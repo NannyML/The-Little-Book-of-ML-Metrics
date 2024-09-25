@@ -1,0 +1,208 @@
+% \documentclass[a5paper]{report}
+% \usepackage[margin=40pt]{geometry}
+\documentclass{report}
+\usepackage[paperwidth=5.7in, paperheight=8.55in, margin=1.25cm]{geometry}
+\setlength{\footskip}{\dimexpr\footskip-.3cm\relax}
+
+\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx} 
+\usepackage{wrapfig}
+\usepackage{enumitem}
+\usepackage{anyfontsize}
+\usepackage{amsmath,amssymb}
+\usepackage{tikz,tikz-layers}
+\usetikzlibrary{calc,positioning,fit}
+
+\definecolor{mygreen}{HTML}{edf7ec}
+\definecolor{myred}{HTML}{fbecec}
+\definecolor{mycyan}{HTML}{d3f9ff}
+\definecolor{myorange}{HTML}{ffecc6}
+\definecolor{mypurple}{HTML}{b7a1d0}
+\definecolor{nmlpurple}{HTML}{3B0280}
+
+
+
+\setsansfont{Lato}[
+    Path=./LatoFont/,
+    % Scale=0.9,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    ItalicFont=*-Italic,
+    BoldItalicFont=*-BoldItalic
+    ]
+
+\setmainfont{Rubik}[
+    Path=./RubikFont/,
+    % Scale=0.9,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-SemiBold,
+    ItalicFont=*-Italic,
+    BoldItalicFont=*-BoldItalic
+    ]
+
+\setmonofont{PlayfairDisplay}[
+    Path=./PlayFairFont/,
+    % Scale=0.85,
+    Extension = .ttf,
+    UprightFont=*-Regular,
+    BoldFont=*-Bold,
+    ItalicFont=*-Italic,
+    BoldItalicFont=*-BoldItalic
+    ]
+
+%============================================================================
+\usepackage{fancyhdr}
+
+% Redefine \section to center the title without number
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-3.5ex \@plus -1ex \@minus -.2ex}%
+  {2.3ex \@plus.2ex}%
+  {\Large\bfseries\centering}}
+\makeatother
+
+% Redefine \subsection to center the title without number
+\makeatletter
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\large\centering}}
+\makeatother
+
+% Remove visible section numbering but keep it in the .aux file for references
+\setcounter{secnumdepth}{0}
+
+% Define commands to store chapter, section title and number
+\newcommand{\chaptertitle}{}
+\newcommand{\sectiontitle}{}
+
+% New command for chapters
+\renewcommand{\chapter}[1]{%
+    \refstepcounter{chapter}% Increment the chapter counter
+    \clearpage
+    \thispagestyle{empty}
+    \vspace*{\fill}
+    {\centering\huge\bfseries #1\par}
+    \vspace*{\fill}
+    \clearpage
+    \renewcommand{\chaptertitle}{#1}%
+}
+
+% Redefine \section to update the mark and store the title
+\let\oldsection\section
+\renewcommand{\section}[1]{%
+    \refstepcounter{section}% Increment the section counter
+    \oldsection{#1}%
+    \markboth{#1}{#1}% Store only title in both marks
+    \renewcommand{\sectiontitle}{#1}% Store the title for use in the style
+}
+
+% Modify customstyle and customstyle2 to include chapter name
+\fancypagestyle{customstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mycyan] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+% Modify customstyle and customstyle2 to include chapter name
+\fancypagestyle{classificatiostyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mypurple] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{customstyle2}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+}
+
+%============================================================================
+
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+
+\newcommand{\coloredboxes}[2]{
+\tikz[every node/.style={outer sep=0pt, inner sep=0pt, align=left}] {
+\node[ minimum width=.5\textwidth, minimum height=1cm, label={[yshift=-7.5mm]above:\strut\textbf{Strength}}] (a) {
+\\[.7cm]
+\parbox{.45\textwidth}{
+\begin{itemize}[left=0pt, label={\textcolor{teal!60!green!60}{$\bullet$}}]
+    #1
+\end{itemize}
+}
+
+};
+
+\path let \p1 = (a.north), \p2 = (a.south) in
+node[ minimum width=.5\textwidth, minimum height=\y1-\y2, 
+label={[yshift=-7.5mm]above:\strut\textbf{Weakness}}, anchor=north west] (b) at (a.north east) {
+\\[.7cm]
+\parbox{.45\textwidth}{
+\begin{itemize}[left=0pt, label={\textcolor{red!80!black!60}{$\bullet$}}]
+    #2
+\end{itemize}
+}
+
+};
+
+\begin{scope}[on behind layer]
+\fill[mygreen] (current bounding box.north)--($(current bounding box.north west)+(.4,0)$) to[bend right=45] ($(current bounding box.north west)+(0,-.4)$)--($(current bounding box.south west)+(0,.4)$) to[bend right=45] ($(current bounding box.south west)+(.4,0)$)--(current bounding box.south)--cycle;    
+\end{scope}
+
+\begin{scope}[on behind layer]
+\fill[myred] (current bounding box.north)--($(current bounding box.north east)+(-.4,0)$) to[bend left=45] ($(current bounding box.north east)+(0,-.4)$)--($(current bounding box.south east)+(0,.4)$) to[bend left=45] ($(current bounding box.south east)+(-.4,0)$)--(current bounding box.south)--cycle;    
+\end{scope}
+}
+}
+
+
+
+\newcommand{\orangebox}[2]{
+{\bigskip\tikz[]{
+\node[outer sep=0pt, inner ysep=.4cm, minimum width=\textwidth, fill=myorange, rounded corners=2mm, align=left, text width=\textwidth-1cm] {
+\textit{\ttfamily #1}\\[2mm]
+#2
+};
+}}
+}
+
+
+
+\begin{document}
+
+\include{introduction}
+\include{regression}
+\include{classification}
+
+\end{document}
