@@ -1,7 +1,9 @@
 \chapter{Classification}
+
+%-------------------- FPR -------------------------------
 \section{FPR}
 \subsection{False Positive Rate}
-\thispagestyle{classificatiostyle}
+\thispagestyle{classificationstyle}
 
 The False Positive Rate (FPR), also known as the false alarm ratio or fall-out, measures how often negative instances are incorrectly classified as positive in binary classification.
 
@@ -69,6 +71,82 @@ In the context of statistical hypothesis testing, the FPR is also known as the "
 }
 
 
-\textbf{FPR alternatives}
+\textbf{FPR alternatives and related metrics}
 
 Other metrics used alongside or instead of FPR include True Positive Rate (TPR), Precision, F1-Score, Receiver Operating Characteristic (ROC AUC), and Specificity.
+
+%-------------------- FNR -------------------------------
+\clearpage
+\section{FNR}
+\subsection{False Negative Rate}
+\thispagestyle{classificationstyle}
+
+The False Negative Rate (FNR), also known as the miss rate, measures the proportion of actual positive instances incorrectly classified as negative in binary classification.
+\begin{center}
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+{
+$\displaystyle
+FPR = \frac{{\color{cyan}FP}}{{\color{cyan}FP} + {{\color{nmlpurple}TN}}}
+$
+}
+};
+\draw[-latex,cyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {False positives} +(1,.5); 
+% \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {True negatives} +(-1,-.5); 
+}
+\end{center}
+
+FNR ranges from 0 (no false negatives) to 1 (all positive instances misclassified). It represents the probability that a positive instance will be incorrectly identified as negative.
+
+\textbf{When to use FNR?}
+
+Use FNR when the cost of missing positive cases is high (e.g., in medical diagnostics or fraud detection) or when you must balance false negatives and false positives.
+
+\coloredboxes{
+\item It directly measures the rate of missed positive cases.
+\item It is critical in fields where false negatives have severe consequences.
+\item Complements True Positive Rate (TPR) in assessing classifier performance.
+}
+{
+\item It doesn't account for true negatives or false positives.
+\item It can be misleading in highly imbalanced datasets.
+\item It should be considered alongside other metrics for a comprehensive evaluation.
+}
+
+
+\clearpage
+\thispagestyle{customstyle2}
+
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/FPR_3d_surface.png}
+    % \caption{Caption}
+    \label{fig1}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.55\textwidth}
+    \centering
+    \vspace{-20pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.5\textwidth]{figures/FPR_2d_line_plot.png} % Your figure goes here
+\end{wrapfigure}
+
+% Left text with the image on the right
+\textbf{Figure 3.1 False Negative Rate.} 
+\textbf{Top:}
+3D surface illustrating FPR's non-linear relationship with FP and TN. FPR is lowest (blue) when FP is low. It increases (red) as FP increases.
+\textbf{Right:}
+Shows how FPR decreases hyperbolically as total negative cases increase for fixed FP values. Lower FP maintains better FPR.
+
+
+\orangebox{%
+Did you know that...}
+{
+    In hypothesis testing, reducing the False Negative Rate ($\beta$) increases the power of the test ($1 - \beta$), but often at the cost of increasing the False Positive Rate ($\alpha$).
+    This demonstrates the inherent trade-off between Type I and Type II errors in statistical testing.
+}
+
+\textbf{FPR alternatives and related metrics}
+
+Other metrics used alongside or instead True Positive Rate (TPR/Recall/Sensitivity), Specificity, Precision, F1-Score, and ROC curve.
