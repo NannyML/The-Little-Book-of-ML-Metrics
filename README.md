@@ -2,7 +2,7 @@
 
 Welcome to the open source repo of The Little Book of ML Metrics. The idea of the book is to be this little handbook that sits on every data scientist's desk for quick reference, from the most well-known metric, ahem, accuracy, to the most obscure ones (looking at you, P4 metric).
 
-![The Little Book of ML Metrics Cover]("/book/figures/The Little Book of Metrics — MAPE.png")
+![The Little Book of ML Metrics](book/figures/The_Little_Book_of_Metrics_MAPE.png)
 
 ## Why are we writing this book?
 
