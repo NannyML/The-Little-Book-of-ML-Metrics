@@ -2,6 +2,8 @@
 
 Welcome to the open source repo of The Little Book of ML Metrics. The idea of the book is to be this little handbook that sits on every data scientist's desk for quick reference, from the most well-known metric, ahem, accuracy, to the most obscure ones (looking at you, P4 metric).
 
+![The Little Book of ML Metrics Cover](/book/figures/The Little Book of Metrics — MAPE)
+
 ## Why are we writing this book?
 
 Machine learning metrics are often overlooked in traditional data science courses and university degrees. This book aims to fill that gap by offering clear, concise, and actionable explanations of the metrics that matter most. Whether you're an aspiring data scientist or an experienced professional, this book will become your go-to reference for understanding and leveraging metrics effectively.
