@@ -1,9 +1,12 @@
 % \documentclass[a5paper]{report}
 % \usepackage[margin=40pt]{geometry}
-\documentclass{report}
+% \documentclass{report}
+\documentclass{book}
+
 \usepackage[paperwidth=5.7in, paperheight=8.55in, margin=1.25cm]{geometry}
 \setlength{\footskip}{\dimexpr\footskip-.3cm\relax}
 
+\usepackage{hyperref}
 \usepackage{fontspec}
 \usepackage{microtype}
 \usepackage[english]{babel}
@@ -102,8 +105,7 @@
     \renewcommand{\sectiontitle}{#1}% Store the title for use in the style
 }
 
-% Modify customstyle and customstyle2 to include chapter name
-\fancypagestyle{customstyle}{
+\fancypagestyle{regressionstyle}{
     \fancyhf{} % Clear all header and footer fields
     \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
     \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
@@ -119,7 +121,7 @@
     }
 }
 
-% Modify customstyle and customstyle2 to include chapter name
+
 \fancypagestyle{classificationstyle}{
     \fancyhf{} % Clear all header and footer fields
     \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
@@ -136,7 +138,23 @@
     }
 }
 
-\fancypagestyle{customstyle2}{
+\fancypagestyle{clusteringstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mypurple] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{customstyle}{
     \fancyhf{} % Clear all header and footer fields
     \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
     \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
@@ -200,9 +218,18 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weakness}}, anchor=north west] (b) at 
 
 
 \begin{document}
-
+\setcounter{tocdepth}{1}  % 1 includes chapters and sections 
+\tableofcontents
+\newpage 
 \include{1-introduction}
 \include{2-regression}
 \include{3-classification}
-
+\include{4-clustering}
+\include{5-ranking}
+\include{6-computer-vision}
+\include{7-nlp}
+\include{8-genai}
+\include{9-probabilistic}
+\include{10-bias-fairness}
+\include{11-business}
 \end{document}
