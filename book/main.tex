@@ -19,11 +19,24 @@
 \usepackage{tikz,tikz-layers}
 \usetikzlibrary{calc,positioning,fit}
 
+% strenghts and weakness colors
 \definecolor{mygreen}{HTML}{edf7ec}
 \definecolor{myred}{HTML}{fbecec}
-\definecolor{mycyan}{HTML}{d3f9ff}
-\definecolor{myorange}{HTML}{ffecc6}
-\definecolor{mypurple}{HTML}{b7a1d0}
+
+% chapters colors
+\definecolor{cyanlight}{HTML}{d3f9ff}
+\definecolor{purplelight}{HTML}{b7a1d0}
+\definecolor{orangelight}{HTML}{ffecc6}
+\definecolor{corallight}{HTML}{FFDEDE}
+\definecolor{mintlight}{HTML}{CAFFC4}
+
+\definecolor{cyanhard}{HTML}{9CF2FF}
+\definecolor{purplehard}{HTML}{A97ADE}
+\definecolor{orangehard}{HTML}{FFD689}
+\definecolor{coralhard}{HTML}{FFA5A5}
+\definecolor{minthard}{HTML}{A1FF98}
+
+% formula colors
 \definecolor{nmlpurple}{HTML}{3B0280}
 
 
@@ -113,7 +126,7 @@
     \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
     \tikz[overlay,remember picture]
     {
-    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mycyan] (a) at (current page.north west) {};
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=cyanlight] (a) at (current page.north west) {};
     \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
     {
     \chaptertitle\ -- \sectiontitle % Chapter and section title here
@@ -127,10 +140,10 @@
     \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
     \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
     \renewcommand{\headrulewidth}{0pt} % Remove header line
-    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
     \tikz[overlay,remember picture]
     {
-    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mypurple] (a) at (current page.north west) {};
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=purplelight] (a) at (current page.north west) {};
     \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
     {
     \chaptertitle\ -- \sectiontitle % Chapter and section title here
@@ -143,10 +156,122 @@
     \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
     \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
     \renewcommand{\headrulewidth}{0pt} % Remove header line
-    \renewcommand{\footrulewidth}{0pt} % Remove footer line if undesired
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
     \tikz[overlay,remember picture]
     {
-    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mypurple] (a) at (current page.north west) {};
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=orangelight] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{rankingstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=corallight] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{cvstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mintlight] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{nlpstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=cyanhard] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{genaistyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=purplehard] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{probabilisticstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=orangehard] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{biasfairnesstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=coralhard] (a) at (current page.north west) {};
+    \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
+    {
+    \chaptertitle\ -- \sectiontitle % Chapter and section title here
+    }; 
+    }
+}
+
+\fancypagestyle{businessstyle}{
+    \fancyhf{} % Clear all header and footer fields
+    \fancyfoot[L]{\color{black!40}Daily metrics at nannyml.com/metrics} % Bottom left
+    \fancyfoot[R]{\thesection\ \chaptertitle: \sectiontitle} % Bottom right, includes chapter.section number, chapter title, and section title
+    \renewcommand{\headrulewidth}{0pt} % Remove header line
+    % \renewcommand{\fchapters colorsootrulewidth}{0pt} % Remove footer line if undesired
+    \tikz[overlay,remember picture]
+    {
+    \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=minthard] (a) at (current page.north west) {};
     \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) 
     {
     \chaptertitle\ -- \sectiontitle % Chapter and section title here
@@ -208,7 +333,7 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weakness}}, anchor=north west] (b) at 
 
 \newcommand{\orangebox}[2]{
 {\bigskip\tikz[]{
-\node[outer sep=0pt, inner ysep=.4cm, minimum width=\textwidth, fill=myorange, rounded corners=2mm, align=left, text width=\textwidth-1cm] {
+\node[outer sep=0pt, inner ysep=.4cm, minimum width=\textwidth, fill=orangelight, rounded corners=2mm, align=left, text width=\textwidth-1cm] {
 \textit{\ttfamily #1}\\[2mm]
 #2
 };
