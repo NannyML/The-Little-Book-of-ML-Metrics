@@ -10,6 +10,9 @@ assignees: ''
 **Metric's name**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
+**Metric's category**
+Which category does the metric belong to: regression, classification, ranking, etc
+
 **Metrics formula**
 Nothing too fancy. It can be a screenshot or something like MAE = mean(y-y_hat)
 
