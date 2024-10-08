@@ -66,7 +66,7 @@ When contributing LaTeX content:
 4. Submit a pull request with a clear title and description.
 
 ## Claiming your Referall Link
-Contact [santiviquez](github.com/santiviquez) at santiago@nannyml.com and he will issue you a referal link :)
+Contact [santiviquez](https://github.com/santiviquez) at santiago@nannyml.com and he will issue you a referal link :)
 
 ## Code of Conduct
 
