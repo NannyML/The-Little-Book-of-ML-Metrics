@@ -31,7 +31,7 @@ We welcome contributions from the community! As a thank-you for your contributio
 
 ## Interested in Being a Book Reviewer?
 
-If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](#). As a thank-you, reviewers will receive an affiliate link with **[Y]%** commission on sales generated through their link.
+If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSejLhxhGowCimOG_1-RLvevB8czKZsW8PM7PwPoi0_8tfGqHw/viewform). As a thank-you, reviewers will receive an affiliate link with **[Y]%** commission on sales generated through their link.
 
 ## About the Authors
 
