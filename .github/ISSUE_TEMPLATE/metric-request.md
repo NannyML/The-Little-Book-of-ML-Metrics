@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Metric's name**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+Add the name of the metric you are referring to
 
 **Metric's category**
 Which category does the metric belong to: regression, classification, ranking, etc
