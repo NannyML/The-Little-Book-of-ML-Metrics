@@ -1,6 +1,6 @@
 # The Little Book of ML Metrics
 
-Welcome to the open source repo of The Little Book of ML Metrics. The idea of the book is to be this little handbook that sits on every data scientist's desk for quick reference, from the most well-known metric, ahem, accuracy, to the most obscure ones (looking at you, P4 metric).
+Welcome to the open source repo of [The Little Book of ML Metrics](https://www.nannyml.com/metrics). The idea of the book is to be this little handbook that sits on every data scientist's desk for quick reference, from the most well-known metric, ahem, accuracy, to the most obscure ones (looking at you, P4 metric).
 
 ![The Little Book of ML Metrics](book/figures/The_Little_Book_of_Metrics_MAPE.png)
 
@@ -27,11 +27,11 @@ The book covers a broad range of metrics from different contexts:
 
 ## How to Contribute
 
-We welcome contributions from the community! As a thank-you for your contributions, each contributor will receive an affiliate link with **[X]%** commission on sales generated through their link. Please check our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+We welcome contributions from the community! As a thank-you for your contributions, each contributor will receive an affiliate link with 10% commission on sales generated through their link. Please check our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
 ## Interested in Being a Book Reviewer?
 
-If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSejLhxhGowCimOG_1-RLvevB8czKZsW8PM7PwPoi0_8tfGqHw/viewform). As a thank-you, reviewers will receive an affiliate link with **[Y]%** commission on sales generated through their link.
+If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSejLhxhGowCimOG_1-RLvevB8czKZsW8PM7PwPoi0_8tfGqHw/viewform). As a thank-you, reviewers will receive an affiliate link with 15% commission on sales generated through their link.
 
 ## About the Authors
 
