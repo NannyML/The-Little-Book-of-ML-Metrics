@@ -27,11 +27,11 @@ The book covers a broad range of metrics from different contexts:
 
 ## How to Contribute
 
-We welcome contributions from the community! As a thank-you for your contributions, each contributor will receive an affiliate link with 10% commission on sales generated through their link. Please check our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+We welcome contributions from the community! As a thank-you for your contributions, each contributor will receive an affiliate link with 10% commission on sales generated through their link. Plus, your name will be included in the book. Please check our [Contributing Guidelines](CONTRIBUTING.md) for more details.
 
 ## Interested in Being a Book Reviewer?
 
-If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSejLhxhGowCimOG_1-RLvevB8czKZsW8PM7PwPoi0_8tfGqHw/viewform). As a thank-you, reviewers will receive an affiliate link with 15% commission on sales generated through their link.
+If you're an expert in any of the topics described in the book contents section and would like to review this book, please fill out [this form](https://docs.google.com/forms/d/e/1FAIpQLSejLhxhGowCimOG_1-RLvevB8czKZsW8PM7PwPoi0_8tfGqHw/viewform). As a thank-you, reviewers will receive an affiliate link with 15% commission on sales generated through their link. Plus, your name will be included in the book.
 
 ## About the Authors
 
