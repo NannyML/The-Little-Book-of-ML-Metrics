@@ -24,6 +24,11 @@ jobs:
         with:
           working_directory: book
           root_file: main.tex
-          compiler: xelatex
+          latexmk_use_xelatex: true
           extra_fonts: |
             ./fonts
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF
+          path: main.pdf
