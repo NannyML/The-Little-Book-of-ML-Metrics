@@ -1,0 +1,21 @@
+name: development build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Tex compile
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: main.tex
+          extra_fonts: |
+            .book/fonts
