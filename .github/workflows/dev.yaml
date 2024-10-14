@@ -24,5 +24,6 @@ jobs:
         with:
           working_directory: book
           root_file: main.tex
+          compiler: xelatex
           extra_fonts: |
             ./fonts
