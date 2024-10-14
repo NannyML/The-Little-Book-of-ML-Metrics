@@ -2,6 +2,10 @@
 
 Welcome to the open source repo of [The Little Book of ML Metrics](https://www.nannyml.com/metrics). The idea of the book is to be this little handbook that sits on every data scientist's desk for quick reference, from the most well-known metric, ahem, accuracy, to the most obscure ones (looking at you, P4 metric).
 
+
+> [!TIP]
+> You can preview the latest pre-release version [here](https://github.com/NannyML/The-Little-Book-of-ML-Metrics/releases/download/nightly/main.pdf)
+
 ![The Little Book of ML Metrics](book/figures/The_Little_Book_of_Metrics_MAPE.png)
 
 ## Why are we writing this book?
