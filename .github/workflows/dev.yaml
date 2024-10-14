@@ -22,6 +22,7 @@ jobs:
       - name: Tex compile
         uses: xu-cheng/latex-action@v3
         with:
+          working_directory: book
           root_file: main.tex
           extra_fonts: |
-            .book/fonts
+            ./fonts
