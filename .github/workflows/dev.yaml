@@ -1,0 +1,36 @@
+name: development build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+        with: 
+          # Fine-grained PAT with contents:write and workflows:write scopes
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+      - name: Tex compile
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: book
+          root_file: main.tex
+          latexmk_use_xelatex: true
+          extra_fonts: |
+            ./fonts
+      - name: Update nightly release
+        uses: eine/tip@master
+        with:
+          tag: nightly
+          rm: true
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          files: ./book/main.pdf
