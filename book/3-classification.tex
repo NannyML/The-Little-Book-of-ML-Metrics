@@ -321,6 +321,7 @@ Consider a loan approval scenario with two true classes: $H_1$ (Creditworthy) an
 
 Cost Matrix: Here we have defined a cost matrix C, where we want to heavily penalize approving loans for non-creditworthy customers (false positives).
 
+\begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
  & $D_1$ (Approve Loan) & $D_2$ (Reject Loan) \\
@@ -330,10 +331,11 @@ $H_1$ (Creditworthy) & $c_{11} =  0$ & $c_{12} = 40$ \\
 $H_2$ (Not Creditworthy) & $c_{21} = 80$ & $c_{22} =  0$ \\
 \hline
 \end{tabular}
-
+\end{center}
 
 Test Set Example: For each row we calculate the cost $C(h_t, d_t)$ incurred on sample t with true class $h_t$ and system’s decision $d_t$.
 
+\begin{center}
 \begin{tabular}{|c|c|c|c|}
 \hline
 Sample (t)& True Class (h) & Predicted Decision (d) & Cost Incurred \\
@@ -345,6 +347,7 @@ Sample (t)& True Class (h) & Predicted Decision (d) & Cost Incurred \\
 3 & Creditworthy & Reject Loan & $C(h_3, d_3) = 40$ \\
 \hline
 \end{tabular}
+\end{center}
 
 Taking the mean over these test samples gives us the Expected Cost (EC):
 \[
