@@ -269,3 +269,97 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \thispagestyle{classificationstyle}
 \section{MCC}
 \subsection{Matthew's Correlation Coefficient}
+
+
+% ---------- EC ----------
+\clearpage
+\thispagestyle{classificationstyle}
+\section{EC}
+\subsection{Expected Cost}
+
+The Expected Cost (EC) metric is designed to evaluate the performance of decision-making systems. It is the expected value of a cost function that assigns a penalty to each combination of the system's decision and the true class of a sample. 
+
+\begin{center}
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+{
+$\displaystyle
+EC = \frac{1}{{\color{nmlred}N}} \sum_{t=1}^{N} {\color{nmlpurple}C}({\color{nmlcyan}h_t}, {\color{nmlyellow}d_t})
+$
+}
+};
+\draw[-latex,nmlred, semithick] ($(a.south)+(-0.7,0.2)$) to[bend left=30] node[pos=1, left] {number of samples} +(-0.8,-0.5);
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(1.3,-0.5)$) to[bend left=30] node[pos=1, right] {true class} +(1.5,0.7);
+\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.7,-0.5)$) to[bend right=60] node[pos=1, left] {cost matrix} +(-1.5,0.7);
+\draw[-latex,nmlyellow, semithick] ($(a.south)+(2.0,0.5)$) to[bend right=30] node[pos=1, right] {decision} +(1.5,-0.7); 
+}
+\end{center}
+
+For each possible true class $h$ and decision $d$, a cost $C(h, d)$ is assigned. The expected cost (EC) is then computed by averaging the costs over the test samples. EC does not assume that the set of possible decisions is the set of classes. Instead, the decisions can be the actions that may be taken by the user of the system.
+
+
+\textbf{When to use EC?}
+
+EC allows assigning specific costs to each combination of true class and predicted decision, making it ideal for applications like finance and healthcare where misclassifications have different consequences. It is highly customizable and effectively handles class imbalance.
+
+\coloredboxes{
+\item It can adjust for deployment scenarios by modifying class priors and handling class imbalance.
+\item It is flexible and explicitly allows to encode the relative costs of different errors in a transparent manner.
+%\item Does not limit the possible decisions to only the class labels.
+}
+{
+\item It's effectiveness depends on well-calibrated model probabilities 
+\item Defining an appropriate cost matrix can be challenging and requires knowledge of the application 
+%\item EC is less widely adopted, making it harder to compare results with existing benchmarks.
+}
+
+
+\clearpage
+\thispagestyle{classificationstyle}
+
+Consider a loan approval scenario with two true classes: $H_1$ (Creditworthy) and $H_2$ (Not Creditworthy), and two decisions: $D_1$ (Approve Loan) and $D_2$ (Reject Loan).
+
+Cost Matrix: Here we have defined a cost matrix C, where we want to heavily penalize approving loans for non-creditworthy customers (false positives).
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+ & $D_1$ (Approve Loan) & $D_2$ (Reject Loan) \\
+\hline
+$H_1$ (Creditworthy) & $c_{11} =  0$ & $c_{12} = 40$ \\
+\hline
+$H_2$ (Not Creditworthy) & $c_{21} = 80$ & $c_{22} =  0$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Test Set Example: For each row we calculate the cost $C(h_t, d_t)$ incurred on sample t with true class $h_t$ and system’s decision $d_t$.
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Sample (t)& True Class (h) & Predicted Decision (d) & Cost Incurred \\
+\hline
+1 & Creditworthy & Approve Loan & $C(h_1, d_1) = 0$ \\
+\hline
+2 & Not Creditworthy & Approve Loan & $C(h_2, d_2) = 80$ \\
+\hline
+3 & Creditworthy & Reject Loan & $C(h_3, d_3) = 40$ \\
+\hline
+\end{tabular}
+\end{center}
+
+Taking the mean over these test samples gives us the Expected Cost (EC):
+\[
+EC = \frac{0 + 80 + 40}{3} = 40
+\]
+
+\orangebox{%
+Did you know that...}
+{
+    The EC metric is also known as Expected Prediction Error or Expected Loss. In speech processing, it’s called Detection Cost Function (DCF), used for tasks like speaker verification and evaluations by NIST. It's also equivalent to Negative Expected Utility in decision theory.
+}
+
+\textbf{EC alternatives and related metrics}
+
+Metrics like F1-score, AUC, and Precision-Recall are ad hoc, treating all errors equally and lacking control over error trade-offs. However, they excel in interpretation and handling class imbalances. In contrast, Expected Cost (EC) allows explicit control over the cost of different misclassifications.
