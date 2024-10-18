@@ -92,9 +92,9 @@
 \section{Silhouette Score}
 \subsection{Silhouette Score}
 
-The Silhouette Coefficient is a measure of how well samples are clustered with samples that are similar to themselves.
-
-The Silhouette Coefficient $s$ for a given data point $i$ in the cluster $C_I$, where $|C_I|$ is the number of data points in $C_I$, is given as:
+The Silhouette Coefficient measures how well a data point fits within its assigned cluster compared to other clusters. 
+It quantifies how similar a sample is to its own cluster (cohesion) compared to the nearest neighboring cluster (separation).
+The Silhouette Coefficient $s(i)$ for a given data point $i$ in the cluster $C_I$, where $|C_I|$ is the number of data points in $C_I$, is given by:
 
 \begin{center}
 \tikz{
@@ -115,11 +115,11 @@ $
 }
 \end{center}
 
-\begin{center}
-$-1 \leq s(i) \leq 1$
-\end{center}
-$a(i)$ is the mean distance between a sample and all other points in the same cluster (mean intra-cluster distance) and $b(i)$ is The mean distance between a sample and all other points in the nearest cluster (mean nearest-cluster distance).
-The Silhouette score for k clusters is given as $SC = \max_{k} \tilde{s}(k)$ where $\tilde{s}(k)$ represents the mean $s(i)$ over all data of the entire dataset.
+Where  $a(i)$ is the mean distance between a sample and all other points in the same cluster (mean intra-cluster distance), 
+and  $b(i)$ is the mean distance between a sample and all points in the nearest different cluster (mean nearest-cluster distance). 
+The value of  $s(i)$ lies between -$1$ and  $1$, where  $s(i) \approx 1$ indicates that the data point is well-clustered, 
+ $s(i) \approx 0$ means the data point is on or very close to the boundary between two clusters, and  $s(i) \approx -1$ 
+suggests that the data point has been misclassified into the wrong cluster.
 
 \textbf{When to use Silhouette Score?}
 
