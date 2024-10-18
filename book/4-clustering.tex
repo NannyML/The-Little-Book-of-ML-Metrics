@@ -94,27 +94,29 @@
 
 The Silhouette Coefficient is a measure of how well samples are clustered with samples that are similar to themselves.
 
-The Silhouette Coefficient s for a given sample is given as 
+The Silhouette Coefficient $s$ for a given data point $i$ in the cluster $C_I$, where $|C_I|$ is the number of data points in $C_I$, is given as:
 
 \begin{center}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
 $\displaystyle
-s = \frac{{\color{cyan}b} - {\color{nmlpurple}a}}{\max({\color{cyan}b}, {\color{nmlpurple}a})}
+s(i) = 
+\begin{cases}
+\frac{{\color{cyan}b(i)} - {\color{nmlpurple}a(i)}}{\max\left\{ {\color{nmlpurple}a(i)}, {\color{cyan}b(i)} \right\}}  & \text{if } |C_I| > 1 \\
+0  & \text{if } |C_I| = 1
+\end{cases}
 $
 }
 };
+\draw[-latex,cyan, semithick] ($(a.north)+(-0.9,0.05)$) to[bend right=15] node[pos=1, left] {measures cohesion} +(-1,.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.2,0.05)$) to[bend left=15] node[pos=1, right] {measures separation} +(1,.5); 
+% \draw[-latex,nmlpurple, semithick] ($(b.north)+(0.1,0.05)$) to[bend left=15] node[pos=1, left] {True negatives} +(-1,-.5); 
 }
 \end{center}
 
-\textbf{a} : The mean distance between a sample and all other points in the same cluster (mean intra-cluster distance)
-
-\textbf{b} : The mean distance between a sample and all other points in the nearest cluster (mean nearest-cluster distance)
-
-Silhouette Score is the average of all the Silhouette Coefficients of each sample in the dataset.
-
-Silhouette Score ranges from -1 (incorrect cluster) to +1 (dense cluster) and values near 0 indicate overlapping customers.
+$a(i)$ is the mean distance between a sample and all other points in the same cluster (mean intra-cluster distance) and $b(i)$ is The mean distance between a sample and all other points in the nearest cluster (mean nearest-cluster distance).
+The Silhouette score for k clusters is given as $SC = \max_{k} \tilde{s}(k)$ where $\tilde{s}(k)$ represents the mean $s(i)$ over all data of the entire dataset.
 
 \textbf{When to use Silhouette Score?}
 
