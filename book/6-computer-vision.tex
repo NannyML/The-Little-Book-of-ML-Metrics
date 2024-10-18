@@ -23,18 +23,18 @@ PSNR is a commonly used metric for comparing pixel differences between them.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                    \text{PSNR} = 10 \cdot \log_{10}\left(\frac{\color{nmlred}MAX^2}{\color{nmlpurple}MSE}\right)
+                    PSNR = 10 \cdot \log_{10}\left(\frac{\color{nmlred}MAX^2}{\color{nmlpurple}MSE}\right)
                 $
             }
         };
-        \draw[-latex,nmlred, semithick] ($(a.north)+(2,-0.1)$) to[bend left=15] node[pos=1, left] {maximum possible pixel} +(-1,.5); 
+        \draw[-latex,nmlred, semithick] ($(a.north)+(2.1,-0)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-1,.5); 
         \draw[-latex,nmlpurple, semithick] ($(a.south)+(2,-0.1)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-1,-.5);
     }
 \end{center}
 
 \vspace{-10pt} 
 
-and 
+where given an original image $O$ of size $h \times w$ and a reconstructed image $R$, the $MSE$ is defined as:
 
 \vspace{-10pt}
 
@@ -44,14 +44,14 @@ and
         \node[inner sep=2pt, font=\large] (a) {
             {
                 $\displaystyle
-                 \text{MSE} = \frac{1}{\color{teal!70!green}h \cdot \color{nmlcyan}w} \sum_{i=1}^{h} \sum_{j=1}^{w} \left(\color{nmlred} O(i,j) \color{black} - \color{nmlpurple} R(i,j) \right)^2
+                 MSE = \frac{1}{\color{teal!70!green}h \cdot \color{nmlcyan}w} \sum_{i=1}^{h} \sum_{j=1}^{w} \left(\color{nmlred} O(i,j) \color{black} - \color{nmlpurple} R(i,j) \right)^2
                 $
             }
         };
         \draw[-latex,teal!70!green, semithick] ($(a.west)+(1.7,-0.5)$) to[bend left=15] node[pos=1, left] {height} +(-1,-.5); 
-        \draw[-latex,nmlcyan, semithick] ($(a.west)+(2.4,-0.5)$) to[bend right=15] node[pos=1.5, left] {width} +(1,-.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.west)+(2.4,-0.5)$) to[bend right=15] node[pos=1.62, left] {width} +(1,-.5);
         \draw[-latex,nmlred, semithick] ($(a.south)+(1,0.5)$) to[bend right=15] node[pos=1, right] {original pixel value} +(1,-.5);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.4)$) to[bend left=15] node[pos=1, left] {reconstructed pixel value} +(-1,.5);    
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.4)$) to[bend right=15] node[pos=1, left] {reconstructed pixel value} +(-1,.5);    
     }
 \end{center}
 
@@ -66,6 +66,16 @@ The unit of peak signal-to-noise ratio is \textbf{decibel (dB)} and the image ha
 \textbf{When to use PSNR?}
 
 PSNR is often chosen as the first metric to provide an overview of how closely the generated image matches the target.
+
+\coloredboxes{
+\item It is a straightforward and widely accepted standard for comparing vision algorithms.
+\item Simple and fast to compute.
+}
+{
+\item It is not always align with human perception of image.
+\item PSNR is sensitive to even small global changes in lighting, contrast, or color.
+}
+
 
 \textbf{Other related metrics}
 
