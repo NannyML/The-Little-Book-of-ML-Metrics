@@ -14,8 +14,8 @@
 \section{PSNR}
 \subsection{Peak Signal-to-Noise Ratio}
 
-In image generation and reconstruction, it is important to measure how closely generated images resemble reference images. 
-PSNR is a commonly used metric for comparing pixel differences between them.
+In image generation and reconstruction, it is important to measure how closely the generated images resemble reference images.
+PSNR is a widely used metric that quantifies pixel-level differences.
 
 % equation
 \begin{center}
@@ -59,7 +59,7 @@ where given an original image $O$ of size $h \times w$ and a reconstructed image
 
 The intuition behind PSNR is that it expresses how large the possible signal value is in comparison to the error. 
 If the error is subtle compared to the maximum signal (i.e., a high PSNR), the reconstructed image is relatively similar to the target in terms of pixel values.
-The unit of peak signal-to-noise ratio is \textbf{decibel (dB)} and the image have PSNR from 30 dB could be consider as good reconstruction quality.
+The unit of peak signal-to-noise ratio is decibel (dB) and the image have PSNR from 30 dB could be consider as good reconstruction quality.
 
 
 
@@ -79,7 +79,7 @@ PSNR is often chosen as the first metric to provide an overview of how closely t
 
 \textbf{Other related metrics}
 
-Modern computer vision problems often focus on generating likely realistic images that are perceptually pleasing to humans, rather than strictly matching the target image pixel by pixel.
-Therefore, PSNR is typically used in conjunction with other modern metrics like FID or Inception Score.
+Modern computer vision problems often focus on generating likely realistic images that are perceptually pleasing to humans, rather than strictly matching the
+target image pixel by pixel. Therefore, PSNR is typically used in conjunction with other modern metrics like Fréchet Inception Distance (FDI) or Inception Score (IS).
 
 
