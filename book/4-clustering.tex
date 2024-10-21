@@ -62,6 +62,34 @@
 \section{Davis Bouldin Score}
 \subsection{Davis Bouldin Score}
 
+The Davis Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. The Davis Bouldin index is defined as 
+
+\begin{center}
+    \tikz{
+    \node[inner sep=2pt, font=\Large] (a) {
+    {
+    $\displaystyle
+    DB = \frac{1}{k} \sum_{i=1}^{k} \max_{i \neq j} R_{ij}
+    $
+    }
+    }; 
+    }
+\end{center}
+
+\begin{center}
+    \tikz{
+    \node[inner sep=2pt, font=\Large] (a) {
+    {
+    $\displaystyle
+    R_{ij} = \frac{s_i + s_j}{d_{ij}}
+    $
+    }
+    }; 
+    }
+\end{center}
+
+where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$.
+
 % ---------- Fowlkes Mallows Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
