@@ -56,39 +56,54 @@
 \section{Completeness Score}
 \subsection{Completeness Score}
 
-% ---------- Davis Bouldin Score ----------
+% ---------- Davies Bouldin Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Davis Bouldin Score}
-\subsection{Davis Bouldin Score}
+\section{Davies Bouldin Score}
+\subsection{Davies Bouldin Score}
 
-The Davis Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. The Davis Bouldin index is defined as 
-
-\begin{center}
-    \tikz{
-    \node[inner sep=2pt, font=\Large] (a) {
-    {
-    $\displaystyle
-    DB = \frac{1}{k} \sum_{i=1}^{k} \max_{i \neq j} R_{ij}
-    $
-    }
-    }; 
-    }
-\end{center}
+The Davies Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. So the clusters which are farther apart and less dispersed will result in a better score. The Davis Bouldin index is defined as 
 
 \begin{center}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
     {
     $\displaystyle
-    R_{ij} = \frac{s_i + s_j}{d_{ij}}
+    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} \max_{{\color{nmlpurple}i} \neq {\color{cyan}j}} R_{{\color{nmlpurple}i}{\color{cyan}j}}
     $
     }
     }; 
     }
+% \end{center}
+
+% \begin{center}
+    \tikz{
+    \node[inner sep=2pt, font=\Large] (a) {
+    {
+    $\displaystyle
+    R_{{\color{nmlpurple}i}{\color{cyan}j}} = \frac{s_{\color{nmlpurple}i} + s_{\color{cyan}j}}{d_{\color{nmlpurple}i\color{cyan}j}}
+    $
+    }
+    }; 
+    \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.2,0.05)$) to[bend left=15] node[pos=1, right] {cluster diameter} +(1,.5); 
+    \draw[-latex,cyan, semithick] ($(a.south)+(0.6,-0.05)$) to[bend left=15] node[pos=1, left] {distance between centroids} +(-1,-.5); 
+    }
 \end{center}
 
-where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$.
+
+where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$. The minium Davies Bouldin score is zero, with lower values indicating better clustering.
+
+\textbf{When to use Davies Bouldin?}
+
+Use Davies Bouldin Score when the ground truth labels are unknown and the evaluation must be performed using the model itself.
+
+\coloredboxes{
+\item The computation of Davies-Bouldin is simpler than that of Silhouette scores, zero is the lowest possible score and closer the value to zero indicate a better separation.
+}
+{
+\item Davies Bouldin Score can generally be higher for convex clusters than other clusters, such as density based clusters.
+\item The usage of centroid distance limits the distance metric to Euclidean space.
+}
 
 % ---------- Fowlkes Mallows Score ----------
 \clearpage
