@@ -62,7 +62,10 @@
 \section{Davies Bouldin Score}
 \subsection{Davies Bouldin Score}
 
-The Davies Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. So the clusters which are farther apart and less dispersed will result in a better score. The Davis Bouldin index is defined as 
+The Davies-Bouldin score measures the quality of clustering by evaluating the average similarity between each cluster \( C_i \) and its most similar neighboring cluster 
+\( C_j \) for $i,j = 1, 2, ... k$. This similarity \( R_{ij} \) is calculated as the ratio of the within-cluster distance (how tightly packed the cluster is) to the between-cluster distance (how far apart the clusters are).
+
+% The Davies Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. So the clusters which are farther apart and less dispersed will result in a better score. The Davis Bouldin index is defined as 
 
 \begin{center}
     \tikz{
@@ -90,8 +93,10 @@ The Davies Bouldin score is the average similairty measure of each cluster $C_{i
     }
 \end{center}
 
+% A lower Davies-Bouldin score indicates better clustering, as it suggests that clusters are more compact and well-separated from one another.
+% where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$. The minium Davies Bouldin score is zero, with lower values indicating better clustering.
 
-where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$. The minium Davies Bouldin score is zero, with lower values indicating better clustering.
+Here, \( s_i \) represents the average distance between each point in cluster \( i \) and the centroid of that cluster, while \( d_{ij} \) is the distance between the centroids of clusters \( i \) and \( j \). The Davies-Bouldin score has a minimum value of zero, with lower scores indicating better-defined clusters that are compact and well-separated.
 
 \textbf{When to use Davies Bouldin?}
 
