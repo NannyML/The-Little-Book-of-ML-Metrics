@@ -62,7 +62,7 @@ Avoid using it when larger errors need more significant penalization.
 \end{wrapfigure}
 
 % Left text with the image on the right
-\textbf{Figure 2.1 MAE.} \underline{Top:} The rate of change of MAE is linear. 
+\textbf{Figure 3.1 MAE.} \underline{Top:} The rate of change of MAE is linear. 
 Each error contributes proportionally to the total error. 
 \underline{Right:} We can see that MAE is always non-negative, symmetrical,
 and cantered around zero. By looking at this plot it is clear that MAE is not differentiable at zero.
@@ -82,6 +82,60 @@ and Mean Absolute Percentage Error (MAPE).
 \thispagestyle{regressionstyle}
 \section{MSE}
 \subsection{Mean Squared Error}
+
+MSE is a common metric to evaluate the performance of regression models and a popular loss optimization function. It measures the average of the squared errors.
+The units of MSE are the squares of the predicted values, which can sometimes make interpretation challenging.
+
+% equation
+\begin{center}
+[FORMULA GOES HERE]
+\end{center}
+
+The smaller the MSE, the closer the model's predictions are to the actual targets. Theoretically, MSE belongs in the 0 to +infinity range.
+A common use of MSE as a loss function is in the least squares method.
+
+\textbf{When to use MSE?}
+
+Use MSE if having a few large mistakes is much worse than having many small ones. Otherwise, MAE might be a better metric.
+
+% strength and weakness box
+\coloredboxes{
+    \item MSE is differentiable, which is useful in optimization algorithms that require gradient information, such as gradient descent.
+}
+{
+    \item Due to the squaring of each error term, MSE is particularly sensitive to outliers. Large errors contribute more significantly to the MSE than smaller ones.
+    \item Because it squares the differences, the metric can be harder to interpret, especially when dealing with units.
+    Let's say you are forecasting revenue; MSE would measure your forecast accuracy in dollars-squared, a bit weird, right?
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/MSE_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.45\textwidth]{figures/MSE_cross_section.png} % Your figure goes here
+    \vspace{-10pt} % Adjust vertical alignment if needed
+\end{wrapfigure}
+
+% Left text with the image on the right
+\textbf{Figure 3.2 MSE.} \underline{Top:} MSE increases quadratically with the magnitude of the prediction error,
+reflecting that larger errors contribute more significantly to the MSE.
+\underline{Right:} MSE is always non-negative, symmetrical, and centered around 0.
+
+\orangebox{Did you know that...}
+{MSE can be written as the sum of the variance and bias of an estimator. $MSE(\hat{\theta}) = Var(\hat{\theta}) + \left(Bias(\hat{\theta})\right)^2$ which means that if we are dealing with an unbiased estimators MSE is equivalent to the variance.}
+
+\textbf{Other related metrics}
+
+Other metrics that are commonly explored alongside MSE are Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE).
 
 % ---------- MSLE ----------
 \clearpage
