@@ -186,62 +186,86 @@ Use TPR when you need to evaluate how well a classifier predicts true positives,
 \item TPR can be sensitive to class imbalance, as it may be easier to achieve a high TPR when the positive class is dominant.
 \item TPR doesn't exist in isolation; it's often important to show its relationship with another key metric. (e.g., FPR, Precision, Recall).
 }
-% ---------- TNR ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{TNR (Specificity)}
-\subsection{True Negative Rate (Specificity)}
 
-True Negative Rate (TNR), also known as specificity, measures the proportion of actual negative instances correctly identified as such in binary classification.
-Specificity is a crucial metric in evaluating diagnostic tests and classification models.
+% ---------- TPR ----------
+\clearpage
+\section{TPR (Recall/Sensitivity)}
+\subsection{True Positive Rate (Recall/Sensitivity)}
+\thispagestyle{classificationstyle}
+
+Recall, also known as Sensitivity or True Positive Rate (TPR), is a crucial metric in classification tasks. It measures the proportion of actual
+positive instances that were correctly identified by the model. Recall answers the question: "Of all the positive cases, how many did our model correctly identify?”
 
 \begin{center}
-    \tikz{
-        \node[inner sep=2pt, font=\Large] (a) {
-        {
-        $\displaystyle
-        TNR = \frac{{\color{cyan}TN}}{{\color{cyan}TN} + {{\color{nmlpurple}FP}}}
-        $
-        }
-        };
-        \draw[-latex,cyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {True negatives} +(1,.5); 
-        % \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5); 
-    }
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+{
+$\displaystyle
+Recall = \frac{{\color{cyan}TP}}{{\color{cyan}TP} + {{\color{nmlpurple}FN}}}
+$
+}
+};
+\draw[-latex,cyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5); 
+% \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {False negatives} +(-1,-.5); 
+}
 \end{center}
 
-TNR ranges from 0 to 1, where 1 indicates perfect specificity (all negative instances correctly identified) and 0 (no negative instances were correctly identified).
-In hypothesis testing, specificity is inversely related to the Type I error rate.
+Recall ranges from 0 to 1, where 1 indicates perfect recall (all positive instances were correctly identified), and 0 indicates the worst
+possible recall (no positive instances were identified).
 
-\textbf{Why to use TNR?}
-
-When you need to assess a test's ability to identify negative cases correctly or when the cost of false positives is high (e.g., unnecessary medical procedures).
+\textbf{When to use Recall?}
+When the cost of false negatives is high (e.g., missing a fraudulent transaction or a critical medical diagnosis).
+When you need to identify as many positive instances as possible, even at the risk of some false positives. In imbalanced datasets where the positive class is rare but important.
 
 \coloredboxes{
-\item It directly measures the ability to correctly identify negative cases.
-\item It is crucial in scenarios where false positives have significant consequences.
-\item High specificity is valuable for confirmatory tests.
+\item Focuses on minimizing false negatives, which is crucial in many high-stakes applications.
+\item Provides insight into a model's ability to find all positive instances.
+\item Useful in scenarios where missing a positive is more costly than incorrectly labeling a negative
 }
 {
-\item It doesn't account for false negatives or true positives.
-\item A test with high specificity but low sensitivity might miss many positive cases.
-\item It should be considered alongside sensitivity for a comprehensive evaluation.
+\item Doesn't account for false positives, which can lead to high recall but poor precision.
+\item Can be misleading when used in isolation, as a model that predicts everything as positive would have perfect recall.
+\item Ignores performance on negative examples, which may be important in some contexts.
 }
+
 
 \clearpage
 \thispagestyle{customstyle}
 
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Recall_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.55\textwidth}
+    \centering
+    \vspace{-20pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.5\textwidth]{figures/Recall_2d_line_plot.png} % Your figure goes here
+\end{wrapfigure}
+
+% Left text with the image on the right
+\textbf{Figure 3.5 Recall.} 
+\underline{Top:}
+Shows how Recall decreases hyperbolically as total positive cases increase for fixed TP values. Higher TP maintains better Recall.
+Curves display a rapid initial decline followed by a gradual decrease.
+\underline{Right:}
+3D surface illustrating Recall's non-linear relationship with TP and FN. Recall is highest (blue) when TP is high and FN is low, decreasing (red) as FN increases or TP decreases.
+
 \orangebox{%
 Did you know that...}
 {
-    Sensitivity and Specificity were introduced by the American biostatistician Jacob Yerushalmy in 1947.
+    Precision and Recall were introduced by Allen Kent in the 1950s. These metrics were initially developed to evaluate the effectiveness of library catalog
+    systems and early computerized document retrieval systems.
 }
 
 \textbf{Other related metrics}
 
-Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall). FPR, which is 1 - Specificity, F1-Score, and ROC curve.
-% ---------- Accuracy ----------
+Other metrics used alongside or instead of Recall are Precision, F1-Score, F-beta, Specificity, ROC AUC and, Matthews Correlation Coefficient (MCC).% ---------- Accuracy ----------
 \clearpage
+
 \thispagestyle{classificationstyle}
 \section{Accuracy}
 \subsection{Accuracy}
