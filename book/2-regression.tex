@@ -131,7 +131,8 @@ reflecting that larger errors contribute more significantly to the MSE.
 \underline{Right:} MSE is always non-negative, symmetrical, and centered around 0.
 
 \orangebox{Did you know that...}
-{MSE can be written as the sum of the variance and bias of an estimator. $MSE(\hat{\theta}) = Var(\hat{\theta}) + \left(Bias(\hat{\theta})\right)^2$ which means that if we are dealing with an unbiased estimators MSE is equivalent to the variance.}
+{MSE can be written as the sum of the variance and bias of an estimator. $MSE(\hat{\theta}) = Var(\hat{\theta}) + \left(Bias(\hat{\theta})\right)^2$ which means
+that if we are dealing with an unbiased estimators MSE is equivalent to the variance.}
 
 \textbf{Other related metrics}
 
@@ -208,6 +209,63 @@ interpretable value in the same units as the target variable.
 \thispagestyle{regressionstyle}
 \section{MAPE}
 \subsection{Mean Absolute Percentage Error}
+
+MAPE is one of the most widely used measures of forecast accuracy due to its scale independence and interoperability.
+It is derived from the Mean Absolute Error (MAE), adjusted to provide a percentage measure, making it easier to interpret and compare across different datasets and contexts.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+When the forecasted values $\hat{Y_{t}}$ are equal to the actual values $Y_{t}$ for all data points, MAPE is 0\% indicating a perfect forecast with no error.
+However, when the relationship between the actual values and predicted values are very different, the percentage error becomes extremely large.
+
+\textbf{When to use MAPE?}
+
+MAPE is useful when the value of the error on it's own is not as important as its relative magnitude compared to the actual target values.
+It is not feasible when actual values can be 0. Additionally, MAPE is beneficial when it serves as a meaningful business metric.
+
+% strength and weakness box
+\coloredboxes{
+    \item Scale-independent and easy interpretation as a percentage error.
+}
+{
+    \item Undefined when $Y_{t} = 0$
+    \item MAPE penalizes negative errors $(\hat{Y_{t}} > Y)$ more than positive errors. This makes it biased since, optimizing for MAPE systematically selects the method with lower forecasts.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/MAPE_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.45\textwidth]{figures/MAPE_cross_section.png} % Your figure goes here
+    \vspace{-10pt} % Adjust vertical alignment if needed
+\end{wrapfigure}
+
+
+% Left text with the image on the right
+\textbf{Figure 3.2 MSE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
+targets and predicted values is significantly different. \underline{Top:} The rate of change of MAPE is non-linear.
+\underline{Right:} Clearly shows MAPE's asymmetry in relation to over- and under-predicting the target variable when optimizing for MAPE.
+
+\orangebox{Did you know that...}
+{MAPE is not translation invariant. This means that if we add a constant to all actual and prediction values, the error will be different.
+In math terms, it means that $MAPE(Y_{t} + c, \hat{Y_{t}} + c) \not= MAPE(Y_{t}, \hat{Y_{t}})$ , where $c$ is a constant.}
+
+
+\textbf{Other related metrics}
+To overcome these issues with MAPE, there are some other measures proposed in the literature: Mean Absolute Scaled Error (MASE),
+Symmetric Mean Absolute Percentage Error (sMAPE), Mean Directional Accuracy (MDA), Mean Arctangent Absolute Percentage Error (MAAPE).
 
 % ---------- sMAPE ----------
 \clearpage
