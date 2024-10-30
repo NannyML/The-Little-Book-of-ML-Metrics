@@ -92,6 +92,47 @@
 \section{Silhouette Score}
 \subsection{Silhouette Score}
 
+The Silhouette Coefficient measures how well a data point fits within its assigned cluster compared to other clusters. 
+It quantifies how similar a sample is to its own cluster (cohesion) compared to the nearest neighboring cluster (separation).
+The Silhouette Coefficient $s(i)$ for a given data point $i$ in the cluster $C_I$, where $|C_I|$ is the number of data points in $C_I$, is given by:
+
+\begin{center}
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+{
+$\displaystyle
+s(i) = 
+\begin{cases}
+\frac{{\color{cyan}b(i)} - {\color{nmlpurple}a(i)}}{max\left\{ {\color{nmlpurple}a(i)}, {\color{cyan}b(i)} \right\}}  & if\, |C_I| > 1 \\
+0  & if\, |C_I| = 1
+\end{cases}
+$
+}
+};
+\draw[-latex,cyan, semithick] ($(a.north)+(-0.9,0.05)$) to[bend right=15] node[pos=1, left] {measures cohesion} +(-1,.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.2,0.05)$) to[bend left=15] node[pos=1, right] {measures separation} +(1,.5); 
+% \draw[-latex,nmlpurple, semithick] ($(b.north)+(0.1,0.05)$) to[bend left=15] node[pos=1, left] {True negatives} +(-1,-.5); 
+}
+\end{center}
+
+Where  $a(i)$ is the mean distance between a sample and all other points in the same cluster (mean intra-cluster distance), 
+and  $b(i)$ is the mean distance between a sample and all points in the nearest different cluster (mean nearest-cluster distance). 
+The value of  $s(i)$ lies between -$1$ and  $1$, where  $s(i) \approx 1$ indicates that the data point is well-clustered, 
+ $s(i) \approx 0$ means the data point is on or very close to the boundary between two clusters, and  $s(i) \approx -1$ 
+suggests that the data point has been misclassified into the wrong cluster.
+
+\textbf{When to use Silhouette Score?}
+
+Use Silhouette Score when the ground truth labels are unknown and the evaluation must be performed using the model itself.
+
+\coloredboxes{
+\item It provides a clear and intuitive measure of how well clusters are separated, +1 highly dense and -1 for incorrect clustering.
+}
+{
+\item Silhouette Score can generally be higher for convex clusters than other clusters, such as density based clusters.
+\item Higher Silhouette Score doesn't necessarily indicate that the clusters will have equal sizes; the clusters can still vary in cardinality. 
+}
+
 % ----------  Consensus Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
