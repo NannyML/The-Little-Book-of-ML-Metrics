@@ -162,6 +162,43 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{TNR}
 \subsection{True Negative Rate (Specificity)}
 
+True Negative Rate (TNR), also known as specificity, measures the proportion of actual negative instances correctly identified as such in binary classification.
+Specificity is a crucial metric in evaluating diagnostic tests and classification models.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+TNR ranges from 0 to 1, where 1 indicates perfect specificity (all negative instances correctly identified) and 0 (no negative instances were correctly identified).
+In hypothesis testing, specificity is inversely related to the Type I error rate.
+
+\textbf{Why to use TNR?}
+
+When you need to assess a test's ability to identify negative cases correctly or when the cost of false positives is high (e.g., unnecessary medical procedures).
+
+\coloredboxes{
+\item It directly measures the ability to correctly identify negative cases.
+\item It is crucial in scenarios where false positives have significant consequences.
+\item High specificity is valuable for confirmatory tests.
+}
+{
+\item It doesn't account for false negatives or true positives.
+\item A test with high specificity but low sensitivity might miss many positive cases.
+\item It should be considered alongside sensitivity for a comprehensive evaluation.
+}
+
+\clearpage
+\thispagestyle{customstyle}
+
+\orangebox{%
+Did you know that...}
+{
+    Sensitivity and Specificity were introduced by the American biostatistician Jacob Yerushalmy in 1947.
+}
+
+\textbf{Other related metrics}
+
+Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall). FPR, which is 1 - Specificity, F1-Score, and ROC curve.
 % ---------- Accuracy ----------
 \clearpage
 \thispagestyle{classificationstyle}
