@@ -166,11 +166,36 @@ This metric is best used when targets have exponential growth, such as populatio
     \item MSLE penalizes an under-predicted estimate more than an over-predicted estimate. This can be a strength in scenarios where underestimating a value can be more problematic than overestimating it.
     \item MSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
 }
+
 % ---------- RMSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
 \section{RMSE}
 \subsection{Root Mean Squared Error}
+
+Similarly to MSE, RMSE squares the difference between predictions and true values but takes the square root of the mean.
+Simplifying its interpretation units since the error is returned in the natural units of the data.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+The RMSE is always a positive value, with a smaller RMSE indicating better forecast accuracy.
+Theoretically, RMSE belongs in the 0 to +infinity range. By squaring the differences, RMSE gives more weight to larger errors, making it sensitive to outliers.
+
+\textbf{When to use RMSE?}
+Use RMSE when you need a metric that penalizes larger errors more than smaller ones due to the squaring of the residuals and reports an
+interpretable value in the same units as the target variable.
+
+% strength and weakness box
+\coloredboxes{
+    \item Because RMSE is measured in the same units as the target variable, interpreting its magnitude is straightforward.
+    \item The squaring of the errors ensures that larger errors have a greater impact on the RMSE value, which can be beneficial when large errors are particularly undesirable.
+}
+{
+    \item Unlike some other metrics like R-squared and MAPE, RMSE does not provide a normalized measure, making it difficult to compare across different datasets without standardization.
+}
 
 % ---------- RMSLE ----------
 \clearpage
