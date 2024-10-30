@@ -143,6 +143,29 @@ Other metrics that are commonly explored alongside MSE are Mean Absolute Error (
 \section{MSLE}
 \subsection{Mean Squared Log Error}
 
+MSLE is a statistical measure used to evaluate the accuracy of a forecasting model.
+It is commonly used when the data has a wide range of values.
+It measures the average of the squared differences between the logarithms of the predicted and actual values.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+    
+MSLE is always a positive value, with a smaller MSLE indicating better forecast accuracy. Theoretically, MSLE belongs in the 0 to +infinity range.
+
+\textbf{When to use MSLE?}
+
+This metric is best used when targets have exponential growth, such as population counts or average sales of a commodity over a span of years.
+
+% strength and weakness box
+\coloredboxes{
+    \item It handles large ranges of values. The logarithmic transformation helps manage large ranges of target values, which are common in real-world datasets.
+}
+{
+    \item MSLE penalizes an under-predicted estimate more than an over-predicted estimate. This can be a strength in scenarios where underestimating a value can be more problematic than overestimating it.
+    \item MSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
+}
 % ---------- RMSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
