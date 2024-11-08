@@ -361,6 +361,39 @@ wMAPE is a good choice when you want some of the characteristics of MAPE, like p
 \section{MASE}
 \subsection{Mean Absolute Scaled Error}
 
+MASE is a scale-independent metric that compares the absolute errors of a forecast model to the absolute errors of a naive forecast.
+This makes MASE particularly useful for comparing the performance of models across different datasets or when the scale of the target variable changes.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+MASE values less than 1 indicate that the forecast model outperforms the naive forecast, while values greater than 1 indicate the opposite.
+MASE is unbounded on the positive side, with 0 representing a perfect forecast.
+
+\textbf{When to use MASE?}
+
+MASE is great for evaluating forecast performance against a baseline model. Because of its scale-independent characteristic, it is also suitable for comparing the accuracy
+of forecasts across datasets with different units or magnitudes.
+
+% strength and weakness box
+\coloredboxes{
+    \item Scale-independent, allowing for fair comparisons across datasets.
+    \item Provides a clear benchmark for model performance relative to a naive forecast.
+    \item Unlike percentage-based metrics such as MAPE, MASE avoids division by zero issues.
+    \item MASE penalizes positive and negative forecast errors equally, and it treats errors in large and small forecasts with equal weight.
+
+}
+{
+    \item Requires defining a suitable naive forecast method.    
+    \item MASE may not be as intuitive to interpret as some other metrics like MAE or MAPE.
+}
+
+\clearpage
+\orangebox{Did you know that...}
+{MASE was created by Anne B. Koehler and Rob J. Hyndman, co-author of the book Forecasting: Principles and Practice, widely regarded as one of the definitive resources in forecasting.}
+
 % ---------- MSPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
