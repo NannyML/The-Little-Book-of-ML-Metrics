@@ -204,6 +204,31 @@ interpretable value in the same units as the target variable.
 \section{RMSLE}
 \subsection{Root Mean Squared Log Error}
 
+RMSLE is a variation of the RMSE metric that is particularly useful when dealing with targets that have a wide range of values, such as those with an exponential growth pattern.
+It measures the square root of the average of the squared logarithmic errors.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+RMSLE is always a positive value, with a smaller RMSLE indicating better forecast accuracy. Theoretically, RMSLE belongs in the 0 to +infinity range.
+By using the logarithm, RMSLE dampens the effect of large outliers compared to RMSE.
+
+\textbf{When to use RMSLE?}
+RMSLE is best used when the target variables have a large range and an exponential growth pattern, such as population counts or sales figures over time.
+It can be more appropriate than RMSE in these cases as it is less sensitive to large outliers.
+
+% strength and weakness box
+\coloredboxes{
+    \item Handles large ranges of values well due to the logarithmic transformation.
+    \item RMSLE penalizes underestimation more than overestimation, which can be beneficial in some use cases.
+}
+{
+    \item RMSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these.
+    \item Interpretation can be less intuitive than RMSE, as the final value is in logarithmic scale.
+}
+
 % ---------- MAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
