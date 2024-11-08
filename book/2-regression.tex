@@ -298,6 +298,32 @@ Symmetric Mean Absolute Percentage Error (sMAPE), Mean Directional Accuracy (MDA
 \section{sMAPE}
 \subsection{Symmetric Mean Absolute Percentage Error}
 
+sMAPE is a variant of the popular metric MAPE and addresses some of its shortcomings. Unlike MAPE, sMAPE has both a lower and an upper bound and is also better
+at handling data with target values that can be zero.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+sMAPE ranges from 0\% to 200\%, with 0\% indicating a perfect forecast and 200\% indicating the worst possible forecast. There is another sMAPE version without the factor of 0.5 in the denominator, which makes the metric range between 0\% and 100\%.
+
+\textbf{When to use sMAPE?}
+
+sMAPE is a good choice when you want some of the benefits of MAPE, like percentage interpretation, but don't want its shortcomings like producing extremely large values when the relationship between
+targets and predicted values are very different.
+
+% strength and weakness box
+\coloredboxes{
+    \item Can handle target values equal to zero.
+    \item Has both a lower and an upper bound.
+}
+{
+    \item Undefined when $|Y_{t}| = |\hat{Y_{t}}| = 0$
+    \item sMAPE is not symmetric to over- and under-forecasts. For example, if $Y_{t} = 100$ and in one case we have $\hat{Y_{t}} = 90$, this gives ansMAPE of 4.76\%; whereas if $\hat{Y_{t}} = 110$, then the sMAPE would be 5.26\%.
+}
+
+
 % ---------- wMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
