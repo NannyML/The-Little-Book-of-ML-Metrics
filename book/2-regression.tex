@@ -257,7 +257,7 @@ It is not feasible when actual values can be 0. Additionally, MAPE is beneficial
 }
 {
     \item Undefined when $Y_{t} = 0$
-    \item MAPE penalizes negative errors $(\hat{Y_{t}} > Y)$ more than positive errors. This makes it biased since, optimizing for MAPE systematically selects the method with lower forecasts.
+    \item MAPE penalizes negative errors $(\hat{Y_{t}} > Y_{t})$ more than positive errors. This makes it biased since, optimizing for MAPE systematically selects the method with lower forecasts.
 }
 
 \clearpage
@@ -329,6 +329,31 @@ targets and predicted values are very different.
 \thispagestyle{regressionstyle}
 \section{wMAPE}
 \subsection{Weighted Mean Absolute Percentage Error}
+
+wMAPE is an extension of the MAPE metric, where MAPE is treated as a weighted arimetric mean. The original formula shows weights $w_{t}$ but most of the time this weights are replaced
+with actual values $Y_{t}$.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+wMAPE ranges from 0\% to +infinity, with 0\% indicating a perfect forecast. Unlike MAPE and even sMAPE, wMAPE doesn't have an issue when the denominator being zero,
+only if $\sum_{t=1}^{N}|Y_{t}| = 0$ which is unlike since that would mean every $Y_{t}$ is zero. We can think about wMAPE as a version of MAE that is normalized by the sum of
+actuals rather than number of observations.
+
+\textbf{When to use wMAPE?}
+
+wMAPE is a good choice when you want some of the characteristics of MAPE, like percentage interpretation and unbound upper limit but don't want it's 'infinity error' issue.
+
+% strength and weakness box
+\coloredboxes{
+    \item Robustness to zero and near-zero actuals.
+    \item Scale-independent metric.
+}
+{
+    \item Not a true percentage error
+}
 
 % ---------- MASE ----------
 \clearpage
