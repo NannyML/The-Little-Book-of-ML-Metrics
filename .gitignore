@@ -6,3 +6,6 @@
 *.toc
 *.out
 *.synctex
+book/main.fdb_latexmk
+book/main.fls
+book/main.xdv
