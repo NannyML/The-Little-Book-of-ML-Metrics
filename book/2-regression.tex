@@ -251,7 +251,18 @@ It is derived from the Mean Absolute Error (MAE), adjusted to provide a percenta
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                MAPE = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \left| \frac{Y_t - \color{nmlpurple}\hat{Y}_t}{\color{nmlcyan}Y_t} \right| \times 100
+                $
+            }
+        };
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.9,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.7,0.0)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.2)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
+    }
 \end{center}
 
 When the forecasted values $\hat{Y_{t}}$ are equal to the actual values $Y_{t}$ for all data points, MAPE is 0\% indicating a perfect forecast with no error.
