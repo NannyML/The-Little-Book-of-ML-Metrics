@@ -88,7 +88,18 @@ The units of MSE are the squares of the predicted values, which can sometimes ma
 
 % equation
 \begin{center}
-[FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                MSE = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \left({\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}\right)^2
+                $
+            }
+        };
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.4,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.3)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.5)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
+    }
 \end{center}
 
 The smaller the MSE, the closer the model's predictions are to the actual targets. Theoretically, MSE belongs in the 0 to +infinity range.
