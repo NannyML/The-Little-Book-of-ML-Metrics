@@ -295,7 +295,31 @@ Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall).
 
 \thispagestyle{classificationstyle}
 \section{Accuracy}
-\subsection{Accuracy}
+\subsection{Accuracy} 
+
+Accuracy is a frequently used classification metric as it provides an intuitive answer to the question, "How often is the classifier correct?”.
+Accuracy measures a model's overall correctness across all classes by calculating the proportion of correct predictions among the total number of cases examined.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Accuracy ranges from 0 to 1, with 1 representing perfect classification. While accuracy may be easy to understand, it can be misleading when dealing with imbalanced datasets.
+It is best used when the classes in the dataset are roughly balanced, and all misclassification errors are equally costly.
+
+\textbf{When to use Accuracy?}
+
+Use accuracy when you need a simple, interpretable metric and your dataset is balanced. Avoid using it as the sole metric for imbalanced datasets or when different errors have varying costs.
+
+\coloredboxes{
+\item Accuracy provides an easily understandable measure of model performance.
+\item It works well for balanced datasets where all classes are equally important.
+}
+{
+\item Accuracy can be misleading for imbalanced datasets, potentially hiding poor performance in minority classes.
+\item It doesn't distinguish between different types of errors (false positives vs. false negatives).
+}
 
 % ---------- Balanced Accuracy ----------
 \clearpage
@@ -314,6 +338,31 @@ Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall).
 \thispagestyle{classificationstyle}
 \section{F1-score}
 \subsection{F1-score}
+
+The F1 score or balanced F-score measures a classifier's predictive performance by assessing classes' performance. We can think of the F1-score as the harmonic mean of the model’s
+precision and recall, thus giving equal weight to both these metrics. So, the F1-score is critical when we care equally about avoiding false positives
+(e.g., incorrectly marking an important email as spam) and false negatives (e.g., missing a spam email).
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+The F1-score ranges from 0 to 1. Maximizing precision and recall allows us to approximate a perfect classifier. However, bear in mind that in practice, there is a
+trade-off between precision and recall, so improving precision may inadvertently decrease recall and vice versa.
+
+\textbf{When to use Accuracy?}
+
+Use the F1-score when you need a balanced measure of a model's performance, with an equal balance between precision and recall (when false positives and negatives are concerns).
+
+\coloredboxes{
+\item F1-score provides a single, easy-to-interpret metric that equally weights precision and recall.
+\item It works better than accuracy for imbalanced datasets.
+}
+{
+\item The F1-score doesn't consider true negatives, which might be necessary in some scenarios.
+\item It assumes that precision and recall are equally important. F-beta score can address this by allowing adjustable weighting between precision and recall.
+}
 
 % ---------- F-beta ----------
 \clearpage
