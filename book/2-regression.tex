@@ -231,7 +231,23 @@ It measures the square root of the average of the squared logarithmic errors.
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                RMSLE = \sqrt{\frac{1}{{\color{nmlred}n}} 
+                        \sum_{t=1}^n
+                        \left(
+                            {\log{({\color{nmlcyan}Y_t} + 1)}} -
+                            {\log{({\color{nmlpurple}\hat{Y}_t} + 1)}}
+                        \right)^2}
+                $
+            }
+        };
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.,0.3)$) to[bend right=15] node[pos=1, right] {number of samples} +(1,-.8);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.6,0.6)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.7,-0.5)$) to[bend left=20] node[pos=1, right] {forecast value} +(1,.2); 
+    }
 \end{center}
 
 RMSLE is always a positive value, with a smaller RMSLE indicating better forecast accuracy. Theoretically, RMSLE belongs in the 0 to +infinity range.
