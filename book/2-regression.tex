@@ -625,8 +625,63 @@ In scenarios where outliers can skew traditional metrics like R-squared and MSE.
     \item Be cautious about which value of $\bar{Y}$ to use. Most implementations default to $\bar{Y}_{\text {test }}$ which can lead to information leakage. It is advisable to use $\bar{Y}_{\text {train }}$ instead.
 }
 
+
+% ---------- Pinball Loss ----------
+\clearpage
+\thispagestyle{regressionstyle}
+\section{Pinball Loss}
+\subsection{Pinball Loss }
+
+Pinball Loss is a metric specifically designed for evaluating quantile regression models. It measures the accuracy of predictions at a specified quantile, such as the median ($q=0.5$),
+and generalizes the concept of absolute loss to asymmetric penalties. This makes it suitable for scenarios where the goal is to predict conditional quantiles of a target variable
+rather than the mean.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Pinball Loss ranges from 0 to +infinity, with 0 indicating a perfect quantile prediction. It asymmetrically penalizes over and under-predictions based on the specified quantile,
+making it unique among regression metrics.
+
+\textbf{When to use Pinball Loss}
+
+When evaluating predictions for a specific quantile of the target variable. Or in applications where different types of errors (over- vs. under-prediction) 
+have unequal costs, such as demand forecasting or risk estimation.
+
+\coloredboxes{
+    \item Can target any quantile by adjusting $q$ enabling detailed analysis across the entire distribution.
+    \item Asymmetric loss penalties reflect practical priorities, such as minimizing over-prediction costs.
+}
+{
+    \item For reliable results, the model must be well-calibrated for the chosen quantile.
+}
+
 % ---------- Explained Variance Score ----------
 \clearpage
 \thispagestyle{regressionstyle}
 \section{Explained Variance Score}
 \subsection{Explained Variance Score}
+
+The Explained Variance Score is a regression evaluation metric that measures the proportion of variance in the target variable that is captured by the model’s predictions.
+It focuses specifically on how well the variability of the data is explained, rather than penalizing systematic biases or a lack of correlation between true and predicted values.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Explained Variance Score ranges from -infinity to 1, with 1 indicating that the model explains all variability in the target variable. Negative values suggest the model performs worse
+than a horizontal line.
+
+\textbf{Whent to use Explained Variance Score?}
+
+When we need to wnderstanding how well the model explains the variability in the data.
+
+\coloredboxes{
+    \item Provides an intuitive measure of how much of the variance in the data is captured by the model.
+}
+{
+    \item Explained Variance Score does not account for systematic offsets between predicted and true values, e.g., the explained variance score between 
+    \( y=[1, 2, 3, 4] \) and \( \hat{y}=[8, 9, 10, 11] \). is equal to $1$ despite the predictions being off.
+}
