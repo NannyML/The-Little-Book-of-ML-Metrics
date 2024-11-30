@@ -190,7 +190,18 @@ Simplifying its interpretation units since the error is returned in the natural 
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                RMSE = \sqrt{\frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \left({\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}\right)^2}
+                $
+            }
+        };
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.2,0.3)$) to[bend left=20] node[pos=1, left] {number of samples} +(-1,-.7);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.5,0.6)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.5,-0.5)$) to[bend left=30] node[pos=1, right] {forecast value} +(1,.2); 
+    }
 \end{center}
 
 The RMSE is always a positive value, with a smaller RMSE indicating better forecast accuracy.
