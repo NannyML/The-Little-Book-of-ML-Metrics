@@ -454,11 +454,58 @@ where correctly identifying the directional movement of variable can be more val
 \section{MPD}
 \subsection{Mean Poisson Deviance}
 
+MPD is a metric used to evaluate the performance of regression models when the target variable follows a Poisson distribution. This distribution is common for count data, such as the number
+of events occurring in a fixed time or space (e.g., website clicks per hour, phone calls received per day).
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+MPD ranges from 0 to +infinity, with 0 indicating a perfect model fit for count data. It is particularly sensitive to the underlying Poisson distribution characteristics.
+
+
+When the target variable represents counts, and when the predictions are constrained to be non-negative.
+
+% strength and weakness box
+\coloredboxes{
+    \item Directly relates to the Poisson distribution, making it interpretable when dealing with count data.
+    \item Accounts for relative errors. Larger deviations matter more, e.g., \( MPD(y=100, \hat{y}=150) > MPD(y=1.0, \hat{y}=1.5) \).
+}
+{
+    \item Sensitive to Zero Counts.
+    \item Requires positive targets and predictions.
+}
+
 % ---------- MGD ----------
 \clearpage
 \thispagestyle{regressionstyle}
 \section{MGD}
 \subsection{Mean Gamma Deviance}
+
+MGD is a metric for evaluating regression models when the target variable follows a Gamma distribution. This distribution is often used for modeling continuous positive data with a
+positive right-skewed distribution, such as insurance claims, response times, or medical expenditures.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+MPD ranges from 0 to +infinity, with 0 indicating a perfect model fit for count data.
+
+\textbf{When to use MGD?}
+
+When the target variable is strictly positive and has a right-skewed distribution (e.g., durations, financial costs).
+
+% strength and weakness box
+\coloredboxes{
+    \item MGD is tailored for right-skewed data. It gandles continuous positive data with increasing variance efficiently.
+    \item MGD penalizes predictions proportionally to the magnitude of the target variable, e.g., \( MGD(y=100, \hat{y}=150) = MGD(y=1.0, \hat{y}=1.5) \).
+}
+{
+    \item Targets as well as predictions must be strictly positive, limiting the metric’s compatibility with some models.
+    \item Not appropriate for data that doesn't follow a Gamma-like structure
+}
 
 % ---------- R-squared ----------
 \clearpage
