@@ -509,7 +509,7 @@ When the target variable is strictly positive and has a right-skewed distributio
 
 % ---------- R-squared ----------
 \clearpage
-\section{$R^2$}
+\section{R-squared}
 \subsection{R-squared}
 \thispagestyle{regressionstyle}
 
@@ -600,6 +600,30 @@ Mean Absolute Error (MAE), Mean Squared Error (MSE), Root Mean Squared Error (RM
 \thispagestyle{regressionstyle}
 \section{D2}
 \subsection{D2 Absolute Score}
+
+The D-squared Absolute Score is a regression evaluation metric that measures the proportion of variance explained by a model, using the absolute deviations between predictions and true values. 
+It serves as an alternative to traditional R-squared but focuses on the absolute differences rather than squared differences, making it more robust to outliers.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+The D-squared Absolute Score lies in the range of -infinity and 1, where represents a perfect model, 0 indicates no improvement over a naive model,
+and negative values imply the model performs worse than the naive baseline.
+
+\textbf{When to use D-squared}
+
+In scenarios where outliers can skew traditional metrics like R-squared and MSE. And where absolute errors are preferable over squared errors.
+
+\coloredboxes{
+    \item Absolute differences reduce the influence of extreme values compared to squared errors.
+    \item Shows how much better (or worse) the model performs compared to a naive baseline.
+}
+{
+    \item By using absolute errors, large deviations are treated equally, which might underemphasize significant mistakes.
+    \item Be cautious about which value of $\bar{Y}$ to use. Most implementations default to $\bar{Y}_{\text {test }}$ which can lead to information leakage. It is advisable to use $\bar{Y}_{\text {train }}$ instead.
+}
 
 % ---------- Explained Variance Score ----------
 \clearpage
