@@ -333,6 +333,37 @@ Use accuracy when you need a simple, interpretable metric and your dataset is ba
 \section{Precision}
 \subsection{Precision}
 
+Precision measures the accuracy of positive predictions made by a classifier. It is the ratio of correctly predicted positive instances (true positives) to
+the total number of instances predicted as positive (true positives + false positives). It answers the question: “Out of all the cases indicated as positive, how many are as actual positives?”
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Precision ranges from 0 to 1, where 1 indicates perfect precision (all predicted positives are correct), and 0 indicates the worst performance (no predicted positives are correct).
+
+\textbf{When to use Precision?}
+
+Precision is important when the cost of false positives is high. For example, in spam detection, you don’t want legitimate emails ending up in the spam folder,
+and in recommendation systems, irrelevant suggestions (false positives) can frustrate users.
+
+\coloredboxes{
+\item Focuses on the accuracy of positive predictions.
+\item Critical in applications where false positives are costly or disruptive.
+}
+{
+\item Doesn't account for false negatives, which can lead to high precision but poor recall.
+\item It can be misleading when used in isolation, as a model that predicts only one sample as positive and correctly gets it would have perfect precision.
+}
+
+\orangebox{%
+Did you know that...}
+{
+    Precision and Recall often have an inverse relationship. As you increase Precision, Recall tends to decrease, and vice versa.
+    This is known as the Precision-Recall trade-off curve.
+}
+
 % ---------- F1-score ----------
 \clearpage
 \thispagestyle{classificationstyle}
