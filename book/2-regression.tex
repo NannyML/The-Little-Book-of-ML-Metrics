@@ -422,6 +422,32 @@ of forecasts across datasets with different units or magnitudes.
 \section{MDA}
 \subsection{Mean Directional Accuracy}
 
+MDA is a metric used to evaluate the performance of forecasting models in terms of their ability to correctly predict the direction of change in the target variable,
+rather than the magnitude of the change.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+To compute it we count the number of times the predicted value has the same sign as the actual value divided by the total number of samples. MDA ranges from 0 to 1, with 1 indicating
+that the model correctly predicted the direction of change for all data points, and 0 indicating that the model
+always predicted the opposite direction.
+
+\textbf{When to use MDA?}
+
+MDA is useful when the ability to predict the direction of change is more important than the precise magnitude of the forecast. This can be the case in finance and economics,
+where correctly identifying the directional movement of variable can be more valuable than accurately predicting the exact price movement.
+
+% strength and weakness box
+\coloredboxes{
+    \item Provides a simple, interpretable metric that is not affected by the scale of the target variable.
+
+}
+{
+    \item MDA does not provide any information about the magnitude of the errors, only the direction.
+}
+
 % ---------- MAD ----------
 \clearpage
 \thispagestyle{regressionstyle}
