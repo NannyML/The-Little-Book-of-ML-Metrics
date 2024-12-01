@@ -365,7 +365,18 @@ at handling data with target values that can be zero.
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+	\tikz{
+		\node[inner sep=2pt, font=\Large] (a) {
+			{
+				$\displaystyle
+				sMAPE = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \frac{\left| {\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t} \right|}{\frac{{|\color{nmlcyan}Y_t}| + {|\color{nmlpurple}\hat{Y}_t}|}{2}} \times 100
+				$
+			}
+		};
+		\draw[-latex,nmlred, semithick] ($(a.south)+(-0.8,0.3)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
+		\draw[-latex,nmlcyan, semithick] ($(a.north)+(0.6,0.0)$) to[bend right=15] node[pos=1, left] {actual value} +(-1,.5);
+		\draw[-latex,nmlpurple, semithick] ($(a.north)+(1.8,0.0)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
+	}
 \end{center}
 
 sMAPE ranges from 0\% to 200\%, with 0\% indicating a perfect forecast and 200\% indicating the worst possible forecast. There is another sMAPE version without the factor of 0.5 in the denominator, which makes the metric range between 0\% and 100\%.
