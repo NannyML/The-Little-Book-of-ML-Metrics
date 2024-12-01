@@ -397,8 +397,19 @@ with actual values $Y_{t}$.
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                wMAPE = \frac{\sum_{t=1}^n |{\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}|}{\sum_{t=1}^n |{\color{nmlcyan}Y_t}|} \times 100
+                $
+            }
+        };
+        \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.8,-0.1)$) to[bend right=15] node[pos=1, left] {actual value} +(-1,.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.0,0.0)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
+    }
 \end{center}
+
 
 wMAPE ranges from 0\% to +infinity, with 0\% indicating a perfect forecast. Unlike MAPE and even sMAPE, wMAPE doesn't have an issue when the denominator being zero,
 only if $\sum_{t=1}^{N}|Y_{t}| = 0$ which is unlike since that would mean every $Y_{t}$ is zero. We can think about wMAPE as a version of MAE that is normalized by the sum of
