@@ -678,7 +678,23 @@ rather than the mean.
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+		\node[inner sep=2pt, font=\Large] (a) {
+			{
+				$\displaystyle
+				L_{q}(Y, \hat{Y}) = 
+                \begin{cases} 
+                    {\color{nmlred}q} \cdot ({\color{nmlcyan}Y} - {\color{nmlpurple}\hat{Y}}), & \text{if } {\color{nmlcyan}Y} \geq {\color{nmlpurple}\hat{Y}}, \\[10pt]
+                    (1 - {\color{nmlred}q}) \cdot ({\color{nmlpurple}\hat{Y}} - {\color{nmlcyan}Y}), & \text{if } {\color{nmlcyan}Y} < {\color{nmlpurple}\hat{Y}},
+                \end{cases}
+                $
+			}
+		};
+		% Adjusted arrows
+		\draw[-latex,nmlred, semithick] ($(a.south)+(-0.7,0.2)$) to[bend left=20] node[pos=1, left] {quantile} +(-1,-.5);
+		\draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.8,-0.1)$) to[bend right=20] node[pos=1, left] {actual value} +(-1,.5);
+		\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.4,-0.1)$) to[bend left=20] node[pos=1, right] {predicted value} +(1,.5); 
+	}
 \end{center}
 
 Pinball Loss ranges from 0 to +infinity, with 0 indicating a perfect quantile prediction. It asymmetrically penalizes over and under-predictions based on the specified quantile,
@@ -696,6 +712,24 @@ have unequal costs, such as demand forecasting or risk estimation.
 {
     \item For reliable results, the model must be well-calibrated for the chosen quantile.
 }
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=\textwidth]{figures/Pinball_Loss.png}
+    % \caption{Caption}
+    \label{Pinball_Loss}
+\end{figure*}
+
+
+\textbf{Figure 3.15 Pinball Loss.} Demonstrates the behavior of the Pinball Loss function for three different quantile values $(q = 0.25, 0.5, 0.75)$.
+The plot shows how the loss increases linearly with the difference between the predicted value $\hat{Y}$ and the actual value $Y$ for various quantiles, with the loss function being asymmetric around the prediction.
+
+\orangebox{Did you know that...}
+{Pinball Loss is also called Quantile Loss and is an L1 Loss when $q=0.5$.}
 
 % ---------- Explained Variance Score ----------
 \clearpage
