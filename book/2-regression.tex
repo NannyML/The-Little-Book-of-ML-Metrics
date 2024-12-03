@@ -493,7 +493,7 @@ rather than the magnitude of the change.
     \node[inner sep=2pt, font=\Large] (a) {
         {
             $\displaystyle
-            MDA = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^{n} {\color{blue}\mathds{1}}_{{\color{orange}sign}({\color{nmlcyan}y_t} - {\color{nmlcyan}y_{t-1}}) == {\color{orange}sign}({\color{nmlpurple}\hat{y}_t} - {\color{nmlcyan}y_{t-1}})}
+            MDA = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^{n} {\color{nmlgreen}\mathds{1}}_{{\color{nmlyellow}sign}({\color{nmlcyan}y_t} - {\color{nmlcyan}y_{t-1}}) == {\color{nmlyellow}sign}({\color{nmlpurple}\hat{y}_t} - {\color{nmlcyan}y_{t-1}})}
             $
         }
     };
@@ -502,8 +502,8 @@ rather than the magnitude of the change.
     \draw[-latex, nmlred, semithick] ($(a.south)+(-2.4,0.4)$) to[bend right=5] node[pos=1, left] {number of samples} +(-1,-.85);
     \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.2,-0.6)$) to[bend right=15] node[pos=1, left] {actual value at time t} +(-1,1);
     \draw[-latex, nmlpurple, semithick] ($(a.north)+(3,-0.6)$) -- +(0,0.65) node[above, yshift=2pt] {forecast value at time $t$};
-    \draw[-latex, blue, semithick] ($(a.south)+(-0.8,0.6)$) -- +(0,-0.7) node[below, yshift=-2pt] {indicator function};
-    \draw[-latex, orange, semithick] ($(a.south)+(2.6,0.5)$) -- +(0,-0.6) node[below, yshift=-2pt] {$sign(\cdot)$ function};
+    \draw[-latex, nmlgreen, semithick] ($(a.south)+(-0.8,0.6)$) -- +(0,-0.7) node[below, yshift=-2pt] {indicator function};
+    \draw[-latex, nmlyellow, semithick] ($(a.south)+(2.6,0.5)$) -- +(0,-0.6) node[below, yshift=-2pt] {$sign(\cdot)$ function};
     }
 \end{center}
 
