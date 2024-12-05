@@ -455,6 +455,33 @@ The F-beta Score is particularly useful when Precision and Recall are unequally 
 \section{ROC AUC}
 \subsection{Area Under the Receiver Operating Characteristic Curve}
 
+The Receiver Operating Characteristic (ROC) plot illustrates a classifier's performance at different thresholds. The curve help us undertand the trade-off between FPR
+and TPR at different thresholds. ROC curves can be summarized in a single value by calculating their area under the curve (AUC), which ranges from 0 to 1.0.
+Given one randomly selected positive instance and one randomly chosen negative example, the AUC is the probability that the classifier will be able to tell which is which.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+A common misconception is that a model with an AUC of 0.5 implies that the classifier is no better than random guessing. This misconception is a "fallacy of the undistributed middle":
+all random models score an AUC of 0.5, but not every model that scores an AUC of 0.5 is random.
+
+\textbf{When to use ROC AUC?}
+
+ROC AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. It's especially helpful when the costs of
+false positives and false negatives are unknown or equally important.
+
+\coloredboxes{
+\item ROC AUC is threshold-independent. It summarizes classifier performance across all possible thresholds.
+\item It allows for a probabilistic interpretation, providing a clear comparison between different models.
+}
+{
+\item It can be misleading if the goal is to optimize performance at a specific threshold. Models can have the same AUC but vary in performance at key thresholds.
+\item It summarises performance over regions of the ROC space in which one would rarely operate, such as extreme right (high FPR) or extreme left side (low TPR).
+\item ROC AUC doesn't inform about precision and negative predicted value.
+}
+
 % ---------- PR AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
