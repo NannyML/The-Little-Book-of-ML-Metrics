@@ -325,7 +325,31 @@ Use accuracy when you need a simple, interpretable metric and your dataset is ba
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Balanced Accuracy}
-\subsection{Balanced Accuracy}
+% \subsection{Balanced Accuracy}
+
+Balanced Accuracy is a classification evaluation metric that accounts for class imbalance. In binary classification it can be undertood as the arithmetic mean between
+specificity and sensitivity (recall). In multi-class classification Balanced Accuracy is the average of the recall obtained in each class, i.e. the macro-average of recall scores per class.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+It is particularly useful when working with datasets where some classes are significantly underrepresented, ensuring that the performance of all classes is treated equally.
+The score ranges from 0 to 1. If the dataset is balance, then Balanced Accuracy score reduces to the conventional Accuracy.
+
+\textbf{When to use Balanced Accuracy?}
+
+When dealing with class imbalance. Balanced Accuracy ensures that underrepresented classes are not overshadowed by majority classes in the performance metric.
+
+\coloredboxes{
+\item Unlike standard accuracy, it gives equal importance to all classes, making it more reliable for imbalanced datasets.
+\item Provides an intuitive measure of how well the model performs across all classes.
+}
+{
+\item Treats all classes equally, which may not be ideal if some classes are more critical than others.
+\item Under extreme class imbalance or small sample sizes, balanced accuracy can show high variance, as the performance of the minority class has a strong impact on the overall score.
+}
 
 % ---------- Precision ----------
 \clearpage
