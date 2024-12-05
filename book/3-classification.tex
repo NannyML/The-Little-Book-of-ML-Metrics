@@ -325,7 +325,7 @@ Use accuracy when you need a simple, interpretable metric and your dataset is ba
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Balanced Accuracy}
-% \subsection{Balanced Accuracy}
+\subsection{Balanced Accuracy}
 
 Balanced Accuracy is a classification evaluation metric that accounts for class imbalance. In binary classification it can be undertood as the arithmetic mean between
 specificity and sensitivity (recall). In multi-class classification Balanced Accuracy is the average of the recall obtained in each class, i.e. the macro-average of recall scores per class.
@@ -424,6 +424,30 @@ Use the F1-score when you need a balanced measure of a model's performance, with
 \thispagestyle{classificationstyle}
 \section{F-beta}
 \subsection{F-beta}
+
+The F-beta Score is a classification evaluation metric that balances the trade-off between precision and recall, allowing you to give different levels of importance to each.
+It is an extension of the F1-score, where the parameter  determines the weight of recall relative to precision.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Similar to the F1-score, the highest possible value is 1.0, indicating perfect precision and recall, while the lowest possible value is 0, which occurs when both precision and recall are zero.
+The two most common $\beta$ values are 2, which weights recall higher than precision, and 0.5, which, conversely, weights precision higher than recall.
+
+\textbf{When to use F-beta?}
+
+The F-beta Score is particularly useful when Precision and Recall are unequally important.
+
+\coloredboxes{
+\item F-beta is customizable. It allows to prioritize precision or recall based on the context of your problem.
+\item Helps balancing the trade-off between precision and recall.
+}
+{
+\item Choosing an appropriate can be non-trivial and requires domain knowledge.
+\item Just like F1-score, F-beta doesn't consider true negatives, which might be necessary in some scenarios.
+}
 
 % ---------- ROC AUC ----------
 \clearpage
