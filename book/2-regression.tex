@@ -706,7 +706,19 @@ It serves as an alternative to traditional R-squared but focuses on the absolute
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                D^2_{abs} = 1 - \frac{\sum_{t=1}^n \lvert {\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}\rvert}{\sum_{t=1}^n \lvert{\color{nmlcyan}Y_t} - {\color{teal!70!green}\bar{Y}}\rvert}
+                $
+            }
+        };
+        
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.3,0)$) to[bend left=15] node[pos=1, right] {Predicted value} +(1,.5); 
+        \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.3,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.1)$) to[bend left=15] node[pos=1, left] {Target value} +(-1,-.5); 
+    }
 \end{center}
 
 The D-squared Absolute Score lies in the range of -infinity and 1, where represents a perfect model, 0 indicates no improvement over a naive model,
