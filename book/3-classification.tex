@@ -456,7 +456,18 @@ It is an extension of the F1-score, where the parameter  determines the weight o
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            F_{\beta} = \frac{(1 + \beta^2) {\color{nmlred}TP}}{(1 + \beta^2) {\color{nmlred}TP} + {\color{nmlpurple}FP} + \beta^2 {\color{teal!70!green}FN}}
+            $
+        }
+        };
+        \draw[-latex, nmlred, semithick] ($(a.north)+(1.5, 0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.2, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
+        \draw[-latex, teal!70!green, semithick] ($(a.south)+(3.1,-0.05)$) to[bend right=15] node[pos=1, right] {False negatives} +(1,-.5);
+    }
 \end{center}
 
 Similar to the F1-score, the highest possible value is 1.0, indicating perfect precision and recall, while the lowest possible value is 0, which occurs when both precision and recall are zero.
