@@ -527,6 +527,34 @@ false positives and false negatives are unknown or equally important.
 \section{PR AUC}
 \subsection{Area Under the Precision-Recall Curve}
 
+The Precision-Recall (PR) curve focuses on the trade-off between precision (positive predictive value) and recall (true positive rate) across various thresholds.
+Precision measures how many of the predicted positives are actually positive, while recall captures how many actual positives were identified.
+The PR AUC represents the area under this curve, offering a single-value summary of a model's performance.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+Similar to the F1-score, the highest possible value for PR AUC is 1.0, indicating perfect precision and recall, while the lowest possible value is 0.
+The main difference between PR AUC and ROC AUC is how they treat true negatives. PR AUC doesn't consider true negatives, which is why it is preferred over ROC AUC
+when true negatives are not relevant to the problem.
+
+\textbf{When to use PR AUC?}
+
+Similarly to ROC AUC, PR AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. 
+It is particularly useful in imbalanced datasets, where one class (typically the positive class) is much rarer than the other. In such cases, PR AUC provides a more
+informative measure of a model's ability to detect the minority class without being overly influenced by the majority class.
+
+\coloredboxes{
+\item PR AUC highlights performance on the minority class, making it invaluable for imbalanced datasets.
+}
+{
+\item PR AUC doesn't provide insights into the true negative predictions.
+\item It summarises performance over regions of the PR space in which one would rarely operate.
+}
+
+
 % ---------- Brier Score Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
