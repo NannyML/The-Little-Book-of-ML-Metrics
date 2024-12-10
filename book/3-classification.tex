@@ -460,13 +460,15 @@ It is an extension of the F1-score, where the parameter  determines the weight o
         \node[inner sep=2pt, font=\Large] (a) {
         {
             $\displaystyle
-            F_{\beta} = \frac{(1 + \beta^2) {\color{nmlred}TP}}{(1 + \beta^2) {\color{nmlred}TP} + {\color{nmlpurple}FP} + \beta^2 {\color{teal!70!green}FN}}
+            F_{\beta} = \frac{(1 + \beta^2) {\color{nmlred}TP}}{(1 + \beta^2) {\color{nmlred}TP} + {\color{nmlpurple}FP} + \beta^2 {\color{teal!70!green}FN}} = \frac{(1 + \beta^2) \cdot {\color{nmlcyan}P} \cdot {\color{nmlyellow}R}}{\beta^2 \cdot {\color{nmlcyan}P} + {\color{nmlyellow}R}}
             $
         }
         };
-        \draw[-latex, nmlred, semithick] ($(a.north)+(1.5, 0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5);
-        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.2, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
-        \draw[-latex, teal!70!green, semithick] ($(a.south)+(3.1,-0.05)$) to[bend right=15] node[pos=1, right] {False negatives} +(1,-.5);
+        \draw[-latex, nmlred, semithick] ($(a.north)+(-0.5, 0.05)$) to[bend right=20] node[pos=1, left] {True positives} +(-1,.5);
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(4.6,0.05)$) -- +(0,0.65) node[above, yshift=2pt] {Precision};
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(-0.8, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
+        \draw[-latex, teal!70!green, semithick] ($(a.south)+(1.2,-0.05)$) -- +(0,-0.6) node[below, yshift=-2pt] {False negatives};
+        \draw[-latex, nmlyellow, semithick] ($(a.south)+(4.8,-0.05)$) -- +(0,-0.6) node[below, yshift=-2pt] {Recall};
     }
 \end{center}
 
