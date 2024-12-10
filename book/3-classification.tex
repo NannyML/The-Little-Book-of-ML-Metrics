@@ -398,22 +398,23 @@ The F1 score or balanced F-score measures a classifier's predictive performance 
 precision and recall, thus giving equal weight to both these metrics. So, the F1-score is critical when we care equally about avoiding false positives
 (e.g., incorrectly marking an important email as spam) and false negatives (e.g., missing a spam email).
 
+
 % formula
 \begin{center}
-    \tikz
+    \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                F1 = \frac{2}{\textcolor{white!25!blue}{P}^{-1} + \textcolor{violet}{R}^{-1}} = \frac{2\textcolor{white!25!red}{TP}}{2\textcolor{white!25!red}{TP} + \textcolor{teal!60!green}{FP} + \textcolor{gray}{FN}}
+                \textbf{F1} = \frac{\textbf{2}}{\textcolor{nmlcyan}{\textbf{P}^{-1}} + \textcolor{nmlpurple}{\textbf{R}^{-1}}} = \frac{\textbf{2}\textcolor{nmlred}{\textbf{TP}}}{\textbf{2}\textcolor{nmlred}{\textbf{TP}} + \textcolor{nmlgreen}{\textbf{FP}} + \textcolor{gray}{\textbf{FN}}}
                 $
             }
         };
-   \draw[-latex, white!25!blue, semithick] ($(a.south)+(-2.7,0.1)$) to[bend left=25] node[pos=1, left] {\scriptsize \textbf{\color{white!25!blue} precision}} +(-.6, -.5);
-    \draw[-latex, white!25!violet, semithick] ($(a.south)+(-1, 0.1)$) to[bend left=-35] node[pos=1, right] {\scriptsize \textbf{\color{white!25!violet} recall}} +(0.8, -.9);
-     \draw[-latex, teal!60!green, semithick] ($(a.south)+(2.2,0.1)$) to[bend left=35] node[pos=1, left] {\scriptsize \textbf{\color{teal!60!green} false positive}} +(-0.5, -.4);
-      \draw[-latex, gray, semithick] ($(a.south)+(3.4, 0.1)$) to[bend left=-30] node[pos=1, right] {\scriptsize \textbf{\color{gray} false negative}} +(0.7, -.6);
-       \draw[-latex, white!25!red, semithick] ($(a.south)+(2.3, 1.1)$) to[bend right=-40] node[pos=1, right] {\scriptsize \textbf{\color{white!25!red} true positive}} +(0.7, .6);
-
+    \draw[-latex, nmlcyan, semithick] ($(a.south)+(-2.7,0.1)$) to[bend left=25] node[pos=1, left] {\textbf{\color{nmlcyan} precision}} +(-.6, -.5);
+    \draw[-latex, nmlpurple, semithick] ($(a.south)+(-1.2, 0.1)$) to[bend left=-35] node[pos=1, right] {\textbf{\color{nmlpurple} recall}} +(0.7, -.9);
+    \draw[-latex, nmlgreen, semithick] ($(a.south)+(2.3,0.1)$) to[bend left=35] node[pos=1, left] {\textbf{\color{nmlgreen} false positive}} +(-0.5, -.4);
+    \draw[-latex, gray, semithick] ($(a.south)+(3.4, 0.1)$) to[bend left=-30] node[pos=1, right] {\textbf{\color{gray} false negative}} +(0.7, -.6);
+    \draw[-latex, nmlred, semithick] ($(a.south)+(2.3, 1.1)$) to[bend right=-40] node[pos=1, right] {\textbf{\color{nmlred} true positive}} +(0.7, .6);
+    }
 \end{center}
 
 The F1-score ranges from 0 to 1. Maximizing precision and recall allows us to approximate a perfect classifier. However, bear in mind that in practice, there is a
