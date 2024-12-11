@@ -378,11 +378,11 @@ the total number of instances predicted as positive (true positives + false posi
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                Precision = \frac{{\color{nmlred}TP}}{{\color{nmlred}TP} + {\color{nmlpurple}FP}}
+                Precision = \frac{{\color{nmlcyan}TP}}{{\color{nmlred}TP} + {\color{nmlpurple}FP}}
                 $
             }
         };
-        \draw[-latex, nmlred, semithick] ($(a.north)+(1.4, 0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5); 
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(1.4, 0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5); 
         \draw[-latex, nmlpurple, semithick] ($(a.south)+(2, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
     }
 \end{center}
