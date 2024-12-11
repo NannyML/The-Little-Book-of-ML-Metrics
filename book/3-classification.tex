@@ -500,7 +500,21 @@ Given one randomly selected positive instance and one randomly chosen negative e
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            \begin{aligned}
+            ROC-AUC &= \int_{{\color{nmlgreen}0}}^{{\color{nmlgreen}1}} ROC({\color{nmlgreen}T}) \, d{\color{nmlgreen}T} \\[2em]
+                    &= \int_{0}^{1} {\color{nmlpurple}TPR}({\color{nmlcyan}FPR}^{-1}(x)) \, dx
+            \end{aligned}
+            $
+        }
+        };
+        \draw[-latex, nmlgreen, semithick] ($(a.north)+(1.5,-0.3)$) to[bend left=15] node[pos=1, right] {Threshold} +(1,.9);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(0.5,1.1)$) to[bend left=15] node[pos=1, right] {True Positive Rate} +(1,.9);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.9,0.25)$) to[bend right=15] node[pos=1, right] {False Positive Rate} +(1,-.9);
+    }
 \end{center}
 
 A common misconception is that a model with an AUC of 0.5 implies that the classifier is no better than random guessing. This misconception is a "fallacy of the undistributed middle":
@@ -511,6 +525,7 @@ all random models score an AUC of 0.5, but not every model that scores an AUC of
 ROC AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. It's especially helpful when the costs of
 false positives and false negatives are unknown or equally important.
 
+\clearpage
 \coloredboxes{
 \item ROC AUC is threshold-independent. It summarizes classifier performance across all possible thresholds.
 \item It allows for a probabilistic interpretation, providing a clear comparison between different models.
