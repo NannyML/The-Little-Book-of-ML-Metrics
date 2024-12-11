@@ -447,12 +447,23 @@ wMAPE is a good choice when you want some of the characteristics of MAPE, like p
 
 MASE is a scale-independent metric that compares the absolute errors of a forecast model to the absolute errors of a naive forecast.
 This makes MASE particularly useful for comparing the performance of models across different datasets or when the scale of the target variable changes.
-
+\vspace{-1em}
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                MASE = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \frac{|{\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}|}{\frac{1}{n-1} \sum_{t=2}^n |{\color{nmlcyan}Y_t} - {\color{nmlcyan}Y_{t-1}}|}
+                $
+            }
+        };
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.5,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.4,-0.05)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
+        \draw[-latex,nmlcyan,semithick] ($(a.north)+(1.2,-0.1)$) to[bend right=15] node[pos=1, left] {actual value} +(-1,.5);
+    }
 \end{center}
-
+\vspace{-1em}
 MASE values less than 1 indicate that the forecast model outperforms the naive forecast, while values greater than 1 indicate the opposite.
 MASE is unbounded on the positive side, with 0 representing a perfect forecast.
 
@@ -474,7 +485,7 @@ of forecasts across datasets with different units or magnitudes.
     \item MASE may not be as intuitive to interpret as some other metrics like MAE or MAPE.
 }
 
-\clearpage
+% \clearpage
 \orangebox{Did you know that...}
 {MASE was created by Anne B. Koehler and Rob J. Hyndman, co-author of the book Forecasting: Principles and Practice, widely regarded as one of the definitive resources in forecasting.}
 
