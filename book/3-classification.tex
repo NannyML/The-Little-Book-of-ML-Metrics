@@ -586,6 +586,30 @@ informative measure of a model's ability to detect the minority class without be
 \section{Brier Score Loss}
 \subsection{Brier Score Loss}
 
+The Brier Score Loss is a metric used to evaluate the accuracy of predicted probabilities in binary classification problems.
+It calculates the mean squared error between the predicted probabilities and the actual binary outcomes, providing a measure of how well-calibrated the predictions are.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+The Brier Score ranges from 0 to 1, where 0 indicates perfect probabilistic predictions, and 1 means worst possible predictions. Because of its similarity with the MSE,
+which can be decomposed as the sum of the variance and the squared of the bias. The Brier Score Loss can be decomposed as the sum of calibration loss and refinement loss.
+
+
+\textbf{When to use the Brier Score Loss?}
+
+When probability calibration is as important as the classification accuracy. Like when the problem requires reliable probability estimates for downstream tasks
+like risk assessment or decision-making.
+
+\coloredboxes{
+\item Summarices both predictive accuracy and calibration in one value.
+}
+{
+\item Only suitable for binary tasks. It is inappropriate for ordinal variables which can take three or more values.
+}
+
 % ---------- Log Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
