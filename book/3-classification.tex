@@ -616,6 +616,35 @@ like risk assessment or decision-making.
 \section{Log Loss}
 \subsection{Log Loss}
 
+The Log Loss, also known as cross-entropy loss or logistic regression loss is a classification metric that evaluates the accuracy of predicted probabilities by
+penalizing predictions that are both incorrect and overly confident. It measures the distance between the predicted probabilities and the actual class labels.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+As is common with loss metrics, smaller values are better. Log Loss ranges from 0 to infinity, where 0 indicates perfect probabilistic predictions and higher values
+represent worse predictions. The formula above defines Log Loss for binary classification, but it can also be extended to multiclass classification:  
+$Log Loss = -\frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} y_{ij} log(p_{ij})$.
+One key difference between Log Loss and Brier Score is that Log Loss is more sensitive to differences in predicted probabilities. This can be either an advantage or a
+disadvantage, depending on the use case.
+
+
+\textbf{When to use Log Loss?}
+
+When you want to evaluate both the accuracy and confidence of predicted probabilities. Similar to the Brier Score, Log Loss is also useful when calibration
+and well-distributed probabilities are important for downstream tasks such as ranking or risk assessment.
+
+\coloredboxes{
+    \item It is also a proper loss function, commonly used in logistic regression and neural networks.
+    \item Generalizable beyond binary classification.
+}
+{
+    \item Predictions close to 0 or 1 for the wrong class can heavily increase the loss.
+    \item Not suitable if the model doesn't output well-calibrated probabilities.
+}
+
 % ---------- Jaccard Score ----------
 \clearpage
 \thispagestyle{classificationstyle}
