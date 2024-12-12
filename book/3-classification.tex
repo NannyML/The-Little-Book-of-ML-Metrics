@@ -645,11 +645,37 @@ and well-distributed probabilities are important for downstream tasks such as ra
     \item Not suitable if the model doesn't output well-calibrated probabilities.
 }
 
-% ---------- Jaccard Score ----------
+% ---------- Jaccard Index ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Jaccard Score}
-\subsection{Jaccard Score}
+\section{Jaccard Index}
+\subsection{Jaccard Index}
+
+The Jaccard Index, or Jaccard Similarity Coefficient, is a similarity metric often used for evaluating the performance of classification models,
+particularly in segmentation tasks.  It measures the overlap between the predicted set and the ground truth set.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
+and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
+$FN$ as: $J = \frac{TP}{TP + FP + FN}$
+
+\textbf{When to use the Jaccard Index}
+
+It is particularly useful when we need to measure the similarity between two sets. For example, it can be used to assess the similarity between text documents,
+evaluate preferences in recommender systems, or measure the similarity between genetic sequences.
+
+\coloredboxes{
+    \item Intuitive interpretation. It provides a straightforward measure of overlap, useful for visualization.
+    \item Scale-Invariance. The Jaccard Index is not affected by the size of the sets being compared.
+}
+{
+    \item Can be computationally expensive. Calculating the intersection and union for large or high dimensonal sets can be resource-intensive.
+}
+
 
 % ---------- D2 Log Loss Score ----------
 \clearpage
