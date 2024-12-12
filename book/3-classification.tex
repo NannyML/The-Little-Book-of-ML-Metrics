@@ -510,7 +510,18 @@ Given one randomly selected positive instance and one randomly chosen negative e
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                  ROC-AUC = \int_{\textcolor{nmlgreen}{0}}^{\textcolor{nmlgreen}{1}} {ROC}({\textcolor{nmlgreen}{T}})\ d{\textcolor{nmlgreen}{T}}\  =  \int_{0}^{1} {\textcolor{nmlpurple}{TPR}} ({\textcolor{nmlcyan}{{FPR}}^{-1}}(x))\ dx\
+                $
+            }
+        };
+    \draw[-latex, nmlgreen, semithick] ($(a.south)+(-0.8, 0.3)$) to[bend left=25] node[pos=1, left] {\color{nmlgreen} Threshold} +(-.7, -.9);
+    \draw[-latex, nmlcyan, semithick] ($(a.south)+(3.7, 0.3)$) to[bend left=-35] node[pos=1, right] {\color{nmlcyan} False Positive Rate} +(0.7, -.7);
+    \draw[-latex, nmlpurple, semithick] ($(a.south)+(2.4, 0.8)$) to[bend right=-25] node[pos=1, right] {\color{nmlpurple} True Positive Rate} +(1, .6);
+    }
 \end{center}
 
 A common misconception is that a model with an AUC of 0.5 implies that the classifier is no better than random guessing. This misconception is a "fallacy of the undistributed middle":
