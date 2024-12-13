@@ -348,15 +348,17 @@ specificity and sensitivity (recall). In multi-class classification Balanced Acc
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                Accuracy = \frac{\textcolor{nmlred}{TP} + \textcolor{nmlcyan}{TN}}
-                {\textcolor{nmlred}{TP} + \textcolor{nmlcyan}{TN} + \textcolor{nmlpurple}{FP} + \textcolor{nmlgreen}{FN}}
+                Balanced-Accuracy = \frac{1}{2} \left( 
+                \frac{\textcolor{nmlred}{TP}}{\textcolor{nmlred}{TP} + \textcolor{nmlgreen}{FN}} +
+                \frac{\textcolor{nmlcyan}{TN}}{\textcolor{nmlcyan}{TN} + \textcolor{nmlpurple}{FP}}
+                \right)
                 $
             }
         };
-        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.9,0.04)$) to[bend left=25] node[pos=1, left] {\color{nmlpurple} false positive} +(-.8, -.5);
-        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.4,0.04)$) to[bend left=-25] node[pos=1, right] {\color{nmlgreen} false negative} +(.8, -.7);
-        \draw[-latex, nmlred, semithick] ($(a.south)+(0.8, 1.2)$) to[bend right=25] node[pos=1, left] {\color{nmlred} true positive} +(-0.9, .6);
-        \draw[-latex, nmlcyan, semithick] ($(a.south)+(2.1, 1.2)$) to[bend left=25] node[pos=1, right] {\color{nmlcyan} true negative} +(0.9, .6);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(2.1,0.04)$) to[bend left=25] node[pos=1, left] {\color{nmlgreen} false negative} +(-.8, -.5);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(5.1,0.04)$) to[bend left=-25] node[pos=1, right] {\color{nmlpurple} false positive} +(.8, -.7);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(1.5, 1.3)$) to[bend right=25] node[pos=1, left] {\color{nmlred} true positive} +(-0.9, .6);        
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(4.5, 1.3)$) to[bend left=25] node[pos=1, right] {\color{nmlcyan} true negative} +(0.9, .6);
     }
 \end{center}
 
