@@ -656,7 +656,20 @@ particularly in segmentation tasks.  It measures the overlap between the predict
 
 % formula
 \begin{center}
-    [FORMULA GOES HERE]
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle 
+                {Jaccard\ Index} = 
+                \frac{\textcolor{nmlred}{TP}}
+                {\textcolor{nmlred}{TP} + \textcolor{nmlpurple}{FP} + \textcolor{nmlgreen}{FN}}
+                $
+            }
+        };
+        \draw[-latex, nmlred, semithick] ($(a.south)+(2, 1.2)$) to[bend right=35] node[pos=1, left] {\color{nmlred} true positive } +(-0.9, .7);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.8,0.04)$) to[bend left=35] node[pos=1, left] {\color{nmlpurple} false positive } +(-.9, -.7);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.2,0.04)$) to[bend left=-35] node[pos=1, right] {\color{nmlgreen} false negative } +(.9, -.7);
+    }
 \end{center}
 
 The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
