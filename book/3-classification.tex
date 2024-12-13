@@ -707,6 +707,46 @@ evaluate preferences in recommender systems, or measure the similarity between g
 \section{MCC}
 \subsection{Matthew's Correlation Coefficient}
 
+The Matthew's Correlation Coefficient (MCC) is a powerful metric for evaluating the performance of binary classifiers in machine learning. MCC is a valuable metric for evaluating binary classifiers, offering insights into their performance and guiding the development of improved models. 
+Its applications span various domains, and its use can lead to more accurate and efficient machine learning models.
+
+
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                MCC = \frac{\textcolor{nmlred}{TP} \times \textcolor{nmlcyan}{TN} - 
+                \textcolor{nmlpurple}{FP} \times \textcolor{nmlgreen}{FN}}
+                {\sqrt{(\textcolor{nmlred}{TP} + \textcolor{nmlpurple}{FP}) (\textcolor{nmlred}{TP} + \textcolor{nmlgreen}{FN}) (\textcolor{nmlcyan}{TN} + \textcolor{nmlpurple}{FP}) 
+                (\textcolor{nmlcyan}{TN} + \textcolor{nmlgreen}{FN})
+                }
+                }
+                $
+            }
+        };
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(0.3, 1.4)$) to[bend right=35] node[pos=1, left] {\color{nmlcyan} true negative } +(-0.9, .8);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.1, 1.4)$) to[bend left=35] node[pos=1, right] {\color{nmlgreen} false negative } +(0.9, .8);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(-1,0.2)$) to[bend left=35] node[pos=1, left] {\color{nmlred} true positive } +(-.9, -.8);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(3,0.2)$) to[bend left=-35] node[pos=1, right] {\color{nmlpurple} false positive } +(.9, -.8);
+    }
+\end{center}
+
+\textbf{When to use MCC?}
+
+MCC is particularly effective in binary classification tasks where class imbalance exists. It provides a single, interpretable metric that considers both the sensitivity and specificity of the model.
+It is especially useful when neither precision nor recall alone provides a clear picture of model performance.
+
+\coloredboxes{ 
+\item Provides a balanced metric that works well even with imbalanced datasets.
+\item Considers all four confusion matrix components (TP, TN, FP, FN) for comprehensive evaluation. 
+%\item Symmetric: Treats positive and negative classes equally, making it robust to dataset biases. 
+} 
+{ 
+\item Primarily designed for binary classification; less commonly used in multi-class problems. 
+\item Can be harder to interpret compared to simpler metrics like accuracy or F1 score. 
+%\item Sensitive to the exact proportions of TP, TN, FP, and FN, which may complicate evaluation in noisy datasets. 
+}
 
 % ---------- EC ----------
 \clearpage
