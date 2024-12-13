@@ -595,19 +595,19 @@ It calculates the mean squared error between the predicted probabilities and the
         \node[inner sep=2pt, font=\Large] (a) {
         {
             $\displaystyle
-            Brier Score = \frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} ({\color{nmlpurple}y_i} - {\color{nmlcyan}p_i})^2
+            {Brier\ Score} = \frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} ({\color{nmlpurple}y_i} - {\color{nmlcyan}p_i})^2
             $
         }
         };
-        \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.6, -0.5)$) to[bend right=20] node[pos=1, left] {Actual outcome} +(-1,.9);
+        \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.7, -0.5)$) to[bend right=20] node[pos=1, left] {Actual outcome} +(-1,.9);
         \draw[-latex, nmlcyan, semithick] ($(a.north)+(2.7,-0.5)$) to[bend left=15] node[pos=1, right] {Predicted probability} +(1,.9); 
-        \draw[-latex, nmlred, semithick] ($(a.south)+(0.2,0.05)$) to[bend left=15] node[pos=1, left] {Number of samples} +(-1,-.5);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(0.2,0.1)$) to[bend left=15] node[pos=1, left] {Number of samples} +(-1,-.5);
     }
 \end{center}
 
 The Brier Score ranges from 0 to 1, where 0 indicates perfect probabilistic predictions, and 1 means worst possible predictions. Because of its similarity with the MSE,
 which can be decomposed as the sum of the variance and the squared of the bias. The Brier Score Loss can be decomposed as the sum of calibration loss and refinement loss.
-For multi-class classification, the Brier Score can be extended to: $Brier Score = \frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} (y_{ij} - p_{ij})^2$ where $C > 2$ is the number of classes.
+For multi-class classification, the Brier Score can be extended to: ${Brier\ Score} = \frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} (y_{ij} - p_{ij})^2$ where $C > 2$ is the number of classes.
 
 
 \textbf{When to use the Brier Score Loss?}
