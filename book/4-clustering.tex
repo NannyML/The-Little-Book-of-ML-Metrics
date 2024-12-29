@@ -138,3 +138,72 @@ Use Silhouette Score when the ground truth labels are unknown and the evaluation
 \thispagestyle{clusteringstyle}
 \section{ Consensus Score}
 \subsection{ Consensus Score}
+
+
+% ----------  Dunn Index ----------
+\clearpage
+\thispagestyle{clusteringstyle}
+\section{ Dunn Index}
+
+% Define colors
+\definecolor{nmlpurple}{RGB}{128,0,128}
+
+The Dunn Index is used to evaluate the quality of clusters by measuring both the separation between the clusters and compactness within clusters. It considers the smallest distance between points in different clusters (inter-cluster distance) and the largest distance within a single cluster (intra-cluster distance) to evaluate how well-defined the clusters are. A higher Dunn Index indicates that the clustering configuration has well-separated and compact clusters, while a lower Dunn Index suggests poor separation or high dispersion within clusters.\\
+
+The Dunn Index for a given clustering solution with \( k \) clusters \( C_1, C_2, \ldots, C_k \) is defined as:
+
+\begin{center}
+	\begin{tikzpicture}
+		\node[inner sep=2pt, font=\Large] (a) {
+			$\displaystyle
+			D = \frac{\min\limits_{1 \leq i < j \leq k} \{ \text{dist}(C_i, C_j) \}}{\max\limits_{1 \leq i \leq k} \{ \text{diam}(C_i) \}}
+			$
+		};
+		\draw[-latex, cyan, semithick] ($(a.north east)+(0.2,-0.1)$) to[bend left=15] node[pos=1, right] {measures inter-cluster distance} +(2,0.5); 
+		\draw[-latex, nmlpurple, semithick] ($(a.south east)+(0.2,0.1)$) to[bend right=15] node[pos=1, right] {measures intra-cluster distance} +(2,-0.5); 
+	\end{tikzpicture}
+\end{center}
+
+where:
+\begin{itemize}
+	\item \(\text{dist}(C_i, C_j)\) represents the distance between clusters \( C_i \) and \( C_j \), often calculated as the minimum distance between any two points in different clusters (inter-cluster distance).
+	\item \(\text{diam}(C_i)\) represents the diameter of cluster \( C_i \), typically defined as the maximum distance between any two points within the same cluster (intra-cluster distance).
+\end{itemize}
+
+\textit{The Dunn Index ranges from 0 to infinity, with higher values indicating better-defined clusters. Values closer to 0 suggest that clusters are either overlapping or not sufficiently compact.}\\
+
+\textbf{When to Use Dunn Index?}
+
+The Dunn Index is primarily used when evaluating clustering results in applications where the structure and separation of clusters are critical. It is useful in determining whether a clustering algorithm has successfully created distinct, dense clusters without overlap. The Dunn Index is particularly valuable for comparing clustering algorithms, such as K-means, hierarchical clustering, and DBSCAN, especially when the number of clusters is uncertain, or various configurations need to be tested.
+
+% strength and weakness box
+\coloredboxes{
+	\item Considers both intra-cluster compactness and inter-cluster separation.
+	\item Useful for determining the best number of clusters.
+	\item Higher values indicate better-defined clusters.
+	\item Helps compare clustering algorithms.
+}
+{
+	\item Outliers can reduce the Dunn Index value, affecting accuracy.
+	\item High resource use for large datasets.
+	\item Less effective for irregular shapes.
+	\item Sensitive to unnormalized features.
+	\item Can be unreliable in high-dimensional spaces.
+}
+
+% Inserting the image
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{/figures/Dunn_Index_Visualized.png} 
+	\caption{Illustration of High and Low Dunn Index Values}
+\end{figure}
+
+% Adding the explanation below the image
+\textbf{In the visualization above:}
+\begin{itemize}
+	\item \textbf{Left Plot (High Dunn Index):} This example illustrates clusters that are well-separated and compact. Each cluster (shown in blue, green, and purple) is distinct, with clear boundaries and minimal overlap with other clusters. The points within each cluster are closely packed, which leads to a small maximum intra-cluster distance (diameter). Furthermore, the minimum distance between clusters (inter-cluster distance) is large, reinforcing the separation between clusters. These characteristics yield a high Dunn Index, signifying a high-quality clustering configuration where clusters are well-defined and do not overlap.
+	\item \textbf{Right Plot (Low Dunn Index):} This example illustrates clusters that are overlapping and dispersed. The clusters lack distinct boundaries, and points from different clusters are intermixed. The large maximum intra-cluster distance, due to dispersed points within clusters, combined with a small minimum inter-cluster distance, because of overlapping clusters, results in a low Dunn Index. This clustering configuration suggests poor clustering quality, as the clusters are not compact or well-separated.
+\end{itemize}
+
+\subsection{ Dunn Index}
+
