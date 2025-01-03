@@ -814,17 +814,35 @@ When you want to compute the agreement between two human annotators on a classif
     \item Some researches argue that the metric is unreliable when dealing with rare events (unbalanced data).
 }
 
-% ---------- Phi Coefficient ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{Phi Coefficient}
-\subsection{Phi Coefficient}
-
 % ---------- MCC ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{MCC}
 \subsection{Matthew's Correlation Coefficient}
+
+The Matthew's Correlation Coefficient, also known as Phi coefficient for binary classification, is a measure of association between predicted and actual classifications
+that is particularly robust to imbalanced datasets. It can be interpreted as a correlation coefficient between binary variables. In binary classification the MCC can
+be written in terms of the confusion matrix elements.
+
+% 
+FORMULA GOES HERE
+% 
+
+The coefficient ranges from -1 to 1, where 1 represents perfect prediction, 0 indicates random prediction, and -1 represents total disagreement between prediction and
+observation.
+
+\textbf{When to use MCC?}
+
+When you need a balanced measure of classification performance that works well with imbalanced datasets and provides a single score that captures both the positive and
+negative class performance.
+
+\coloredboxes{
+    \item Handles imbalanced datasets well.
+    \item Considers all aspects of the confusion matrix.
+}
+{
+    \item More complex to interpret than simpler metrics like accuracy or F1-score.
+}
 
 
 % ---------- EC ----------
