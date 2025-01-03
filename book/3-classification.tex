@@ -733,7 +733,7 @@ The D-squared score log loss is a normalized version of log loss that provides a
 It measures the relative improvement of a model's log loss compared to a naive baseline model that always predicts the mean probability.
 
 % 
-% FORMULA GOES HERE
+FORMULA GOES HERE
 % 
 
 As with R-squared, D-squared ranges from -infinity to 1, where 1 indicates perfect predictions, 0 suggests the model performs no better than the baseline, and negative values indicate
@@ -765,7 +765,7 @@ on only some aspects of classification performance, P4 comprehensively considers
 more balanced measure of classifier performance.
 
 % 
-% FORMULA GOES HERE
+FORMULA GOES HERE
 % 
 
 The metric ranges from 0 to 1, where 1 indicates perfect classification (all probabilities equal 1) and 0 indicates complete failure (any probability equals 0).
@@ -791,6 +791,28 @@ could be problematic.
 \thispagestyle{classificationstyle}
 \section{Cohen's Kappa}
 \subsection{Cohen's Kappa}
+
+Cohen's Kappa is a metric that measures inter-rater reliability and agreement between classifiers while accounting for the agreement that could occur by chance.
+This metric is designed to compare labelings by two different human annotators, not like othe metrics that compares a classifier versus a ground truth.
+
+% 
+FORMULA GOES HERE
+% 
+
+The score ranges from -1 to 1, where 1 indicates perfect agreement, 0 suggests agreement no better than chance, and negative values indicate worse than chance agreement.
+
+\textbf{When to use Cohen's Kappa?}
+
+When you want to compute the agreement between two human annotators on a classification task.
+
+\coloredboxes{
+    \item Accounts for agreement by chance.
+    \item Widely accepted in many fields.
+}
+{
+    \item It is not adviced to use it as a classification metric. Only to measure inter-annotator agreement.
+    \item Some researches argue that the metric is unreliable when dealing with rare events (unbalanced data).
+}
 
 % ---------- Phi Coefficient ----------
 \clearpage
