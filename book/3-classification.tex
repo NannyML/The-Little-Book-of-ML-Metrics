@@ -760,6 +760,32 @@ datasets or when you want to communicate model performance to non-technical stak
 \section{P4-metric}
 \subsection{P4-metric}
 
+The P4-metric (also known as Symmetric F) is an evaluation metric for binary classifiers that addresses several limitations of the F1 score. Unlike metrics that focus
+on only some aspects of classification performance, P4 comprehensively considers all four key conditional probabilities in binary classification, making it a
+more balanced measure of classifier performance.
+
+% 
+% FORMULA GOES HERE
+% 
+
+The metric ranges from 0 to 1, where 1 indicates perfect classification (all probabilities equal 1) and 0 indicates complete failure (any probability equals 0).
+
+\textbf{When to use P4-metric}
+
+Use P4 in scenarios where both positive and negative predictions are equally important. Or in sases where F1 score's limitations (ignoring true negatives)
+could be problematic.
+
+\coloredboxes{
+    \item Considers all four fundamental probabilities of binary classification.
+    \item Symmetric with respect to positive and negative classes meaning that it does not change when the dataset labeling is changed.
+}
+{
+    \item Less widely adopted than traditional metrics.
+    \item May be harder to interpret for non-technical stakeholders.
+    \item Goes to zero if any of the key probabilities goes to zero. This can be a strength too.
+}
+
+
 % ---------- Cohen's Kappa ----------
 \clearpage
 \thispagestyle{classificationstyle}
