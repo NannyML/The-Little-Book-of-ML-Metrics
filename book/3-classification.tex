@@ -723,11 +723,36 @@ evaluate preferences in recommender systems, or measure the similarity between g
 }
 
 
-% ---------- D2 Log Loss Score ----------
+% ---------- D-squared Log Loss Score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{D2 Log Loss Score}
-\subsection{D2 Log Loss Score}
+\section{D-squared Log Loss Score}
+\subsection{D-squared Log Loss Score}
+
+The D-squared score log loss is a normalized version of log loss that provides a more interpretable metric for classification performance, similar to R² for regression.
+It measures the relative improvement of a model's log loss compared to a naive baseline model that always predicts the mean probability.
+
+% 
+% FORMULA GOES HERE
+% 
+
+As with R-squared, D-squared ranges from -infinity to 1, where 1 indicates perfect predictions, 0 suggests the model performs no better than the baseline, and negative values indicate
+worse performance than the baseline. The metric provides a standardized way to compare model performance across different datasets and class distributions.
+
+\textbf{When to use D-squared Log Loss Score}
+
+When you need a normalized metric that is both interpretable and comparable across different classification problems. It's particularly useful when working with imbalanced
+datasets or when you want to communicate model performance to non-technical stakeholders who are familiar with R-squared.
+
+\coloredboxes{
+    \item Provides a normalized score that is easier to interpret than raw log loss.
+    \item Accounts for class imbalance through baseline normalization.
+}
+{
+    \item Can be sensitive to outliers and extreme predictions.
+    \item Requires computing the baseline model's performance.
+}
+
 
 % ---------- P4-metric ----------
 \clearpage
