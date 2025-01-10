@@ -723,11 +723,36 @@ evaluate preferences in recommender systems, or measure the similarity between g
 }
 
 
-% ---------- D2 Log Loss Score ----------
+% ---------- D-squared Log Loss Score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{D2 Log Loss Score}
-\subsection{D2 Log Loss Score}
+\section{D-squared Log Loss Score}
+\subsection{D-squared Log Loss Score}
+
+The D-squared score log loss is a normalized version of log loss that provides a more interpretable metric for classification performance, similar to R² for regression.
+It measures the relative improvement of a model's log loss compared to a naive baseline model that always predicts the mean probability.
+
+% 
+FORMULA GOES HERE
+% 
+
+As with R-squared, D-squared ranges from -infinity to 1, where 1 indicates perfect predictions, 0 suggests the model performs no better than the baseline, and negative values indicate
+worse performance than the baseline. The metric provides a standardized way to compare model performance across different datasets and class distributions.
+
+\textbf{When to use D-squared Log Loss Score}
+
+When you need a normalized metric that is both interpretable and comparable across different classification problems. It's particularly useful when working with imbalanced
+datasets or when you want to communicate model performance to non-technical stakeholders who are familiar with R-squared.
+
+\coloredboxes{
+    \item Provides a normalized score that is easier to interpret than raw log loss.
+    \item Accounts for class imbalance through baseline normalization.
+}
+{
+    \item Can be sensitive to outliers and extreme predictions.
+    \item Requires computing the baseline model's performance.
+}
+
 
 % ---------- P4-metric ----------
 \clearpage
@@ -735,23 +760,89 @@ evaluate preferences in recommender systems, or measure the similarity between g
 \section{P4-metric}
 \subsection{P4-metric}
 
+The P4-metric (also known as Symmetric F) is an evaluation metric for binary classifiers that addresses several limitations of the F1 score. Unlike metrics that focus
+on only some aspects of classification performance, P4 comprehensively considers all four key conditional probabilities in binary classification, making it a
+more balanced measure of classifier performance.
+
+% 
+FORMULA GOES HERE
+% 
+
+The metric ranges from 0 to 1, where 1 indicates perfect classification (all probabilities equal 1) and 0 indicates complete failure (any probability equals 0).
+
+\textbf{When to use P4-metric}
+
+Use P4 in scenarios where both positive and negative predictions are equally important. Or in sases where F1 score's limitations (ignoring true negatives)
+could be problematic.
+
+\coloredboxes{
+    \item Considers all four fundamental probabilities of binary classification.
+    \item Symmetric with respect to positive and negative classes meaning that it does not change when the dataset labeling is changed.
+}
+{
+    \item Less widely adopted than traditional metrics.
+    \item May be harder to interpret for non-technical stakeholders.
+    \item Goes to zero if any of the key probabilities goes to zero. This can be a strength too.
+}
+
+
 % ---------- Cohen's Kappa ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Cohen's Kappa}
 \subsection{Cohen's Kappa}
 
-% ---------- Phi Coefficient ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{Phi Coefficient}
-\subsection{Phi Coefficient}
+Cohen's Kappa is a metric that measures inter-rater reliability and agreement between classifiers while accounting for the agreement that could occur by chance.
+This metric is designed to compare labelings by two different human annotators, not like othe metrics that compares a classifier versus a ground truth.
+
+% 
+FORMULA GOES HERE
+% 
+
+The score ranges from -1 to 1, where 1 indicates perfect agreement, 0 suggests agreement no better than chance, and negative values indicate worse than chance agreement.
+
+\textbf{When to use Cohen's Kappa?}
+
+When you want to compute the agreement between two human annotators on a classification task.
+
+\coloredboxes{
+    \item Accounts for agreement by chance.
+    \item Widely accepted in many fields.
+}
+{
+    \item It is not adviced to use it as a classification metric. Only to measure inter-annotator agreement.
+    \item Some researches argue that the metric is unreliable when dealing with rare events (unbalanced data).
+}
 
 % ---------- MCC ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{MCC}
 \subsection{Matthew's Correlation Coefficient}
+
+The Matthew's Correlation Coefficient, also known as Phi coefficient for binary classification, is a measure of association between predicted and actual classifications
+that is particularly robust to imbalanced datasets. It can be interpreted as a correlation coefficient between binary variables. In binary classification the MCC can
+be written in terms of the confusion matrix elements.
+
+% 
+FORMULA GOES HERE
+% 
+
+The coefficient ranges from -1 to 1, where 1 represents perfect prediction, 0 indicates random prediction, and -1 represents total disagreement between prediction and
+observation.
+
+\textbf{When to use MCC?}
+
+When you need a balanced measure of classification performance that works well with imbalanced datasets and provides a single score that captures both the positive and
+negative class performance.
+
+\coloredboxes{
+    \item Handles imbalanced datasets well.
+    \item Considers all aspects of the confusion matrix.
+}
+{
+    \item More complex to interpret than simpler metrics like accuracy or F1-score.
+}
 
 
 % ---------- EC ----------

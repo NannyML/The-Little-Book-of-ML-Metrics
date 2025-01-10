@@ -7,17 +7,36 @@
 \section{Mutual Info Score}
 \subsection{Mutual Info Score}
 
-% ---------- adjusted mutual info score ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{Adjusted Mutual Info score}
-\subsection{Adjusted Mutual Information score}
+The Mutual Information (MI) Score can be used to quantify the amount of information shared between two clustering assignments.
+It's also particularly useful for comparing the similarity between ground-truth labels and predicted clustering labels.
 
-% ---------- Normalized Mutual Info Score ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{Normalized Mutual Info Score}
-\subsection{Normalized Mutual Info Score}
+% Formula
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+The MI score ranges from 0 to +infinity, where 0 indicates no mutual information and higher values signify greater
+similarity. To address certain limitations of the standard MI score, such as lack of normalization and agreement by chance, variations like the
+Normalized Mutual Information (NMI) score and the Adjusted Mutual Information (AMI) score were developed.
+
+NMI ranges from 0 to 1, while AMI ranges from -1 to 1. The key difference between AMI and NMI is that AMI adjusts for chance. 
+AMI equals 0 when the clustering assignments are no more similar than would be expected by chance.
+
+\textbf{When to use Mutual Info Scores?}
+
+Use MI you need a basic measure of shared information between two clusterings. NMI when comparing clustering results with different numbers of
+clusters, as it normalizes the score to a standard range. AMI when you want to account for chance.
+
+\coloredboxes{
+    \item Symmetric. Switching true label with predicted ones will return the same score.
+    \item Lower and upper bounded in the case of the NMI and AMI variations.
+    \item Can be used as a consensus score.
+}
+{
+    \item Requires knowledge of ground truth classes.
+    \item A permutation of the cluster label values doesn't change the score value in any way. eg. IM([0, 0, 1], [0, 0, 1]) = IM([0, 0, 1], [1, 0, 0])
+
+}
 
 % ---------- rand score ----------
 \clearpage
