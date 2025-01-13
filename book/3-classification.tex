@@ -693,13 +693,13 @@ particularly in segmentation tasks. It measures the overlap between the predicte
             {
                 $\displaystyle 
                 J(A, B) = 
-                \frac{\textcolor{nmlred}{|A \cap B|}}
-                {\textcolor{nmlblue}{|A \cup B|}}
+                \frac{\textcolor{nmlpurple}{|A \cap B|}}
+                {\textcolor{nmlcyan}{|A \cup B|}}
                 $
             }
         };
-        \draw[-latex, nmlred, semithick] ($(a.south)+(1.5, 1.2)$) to[bend right=35] node[pos=1, left] {\color{nmlred} Intersection (common elements)} +(-0.9, .7);
-        \draw[-latex, nmlblue, semithick] ($(a.south)+(2.5,0.04)$) to[bend left=35] node[pos=1, right] {\color{nmlblue} Union (all unique elements)} +(.9, -.7);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.2, 1.4)$) to[bend right=35] node[pos=1, left] {\color{nmlpurple} Intersection (common elements)} +(-0.9, .7);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.2,0.04)$) to[bend right=35] node[pos=1, right] {\color{nmlcyan} Union (all elements)} +(.9, -.7);
     }
 \end{center}
 
