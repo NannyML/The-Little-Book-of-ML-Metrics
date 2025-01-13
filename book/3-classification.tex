@@ -685,11 +685,7 @@ and well-distributed probabilities are important for downstream tasks such as ra
 \subsection{Jaccard Index}
 
 The Jaccard Index, or Jaccard Similarity Coefficient, is a similarity metric often used for evaluating the performance of classification models,
-particularly in segmentation tasks. It measures the overlap between the predicted set and the ground truth set. We can write the gneral formulation as:
-
-\textbf{Jaccard Similarity} = \(\frac{\text{(number of observations in both sets)}}{\text{(number in either set)}}\)
-
-Or, written in notation form:
+particularly in segmentation tasks. It measures the overlap between the predicted set and the ground truth set.
 
 \begin{center}
     \tikz{
@@ -698,37 +694,15 @@ Or, written in notation form:
                 $\displaystyle 
                 J(A, B) = 
                 \frac{\textcolor{nmlred}{|A \cap B|}}
-                {\textcolor{nmlred}{|A \cap B|} + \textcolor{nmlpurple}{|A \setminus B|} + \textcolor{nmlgreen}{|B \setminus A|}}
+                {\textcolor{nmlblue}{|A \cup B|}}
                 $
             }
         };
-        \draw[-latex, nmlred, semithick] ($(a.south)+(2, 1.2)$) to[bend right=35] node[pos=1, left] {\color{nmlred} Intersection (common elements)} +(-0.9, .7);
-        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.8,0.04)$) to[bend left=35] node[pos=1, left] {\color{nmlpurple} Elements in A only } +(-.9, -.7);
-        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.2,0.04)$) to[bend left=-35] node[pos=1, right] {\color{nmlgreen} Elements in B only } +(.9, -.7);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(1.5, 1.2)$) to[bend right=35] node[pos=1, left] {\color{nmlred} Intersection (common elements)} +(-0.9, .7);
+        \draw[-latex, nmlblue, semithick] ($(a.south)+(2.5,0.04)$) to[bend left=35] node[pos=1, right] {\color{nmlblue} Union (all unique elements)} +(.9, -.7);
     }
 \end{center}
 
-where A and B are two sets of data.
-
-If two datasets share the exact same members, their Jaccard Similarity Index will be 1. Conversely, if they have no members in common, then their similarity will be 0.
-
-% formula
-\begin{center}
-    \tikz{
-        \node[inner sep=2pt, font=\Large] (a) {
-            {
-                $\displaystyle 
-                {Jaccard\ Index} = 
-                \frac{\textcolor{nmlred}{TP}}
-                {\textcolor{nmlred}{TP} + \textcolor{nmlpurple}{FP} + \textcolor{nmlgreen}{FN}}
-                $
-            }
-        };
-        \draw[-latex, nmlred, semithick] ($(a.south)+(2, 1.2)$) to[bend right=35] node[pos=1, left] {\color{nmlred} true positive } +(-0.9, .7);
-        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.8,0.04)$) to[bend left=35] node[pos=1, left] {\color{nmlpurple} false positive } +(-.9, -.7);
-        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.2,0.04)$) to[bend left=-35] node[pos=1, right] {\color{nmlgreen} false negative } +(.9, -.7);
-    }
-\end{center}
 
 The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
 and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
