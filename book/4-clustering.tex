@@ -108,13 +108,39 @@ optimal number of clusters by maximizing the CH Index across different cluster c
     \item The calculation assumes a Euclidean distance metric, which may limit its applicability for non-Euclidean data.
 }
 
-
-
 % ---------- contingency matrix ----------
 \clearpage
 \thispagestyle{clusteringstyle}
 \section{Contingency Matrix}
 \subsection{Contingency Matrix}
+
+The Contingency Matrix is a tool for evaluating clustering performance by comparing the alignment of predicted cluster
+assignments with ground-truth labels. It provides a detailed overview of how well the clusters correspond to the known
+categories by counting overlaps between the two.
+
+For a dataset of size $n$, let $k$ be the number of clusters and $C$ the number of ground-truth categories.
+The Contingency Matrix is constructed such that the element at position  $(i,j)$ represents the number of data points that belong
+to cluster $i$ and category $j$. If this sounds familiar to a Confusion Matrix, it is because it is. In fact, a Confusion Matrix
+is a special case of a Contingency Matrix, where the matrix is square, and instead of clusters, we have classes.
+
+\textbf{When to use a Contingency Matrix?}
+
+The contingency matrix is particularly useful when ground-truth labels are available. When you want to analyze how well the
+clustering results correspond to the known categories, especially for imbalanced datasets. Or when a deeper understanding
+of misclassifications or overlaps between clusters and categories is needed. It most effective when combined with
+complementary evaluation methods.
+
+\coloredboxes{
+    \item Provides a granular view of the correspondence between clusters and ground-truth categories,
+    including misclassifications.
+    \item Serves as a basis for other clustering evaluation metrics like Normalized Mutual Information (NMI) or
+    Adjusted Rand Index (ARI).
+}
+{
+    \item Requires ground-truth labels.
+    \item For datasets with many clusters or categories, the matrix can become large and harder to interpret.
+    \item Does not provide a single score.
+}
 
 % ---------- pair confusion matrix ----------
 \clearpage
