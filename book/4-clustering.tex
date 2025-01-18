@@ -148,6 +148,73 @@ complementary evaluation methods.
 \section{Pair Confusion Matrix}
 \subsection{Pair Confusion Matrix}
 
+The Pair Confusion Matrix is a clustering evaluation metric used to assess the similarity between two clusterings by
+comparing pairwise relationships between data points. It is a $2x2$ matrix that extends the idea of the confusion matrix
+to clustering scenarios, focusing on whether pairs of points are grouped together or not.
+
+\begin{center}
+    MATRIX GOES HERE
+\end{center}
+
+It has four key components, each representing a count of point pairs in specific configurations across two clusterings. It can
+also be showen that $C_{00} + C_{11} + C_{10} + C_{01} = \frac{n(n-1)}{2}$
+
+\textbf{When to use the Pair Confusion Matrix?}
+
+Use the Pair Confusion Matrix when evaluating clustering algorithms that produce hard cluster assignments and when ground truth
+is available.
+
+\coloredboxes{
+    \item Breaks down clustering agreements and disagreements into familiar components (TP, TN, FP, FN).
+}
+{
+    \item Requires ground-truth labels.    
+    \item Computation can be slow for large datasets due to the pairwise comparison of all points.
+    \item Does not provide a single score.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+Analyse the following example to understand how to build the matrix. Lets say we have the following clustering results.
+
+\[
+\begin{array}{l|cccccc}
+    & \text{$obj_{1}$} & \text{$obj_{2}$} & \text{$obj_{3}$} & \text{$obj_{4}$} \\
+\hline
+\text{True Labels} & 0 & 0 & 1 & 0 \\
+\text{Pred Labels} & 0 & 1 & 0 & 1 \\
+\end{array}
+\]
+
+With this we can compute $C_{00}$, $C_{11}$, $C_{10}$ and $C_{01}$.
+
+\begin{itemize}
+    \item $C_{00}$: number of pairs with different true and pred labels = $(obj_{2}, obj_{3})$; $(obj_{3}, obj_{4})$; $(obj_{3}, obj_{2})$; $(obj_{4}, obj_{3})$ = $4$
+    \item $C_{11}$: number of pairs with same true and pred labels = $(obj_{2}, obj_{4})$; $(obj_{4}, obj_{2})$ = $2$
+    \item $C_{10}$: number of pairs with same true but different pred labels = $(obj_{1}, obj_{2})$; $(obj_{1}, obj_{4})$;
+    $(obj_{2}, obj_{1})$; $(obj_{4}, obj_{1})$ = $4$
+    \item $C_{01}$: number of pairs with different true but same pred labels = $(obj_{1}, obj_{3})$; $(obj_{3}, obj_{1})$ = $2$
+\end{itemize}
+
+Thus, the final Pair Confusion Matrix looks like:
+\begin{center}
+    \[
+        C =
+        \begin{bmatrix}
+            4 & 2 \\
+            4 & 2
+        \end{bmatrix}
+    \]
+\end{center}
+
+\orangebox{Did you know that...}
+{MISSING FUN FACT}
+
+
+\textbf{Other related metrics}
+
 % ---------- Completeness Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
