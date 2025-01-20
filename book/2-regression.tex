@@ -183,12 +183,46 @@ This metric is best used when targets have exponential growth, such as populatio
 
 % strength and weakness box
 \coloredboxes{
-    \item It handles large ranges of values. The logarithmic transformation helps manage large ranges of target values, which are common in real-world datasets.
+    \item Effectively handles large value ranges
+    \item Provides balanced error representation
+    \item Robust against skewed data distributions
 }
 {
-    \item MSLE penalizes an under-predicted estimate more than an over-predicted estimate. This can be a strength in scenarios where underestimating a value can be more problematic than overestimating it.
-    \item MSLE is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
+    \item It penalizes an under-predicted estimate more than an over-predicted estimate. This can be a strength in scenarios where underestimating a value can be more problematic than overestimating it.
+    \item It is not suitable for data with negative values or zero values, as the logarithm function is not defined for these values.
+    \item Can be difficult to interpret. 
 }
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/MSLE_3d_surface.png}
+    
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt} 
+    \includegraphics[width=0.45\textwidth]{figures/MSLE_cross_section.png} % Your figure goes here
+    \vspace{-10pt} % Adjust vertical alignment if needed
+\end{wrapfigure}
+
+% Left text with the image on the right
+\textbf{Figure 3.3 MSLE.} \underline{Top:} MSLE surface illustrates how the penalty varies across different target and predicted values, exhibiting a non-linear relationship.
+\underline{Right:}  The cross-section reveals MSLE's asymmetric nature, penalizing underprediction more severely than overprediction. 
+
+
+
+\orangebox{Did you know that...}
+{MSLE uses logarithms to look at proportional differences instead of absolute ones. 
+This makes it more sensitive to percentage errors. It also lowers the impact of large differences, unlike MSE, which treats them more strongly.}
+
+\textbf{Other related metrics}
+
+Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Sqaured Log Error (RMSE). 
 
 % ---------- RMSE ----------
 \clearpage
