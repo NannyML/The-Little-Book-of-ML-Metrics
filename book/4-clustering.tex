@@ -318,6 +318,45 @@ into a single harmonic mean, providing a balanced evaluation of clustering quali
 \section{V Measure}
 \subsection{V Measure}
 
+V-Measure is an external clustering evaluation metric that combines the strengths of two complementary criteria: Homogeneity
+(how pure clusters are with respect to ground-truth classes) and Completeness (how well all members of a class are grouped into
+the same cluster). It is computed as the harmonic mean of these two scores, similar to how precision and recall are combined into
+the F-score.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+By design, V-Measure is bounded between 0.0 and 1.0, with higher scores indicating better clustering quality. A score of 1.0
+means that both homogeneity and completeness are perfectly satisfied.
+
+\textbf{When to use the V-measure?}
+
+V-Measure is ideal for evaluating clustering solutions when you need a balanced assessment of both purity within clusters and the
+completeness of class representation.
+
+\coloredboxes{
+    \item Combines homogeneity and completeness into a single score, providing a holistic evaluation of clustering quality.
+    \item The $\beta$ parameter allows customization to prioritize either homogeneity or completeness based on specific use cases.
+    \item Clustering algorithm agnostic.
+}
+{
+    \item Requires ground-truth labels.
+    \item V-Measure inherits the trade-off between homogeneity and completeness. Adjusting one often impacts the other, making it
+    challenging to optimize both in some scenarios.
+    \item Not normalized with regards to random labeling.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\textbf{Other related metrics}
+
+V-Measure excels as a comprehensive metric for clustering evaluation. However, for specific insights, it can be supplemented with
+individual Homogeneity and Completeness scores. Additionally, pair-based measures like Adjusted Rand Index (ARI) or
+information-theoretic measures like Variation of Information (VI) may provide complementary perspectives in specific use cases​.
+
 % ---------- Davis Bouldin Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
