@@ -221,6 +221,62 @@ Thus, the final Pair Confusion Matrix looks like:
 \section{Completeness Score}
 \subsection{Completeness Score}
 
+The Completeness Score evaluates the degree to which members of a ground-truth class are assigned to the same cluster in a
+clustering solution. It is one of two complementary measures (the other being Homogeneity Score) used to assess the quality of
+clustering. Completeness is mathematically defined using conditional entropy between cluster labels and assignments.
+
+% \[
+% \text{Completeness} = 1 - \frac{H(K \mid C)}{H(K)}
+% \]
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A perfect completeness score of 1 indicates that all members of a single class are contained within a single cluster. 
+A score of 0 means the clustering completely fails to keep members of the same class together.
+
+\textbf{When to use the Completeness Score?}
+
+The Completeness Score is particularly useful when you need to evaluate how well a clustering algorithm preserves class membership
+within individual clusters. It is commonly applied in scenarios such as document clustering, where documents belonging to the same
+topic should ideally belong to one cluster.
+
+\coloredboxes{
+    \item Lower and upper bounded.
+    \item Clustering algorithm agnostic.
+}
+{
+    \item Requires ground-truth labels.
+    \item Trade-Off with Homogeneity. Completeness often opposes homogeneity. Increasing one can reduce the other, making it
+    challenging to achieve a balance without an explicit metric that combines the two, such as V-Measure.
+    \item Not normalized with regards to random labeling.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\textbf{Other related metrics}
+
+The Completeness Score is best used in conjunction with the Homogeneity Score or V-Measure. While completeness focuses on
+ensuring all members of a class are in the same cluster, homogeneity ensures that clusters do not mix members from different
+classes. V-Measure provides a balanced harmonic mean of these two metrics, offering a single comprehensive evaluation of
+clustering quality​.
+
+% ---------- Homogeneity Score ----------
+\clearpage
+\thispagestyle{clusteringstyle}
+\section{Homogeneity Score}
+\subsection{Homogeneity Score}
+
+
+% ---------- V Measure ----------
+\clearpage
+\thispagestyle{clusteringstyle}
+\section{V Measure}
+\subsection{V Measure}
+
 % ---------- Davis Bouldin Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
@@ -232,24 +288,6 @@ Thus, the final Pair Confusion Matrix looks like:
 \thispagestyle{clusteringstyle}
 \section{Fowlkes Mallows Score}
 \subsection{Fowlkes Mallows Score}
-
-% ---------- Homogeneity Score ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{Homogeneity Score}
-\subsection{Homogeneity Score}
-
-% ---------- V Measure ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{V Measure}
-\subsection{V Measure}
-
-% ---------- Homogeneity Completeness V Measure ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{Homogeneity Completeness V Measure}
-\subsection{Homogeneity Completeness V Measure}
 
 % ---------- Silhouette Score ----------
 \clearpage
