@@ -243,13 +243,15 @@ within individual clusters. It is commonly applied in scenarios such as document
 topic should ideally belong to one cluster.
 
 \coloredboxes{
+    \item Class-Focused Evaluation. Completeness measures how well class integrity is preserved in clustering,
+    providing a clear diagnostic for one aspect of clustering quality.
     \item Lower and upper bounded.
     \item Clustering algorithm agnostic.
 }
 {
     \item Requires ground-truth labels.
-    \item Trade-Off with Homogeneity. Completeness often opposes homogeneity. Increasing one can reduce the other, making it
-    challenging to achieve a balance without an explicit metric that combines the two, such as V-Measure.
+    \item Trade-Off with Homogeneity. Completeness tends to decrease as completeness increases, creating a challenge when
+    trying to optimize both simultaneously.
     \item Not normalized with regards to random labeling.
 }
 
@@ -270,6 +272,45 @@ clustering quality​.
 \section{Homogeneity Score}
 \subsection{Homogeneity Score}
 
+The Homogeneity Score measures how well each cluster contains only data points from a single ground-truth class.
+It is designed to assess the purity of clusters by evaluating the entropy of class distributions within each cluster.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A score of 1.0 indicates perfect homogeneity, meaning every cluster contains data points from only one class. 
+A score of 0.0 indicates that the class distribution within clusters mirrors the overall dataset distribution,
+showing no class distinction within clusters.
+
+\textbf{When to use the Homogeneity Score?}
+
+The Homogeneity Score is particularly valuable when evaluating the ability of a clustering algorithm to form well-defined,
+class-pure clusters. Common applications include customer segmentation, where customers within a cluster should share similar characteristics.
+Topic modeling, where documents within a cluster should belong to the same topic.
+
+\coloredboxes{
+    \item Cluster Purity Focus. Homogeneity emphasizes the purity of clusters, providing a clear diagnostic of whether
+    clusters contain mixed classes.
+    \item Lower and upper bounded.
+    \item Clustering algorithm agnostic.
+}
+{
+    \item Requires ground-truth labels.
+    \item Trade-Off with Completeness. Homogeneity tends to decrease as completeness increases, creating a challenge when trying to optimize both simultaneously.
+    \item Not normalized with regards to random labeling.
+}
+
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\textbf{Other related metrics}
+
+Homogeneity is best used alongside Completeness or V-Measure. While Homogeneity ensures clusters are internally consistent with
+respect to class membership, Completeness ensures that all members of a class are grouped together. V-Measure combines the two
+into a single harmonic mean, providing a balanced evaluation of clustering quality
 
 % ---------- V Measure ----------
 \clearpage
