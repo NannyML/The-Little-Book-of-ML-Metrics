@@ -363,11 +363,61 @@ information-theoretic measures like Variation of Information (VI) may provide co
 \section{Davis Bouldin Score}
 \subsection{Davis Bouldin Score}
 
-% ---------- Fowlkes Mallows Score ----------
+% ---------- Fowlkes-Mallows Index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Fowlkes Mallows Score}
-\subsection{Fowlkes Mallows Score}
+\section{FMI}
+\subsection{Fowlkes-Mallows Index}
+
+The Fowlkes–Mallows Index (FMI) is an external evaluation metric used to quantify the similarity between two clustering results
+or between a clustering result and a ground-truth classification. It is defined as the geometric mean of precision and recall.
+
+\begin{center}
+    FORMULA GOES HERE
+    % formula of the type
+    % \FMI = \sqrt{\text{Precision} \times \text{Recall}} = \sqrt {{\frac {TP}{TP+FP}}\cdot {\frac {TP}{TP+FN}}}
+
+    % TP: Number of pairs correctly clustered together.
+    % FP: Number of pairs incorrectly clustered together.
+    % FN: Number of pairs that are not clustered together but should be.
+\end{center}
+
+The FMI ranges from 0 to 1, where a higher value indicates a greater similarity between the clustering result and the ground
+truth.
+
+\textbf{When to use FMI?}
+
+The Fowlkes–Mallows Index is particularly useful when assessing how well a clustering algorithm performs relative to a
+known classification. Measuring the similarity between two different clustering results to determine consistency.
+
+\coloredboxes{
+    \item Provides a straightforward measure of clustering quality based on well-understood concepts of precision and recall.
+    \item Can be used to evaluate both flat and hierarchical clustering algorithms.
+    \item Clustering algorithm agnostic.
+}
+{
+    \item Requires ground-truth labels.
+    \item Relies on pairwise comparisons, which can be computationally intensive for large datasets.
+    \item Not normalized with regards to random labeling.
+}
+
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\textbf{Other related metrics}
+
+While the Fowlkes–Mallows Index provides valuable insights into clustering performance, it is often beneficial to use it
+alongside other metrics to gain a comprehensive evaluation. Metrics such as the Adjusted Rand Index (ARI) and Normalized Mutual
+Information (NMI) can offer additional perspectives.
+
+
+
+
+
+
+
 
 % ---------- Silhouette Score ----------
 \clearpage
@@ -415,9 +465,3 @@ Use Silhouette Score when the ground truth labels are unknown and the evaluation
 \item Silhouette Score can generally be higher for convex clusters than other clusters, such as density based clusters.
 \item Higher Silhouette Score doesn't necessarily indicate that the clusters will have equal sizes; the clusters can still vary in cardinality. 
 }
-
-% ----------  Consensus Score ----------
-\clearpage
-\thispagestyle{clusteringstyle}
-\section{ Consensus Score}
-\subsection{ Consensus Score}
