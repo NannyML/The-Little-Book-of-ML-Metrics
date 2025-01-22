@@ -76,7 +76,7 @@ Did you know that...}
 In the context of statistical hypothesis testing, the FPR is also known as the "type I error rate" or the probability of rejecting a true null hypothesis.
 }
 
-\textbf{FPR alternatives and related metrics}
+\textbf{Other related metrics}
 
 Other metrics used alongside or instead of FPR include True Positive Rate (TPR), Precision, F1-Score, Receiver Operating Characteristic (ROC AUC), and Specificity.
 
@@ -152,33 +152,186 @@ Did you know that...}
     This demonstrates the inherent trade-off between Type I and Type II errors in statistical testing.
 }
 
-\textbf{FNR alternatives and related metrics}
+\textbf{Other related metrics}
 
-Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensitivity), Specificity, Precision, F1-Score, and ROC curve.
-
-% ---------- FNR ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{FNR}
-\subsection{False Negative Rate}
+Other metrics used alongside or instead of False Negative Rate
+are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
 
 % ---------- TPR ----------
 \clearpage
-\thispagestyle{classificationstyle}
-\section{TPR}
+\section{TPR (Recall/Sensitivity)}
 \subsection{True Positive Rate (Recall/Sensitivity)}
+\thispagestyle{classificationstyle}
+
+Recall, also known as Sensitivity or True Positive Rate (TPR), is a crucial metric in classification tasks. It measures the proportion of actual
+positive instances that were correctly identified by the model. Recall answers the question: "Of all the positive cases, how many did our model correctly identify?”
+
+\begin{center}
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+{
+$\displaystyle
+Recall = \frac{{\color{cyan}TP}}{{\color{cyan}TP} + {{\color{nmlpurple}FN}}}
+$
+}
+};
+\draw[-latex,cyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5); 
+% \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {False negatives} +(-1,-.5); 
+}
+\end{center}
+
+Recall ranges from 0 to 1, where 1 indicates perfect recall (all positive instances were correctly identified), and 0 indicates the worst
+possible recall (no positive instances were identified).
+
+\textbf{When to use Recall?}
+When the cost of false negatives is high (e.g., missing a fraudulent transaction or a critical medical diagnosis).
+When you need to identify as many positive instances as possible, even at the risk of some false positives. In imbalanced datasets where the positive class is rare but important.
+
+\coloredboxes{
+\item Focuses on minimizing false negatives, which is crucial in many high-stakes applications.
+\item Provides insight into a model's ability to find all positive instances.
+\item Useful in scenarios where missing a positive is more costly than incorrectly labeling a negative
+}
+{
+\item Doesn't account for false positives, which can lead to high recall but poor precision.
+\item Can be misleading when used in isolation, as a model that predicts everything as positive would have perfect recall.
+\item Ignores performance on negative examples, which may be important in some contexts.
+}
+
+
+\clearpage
+\thispagestyle{customstyle}
+
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/Recall_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.55\textwidth}
+    \centering
+    \vspace{-20pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.5\textwidth]{figures/Recall_2d_line_plot.png} % Your figure goes here
+\end{wrapfigure}
+
+% Left text with the image on the right
+\textbf{Figure 3.5 Recall.} 
+\underline{Top:}
+Shows how Recall decreases hyperbolically as total positive cases increase for fixed TP values. Higher TP maintains better Recall.
+Curves display a rapid initial decline followed by a gradual decrease.
+\underline{Right:}
+3D surface illustrating Recall's non-linear relationship with TP and FN. Recall is highest (blue) when TP is high and FN is low, decreasing (red) as FN increases or TP decreases.
+
+\orangebox{%
+Did you know that...}
+{
+    Precision and Recall were introduced by Allen Kent in the 1950s. These metrics were initially developed to evaluate the effectiveness of library catalog
+    systems and early computerized document retrieval systems.
+}
+
+\textbf{Other related metrics}
+
+Other metrics used alongside or instead of Recall are Precision, F1-Score, F-beta, Specificity, ROC AUC and, Matthews Correlation Coefficient (MCC).
 
 % ---------- TNR ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{TNR}
+\section{TNR (Specificity)}
 \subsection{True Negative Rate (Specificity)}
+
+True Negative Rate (TNR), also known as specificity, measures the proportion of actual negative instances correctly identified as such in binary classification.
+Specificity is a crucial metric in evaluating diagnostic tests and classification models.
+
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+        $\displaystyle
+        TNR = \frac{{\color{cyan}TN}}{{\color{cyan}TN} + {{\color{nmlpurple}FP}}}
+        $
+        }
+        };
+        \draw[-latex,cyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {True negatives} +(1,.5); 
+        % \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5); 
+    }
+\end{center}
+
+TNR ranges from 0 to 1, where 1 indicates perfect specificity (all negative instances correctly identified) and 0 (no negative instances were correctly identified).
+In hypothesis testing, specificity is inversely related to the Type I error rate.
+
+\textbf{Why to use TNR?}
+
+When you need to assess a test's ability to identify negative cases correctly or when the cost of false positives is high (e.g., unnecessary medical procedures).
+
+\coloredboxes{
+\item It directly measures the ability to correctly identify negative cases.
+\item It is crucial in scenarios where false positives have significant consequences.
+\item High specificity is valuable for confirmatory tests.
+}
+{
+\item It doesn't account for false negatives or true positives.
+\item A test with high specificity but low sensitivity might miss many positive cases.
+\item It should be considered alongside sensitivity for a comprehensive evaluation.
+}
+
+\clearpage
+\thispagestyle{customstyle}
+
+\orangebox{%
+Did you know that...}
+{
+    Sensitivity and Specificity were introduced by the American biostatistician Jacob Yerushalmy in 1947.
+}
+
+\textbf{Other related metrics}
+
+Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall). FPR, which is 1 - Specificity, F1-Score, and ROC curve.
 
 % ---------- Accuracy ----------
 \clearpage
+
 \thispagestyle{classificationstyle}
 \section{Accuracy}
-\subsection{Accuracy}
+\subsection{Accuracy} 
+
+Accuracy is a frequently used classification metric as it provides an intuitive answer to the question, "How often is the classifier correct?”.
+Accuracy measures a model's overall correctness across all classes by calculating the proportion of correct predictions among the total number of cases examined.
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                Accuracy = \frac{{\color{nmlred}TP}+{\color{cyan}TN}}{{\color{nmlred}TP} + {{\color{cyan}TN}} + {\color{nmlpurple}FP} + {\color{teal!70!green}FN}}
+                $
+            }
+        };
+        \draw[-latex, cyan, semithick] ($(a.north)+(2, 0.05)$) to[bend left=15] node[pos=1, right] {True negatives} +(1,.5); 
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(2, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
+        \draw[-latex, nmlred, semithick] ($(a.north)+(0.7, 0.05)$) to[bend right=20] node[pos=1, left] {True positives} +(-1,.5);
+        \draw[-latex, teal!70!green, semithick] ($(a.south)+(3.5,-0.05)$) to[bend right=15] node[pos=1, right] {False negatives} +(1,-.5);
+    }
+\end{center}
+
+Accuracy ranges from 0 to 1, with 1 representing perfect classification. While accuracy may be easy to understand, it can be misleading when dealing with imbalanced datasets.
+It is best used when the classes in the dataset are roughly balanced, and all misclassification errors are equally costly.
+
+\textbf{When to use Accuracy?}
+
+Use accuracy when you need a simple, interpretable metric and your dataset is balanced. Avoid using it as the sole metric for imbalanced datasets or when different errors have varying costs.
+
+\coloredboxes{
+\item Accuracy provides an easily understandable measure of model performance.
+\item It works well for balanced datasets where all classes are equally important.
+}
+{
+\item Accuracy can be misleading for imbalanced datasets, potentially hiding poor performance in minority classes.
+\item It doesn't distinguish between different types of errors (false positives vs. false negatives).
+}
 
 % ---------- Balanced Accuracy ----------
 \clearpage
@@ -186,11 +339,76 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{Balanced Accuracy}
 \subsection{Balanced Accuracy}
 
+Balanced Accuracy is a classification evaluation metric that accounts for class imbalance. In binary classification it can be undertood as the arithmetic mean between
+specificity and sensitivity (recall). In multi-class classification Balanced Accuracy is the average of the recall obtained in each class, i.e. the macro-average of recall scores per class.
+
+% formula
+\begin{center}
+    [FORMULA GOES HERE]
+\end{center}
+
+It is particularly useful when working with datasets where some classes are significantly underrepresented, ensuring that the performance of all classes is treated equally.
+The score ranges from 0 to 1. If the dataset is balance, then Balanced Accuracy score reduces to the conventional Accuracy.
+
+\textbf{When to use Balanced Accuracy?}
+
+When dealing with class imbalance. Balanced Accuracy ensures that underrepresented classes are not overshadowed by majority classes in the performance metric.
+
+\coloredboxes{
+\item Unlike standard accuracy, it gives equal importance to all classes, making it more reliable for imbalanced datasets.
+\item Provides an intuitive measure of how well the model performs across all classes.
+}
+{
+\item Treats all classes equally, which may not be ideal if some classes are more critical than others.
+\item Under extreme class imbalance or small sample sizes, balanced accuracy can show high variance, as the performance of the minority class has a strong impact on the overall score.
+}
+
 % ---------- Precision ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Precision}
 \subsection{Precision}
+
+Precision measures the accuracy of positive predictions made by a classifier. It is the ratio of correctly predicted positive instances (true positives) to
+the total number of instances predicted as positive (true positives + false positives). It answers the question: “Out of all the cases indicated as positive, how many are as actual positives?”
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                Precision = \frac{{\color{nmlcyan}TP}}{{\color{nmlcyan}TP} + {\color{nmlpurple}FP}}
+                $
+            }
+        };
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(1.4, 0.05)$) to[bend left=15] node[pos=1, right] {True positives} +(1,.5); 
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(2, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
+    }
+\end{center}
+
+Precision ranges from 0 to 1, where 1 indicates perfect precision (all predicted positives are correct), and 0 indicates the worst performance (no predicted positives are correct).
+
+\textbf{When to use Precision?}
+
+Precision is important when the cost of false positives is high. For example, in spam detection, you don’t want legitimate emails ending up in the spam folder,
+and in recommendation systems, irrelevant suggestions (false positives) can frustrate users.
+
+\coloredboxes{
+\item Focuses on the accuracy of positive predictions.
+\item Critical in applications where false positives are costly or disruptive.
+}
+{
+\item Doesn't account for false negatives, which can lead to high precision but poor recall.
+\item It can be misleading when used in isolation, as a model that predicts only one sample as positive and correctly gets it would have perfect precision.
+}
+
+\orangebox{%
+Did you know that...}
+{
+    Precision and Recall often have an inverse relationship. As you increase Precision, Recall tends to decrease, and vice versa.
+    This is known as the Precision-Recall trade-off curve.
+}
 
 % ---------- F1-score ----------
 \clearpage
@@ -198,17 +416,87 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{F1-score}
 \subsection{F1-score}
 
-% ---------- F-beta ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{F-beta}
-\subsection{F-beta}
+The F1 score or balanced F-score measures a classifier's predictive performance by assessing classes' performance. We can think of the F1-score as the harmonic mean of the model’s
+precision and recall, thus giving equal weight to both these metrics. So, the F1-score is critical when we care equally about avoiding false positives
+(e.g., incorrectly marking an important email as spam) and false negatives (e.g., missing a spam email).
+
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                F1 = \frac{2}{\textcolor{nmlcyan}{P^{-1}} + \textcolor{nmlpurple}{R^{-1}}} = \frac{2\textcolor{nmlred}{TP}}{2\textcolor{nmlred}{TP} + \textcolor{nmlgreen}{FP} + \textcolor{gray}{FN}}
+                $
+            }
+        };
+    \draw[-latex, nmlcyan, semithick] ($(a.south)+(-2.7, -0.05)$) to[bend left=25] node[pos=1, left] {\color{nmlcyan} precision} +(-.6, -.5);
+    \draw[-latex, nmlpurple, semithick] ($(a.south)+(-1.2, -0.05)$) to[bend left=-35] node[pos=1, right] {\color{nmlpurple} recall} +(0.7, -.9);
+    \draw[-latex, nmlgreen, semithick] ($(a.south)+(2.3, -0.05)$) to[bend left=35] node[pos=1, left] {\color{nmlgreen} false positive} +(-0.5, -.4);
+    \draw[-latex, gray, semithick] ($(a.south)+(3.4, -0.05)$) to[bend left=-30] node[pos=1, right] {\color{gray} false negative} +(0.7, -.6);
+    \draw[-latex, nmlred, semithick] ($(a.south)+(2.3, 1.3)$) to[bend right=-40] node[pos=1, right] {\color{nmlred} true positive} +(0.7, .6);
+    }
+\end{center}
+
+The F1-score ranges from 0 to 1. Maximizing precision and recall allows us to approximate a perfect classifier. However, bear in mind that in practice, there is a
+trade-off between precision and recall, so improving precision may inadvertently decrease recall and vice versa.
+
+\textbf{When to use Accuracy?}
+
+Use the F1-score when you need a balanced measure of a model's performance, with an equal balance between precision and recall (when false positives and negatives are concerns).
+
+\coloredboxes{
+\item F1-score provides a single, easy-to-interpret metric that equally weights precision and recall.
+\item It works better than accuracy for imbalanced datasets.
+}
+{
+\item The F1-score doesn't consider true negatives, which might be necessary in some scenarios.
+\item It assumes that precision and recall are equally important. F-beta score can address this by allowing adjustable weighting between precision and recall.
+}
 
 % ---------- F-beta ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{F-beta}
 \subsection{F-beta}
+
+The F-beta Score is a classification evaluation metric that balances the trade-off between precision and recall, allowing us to give different levels of importance to each.
+It is an extension of the F1-score, where the parameter  determines the weight of recall relative to precision.
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            F_{\beta} = \frac{(1 + \beta^2) {\color{nmlred}TP}}{(1 + \beta^2) {\color{nmlred}TP} + {\color{nmlpurple}FP} + \beta^2 {\color{teal!70!green}FN}} = \frac{(1 + \beta^2) \cdot {\color{nmlcyan}P} \cdot {\color{nmlyellow}R}}{\beta^2 \cdot {\color{nmlcyan}P} + {\color{nmlyellow}R}}
+            $
+        }
+        };
+        \draw[-latex, nmlred, semithick] ($(a.north)+(-0.5, 0.05)$) to[bend right=20] node[pos=1, left] {True positives} +(-1,.5);
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(4.6,0.05)$) -- +(0,0.65) node[above, yshift=2pt] {Precision};
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(-0.8, -0.05)$) to[bend left=15] node[pos=1, left] {False positives} +(-1,-.5);
+        \draw[-latex, teal!70!green, semithick] ($(a.south)+(1.2,-0.05)$) -- +(0,-0.6) node[below, yshift=-2pt] {False negatives};
+        \draw[-latex, nmlyellow, semithick] ($(a.south)+(4.8,-0.05)$) -- +(0,-0.6) node[below, yshift=-2pt] {Recall};
+    }
+\end{center}
+
+Similar to the F1-score, the highest possible value is 1.0, indicating perfect precision and recall, while the lowest possible value is 0, which occurs when both precision and recall are zero.
+The two most common $\beta$ values are 2, which weights recall higher than precision, and 0.5, which, conversely, weights precision higher than recall.
+
+\textbf{When to use F-beta?}
+
+The F-beta Score is particularly useful when Precision and Recall are unequally important.
+
+\coloredboxes{
+\item F-beta is customizable. It allows to prioritize precision or recall based on the context of your problem.
+\item Helps balancing the trade-off between precision and recall.
+}
+{
+\item Choosing an appropriate value for $\beta$ can be non-trivial and requires domain knowledge.
+\item Just like F1-score, F-beta doesn't consider true negatives, which might be necessary in some scenarios.
+}
 
 % ---------- ROC AUC ----------
 \clearpage
@@ -216,11 +504,91 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{ROC AUC}
 \subsection{Area Under the Receiver Operating Characteristic Curve}
 
+The Receiver Operating Characteristic (ROC) plot illustrates a classifier's performance at different thresholds. The curve help us undertand the trade-off between FPR
+and TPR at different thresholds. ROC curves can be summarized in a single value by calculating their area under the curve (AUC), which ranges from 0 to 1.0.
+Given one randomly selected positive instance and one randomly chosen negative example, the AUC is the probability that the classifier will be able to tell which is which.
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            \begin{aligned}
+            ROC-AUC &= \int_{{\color{nmlgreen}0}}^{{\color{nmlgreen}1}} ROC({\color{nmlgreen}T}) \, d{\color{nmlgreen}T} \\[2em]
+                    &= \int_{0}^{1} {\color{nmlpurple}TPR}({\color{nmlcyan}FPR}^{-1}(x)) \, dx
+            \end{aligned}
+            $
+        }
+        };
+        \draw[-latex, nmlgreen, semithick] ($(a.north)+(1.5,-0.3)$) to[bend left=15] node[pos=1, right] {Threshold} +(1,.9);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(0.5,1.1)$) to[bend left=15] node[pos=1, right] {True Positive Rate} +(1,.9);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.9,0.25)$) to[bend right=15] node[pos=1, right] {False Positive Rate} +(1,-.9);
+    }
+\end{center}
+
+A common misconception is that a model with an AUC of 0.5 implies that the classifier is no better than random guessing. This misconception is a "fallacy of the undistributed middle":
+all random models score an AUC of 0.5, but not every model that scores an AUC of 0.5 is random.
+
+\textbf{When to use ROC AUC?}
+
+ROC AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. It's especially helpful when the costs of
+false positives and false negatives are unknown or equally important.
+
+\clearpage
+\coloredboxes{
+\item ROC AUC is threshold-independent. It summarizes classifier performance across all possible thresholds.
+\item It allows for a probabilistic interpretation, providing a clear comparison between different models.
+}
+{
+\item It can be misleading if the goal is to optimize performance at a specific threshold. Models can have the same AUC but vary in performance at key thresholds.
+\item It summarises performance over regions of the ROC space in which one would rarely operate, such as extreme right (high FPR) or extreme left side (low TPR).
+\item ROC AUC doesn't inform about precision and negative predicted value.
+}
+
 % ---------- PR AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{PR AUC}
 \subsection{Area Under the Precision-Recall Curve}
+
+The Precision-Recall (PR) curve focuses on the trade-off between precision (positive predictive value) and recall (true positive rate) across various thresholds.
+Precision measures how many of the predicted positives are actually positive, while recall captures how many actual positives were identified.
+The PR AUC represents the area under this curve, offering a single-value summary of a model's performance.
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            PR-AUC = \int_{{\color{nmlyellow}0}}^{{\color{nmlyellow}1}} {\color{nmlcyan}P}({\color{nmlyellow}R}) \, d{\color{nmlyellow}R}
+            $
+        }
+        };
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(1.3, -0.3)$) to[bend right=20] node[pos=1, left] {Precision} +(-1,.9);
+        \draw[-latex, nmlyellow, semithick] ($(a.north)+(1.9,-0.3)$) to[bend left=15] node[pos=1, right] {Recall} +(1,.9);
+    }
+\end{center}
+
+Similar to the F1-score, the highest possible value for PR AUC is 1.0, indicating perfect precision and recall, while the lowest possible value is 0.
+The main difference between PR AUC and ROC AUC is how they treat true negatives. PR AUC doesn't consider true negatives, which is why it is preferred over ROC AUC
+when true negatives are not relevant to the problem.
+
+\textbf{When to use PR AUC?}
+
+Similarly to ROC AUC, PR AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. 
+It is particularly useful in imbalanced datasets, where one class (typically the positive class) is much rarer than the other. In such cases, PR AUC provides a more
+informative measure of a model's ability to detect the minority class without being overly influenced by the majority class.
+
+\coloredboxes{
+\item PR AUC highlights performance on the minority class, making it invaluable for imbalanced datasets.
+}
+{
+\item PR AUC doesn't provide insights into the true negative predictions.
+\item It summarises performance over regions of the PR space in which one would rarely operate.
+}
+
 
 % ---------- Brier Score Loss ----------
 \clearpage
@@ -228,23 +596,161 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{Brier Score Loss}
 \subsection{Brier Score Loss}
 
+The Brier Score Loss is a metric used to evaluate the accuracy of predicted probabilities in binary classification problems.
+It calculates the mean squared error between the predicted probabilities and the actual binary outcomes, providing a measure of how well-calibrated the predictions are.
+
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            {Brier\ Score} = \frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} ({\color{nmlpurple}y_i} - {\color{nmlcyan}p_i})^2
+            $
+        }
+        };
+        \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.7, -0.5)$) to[bend right=20] node[pos=1, left] {Actual outcome} +(-1,.9);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(2.7,0.5)$) to[bend right=15] node[pos=1, right] {Predicted probability} +(1,-.5);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(0.2,0.1)$) to[bend left=15] node[pos=1, left] {Number of samples} +(-1,-.5);
+    }
+\end{center}
+
+The Brier Score ranges from 0 to 1, where 0 indicates perfect probabilistic predictions, and 1 means worst possible predictions. Because of its similarity with the MSE,
+which can be decomposed as the sum of the variance and the squared of the bias. The Brier Score Loss can be decomposed as the sum of calibration loss and refinement loss.
+For multi-class classification, the Brier Score can be extended to: ${Brier\ Score} = \frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} (y_{ij} - p_{ij})^2$ where $C > 2$ is the number of classes.
+
+
+\textbf{When to use the Brier Score Loss?}
+
+When probability calibration is as important as the classification accuracy. Like when the problem requires reliable probability estimates for downstream tasks
+like risk assessment or decision-making.
+
+\coloredboxes{
+\item Summarices both predictive accuracy and calibration in one value.
+}
+{
+\item Only suitable for binary tasks. It is inappropriate for ordinal variables which can take three or more values.
+}
+
 % ---------- Log Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Log Loss}
 \subsection{Log Loss}
 
-% ---------- Jaccard Score ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{Jaccard Score}
-\subsection{Jaccard Score}
+The Log Loss, also known as cross-entropy loss or logistic regression loss is a classification metric that evaluates the accuracy of predicted probabilities by
+penalizing predictions that are both incorrect and overly confident. It measures the distance between the predicted probabilities and the actual class labels.
 
-% ---------- D2 Log Loss Score ----------
+% formula
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+        {
+            $\displaystyle
+            {Log\ Loss} = -\frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} ({\color{nmlpurple}y_i} \cdot log({\color{nmlcyan}p_i}) + (1 - {\color{nmlpurple}y_i}) \cdot log(1 - {\color{nmlcyan}p_i}))
+            $
+        }
+        };
+        \draw[-latex, nmlpurple, semithick] ($(a.north)+(-1.3, -0.5)$) to[bend right=20] node[pos=1, left] {Actual outcome} +(-1,.9);
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(0.4,-0.5)$) to[bend left=15] node[pos=1, right] {Predicted probability} +(1,.9); 
+        \draw[-latex, nmlred, semithick] ($(a.south)+(-2.6,0.25)$) to[bend right=15] node[pos=1, right] {Number of samples} +(1,-.9);
+    }
+\end{center}
+
+As is common with loss metrics, smaller values are better. Log Loss ranges from 0 to infinity, where 0 indicates perfect probabilistic predictions and higher values
+represent worse predictions. The formula above defines Log Loss for binary classification, but it can also be extended to multiclass classification:  
+$Log Loss = -\frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} y_{ij} log(p_{ij})$.
+One key difference between Log Loss and Brier Score is that Log Loss is more sensitive to differences in predicted probabilities. This can be either an advantage or a
+disadvantage, depending on the use case.
+
+
+\textbf{When to use Log Loss?}
+
+When you want to evaluate both the accuracy and confidence of predicted probabilities. Similar to the Brier Score, Log Loss is also useful when calibration
+and well-distributed probabilities are important for downstream tasks such as ranking or risk assessment.
+
+\coloredboxes{
+    \item It is also a proper loss function, commonly used in logistic regression and neural networks.
+    \item Generalizable beyond binary classification.
+}
+{
+    \item Predictions close to 0 or 1 for the wrong class can heavily increase the loss.
+    \item Not suitable if the model doesn't output well-calibrated probabilities.
+}
+
+% ---------- Jaccard Index ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{D2 Log Loss Score}
-\subsection{D2 Log Loss Score}
+\section{Jaccard Index}
+\subsection{Jaccard Index}
+
+The Jaccard Index, or Jaccard Similarity Coefficient, is a similarity metric often used for evaluating the performance of classification models,
+particularly in segmentation tasks. It measures the overlap between the predicted set and the ground truth set.
+
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle 
+                J(A, B) = 
+                \frac{\textcolor{nmlpurple}{|A \cap B|}}
+                {\textcolor{nmlcyan}{|A \cup B|}}
+                $
+            }
+        };
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.2, 1.4)$) to[bend right=35] node[pos=1, left] {\color{nmlpurple} Intersection (common elements)} +(-0.9, .7);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.2,0.04)$) to[bend right=35] node[pos=1, right] {\color{nmlcyan} Union (all elements)} +(.9, -.7);
+    }
+\end{center}
+
+The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
+and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
+$FN$ as: $J = \frac{TP}{TP + FP + FN}$
+
+\textbf{When to use the Jaccard Index}
+
+It is particularly useful when we need to measure the similarity between two sets. For example, it can be used to assess the similarity between text documents,
+evaluate preferences in recommender systems, or measure the similarity between genetic sequences.
+
+\coloredboxes{
+    \item Intuitive interpretation. It provides a straightforward measure of overlap, useful for visualization.
+    \item Scale-Invariance. The Jaccard Index is not affected by the size of the sets being compared.
+}
+{
+    \item Can be computationally expensive. Calculating the intersection and union for large or high dimensonal sets can be resource-intensive.
+}
+
+
+% ---------- D-squared Log Loss Score ----------
+\clearpage
+\thispagestyle{classificationstyle}
+\section{D-squared Log Loss Score}
+\subsection{D-squared Log Loss Score}
+
+The D-squared score log loss is a normalized version of log loss that provides a more interpretable metric for classification performance, similar to R² for regression.
+It measures the relative improvement of a model's log loss compared to a naive baseline model that always predicts the mean probability.
+
+% 
+FORMULA GOES HERE
+% 
+
+As with R-squared, D-squared ranges from -infinity to 1, where 1 indicates perfect predictions, 0 suggests the model performs no better than the baseline, and negative values indicate
+worse performance than the baseline. The metric provides a standardized way to compare model performance across different datasets and class distributions.
+
+\textbf{When to use D-squared Log Loss Score}
+
+When you need a normalized metric that is both interpretable and comparable across different classification problems. It's particularly useful when working with imbalanced
+datasets or when you want to communicate model performance to non-technical stakeholders who are familiar with R-squared.
+
+\coloredboxes{
+    \item Provides a normalized score that is easier to interpret than raw log loss.
+    \item Accounts for class imbalance through baseline normalization.
+}
+{
+    \item Can be sensitive to outliers and extreme predictions.
+    \item Requires computing the baseline model's performance.
+}
+
 
 % ---------- P4-metric ----------
 \clearpage
@@ -252,23 +758,89 @@ Other metrics used alongside or instead of False Negative Rate (TPR/Recall/Sensi
 \section{P4-metric}
 \subsection{P4-metric}
 
+The P4-metric (also known as Symmetric F) is an evaluation metric for binary classifiers that addresses several limitations of the F1 score. Unlike metrics that focus
+on only some aspects of classification performance, P4 comprehensively considers all four key conditional probabilities in binary classification, making it a
+more balanced measure of classifier performance.
+
+% 
+FORMULA GOES HERE
+% 
+
+The metric ranges from 0 to 1, where 1 indicates perfect classification (all probabilities equal 1) and 0 indicates complete failure (any probability equals 0).
+
+\textbf{When to use P4-metric}
+
+Use P4 in scenarios where both positive and negative predictions are equally important. Or in sases where F1 score's limitations (ignoring true negatives)
+could be problematic.
+
+\coloredboxes{
+    \item Considers all four fundamental probabilities of binary classification.
+    \item Symmetric with respect to positive and negative classes meaning that it does not change when the dataset labeling is changed.
+}
+{
+    \item Less widely adopted than traditional metrics.
+    \item May be harder to interpret for non-technical stakeholders.
+    \item Goes to zero if any of the key probabilities goes to zero. This can be a strength too.
+}
+
+
 % ---------- Cohen's Kappa ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{Cohen's Kappa}
 \subsection{Cohen's Kappa}
 
-% ---------- Phi Coefficient ----------
-\clearpage
-\thispagestyle{classificationstyle}
-\section{Phi Coefficient}
-\subsection{Phi Coefficient}
+Cohen's Kappa is a metric that measures inter-rater reliability and agreement between classifiers while accounting for the agreement that could occur by chance.
+This metric is designed to compare labelings by two different human annotators, not like othe metrics that compares a classifier versus a ground truth.
+
+% 
+FORMULA GOES HERE
+% 
+
+The score ranges from -1 to 1, where 1 indicates perfect agreement, 0 suggests agreement no better than chance, and negative values indicate worse than chance agreement.
+
+\textbf{When to use Cohen's Kappa?}
+
+When you want to compute the agreement between two human annotators on a classification task.
+
+\coloredboxes{
+    \item Accounts for agreement by chance.
+    \item Widely accepted in many fields.
+}
+{
+    \item It is not adviced to use it as a classification metric. Only to measure inter-annotator agreement.
+    \item Some researches argue that the metric is unreliable when dealing with rare events (unbalanced data).
+}
 
 % ---------- MCC ----------
 \clearpage
 \thispagestyle{classificationstyle}
 \section{MCC}
 \subsection{Matthew's Correlation Coefficient}
+
+The Matthew's Correlation Coefficient, also known as Phi coefficient for binary classification, is a measure of association between predicted and actual classifications
+that is particularly robust to imbalanced datasets. It can be interpreted as a correlation coefficient between binary variables. In binary classification the MCC can
+be written in terms of the confusion matrix elements.
+
+% 
+FORMULA GOES HERE
+% 
+
+The coefficient ranges from -1 to 1, where 1 represents perfect prediction, 0 indicates random prediction, and -1 represents total disagreement between prediction and
+observation.
+
+\textbf{When to use MCC?}
+
+When you need a balanced measure of classification performance that works well with imbalanced datasets and provides a single score that captures both the positive and
+negative class performance.
+
+\coloredboxes{
+    \item Handles imbalanced datasets well.
+    \item Considers all aspects of the confusion matrix.
+}
+{
+    \item More complex to interpret than simpler metrics like accuracy or F1-score.
+}
 
 
 % ---------- EC ----------
@@ -360,6 +932,6 @@ Did you know that...}
     The EC metric is also known as Expected Prediction Error or Expected Loss. In speech processing, it’s called Detection Cost Function (DCF), used for tasks like speaker verification and evaluations by NIST. It's also equivalent to Negative Expected Utility in decision theory.
 }
 
-\textbf{EC alternatives and related metrics}
+\textbf{Other related metrics}
 
 Metrics like F1-score, AUC, and Precision-Recall are ad hoc, treating all errors equally and lacking control over error trade-offs. However, they excel in interpretation and handling class imbalances. In contrast, Expected Cost (EC) allows explicit control over the cost of different misclassifications.

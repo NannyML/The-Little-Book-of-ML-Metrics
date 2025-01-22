@@ -76,10 +76,34 @@ PSNR is often chosen as the first metric to provide an overview of how closely t
 \item PSNR is sensitive to even small global changes in lighting, contrast, or color.
 }
 
+\clearpage
+
+\thispagestyle{customstyle}
+
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/PSNR_plot.png}
+    % \caption{Caption}
+    \label{PSNR plot}
+\end{figure*}
+
+
+\textbf{Figure 7.1 Image with different PSNR.} Demonstrates noisy images with their corresponding PSNR values compared to the original ones. \textbf{Left:} Original image and its noisy version. 
+\textbf{Right:} Illustration of how strong noise signals have been added to the original image.
+The color image is from the popular \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K} dataset.
+\vspace{-12pt} 
+
+\orangebox{Did you know that...}
+{PSNR is not just for images; it can be applied to \textbf{video, audio, or even signal processing}. Anytime we want to measure the quality of \textbf{reconstructed} signal compared to the \textbf{original}, PSNR could be considered.}
+
+\vspace{-5pt} 
 
 \textbf{Other related metrics}
 
+\vspace{-5pt} 
+
 Modern computer vision problems often focus on generating likely realistic images that are perceptually pleasing to humans, rather than strictly matching the
-target image pixel by pixel. Therefore, PSNR is typically used in conjunction with other modern metrics like Fréchet Inception Distance (FDI) or Inception Score (IS).
+target image pixel by pixel. Therefore, PSNR is typically used in conjunction with other modern metrics like Fréchet Inception Distance (FID) or Inception Score (IS).
 
 

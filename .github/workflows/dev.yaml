@@ -25,7 +25,7 @@ jobs:
           extra_fonts: |
             ./fonts
       - name: Update nightly release
-        uses: eine/tip@master
+        uses: pyTooling/Actions/releaser@main
         with:
           tag: nightly
           rm: true
