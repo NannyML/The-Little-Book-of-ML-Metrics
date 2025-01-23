@@ -1,13 +1,5 @@
 \chapter{Ranking}
 
-
-% ---------- Ranking Sample Metric ----------
-\clearpage
-\thispagestyle{rankingstyle}
-\section{Ranking Sample Metric}
-\subsection{Ranking Sample Metric}
-
-
 % ---------- @K Metrics ----------
 \clearpage
 \thispagestyle{rankingstyle}
@@ -18,7 +10,46 @@
 \clearpage
 \thispagestyle{rankingstyle}
 \section{Mean Reciprocal Rank}
-\subsection{Mean Reciprocal Rank}
+\subsection{MRR}
+
+The Mean Reciprocal Rank (MRR) is a metric that evaluates the quality of ranked results, typically in information retrieval
+and recommendation systems. It measures how high the first relevant result appears in the ranking list. MRR is computed as
+the average reciprocal rank across all queries in a dataset.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+MRR goes from 0 to 1. Where 0 mean no relevant items exist in the ranked results for all queries and 1 is achieved when the
+relevant item is always the first result for every query. In practice a low MRR suggests that users may need to scroll
+significantly to find the relevant result, leading to poor user experience.
+
+\textbf{When to use MRR?}
+
+Use MRR when the primary goal is to return the most relevant result as close to the top of the list as possible, or
+when evaluating the quality of systems where only the position of the first relevant result matters.
+
+\coloredboxes{
+    \item Intuitive metric.
+    \item Aligns with user expectations in applications where relevance at the top matters most.
+}
+{
+    \item MRR only considers the first relevant result, ignoring subsequent relevant results that might also be important.
+    \item Systems returning shorter rankings can sometimes inflate MRR if the first relevant result appears earlier.
+    \item MRR doesn't handle well cases where multiple relevant items exist with varying degrees of importance.
+
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\textbf{Other related metrics}
+
+MRR is a concise and effective metric for assessing ranked output but should be complemented by other metrics like
+nDCG (Normalized Discounted Cumulative Gain) or Mean Average Precision when evaluating scenarios with multiple relevant
+items or varying relevance grades.
+
 
 % ---------- Mean Average Precision ----------
 \clearpage
