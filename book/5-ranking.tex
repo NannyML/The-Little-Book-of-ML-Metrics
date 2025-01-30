@@ -57,6 +57,39 @@ items or varying relevance grades.
 \section{Mean Average Precision}
 \subsection{Mean Average Precision}
 
+Mean Average Precision (MAP) is a metric used to evaluate the performance of ranking and recommendation systems. It measures
+both the relevance of the recommended items and the order in which they are presented, rewarding systems that rank relevant
+items higher. The MAP is calculated by averaging the Average Precision (AP) across all users or queries. 
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+MAP values range from 0 to 1, with 1 indicating a perfect ranking where all relevant items are placed at the top of the list.
+
+\textbf{When to use MAP?}
+
+MAP is particularly useful when evaluating search engines, recommendation systems, and other ranking-based models where
+returning relevant items in the top ranks is critical. It is especially suited for situations where multiple queries exist,
+and precision at various cutoffs matters more than recall.
+
+\coloredboxes{
+    \item Evaluates how well relevant items are ranked.
+    \item Handles multiple queries. MAP averages precision over multiple search instances, providing a holistic evaluation
+    of the model.
+}
+{
+    \item Sensitive to exact ranking positions. A single misplaced relevant item can significantly impact MAP, making it less
+    robust to minor ranking fluctuations.
+    \item Requires known relevance labels. MAP relies on predefined relevance judgments, which may not always be
+    available or objective.
+    \item Complex interpretation.
+
+}
+
+% good resources for inpiration for visual: https://juneandrews.com/2014/12/15/mean-average-precision-isnt-so-nice/
+% https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
+
 % ---------- Hit Rate ----------
 \clearpage
 \thispagestyle{rankingstyle}
