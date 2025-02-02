@@ -373,7 +373,7 @@ The Davies-Bouldin Index measures the quality of clustering by evaluating the av
     \node[inner sep=2pt, font=\Large] (a) {
     {
     $\displaystyle
-    DB = \frac{1}{\textcolor{nmlgreen}{k}} \sum_{{\color{nmlpurple}i}=1}^{\textcolor{nmlgreen}{k}} \max_{{\color{nmlpurple}i} \neq {\color{nmlpurple}j}} \textcolor{nmlpurple}{R_{{\color{nmlpurple}i}{\color{nmlpurple}j}}}
+    DB = \frac{1}{\textcolor{nmlgreen}{k}} \sum_{{\color{nmlpurple}i}=1}^{\textcolor{nmlgreen}{k}} \max_{{\color{nmlpurple}i} \neq {\color{nmlpurple}j}} \textcolor{nmlpurple}{R_{{\color{nmlred}i}{\color{nmlred}j}}}
     $
     }
     }; 
@@ -384,7 +384,7 @@ The Davies-Bouldin Index measures the quality of clustering by evaluating the av
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
         $\displaystyle
-        \textcolor{nmlpurple}{R_{{\color{nmlpurple}i}{\color{nmlpurple}j}}} = \frac{\textcolor{nmlred}{s_{\color{nmlpurple}i}} + \textcolor{nmlred}{s_{\color{nmlpurple}j}}}{\textcolor{nmlcyan}{d_{\color{nmlpurple}i\color{nmlpurple}j}}}
+        R_{ij} = \frac{\textcolor{nmlpurple}{s_{\color{nmlpurple}i}} + \textcolor{nmlpurple}{s_{\color{nmlpurple}j}}}{\textcolor{nmlcyan}{d_{\color{nmlcyan}i\color{nmlcyan}j}}}
         $
         }; 
         \draw[-latex,nmlred, semithick] ($(a.north)+(1.2,0.05)$) 
