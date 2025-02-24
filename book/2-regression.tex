@@ -406,7 +406,7 @@ It is not feasible when actual values can be 0. Additionally, MAPE is beneficial
 
 
 % Left text with the image on the right
-\textbf{Figure 3.2 MSE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
+\textbf{Figure 3.6 MAPE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
 targets and predicted values is significantly different. \underline{Top:} The rate of change of MAPE is non-linear.
 \underline{Right:} Clearly shows MAPE's asymmetry in relation to over- and under-predicting the target variable when optimizing for MAPE.
 
@@ -461,7 +461,37 @@ targets and predicted values are very different.
     \item sMAPE is not symmetric to over- and under-forecasts. For example, if $Y_{t} = 100$ and in one case we have $\hat{Y_{t}} = 90$, this gives ansMAPE of 4.76\%; whereas if $\hat{Y_{t}} = 110$, then the sMAPE would be 5.26\%.
 }
 
+\clearpage
 
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/sMAPE_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.45\textwidth]{figures/sMAPE_cross_section.png} % Your figure goes here
+    \vspace{-10pt} % Adjust vertical alignment if needed
+\end{wrapfigure}
+
+
+% Left text with the image on the right
+\textbf{Figure 3.2 MSE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
+targets and predicted values is significantly different. \underline{Top:} The rate of change of MAPE is non-linear.
+\underline{Right:} Clearly shows MAPE's asymmetry in relation to over- and under-predicting the target variable when optimizing for MAPE.
+
+\orangebox{Did you know that...}
+{MAPE is not translation invariant. This means that if we add a constant to all actual and prediction values, the error will be different.
+In math terms, it means that $MAPE(Y_{t} + c, \hat{Y_{t}} + c) \not= MAPE(Y_{t}, \hat{Y_{t}})$ , where $c$ is a constant.}
+
+
+\textbf{Other related metrics}
+To overcome these issues with MAPE, there are some other measures proposed in the literature: Mean Absolute Scaled Error (MASE),
+Symmetric Mean Absolute Percentage Error (sMAPE), Mean Directional Accuracy (MDA), Mean Arctangent Absolute Percentage Error (MAAPE).
 % ---------- wMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
