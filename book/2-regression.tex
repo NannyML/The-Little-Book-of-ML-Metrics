@@ -344,6 +344,28 @@ It can be more appropriate than RMSE in these cases as it is less sensitive to l
     \item Interpretation can be less intuitive than RMSE, as the final value is in logarithmic scale.
 }
 
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/RMSLE_comparison_MSLE.png}
+    % \caption{Caption}
+\end{figure*}
+
+% Left text with the image on the right
+\textbf{Figure 3.5 RMSLE.} \underline{Top:} The MSLE curve grows quadratically, penalizing large relative errors more aggressively, 
+while the RMSLE curve increases more slowly, smoothing out extreme values. Both metrics remain non-negative and centered around zero, 
+with RMSLE being less sensitive to large errors. 
+
+\orangebox{Did you know that...}
+{RMSLE gained popularity during the 2019 ASHRAE - Great Energy Predictor III competition on Kaggle. 
+An earlier appearance can be noted in the 2017 Mercari Price Suggestion Challenge on Kaggle as well.}
+
+\textbf{Other related metrics}
+RMSLE is suited to data that has exponential growth and in usecases like demand forecasting, metrics that are similar in 
+fashion are Mean Squared Logarithmic Error (MSLE), Mean Absolute Percentage Error (MAPE) , Huber Loss and Quantile Loss. 
 % ---------- MAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
