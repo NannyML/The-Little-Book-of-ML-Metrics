@@ -480,9 +480,9 @@ targets and predicted values are very different.
 
 
 % Left text with the image on the right
-\textbf{Figure 3.2 MSE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
-targets and predicted values is significantly different. \underline{Top:} The rate of change of MAPE is non-linear.
-\underline{Right:} Clearly shows MAPE's asymmetry in relation to over- and under-predicting the target variable when optimizing for MAPE.
+\textbf{Figure 3.7 sMAPE.}Highlights the behavior of sMAPE. Unlike MAPE, sMAPE remains bounded but still exhibits extreme values 
+(red area) when the difference between targets and predictions is large. \underline{Top:} Shows the non-linear response of sMAPE to deviations from the true value.
+\underline{Right:} Demonstrates sMAPE’s symmetric nature, where over- and under-predictions result in the same error magnitude.
 
 \orangebox{Did you know that...}
 {MAPE is not translation invariant. This means that if we add a constant to all actual and prediction values, the error will be different.
