@@ -266,6 +266,37 @@ interpretable value in the same units as the target variable.
     \item Unlike some other metrics like R-squared and MAPE, RMSE does not provide a normalized measure, making it difficult to compare across different datasets without standardization.
 }
 
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/RMSE_sensitivity_outliers_plot.png} % Increased width for better visibility
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.45\textwidth}
+    \centering
+    \vspace{-5pt} % Adjusted spacing to avoid overlap
+    \includegraphics[width=0.40\textwidth]{figures/RMSE_comparison_2d_plot.png} 
+    \vspace{-10pt} 
+\end{wrapfigure}
+
+\noindent
+\textbf{Figure 3.4 RMSE.} \underline{Top:} RMSE is highly sensitive to outliers. The left plot shows RMSE without outliers, while the right plot demonstrates the increase in RMSE due to a single outlier. 
+\underline{Right:} A visual comparison of MSE (blue) and RMSE (red). RMSE, due to its square root operation, often scales differently than MSE.
+
+\vspace{10pt} % Added spacing to prevent overlap with the wrapfigure
+
+\orangebox{Did you know that...}
+{While there is no standard literature on normalizing RMSE, one approach is to divide the value by the range or mean. 
+This normalized RMSE is commonly expressed as a percentage, known as the Coefficient of Variation (CV).}
+
+\vspace{10pt} % Added spacing for better layout
+
+\textbf{Other related metrics}
+Metrics like Mean Absolute Error (MAE), Average Absolute Deviation (AAD), and Normalized Estimation Error Squared (NEES) are also used to evaluate model performance.
+
 % ---------- RMSLE ----------
 \clearpage
 \thispagestyle{regressionstyle}
