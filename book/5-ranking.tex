@@ -96,6 +96,40 @@ and precision at various cutoffs matters more than recall.
 \section{Hit Rate}
 \subsection{Hit Rate}
 
+Hit Rate is a ranking metric used in recommender systems to measure how often a relevant item appears in the top-k
+recommendations. It is a binary metric that checks whether at least one of the user's relevant items is present in the
+recommended list. If at least one relevant item appears, it counts as a "hit"; otherwise, it does not.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+Hit Rate is particularly useful in top-k recommendation scenarios where the primary goal is to ensure that users receive at
+least one relevant item in their recommendation lists.
+
+\textbf{When to use Hit Rate?}
+
+Use Hit Rate when evaluating recommender systems that generate ranked lists of recommendations, such as e-commerce product
+recommendations, streaming service content suggestions, or news article recommendations. It is best suited for use cases
+where delivering at least one relevant recommendation is critical, rather than ranking all relevant items perfectly.
+
+\coloredboxes{
+    \item Simple to compute and interpret. Hit Rate provides an intuitive measure of whether the recommender system is
+    surfacing at least one relevant item.
+    \item Effective for top-k evaluation. This metric is particularly useful when users engage with only a few of
+    the top-ranked recommendations.
+    \item Works well for sparse data. Since it only requires identifying one correct prediction in the top-k list,
+    it is less sensitive to sparsity compared to other ranking metrics.
+}
+{
+    \item Hit Rate does not account for the position of the relevant item within the top-k list. An item in the first
+    position has the same weight as an item in the last position.
+    \item Hit Rate does not differentiate between multiple relevant hits. This means that if multiple relevant
+    items appear in the top-k list, Hit Rate does not increase—it remains the same as long as at least one relevant
+    item is found. 
+
+}
+
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
