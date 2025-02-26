@@ -126,15 +126,58 @@ where delivering at least one relevant recommendation is critical, rather than r
     position has the same weight as an item in the last position.
     \item Hit Rate does not differentiate between multiple relevant hits. This means that if multiple relevant
     items appear in the top-k list, Hit Rate does not increase—it remains the same as long as at least one relevant
-    item is found. 
+    item is found.
+}
+
+% ---------- Cumulative Gain ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Cumulative Gain}
+\subsection{Cumulative Gain}
+
+Cumulative Gain (CG) measures the total relevance score of recommended items, by summing the relevance scores of all
+items in the recommendation list. It provides a simple way to evaluate how much useful content is retrieved but
+does not consider the position of the relevant items.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A higher cumulative gain reflects a greater concentration of relevant items in the recommendations,
+while a lower cumulative gain indicates fewer relevant items in the list.
+
+\textbf{When to use CG?}
+
+CG is useful when you want a basic measure of total relevance in a recommendation list, without considering the ranking order.
+It can be applied in scenarios where all retrieved relevant items are equally important, regardless of position.
+
+
+\coloredboxes{
+    \item CG provides a straightforward way to measure how the overall relevance score in the recommended list. 
+    \item If the order of recommended items does not matter, CG is a reasonable metric.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
 
 }
+
+
+% ---------- Discounted Cumulative Gain ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Discounted Cumulative Gain}
+\subsection{Discounted Cumulative Gain}
 
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
 \section{Normalized Discounted Cumulative Gain}
 \subsection{Normalized Discounted Cumulative Gain}
+
+
+% great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
 
 % ---------- Intra-List Diversity ----------
 \clearpage
