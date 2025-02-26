@@ -6,6 +6,35 @@
 \section{@K Metrics}
 \subsection{@K Metrics}
 
+The @K variation of ranking metrics is used in recommender systems to evaluate performance within a fixed top-K recommendation
+window. By considering only the top-K retrieved items, these metrics provide a more realistic assessment of user interaction,
+as users typically engage with only a limited number of recommendations.
+
+\begin{center}
+    EXAMPLE FORMULA GOES HERE
+\end{center}
+
+Common @K metrics include Precision@K, Recall@K, Mean Reciprocal Rank (MRR@K), and Mean Average Precision (MAP@K).
+These adaptations help focus evaluation on highly ranked results, ensuring the recommender system prioritizes relevant
+items within the user's attention span.
+
+\textbf{When to @K metrics?}
+
+Use @K metrics when the top-ranked recommendations are more important than the entire ranking. You need to limit evaluation
+to a practical window that reflects real user behavior. Evaluating recommender systems in interactive settings,
+such as search results, product recommendations, or content feeds.
+
+\coloredboxes{
+    \item Focuses on practical recommendations. Evaluates performance within a relevant top-K window, aligning with
+    real-world user engagement.
+}
+{
+    \item Choice of K affects results. The performance of a model may vary significantly depending on the selected K value,
+    requiring careful tuning.
+    \item May not differentiate beyond K. Once an item falls outside the cutoff, it is treated equally regardless of
+    how close it was to inclusion.
+}
+
 % ---------- Mean Reciprocal Rank ----------
 \clearpage
 \thispagestyle{rankingstyle}
