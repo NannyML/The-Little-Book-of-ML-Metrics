@@ -233,6 +233,45 @@ It is widely used in search engines, recommender systems, and ranking models whe
 
 % great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
 
+
+% ---------- Fraction of Concordant Pairs ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{FCP}
+\subsection{Fraction of Concordant Pairs}
+
+Fraction of Concordant Pairs (FCP) is a ranking metric used in recommender systems to evaluate how well a model ranks
+preferred items higher than less preferred ones. It measures the proportion of correctly ordered item pairs among all
+comparable pairs in a recommendation list. Given a user’s interactions, FCP checks whether the model ranks a more relevant
+item above a less relevant one.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A concordant pair is one where the model correctly ranks a preferred item above a less preferred one. FCP values range from
+0 to 1, with 1 indicating a perfect ranking and 0 meaning the model fails to rank preferred items higher.
+
+\textbf{When to use FCP?}
+
+Use FCP when evaluating recommender systems that generate personalized rankings, especially in cases where relative
+ranking quality is more important than absolute scores. It is particularly useful in implicit feedback scenarios,
+such as e-commerce or media streaming, where explicit relevance scores are unavailable, and user preferences must be
+inferred from interactions.
+
+\coloredboxes{
+    \item It directly measures how accurately the system's rankings align with user preferences.
+}
+{
+    \item It only evaluates pairs of items where user preferences can be inferred, potentially reducing
+    the number of evaluated pairs.
+    \item Calculating FCP can be resource-intensive for large datasets, as the number of item pairs grows
+    quadratically with dataset size.
+}
+
+% great references: https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp
+% https://www.ijcai.org/Proceedings/13/Papers/449.pdf
+
 % ---------- Behavioral Metrics (Novelty, Serendipity, Diversity/Intra-List Diversity, Coverage) ----------
 \clearpage
 \thispagestyle{rankingstyle}
