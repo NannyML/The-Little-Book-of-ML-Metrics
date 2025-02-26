@@ -132,7 +132,7 @@ where delivering at least one relevant recommendation is critical, rather than r
 % ---------- Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Cumulative Gain}
+\section{CG}
 \subsection{Cumulative Gain}
 
 Cumulative Gain (CG) measures the total relevance score of recommended items, by summing the relevance scores of all
@@ -159,39 +159,81 @@ It can be applied in scenarios where all retrieved relevant items are equally im
 {
     \item It does not penalize relevant items appearing lower in the ranking, which is
     unrealistic in most real-world applications.
+    \item As with CG, DCG does not provide an upper bound.
     \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
-
 }
 
 
 % ---------- Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Discounted Cumulative Gain}
+\section{DCG}
 \subsection{Discounted Cumulative Gain}
+
+Discounted Cumulative Gain (DCG) improves upon CG by introducing a position-based discounting factor.
+It accounts for the fact that relevant items appearing earlier in the list are more valuable than those appearing later.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+This logarithmic discounting ensures that higher-ranked relevant items contribute more to the score.
+
+\textbf{When to use DCG?}
+
+Use DCG when you want to measure both the total relevance and the order of relevant items in a ranked list. It is particularly
+useful for search engines, recommendation systems, and ranking models where placing relevant items at the top is crucial.
+
+\coloredboxes{
+    \item Accounts for ranking order. Relevant items appearing earlier in the list are weighted more heavily.
+    \item More realistic than CG. Since users are more likely to engage with items at the top, DCG better reflects
+    real-world relevance.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item Like CG, DCG does not provide an upper bound.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+}
 
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Normalized Discounted Cumulative Gain}
+\section{nDCG}
 \subsection{Normalized Discounted Cumulative Gain}
 
+Normalized Discounted Cumulative Gain (nDCG) extends DCG by normalizing it relative to the Ideal Discounted Cumulative Gain
+(IDCG)—the best possible ranking of the same set of items. This ensures that scores are comparable across different users
+and queries.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+IDCG is the DCG computed with an optimally ranked list. nDCG values range from 0 to 1, with 1 indicating a perfect ranking.
+
+\textbf{When to use nDCG?}
+
+Use nDCG when you need a standardized ranking metric that allows comparison across different recommendation tasks.
+It is widely used in search engines, recommender systems, and ranking models where ranking quality is essential.
+
+\coloredboxes{
+    \item Scale-independent. Since it is normalized, NDCG values are comparable across different datasets and users.
+    \item Captures both relevance and ranking order. It rewards placing highly relevant items early in the list while
+    penalizing poorly ranked relevant items.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item Like CG, DCG does not provide an upper bound.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+    \item Not ideal for binary relevance. NDCG may not be the best fit in scenarios where relevance is strictly binary, as it
+    is designed to handle graded relevance scores.
+}
 
 % great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
 
-% ---------- Intra-List Diversity ----------
-\clearpage
-\thispagestyle{rankingstyle}
-\section{Intra-List Diversity}
-\subsection{Intra-List Diversity}
-
-% ---------- Coverage ----------
-\clearpage
-\thispagestyle{rankingstyle}
-\section{Coverage}
-\subsection{Coverage}
-
-% ---------- Behavioral Metrics (Novelty, Serendipity, Diversity) ----------
+% ---------- Behavioral Metrics (Novelty, Serendipity, Diversity/Intra-List Diversity, Coverage) ----------
 \clearpage
 \thispagestyle{rankingstyle}
 \section{Behavioral Metrics}
