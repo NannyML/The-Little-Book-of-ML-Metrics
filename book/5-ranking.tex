@@ -301,10 +301,149 @@ inferred from interactions.
 % great references: https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp
 % https://www.ijcai.org/Proceedings/13/Papers/449.pdf
 
-% ---------- Behavioral Metrics (Novelty, Serendipity, Diversity/Intra-List Diversity, Coverage) ----------
+% ---------- Diversity ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Behavioral Metrics}
-\subsection{Behavioral Metrics}
+\section{Diversity}
+\subsection{Diversity}
+
+Diversity is a ranking metric used in recommender systems to measure how varied the recommended items are within a given list.
+A diverse recommendation set ensures that users are exposed to different categories, genres, or types of content, rather than
+receiving highly similar items. This helps prevent redundancy and enhances user discovery. Diversity is often calculated using
+pairwise dissimilarity between recommended items.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A higher Diversity score indicates that the recommended items are more distinct from one another, whereas a lower score
+suggests redundancy.
+
+\textbf{When to use Diversity?}
+
+Diversity is particularly important when you want to improve user engagement by introducing varied recommendations. Or when
+you want to avoid excessive similarity in recommendations.
+
+\coloredboxes{
+    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
+    engagement and retention.
+    \item Supports long-tail recommendations. Helps surface less popular items that may still be relevant,
+    avoiding over-recommendation of mainstream content.
+}
+{
+    \item Potential trade-off with relevance. Increasing diversity may sometimes lead to less relevant recommendations
+    for the user.
+    \item Hard to define optimal diversity. Too much diversity can lead to recommendations that feel random or disconnected.
+}
+
+% ---------- Novelty ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Novelty}
+\subsection{Novelty}
+
+Novelty is a ranking metric in recommender systems that measures how unfamiliar or unexpected the recommended items are to
+the user. A high Novelty score indicates that the system is suggesting items that the user has not encountered before,
+rather than repeating well-known or frequently recommended content. One way to measure Novelty is the following.
+
+\begin{center}
+    \[
+        Novelty(i) = 1 - \frac{count(\text{users who got recommended} \: i)}{count(\text{users who have not interacted with} \: i)}
+    \]
+\end{center}
+
+In the literature we can find other ways to compute Novelty such as: $Novelty(i) = -log_2 \left( \frac{count(\text{users who got recommended } \: i)}{count(\text{users who have not interacted with} \: i)} \right)$
+or $Novelty = \frac{1}{|S|} \sum_{i \in S} -log P(i)$ where $P(i)$ represents the popularity of item \( i \)
+A higher Novelty score means the recommendations contain less mainstream content, encouraging discovery of new items rather
+than reinforcing existing preferences.
+
+\textbf{When to use Novelty?}
+
+Novelty is especially useful in scenarios where exploration and discovery are important. Such as content, e-commerce and
+retail platforms where recommending new or niche products rather than just trending or best-selling ones can make a difference.
+
+\coloredboxes{
+    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
+    engagement and retention.
+    \item Supports discovery of niche content. Helps mitigate the popularity bias by promoting lesser-known items.
+}
+{
+    \item Potential Trade-off with relevance. High novelty items might be less relevant if the user has no prior
+    interest in them.
+    \item Potentially overwhelming for users. If novelty is too high, recommendations may feel random or disconnected.
+}
 
 
+\clearpage
+% FOR SECOND PAGE
+\textbf{Novelty vs Diversity}
+
+Novelty focuses on how new or unexpected the recommendations are for the user whereas diversity focuses on how different the
+recommended items are from each other. Both metrics contribute to exploration but in different ways — novelty ensures
+fresh discoveries, while diversity prevents redundancy.
+
+% ---------- Serendipity ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Serendipity}
+\subsection{Serendipity}
+
+Serendipity is a ranking and recommendation system metric that measures the extent to which a recommendation is both
+relevant and surprising to a user. Unlike conventional accuracy-based metrics, which focus on predicting user preferences
+based on past behavior, serendipity evaluates how well a system introduces users to novel and unexpected items they would
+not have easily discovered themselves.
+
+\begin{center}
+    % there are many formulas, we need to figure which one to show. potentially comment on the others.
+    FORMULA GOES HERE
+\end{center}
+
+A high serendipity score means the system provides relevant and pleasantly surprising recommendations, while a low score
+indicates predictable suggestions.
+
+\textbf{When to use Serendipity?}
+
+Use serendipity when designing recommender systems that aim to provide diverse and engaging recommendations beyond what
+users already know. It is particularly useful in domains like music streaming and movie recommendations, where user
+satisfaction improves when they encounter unexpected but enjoyable suggestions.
+
+\coloredboxes{
+    \item Encourages discovery: Helps users explore new items they wouldn't typically encounter.
+    \item Improves long-term engagement. By avoiding repetitive recommendations, it keeps users engaged with the platform.
+}
+{
+    \item Hard to quantify "unexpectedness".
+    \item Trade-off with accuracy. Maximizing serendipity may reduce traditional accuracy metrics.
+}
+
+
+% ---------- Coverage ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Coverage}
+\subsection{Coverage}
+
+Coverage measures how well a recommender system utilizes the full range of available items. It reflects the proportion of
+the item catalog that is being recommended to users, ensuring that recommendations are not overly concentrated on a small
+subset of popular items. 
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+Higher coverage indicates a broader, more diverse recommendation set, while lower coverage suggests a system that primarily
+focuses on frequently chosen or trending items.
+
+\textbf{When to use Coverage?}
+
+Use coverage when evaluating how well a recommender system distributes recommendations across the entire catalog. 
+It is particularly useful for platforms where content discovery is a priority. If a system recommends only a small fraction
+of the available items, users may miss out on relevant but less popular choices.
+
+\coloredboxes{
+    \item Reduces popularity bias. Encourages recommendations beyond just the most popular or frequently interacted items.
+    \item Enhances user discovery. Helps users explore content they may not have found otherwise.
+}
+{
+    \item Can reduce recommendation accuracy. Expanding recommendations too broadly may lead to less relevant suggestions.
+}
