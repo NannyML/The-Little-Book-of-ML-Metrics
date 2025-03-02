@@ -1,12 +1,38 @@
 \chapter{Computer Vision}
 
-
-% ---------- Computer Vision Sample Metric ----------
+% ---------- Pixel Accuracy ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{Computer Vision Sample Metric}
-\subsection{Computer Vision Sample Metric}
+\section{Pixel Accuracy}
+\subsection{Pixel Accuracy}
 
+Pixel Accuracy is one of the most straightforward evaluation metrics for image segmentation tasks. It measures the proportion
+of correctly classified pixels across the entire image, comparing the predicted segmentation mask to the ground truth.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A Pixel Accuracy of 1.0 indicates perfect segmentation, while lower values suggest a higher proportion of misclassified pixels.
+A common variation, Mean Pixel Accuracy (MPA), calculates accuracy per class and then averages across all classes.
+This adjustment ensures that smaller classes are not overshadowed by dominant ones, making MPA a more balanced evaluation
+metric in class-imbalanced datasets.
+
+\textbf{When to use Pixel Accuracy?}
+
+Pixel Accuracy is useful when evaluating segmentation models where all pixel classes are of similar importance.
+It provides a simple and interpretable measure of segmentation performance, making it a good starting point for initial
+evaluation.
+
+\coloredboxes{
+\item Simple and interpretable.
+\item Provides an initial sense of segmentation quality.
+}
+{
+\item Insensitive to class imbalance. Heavily biased towards majority classes, leading to overly optimistic
+evaluations in datasets with dominant background pixels.
+\item Cannot differentiate per-class performance. A high Pixel Accuracy does not guarantee that all classes are well-segmented.
+}
 
 % ---------- PSNR ----------
 \clearpage
