@@ -6,6 +6,7 @@
 *.toc
 *.out
 *.synctex
+*.synctex(busy)
 book/main.fdb_latexmk
 book/main.fls
 book/main.xdv

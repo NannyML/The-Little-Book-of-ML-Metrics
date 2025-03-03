@@ -6,6 +6,35 @@
 \section{@K Metrics}
 \subsection{@K Metrics}
 
+The @K variation of ranking metrics is used in recommender systems to evaluate performance within a fixed top-K recommendation
+window. By considering only the top-K retrieved items, these metrics provide a more realistic assessment of user interaction,
+as users typically engage with only a limited number of recommendations.
+
+\begin{center}
+    EXAMPLE FORMULA GOES HERE
+\end{center}
+
+Common @K metrics include Precision@K, Recall@K, Mean Reciprocal Rank (MRR@K), and Mean Average Precision (MAP@K).
+These adaptations help focus evaluation on highly ranked results, ensuring the recommender system prioritizes relevant
+items within the user's attention span.
+
+\textbf{When to @K metrics?}
+
+Use @K metrics when the top-ranked recommendations are more important than the entire ranking. You need to limit evaluation
+to a practical window that reflects real user behavior. Evaluating recommender systems in interactive settings,
+such as search results, product recommendations, or content feeds.
+
+\coloredboxes{
+    \item Focuses on practical recommendations. Evaluates performance within a relevant top-K window, aligning with
+    real-world user engagement.
+}
+{
+    \item Choice of K affects results. The performance of a model may vary significantly depending on the selected K value,
+    requiring careful tuning.
+    \item May not differentiate beyond K. Once an item falls outside the cutoff, it is treated equally regardless of
+    how close it was to inclusion.
+}
+
 % ---------- Mean Reciprocal Rank ----------
 \clearpage
 \thispagestyle{rankingstyle}
@@ -96,17 +125,297 @@ and precision at various cutoffs matters more than recall.
 \section{Hit Rate}
 \subsection{Hit Rate}
 
+Hit Rate is a ranking metric used in recommender systems to measure how often a relevant item appears in the top-k
+recommendations. It is a binary metric that checks whether at least one of the user's relevant items is present in the
+recommended list. If at least one relevant item appears, it counts as a "hit"; otherwise, it does not.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+Hit Rate is particularly useful in top-k recommendation scenarios where the primary goal is to ensure that users receive at
+least one relevant item in their recommendation lists.
+
+\textbf{When to use Hit Rate?}
+
+Use Hit Rate when evaluating recommender systems that generate ranked lists of recommendations, such as e-commerce product
+recommendations, streaming service content suggestions, or news article recommendations. It is best suited for use cases
+where delivering at least one relevant recommendation is critical, rather than ranking all relevant items perfectly.
+
+\coloredboxes{
+    \item Simple to compute and interpret. Hit Rate provides an intuitive measure of whether the recommender system is
+    surfacing at least one relevant item.
+    \item Effective for top-k evaluation. This metric is particularly useful when users engage with only a few of
+    the top-ranked recommendations.
+    \item Works well for sparse data. Since it only requires identifying one correct prediction in the top-k list,
+    it is less sensitive to sparsity compared to other ranking metrics.
+}
+{
+    \item Hit Rate does not account for the position of the relevant item within the top-k list. An item in the first
+    position has the same weight as an item in the last position.
+    \item Hit Rate does not differentiate between multiple relevant hits. This means that if multiple relevant
+    items appear in the top-k list, Hit Rate does not increase—it remains the same as long as at least one relevant
+    item is found.
+}
+
+% ---------- Cumulative Gain ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{CG}
+\subsection{Cumulative Gain}
+
+Cumulative Gain (CG) measures the total relevance score of recommended items, by summing the relevance scores of all
+items in the recommendation list. It provides a simple way to evaluate how much useful content is retrieved but
+does not consider the position of the relevant items.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A higher cumulative gain reflects a greater concentration of relevant items in the recommendations,
+while a lower cumulative gain indicates fewer relevant items in the list.
+
+\textbf{When to use CG?}
+
+CG is useful when you want a basic measure of total relevance in a recommendation list, without considering the ranking order.
+It can be applied in scenarios where all retrieved relevant items are equally important, regardless of position.
+
+
+\coloredboxes{
+    \item CG provides a straightforward way to measure how the overall relevance score in the recommended list. 
+    \item If the order of recommended items does not matter, CG is a reasonable metric.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item As with CG, DCG does not provide an upper bound.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+}
+
+
+% ---------- Discounted Cumulative Gain ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{DCG}
+\subsection{Discounted Cumulative Gain}
+
+Discounted Cumulative Gain (DCG) improves upon CG by introducing a position-based discounting factor.
+It accounts for the fact that relevant items appearing earlier in the list are more valuable than those appearing later.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+This logarithmic discounting ensures that higher-ranked relevant items contribute more to the score.
+
+\textbf{When to use DCG?}
+
+Use DCG when you want to measure both the total relevance and the order of relevant items in a ranked list. It is particularly
+useful for search engines, recommendation systems, and ranking models where placing relevant items at the top is crucial.
+
+\coloredboxes{
+    \item Accounts for ranking order. Relevant items appearing earlier in the list are weighted more heavily.
+    \item More realistic than CG. Since users are more likely to engage with items at the top, DCG better reflects
+    real-world relevance.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item Like CG, DCG does not provide an upper bound.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+}
+
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Normalized Discounted Cumulative Gain}
+\section{nDCG}
 \subsection{Normalized Discounted Cumulative Gain}
 
-% ---------- Intra-List Diversity ----------
+Normalized Discounted Cumulative Gain (nDCG) extends DCG by normalizing it relative to the Ideal Discounted Cumulative Gain
+(IDCG)—the best possible ranking of the same set of items. This ensures that scores are comparable across different users
+and queries.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+IDCG is the DCG computed with an optimally ranked list. nDCG values range from 0 to 1, with 1 indicating a perfect ranking.
+
+\textbf{When to use nDCG?}
+
+Use nDCG when you need a standardized ranking metric that allows comparison across different recommendation tasks.
+It is widely used in search engines, recommender systems, and ranking models where ranking quality is essential.
+
+\coloredboxes{
+    \item Scale-independent. Since it is normalized, NDCG values are comparable across different datasets and users.
+    \item Captures both relevance and ranking order. It rewards placing highly relevant items early in the list while
+    penalizing poorly ranked relevant items.
+}
+{
+    \item It does not penalize relevant items appearing lower in the ranking, which is
+    unrealistic in most real-world applications.
+    \item Like CG, DCG does not provide an upper bound.
+    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+    \item Not ideal for binary relevance. NDCG may not be the best fit in scenarios where relevance is strictly binary, as it
+    is designed to handle graded relevance scores.
+}
+
+% great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
+
+
+% ---------- Fraction of Concordant Pairs ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Intra-List Diversity}
-\subsection{Intra-List Diversity}
+\section{FCP}
+\subsection{Fraction of Concordant Pairs}
+
+Fraction of Concordant Pairs (FCP) is a ranking metric used in recommender systems to evaluate how well a model ranks
+preferred items higher than less preferred ones. It measures the proportion of correctly ordered item pairs among all
+comparable pairs in a recommendation list. Given a user’s interactions, FCP checks whether the model ranks a more relevant
+item above a less relevant one.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A concordant pair is one where the model correctly ranks a preferred item above a less preferred one. FCP values range from
+0 to 1, with 1 indicating a perfect ranking and 0 meaning the model fails to rank preferred items higher.
+
+\textbf{When to use FCP?}
+
+Use FCP when evaluating recommender systems that generate personalized rankings, especially in cases where relative
+ranking quality is more important than absolute scores. It is particularly useful in implicit feedback scenarios,
+such as e-commerce or media streaming, where explicit relevance scores are unavailable, and user preferences must be
+inferred from interactions.
+
+\coloredboxes{
+    \item It directly measures how accurately the system's rankings align with user preferences.
+}
+{
+    \item It only evaluates pairs of items where user preferences can be inferred, potentially reducing
+    the number of evaluated pairs.
+    \item Calculating FCP can be resource-intensive for large datasets, as the number of item pairs grows
+    quadratically with dataset size.
+}
+
+% great references: https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp
+% https://www.ijcai.org/Proceedings/13/Papers/449.pdf
+
+% ---------- Diversity ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Diversity}
+\subsection{Diversity}
+
+Diversity is a ranking metric used in recommender systems to measure how varied the recommended items are within a given list.
+A diverse recommendation set ensures that users are exposed to different categories, genres, or types of content, rather than
+receiving highly similar items. This helps prevent redundancy and enhances user discovery. Diversity is often calculated using
+pairwise dissimilarity between recommended items.
+
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A higher Diversity score indicates that the recommended items are more distinct from one another, whereas a lower score
+suggests redundancy.
+
+\textbf{When to use Diversity?}
+
+Diversity is particularly important when you want to improve user engagement by introducing varied recommendations. Or when
+you want to avoid excessive similarity in recommendations.
+
+\coloredboxes{
+    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
+    engagement and retention.
+    \item Supports long-tail recommendations. Helps surface less popular items that may still be relevant,
+    avoiding over-recommendation of mainstream content.
+}
+{
+    \item Potential trade-off with relevance. Increasing diversity may sometimes lead to less relevant recommendations
+    for the user.
+    \item Hard to define optimal diversity. Too much diversity can lead to recommendations that feel random or disconnected.
+}
+
+% ---------- Novelty ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Novelty}
+\subsection{Novelty}
+
+Novelty is a ranking metric in recommender systems that measures how unfamiliar or unexpected the recommended items are to
+the user. A high Novelty score indicates that the system is suggesting items that the user has not encountered before,
+rather than repeating well-known or frequently recommended content. One way to measure Novelty is the following.
+
+\begin{center}
+    \[
+        Novelty(i) = 1 - \frac{count(\text{users who got recommended} \: i)}{count(\text{users who have not interacted with} \: i)}
+    \]
+\end{center}
+
+In the literature we can find other ways to compute Novelty such as: $Novelty(i) = -log_2 \left( \frac{count(\text{users who got recommended } \: i)}{count(\text{users who have not interacted with} \: i)} \right)$
+or $Novelty = \frac{1}{|S|} \sum_{i \in S} -log P(i)$ where $P(i)$ represents the popularity of item \( i \)
+A higher Novelty score means the recommendations contain less mainstream content, encouraging discovery of new items rather
+than reinforcing existing preferences.
+
+\textbf{When to use Novelty?}
+
+Novelty is especially useful in scenarios where exploration and discovery are important. Such as content, e-commerce and
+retail platforms where recommending new or niche products rather than just trending or best-selling ones can make a difference.
+
+\coloredboxes{
+    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
+    engagement and retention.
+    \item Supports discovery of niche content. Helps mitigate the popularity bias by promoting lesser-known items.
+}
+{
+    \item Potential Trade-off with relevance. High novelty items might be less relevant if the user has no prior
+    interest in them.
+    \item Potentially overwhelming for users. If novelty is too high, recommendations may feel random or disconnected.
+}
+
+
+\clearpage
+% FOR SECOND PAGE
+\textbf{Novelty vs Diversity}
+
+Novelty focuses on how new or unexpected the recommendations are for the user whereas diversity focuses on how different the
+recommended items are from each other. Both metrics contribute to exploration but in different ways — novelty ensures
+fresh discoveries, while diversity prevents redundancy.
+
+% ---------- Serendipity ----------
+\clearpage
+\thispagestyle{rankingstyle}
+\section{Serendipity}
+\subsection{Serendipity}
+
+Serendipity is a ranking and recommendation system metric that measures the extent to which a recommendation is both
+relevant and surprising to a user. Unlike conventional accuracy-based metrics, which focus on predicting user preferences
+based on past behavior, serendipity evaluates how well a system introduces users to novel and unexpected items they would
+not have easily discovered themselves.
+
+\begin{center}
+    % there are many formulas, we need to figure which one to show. potentially comment on the others.
+    FORMULA GOES HERE
+\end{center}
+
+A high serendipity score means the system provides relevant and pleasantly surprising recommendations, while a low score
+indicates predictable suggestions.
+
+\textbf{When to use Serendipity?}
+
+Use serendipity when designing recommender systems that aim to provide diverse and engaging recommendations beyond what
+users already know. It is particularly useful in domains like music streaming and movie recommendations, where user
+satisfaction improves when they encounter unexpected but enjoyable suggestions.
+
+\coloredboxes{
+    \item Encourages discovery: Helps users explore new items they wouldn't typically encounter.
+    \item Improves long-term engagement. By avoiding repetitive recommendations, it keeps users engaged with the platform.
+}
+{
+    \item Hard to quantify "unexpectedness".
+    \item Trade-off with accuracy. Maximizing serendipity may reduce traditional accuracy metrics.
+}
+
 
 % ---------- Coverage ----------
 \clearpage
@@ -114,10 +423,27 @@ and precision at various cutoffs matters more than recall.
 \section{Coverage}
 \subsection{Coverage}
 
-% ---------- Behavioral Metrics (Novelty, Serendipity, Diversity) ----------
-\clearpage
-\thispagestyle{rankingstyle}
-\section{Behavioral Metrics}
-\subsection{Behavioral Metrics}
+Coverage measures how well a recommender system utilizes the full range of available items. It reflects the proportion of
+the item catalog that is being recommended to users, ensuring that recommendations are not overly concentrated on a small
+subset of popular items. 
 
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
 
+Higher coverage indicates a broader, more diverse recommendation set, while lower coverage suggests a system that primarily
+focuses on frequently chosen or trending items.
+
+\textbf{When to use Coverage?}
+
+Use coverage when evaluating how well a recommender system distributes recommendations across the entire catalog. 
+It is particularly useful for platforms where content discovery is a priority. If a system recommends only a small fraction
+of the available items, users may miss out on relevant but less popular choices.
+
+\coloredboxes{
+    \item Reduces popularity bias. Encourages recommendations beyond just the most popular or frequently interacted items.
+    \item Enhances user discovery. Helps users explore content they may not have found otherwise.
+}
+{
+    \item Can reduce recommendation accuracy. Expanding recommendations too broadly may lead to less relevant suggestions.
+}
