@@ -500,20 +500,24 @@ targets and predicted values are very different.
     \vspace{-10pt} % Adjust vertical alignment if needed
 \end{wrapfigure}
 
-
-% Left text with the image on the right
-\textbf{Figure 3.7 sMAPE.}Highlights the behavior of sMAPE. Unlike MAPE, sMAPE remains bounded but still exhibits extreme values 
+\sloppy
+\textbf{Figure 3.7 sMAPE.}Unlike MAPE, sMAPE remains bounded but still exhibits extreme values 
 (red area) when the difference between targets and predictions is large. \underline{Top:} Shows the non-linear response of sMAPE to deviations from the true value.
 \underline{Right:} Demonstrates sMAPE’s symmetric nature, where over- and under-predictions result in the same error magnitude.
 
+\sloppy
 \orangebox{Did you know that...}
-{MAPE is not translation invariant. This means that if we add a constant to all actual and prediction values, the error will be different.
-In math terms, it means that $MAPE(Y_{t} + c, \hat{Y_{t}} + c) \not= MAPE(Y_{t}, \hat{Y_{t}})$ , where $c$ is a constant.}
+{SMAPE explains why the geometric mean often produces the best forecast combination. 
+When you have two forecasts, \( x \) and \( y \), you need to find a single estimate, \( z \), that minimizes the total SMAPE error:
+\[
+s(x,z)+s(y,z) = \frac{|x - z|}{x + z} + \frac{|y - z|}{y + z}
+\]
+The best choice for \( z \) is the geometric mean:
+\[
+z = \sqrt{x \cdot y}
+\]
+This result matters in real-world forecasting. Many competitions and industry applications use this approach to improve forecasting accuracy.}
 
-
-\textbf{Other related metrics}
-To overcome these issues with MAPE, there are some other measures proposed in the literature: Mean Absolute Scaled Error (MASE),
-Symmetric Mean Absolute Percentage Error (sMAPE), Mean Directional Accuracy (MDA), Mean Arctangent Absolute Percentage Error (MAAPE).
 % ---------- wMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
