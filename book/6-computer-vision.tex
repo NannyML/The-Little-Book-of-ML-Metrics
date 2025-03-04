@@ -96,18 +96,18 @@ estimation, facial landmark detection and benchmarking keypoint models.
 
 
 \coloredboxes{
-\item Scale-Invariant Evaluation. Unlike raw pixel-based metrics, OKS normalizes errors relative to object size,
+\item Scale-invariant evaluation. Unlike raw pixel-based metrics, OKS normalizes errors relative to object size,
 ensuring fair evaluation across small and large objects.
-\item Smooth Penalization of Localization Errors.
+\item Smooth penalization of localization errors.
 Instead of a hard threshold (like in PCK), OKS applies a Gaussian function to penalize errors, making it a more continuous
 and informative measure.
-\item Handles Occlusions and Visibility Issues. The visibility flag $v_i$ ensures that models are not penalized for missing
+\item Handles occlusions and visibility issues. The visibility flag $v_i$ ensures that models are not penalized for missing
 occluded or unlabeled keypoints.
 }
 {
-\item Requires Keypoint-Specific Constants. The $k_i$ values must be tuned per dataset, making cross-dataset comparisons
+\item Requires keypoint-specific constants. The $k_i$ values must be tuned per dataset, making cross-dataset comparisons
 challenging.
-\item Computationally More Complex than PCK.
+\item Computationally more complex than PCK.
 }
 
 
