@@ -373,7 +373,7 @@ The Davies-Bouldin Index measures the quality of clustering by evaluating the av
     \node[inner sep=2pt, font=\Large] (a) {
     {
     $\displaystyle
-    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} max_{{\color{nmlpurple}i} \neq {\color{cyan}j}} R_{{\color{nmlpurple}i}{\color{cyan}j}}
+    DB = \frac{1}{\textcolor{nmlgreen}{k}} \sum_{{\color{nmlpurple}i}=1}^{\textcolor{nmlgreen}{k}} \max_{{\color{nmlpurple}i} \neq {\color{nmlpurple}j}} \textcolor{nmlpurple}{R_{{\color{nmlred}i}{\color{nmlred}j}}}
     $
     }
     }; 
@@ -383,14 +383,14 @@ The Davies-Bouldin Index measures the quality of clustering by evaluating the av
 % \begin{center}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
-    {
-    $\displaystyle
-    R_{{\color{nmlpurple}i}{\color{cyan}j}} = \frac{s_{\color{nmlpurple}i} + s_{\color{cyan}j}}{d_{\color{nmlpurple}i\color{cyan}j}}
-    $
-    }
-    }; 
-    \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.2,0.05)$) to[bend left=15] node[pos=1, right] {cluster diameter} +(1,.5); 
-    \draw[-latex,cyan, semithick] ($(a.south)+(0.6,-0.05)$) to[bend left=15] node[pos=1, left] {distance between centroids} +(-1,-.5); 
+        $\displaystyle
+        R_{ij} = \frac{\textcolor{nmlpurple}{s_{\color{nmlpurple}i}} + \textcolor{nmlpurple}{s_{\color{nmlpurple}j}}}{\textcolor{nmlcyan}{d_{\color{nmlcyan}i\color{nmlcyan}j}}}
+        $
+        }; 
+        \draw[-latex,nmlred, semithick] ($(a.north)+(1.2,0.05)$) 
+        to[bend left=15] node[pos=1, right, text=nmlred] {Within-cluster scatter ($s_i$)} + (1,.5); 
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.6,-0.05)$) 
+        to[bend left=15] node[pos=1, left, text=nmlcyan] {Distance between centroids ($d_{ij}$)} + (-1,-.5); 
     }
 \end{center}
 
