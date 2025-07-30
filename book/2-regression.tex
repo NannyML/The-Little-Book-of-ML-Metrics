@@ -272,12 +272,12 @@ interpretable value in the same units as the target variable.
 
 \begin{figure*}[htbp]
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/RMSE_sensitivity_outliers_plot.png} % Increased width for better visibility
+    \includegraphics[width=0.95\textwidth]{figures/RMSE_sensitivity_outliers_plot.png} 
 \end{figure*}
 
 \begin{wrapfigure}{r}{0.45\textwidth}
     \centering
-    \vspace{-5pt} % Adjusted spacing to avoid overlap
+    \vspace{-5pt} 
     \includegraphics[width=0.40\textwidth]{figures/RMSE_comparison_2d_plot.png} 
     \vspace{-10pt} 
 \end{wrapfigure}
@@ -286,8 +286,7 @@ interpretable value in the same units as the target variable.
 \textbf{Figure 3.4 RMSE.} \underline{Top:} RMSE is highly sensitive to outliers. The left plot shows RMSE without outliers, while the right plot demonstrates the increase in RMSE due to a single outlier. 
 \underline{Right:} A visual comparison of MSE (blue) and RMSE (red). RMSE, due to its square root operation, often scales differently than MSE.
 
-\vspace{10pt} % Added spacing to prevent overlap with the wrapfigure
-
+\vspace{10pt} 
 \orangebox{Did you know that...}
 {While there is no standard literature on normalizing RMSE, one approach is to divide the value by the range or mean. 
 This normalized RMSE is commonly expressed as a percentage, known as the Coefficient of Variation (CV).}
@@ -397,6 +396,7 @@ It is not feasible when actual values can be 0. Additionally, MAPE is beneficial
     % \caption{Caption}
 \end{figure*}
 
+
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \vspace{-10pt} % Adjust vertical alignment if needed
@@ -503,6 +503,45 @@ wMAPE is a good choice when you want some of the characteristics of MAPE, like p
 {
     \item Not a true percentage error
 }
+
+\clearpage 
+\thispagestyle{customstyle}
+%inspiration for this : https://www.baeldung.com/cs/mape-vs-wape-vs-wmape
+To illustrate the real-world use of WMAPE compared to MAPE, let's look at a business scenario. 
+Table 3.8 shows the sales growth for each channel, the forecast errors made by the predicting machine learning model,
+and the weight of each channel based on the revenue it generates. 
+
+{
+\small
+\noindent
+\begin{tabular}{l r r c c c }
+\hline
+\textbf{Channel} & \textbf{Actual} & \textbf{Forecast} & \textbf{MAPE (\%)} & \textbf{Revenue Wt(\%)} & \textbf{wMAPE (\%)} \\
+\hline
+B2B          & 1,10,000    & 99,010     & 9.1   & 8.3   & 0.76 \\
+Online       & 90,000      & 79,990     & 11.1  & 6.8   & 0.75 \\
+Marketplace  & 1,20,000    & 1,10,040   & 8.3   & 9.1   & 0.76 \\
+Retail       & 10,00,000   & 9,00,000   & 10.0  & 75.8  & 7.58 \\
+\hline
+\end{tabular}
+}
+\setcounter{figure}{7}
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=1.0\textwidth]{figures/wMAPE_compare_MAPE.png}
+    \caption{Channel-wise Sales Forecast Errors: WMAPE (red)}
+\end{figure*}
+
+At first glance, if you only look at the MAPE (blue), it might seem like the model struggles equally with each channel, 
+showing an error margin of about 10 percent. 
+
+However, when you consider WMAPE (red), you can clearly see the risk these errors pose for each channel. 
+
+The retail channel accounts for 75 percent of the revenue, so even the smallest error can have a significant impact on business strategy. While MAPE shows all the errors, 
+WMAPE helps highlight which errors should be addressed first. This is illustrated in Fig. 3.8.
+
+
+
 
 % ---------- MASE ----------
 \clearpage
@@ -727,13 +766,13 @@ R-squared can be more intuitive than MAE, MSE, RMSE, and other scale-dependent m
 \clearpage
 \thispagestyle{customstyle}
 
-
-\begin{figure*}[ht!]
+\begin{wrapfigure}{r}{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/R2_explained.png}
-    % \caption{Caption}
-    \label{fig1}
-\end{figure*}
+    \vspace{-5pt} 
+    \includegraphics[width=0.40\textwidth]{figures/R2_explained.png} 
+    \vspace{-10pt} 
+\end{wrapfigure}
+
 
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
@@ -866,12 +905,12 @@ have unequal costs, such as demand forecasting or risk estimation.
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{wrapfigure}{r}{0.45\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{figures/Pinball_Loss.png}
-    % \caption{Caption}
-    \label{Pinball_Loss}
-\end{figure*}
+    \vspace{-5pt} 
+    \includegraphics[width=0.40\textwidth]{figures/Pinball_Loss.png} 
+    \vspace{-10pt} 
+\end{wrapfigure}
 
 
 \textbf{Figure 3.15 Pinball Loss.} Demonstrates the behavior of the Pinball Loss function for three different quantile values $(q = 0.25, 0.5, 0.75)$.
