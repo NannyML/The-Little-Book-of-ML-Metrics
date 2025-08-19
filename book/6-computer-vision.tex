@@ -225,3 +225,50 @@ target image pixel by pixel. Therefore, PSNR is typically used in conjunction wi
 Distance (FID) or Inception Score (IS).
 
 
+% ---------- Sørensen–Dice Coefficient ----------
+\clearpage
+\thispagestyle{cvstyle}
+\section{S{\o}rensen–Dice Coefficient}
+\subsection{S{\o}rensen–Dice Coefficient}
+
+
+The S{\o}rensen–Dice Coefficient, sometimes simply called the Dice score, is a similarity metric that
+measures the overlap between two sets. In computer vision, it is often used to evaluate segmentation
+models by comparing the predicted mask against the ground-truth mask.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+where $A$ is the set of predicted positives and $B$ is the set of true positives.
+The score ranges between 0 and 1, with 1 indicating perfect overlap and 0 indicating no overlap.
+When applied to binary classification problems, the S{\o}rensen–Dice coefficient is mathematically
+equivalent to the F1-score.
+
+\textbf{When to use S{\o}rensen–Dice Coefficient?}
+
+Use the S{\o}rensen–Dice Coefficient when you need a robust measure of similarity between two binary
+or categorical sets. It is especially popular in immage segmentation, information retrieval and
+natural language processing.
+
+\coloredboxes{
+\item Intuitive and interpretable. Directly measures the overlap between predicted and true sets.
+\item Balances false positives and false negatives. Equivalent to F1-score, making it well-suited to
+imbalanced data.
+}
+{
+\item Not a true metric, as it does not satisfy the triangle inequality.
+\item Overly optimistic in some contexts. May give high similarity even when boundary alignment
+is poor, which matters in precise applications like medical imaging.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The S{\o}rensen–Dice coefficient was first introduced in ecology as a way to measure the similarity
+between populations of flora and fauna.}
+
+\vspace{-5pt}
