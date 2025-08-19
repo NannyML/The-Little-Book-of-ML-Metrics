@@ -278,7 +278,7 @@ interpretable value in the same units as the target variable.
 \begin{wrapfigure}{r}{0.45\textwidth}
     \centering
     \vspace{-5pt} % Adjusted spacing to avoid overlap
-    \includegraphics[width=0.40\textwidth]{figures/RMSE_comparison_2d_plot.png} 
+    \includegraphics[width=0.40\textwidth]{figures/RMSE_comparison_MSE.png} 
     \vspace{-10pt} 
 \end{wrapfigure}
 
@@ -345,6 +345,28 @@ It can be more appropriate than RMSE in these cases as it is less sensitive to l
     \item Interpretation can be less intuitive than RMSE, as the final value is in logarithmic scale.
 }
 
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/RMSLE_comparison_MSLE.png}
+    % \caption{Caption}
+\end{figure*}
+
+% Left text with the image on the right
+\textbf{Figure 3.5 RMSLE.} \underline{Top:} The MSLE curve grows quadratically, penalizing large relative errors more aggressively, 
+while the RMSLE curve increases more slowly, smoothing out extreme values. Both metrics remain non-negative and centered around zero, 
+with RMSLE being less sensitive to large errors. 
+
+\orangebox{Did you know that...}
+{RMSLE gained popularity during the 2019 ASHRAE - Great Energy Predictor III competition on Kaggle. 
+An earlier appearance can be noted in the 2017 Mercari Price Suggestion Challenge on Kaggle as well.}
+
+\textbf{Other related metrics}
+RMSLE is suited to data that has exponential growth and in usecases like demand forecasting, metrics that are similar in 
+fashion are Mean Squared Logarithmic Error (MSLE), Mean Absolute Percentage Error (MAPE) , Huber Loss and Quantile Loss. 
 % ---------- MAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
@@ -406,7 +428,7 @@ It is not feasible when actual values can be 0. Additionally, MAPE is beneficial
 
 
 % Left text with the image on the right
-\textbf{Figure 3.2 MSE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
+\textbf{Figure 3.6 MAPE.} Illustrates the drawbacks of MAPE. It produces extremely large values (red area) when the relationship between
 targets and predicted values is significantly different. \underline{Top:} The rate of change of MAPE is non-linear.
 \underline{Right:} Clearly shows MAPE's asymmetry in relation to over- and under-predicting the target variable when optimizing for MAPE.
 
@@ -461,6 +483,40 @@ targets and predicted values are very different.
     \item sMAPE is not symmetric to over- and under-forecasts. For example, if $Y_{t} = 100$ and in one case we have $\hat{Y_{t}} = 90$, this gives ansMAPE of 4.76\%; whereas if $\hat{Y_{t}} = 110$, then the sMAPE would be 5.26\%.
 }
 
+\clearpage
+
+\thispagestyle{customstyle}
+
+\begin{figure*}[ht!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/sMAPE_3d_surface.png}
+    % \caption{Caption}
+\end{figure*}
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \vspace{-10pt} % Adjust vertical alignment if needed
+    \includegraphics[width=0.45\textwidth]{figures/sMAPE_cross_section.png} % Your figure goes here
+    \vspace{-10pt} % Adjust vertical alignment if needed
+\end{wrapfigure}
+
+\sloppy
+\textbf{Figure 3.7 sMAPE.}Unlike MAPE, sMAPE remains bounded but still exhibits extreme values 
+(red area) when the difference between targets and predictions is large. \underline{Top:} Shows the non-linear response of sMAPE to deviations from the true value.
+\underline{Right:} Demonstrates sMAPE’s symmetric nature, where over- and under-predictions result in the same error magnitude.
+% Source : https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=1865&context=cs_techrep
+\sloppy
+\orangebox{Did you know that...}
+{SMAPE explains why the geometric mean often produces the best forecast combination. 
+When you have two forecasts, \( x \) and \( y \), you need to find a single estimate, \( z \), that minimizes the total SMAPE error:
+\[
+s(x,z)+s(y,z) = \frac{|x - z|}{x + z} + \frac{|y - z|}{y + z}
+\]
+The best choice for \( z \) is the geometric mean:
+\[
+z = \sqrt{x \cdot y}
+\]
+This result matters in real-world forecasting. Many competitions and industry applications use this approach to improve forecasting accuracy.}
 
 % ---------- wMAPE ----------
 \clearpage
