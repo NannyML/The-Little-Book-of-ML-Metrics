@@ -275,3 +275,60 @@ is poor, which matters in precise applications like medical imaging.
 between populations of flora and fauna.}
 
 \vspace{-5pt}
+
+
+% ---------- Panoptic Quality ----------
+% references: 
+% https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf
+% https://www.nature.com/articles/s41598-023-35605-7
+\clearpage
+\thispagestyle{cvstyle}
+\section{PQ}
+\subsection{Panoptic Quality}
+
+Panoptic Quality (PQ) is a computer vision metric designed to evaluate panoptic segmentation, a task
+that unifies semantic segmentation and instance segmentation . Unlike earlier metrics that treated stuff
+(amorphous regions like sky, road) and things (countable objects like cars, people) separately,
+PQ evaluates both in a uniform and consistent way.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+PQ can be decomposed into two interpretable components:
+% equation
+% Segmentation Quality (SQ): the average IoU of matched segments.
+% Recognition Quality (RQ): an F1-like measure that penalizes false positives and false negatives.
+
+\begin{center}
+    $PQ = SQ \times RQ$
+\end{center}
+
+\textbf{When to use Panoptic Quality?}
+
+Use PQ when evaluating models that must both classify and segment objects at the pixel level, such
+as in autonomous driving, medical imaging, or robotics. It is especially relevant when your model
+must handle both “stuff” classes and “thing” classes.
+
+
+\coloredboxes{
+\item Unified evaluation: Handles both stuff and things in a single metric.
+\item Balanced penalties. The denominator includes $FP$ and $FN$, ensuring both missed and spurious
+predictions are penalized.
+\item Interpretability: The $SQ$ and $RQ$ decomposition makes it easy to diagnose whether errors
+come from poor segmentation or recognition.
+}
+{
+\item Equal weighting of segments. While useful for fairness, this may undervalue large, important regions in favor of many small segments.
+\item Boundary insensitivity: Since PQ relies on IoU, it may miss fine-grained boundary quality,
+which can matter in domains like medical imaging.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The S{\o}rensen–Dice coefficient was first introduced in ecology as a way to measure the similarity
+between populations of flora and fauna.}
