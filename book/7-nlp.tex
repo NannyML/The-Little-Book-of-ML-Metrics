@@ -1,8 +1,48 @@
 \chapter{NLP}
 
 
-% ---------- NLP Sample Metric ----------
+% ---------- Bilingual Evaluation Understudy ----------
 \clearpage
 \thispagestyle{nlpstyle}
-\section{NLP Sample Metric}
-\subsection{NLP Sample Metric}
+\section{BLEU}
+\subsection{Bilingual Evaluation Understudy}
+
+BLEU is one of the earliest and most widely used metrics for evaluating machine translation and other
+text generation tasks. It measures how similar a machine-generated text is to one or more human
+reference translations by calculating the overlap of n-grams (contiguous sequences of words).
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+BLEU ranges from 0 to 1, where 1 indicates a perfect match with the reference.
+
+\textbf{When to use Panoptic Quality?}
+
+Use BLEU when evaluating machine translation, summarization, or text generation models where direct
+word or phrase overlap with human-produced references is important.
+
+\coloredboxes{
+\item Correlates with human judgments at the corpus level. In its original study, BLEU showed strong
+alignment with human evaluators.
+\item Supports multiple references. Several human translations can be used, helping BLEU capture
+natural variability.
+\item To prevent models from producing unrealistically short outputs, BLEU introduces a
+brevity penalty.
+}
+{
+\item Insensitive to meaning. BLEU measures surface-level word overlap and does not account for
+semantic equivalence.
+\item Vulnerable to synonyms and paraphrasing. Valid alternative phrasings are not rewarded.
+\item Sensitive to tokenization and normalization choices. BLEU scores can vary depending on how words
+are segmented (e.g., handling of punctuation, casing, or subword units).
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{BLEU was introduced in 2002 by Papineni et al. at IBM and was the first automatic metric to gain
+wide acceptance in machine translation research.}
