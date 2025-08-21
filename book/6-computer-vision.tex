@@ -332,3 +332,54 @@ which can matter in domains like medical imaging.
 \orangebox{Did you know that...}
 {The S{\o}rensen–Dice coefficient was first introduced in ecology as a way to measure the similarity
 between populations of flora and fauna.}
+
+
+% ---------- Structural Similarity Index ----------
+% references: 
+% https://www.cns.nyu.edu/pub/lcv/wang03-preprint.pdf
+% https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html
+% https://espace2.etsmtl.ca/id/eprint/12070/1/Noumeir%20R.%202015%2012070%20Limitations%20of%20the%20SSIM%20quality%20metric.pdf?utm_source=chatgpt.com
+
+\clearpage
+\thispagestyle{cvstyle}
+\section{SSMI}
+\subsection{Structural Similarity Index}
+
+The Structural Similarity Index Measure (SSIM) is a computer vision metric that evaluates the similarity
+between two images by modeling perceived changes in structural information, rather than relying solely on
+pixel-level differences. Unlike metrics such as MSE or PSNR, which compare absolute differences, SSIM
+incorporates luminance, contrast, and structural components of the images.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+The SSIM score ranges from -1 to 1, with 1 indicating perfect structural similarity. In practice, values
+below 0 are rare, and scores closer to 1 indicate higher perceptual similarity.
+
+\textbf{When to use Structural Similarity Index?}
+
+Use SSIM when the goal is to evaluate image quality in a way that aligns with human visual perception.
+
+\coloredboxes{
+\item Perceptual alignment. Incorporates human visual perception by considering luminance, contrast, and
+structural information.
+\item Local sensitivity. SSIM can be applied locally, capturing variations in quality across different
+regions of an image.
+}
+{
+\item Uniform pooling limitation. Averaging local SSIM scores can hide critical localized distortions.
+\item Insensitive to edges. Distortions near sharp transitions may be underestimated, even though edges carry
+important structural information.
+\item Single-scale. Classic SSIM does not account for multi-scale perceptual phenomena, though extensions
+like MS-SSIM address this.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{SSIM was introduced in 2004 by Wang et al. as an alternative to PSNR and MSE, and has since become one of
+the most cited metrics in image quality assessment research}
