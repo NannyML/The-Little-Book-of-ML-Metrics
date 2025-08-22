@@ -194,3 +194,46 @@ post-editing effort.
 \orangebox{Did you know that...}
 {TER was introduced by Snover et al. (2006) to provide a more human-centered evaluation of
 machine translation.}
+
+% ---------- Exact Match ----------
+\clearpage
+\thispagestyle{nlpstyle}
+\section{EM}
+\subsection{Exact Match}
+
+Exact Match measures the percentage of predictions that exactly match the ground-truth answers,
+word-for-word and character-for-character. The metric returns 1 if the predicted output is an
+exact match with the reference text, and 0 otherwise. The overall score is the average across all
+samples.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+EM is considered one of the strictest evaluation metrics since even a small deviation, such as an
+extra space, different casing, or synonymous phrasing, leads to a score of 0.
+
+\textbf{When to use EM?}
+
+Use EM when exactness is critical. For instance, in extractive question answering, where the predicted
+span must exactly match the gold answer. In structured outputs, such as JSON key-value generation,
+where even a single mismatch makes the output invalid.
+
+\coloredboxes{
+\item Easy to calculate and explain. The prediction is either right or wrong.
+\item Strict correctness guarantee. Particularly valuable when any deviation from the ground truth
+is unacceptable (e.g., API calls, database queries).
+}
+{
+\item Overly rigid. Does not account for semantically equivalent answers.
+\item Not suitable for open-ended generation.
+}
+
+\clearpage
+
+\orangebox{Did you know that...}
+{Exact Match is one of the core metrics used in the Stanford Question Answering Dataset (SQuAD)
+benchmark. However, because it is so strict, researchers often report both EM and F1 score.
+EM for exact correctness, and F1 to give partial credit when a prediction overlaps significantly with
+the ground truth.}
