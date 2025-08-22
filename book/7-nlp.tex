@@ -18,7 +18,7 @@ reference translations by calculating the overlap of n-grams (contiguous sequenc
 
 BLEU ranges from 0 to 1, where 1 indicates a perfect match with the reference.
 
-\textbf{When to use Panoptic Quality?}
+\textbf{When to use BLEU?}
 
 Use BLEU when evaluating machine translation, summarization, or text generation models where direct
 word or phrase overlap with human-produced references is important.
@@ -46,3 +46,52 @@ are segmented (e.g., handling of punctuation, casing, or subword units).
 \orangebox{Did you know that...}
 {BLEU was introduced in 2002 by Papineni et al. at IBM and was the first automatic metric to gain
 wide acceptance in machine translation research.}
+
+
+% ---------- Metric for Evaluation of Translation with Explicit ORdering ----------
+\clearpage
+\thispagestyle{nlpstyle}
+\section{METEOR}
+\subsection{Metric for Evaluation of Translation with Explicit ORdering}
+
+METEOR (Metric for Evaluation of Translation with Explicit ORdering) is a machine translation
+evaluation metric introduced as an improvement over BLEU. Unlike BLEU, which relies heavily on
+exact n-gram matches, METEOR aligns candidate translations with reference translations using stemming,
+synonyms, and paraphrases. 
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+It then computes a harmonic mean of unigram precision and recall, with
+recall weighted higher to better capture adequacy. Finally, it introduces a fragmentation penalty to
+account for word order, rewarding translations that are both accurate and fluent.
+
+\textbf{When to use METEOR?}
+
+It is especially valuable when translation adequacy (capturing meaning) is as important as fluency.
+Because it incorporates linguistic resources such as stemming and synonyms, METEOR is useful for
+low-resource or morphologically rich languages, where exact matches are too strict.
+
+\coloredboxes{
+\item Closer to human judgment. METEOR was shown to correlate better with human evaluations compared
+to BLEU.
+\item Flexible matching. Accounts for stemming, synonyms, and paraphrases, making it more tolerant
+to variation in expression.
+\item Balances adequacy and fluency. By combining precision, recall, and word order penalties,
+it reflects both meaning preservation and readability.
+}
+{
+\item Computationally heavy. Requires linguistic resources (stemming, synonym databases),
+making it slower than purely statistical metrics.
+\item Language dependence. Its quality depends on the availability and completeness of stemming
+rules and synonym dictionaries for the target language.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{METEOR was developed at Carnegie Mellon University in 2005 as a direct response to BLEU’s shortcomings.}
