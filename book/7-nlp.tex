@@ -151,3 +151,46 @@ overlaps (local n-grams, subsequences, or flexible structures).
 {ROUGE was introduced by Chin-Yew Lin in 2004 and quickly became a popular benchmark in text
 summarization challenges. Despite its limitations, it is still one of the most reported
 metrics in NLP.}
+
+% ---------- Translation Error Rate ----------
+
+\clearpage
+\thispagestyle{nlpstyle}
+\section{TER}
+\subsection{Translation Error Rate}
+
+TER is a metric designed to evaluate machine translation quality by measuring the number of edits
+required to change a system’s translation into a reference translation. The edits include insertions,
+deletions, substitutions, and shifts of word sequences.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+The score ranges from 0 to +infinity, where 0 indicates a perfect translation (no edits required).
+Higher values correspond to translations needing more post-editing.
+
+\textbf{When to use TER?}
+
+Use TER when you want a metric that correlates closely with the amount of human editing effort
+required to correct machine translations.
+
+\coloredboxes{
+\item Easy to compute and understand.
+\item Includes word reordering (shifts), which captures errors that BLEU and related metrics
+often miss.
+}
+{
+\item Does not account for semantic equivalence when different but correct word choices are used.
+\item TER tends to overestimate the actual translation error rate compared to human
+post-editing effort.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{TER was introduced by Snover et al. (2006) to provide a more human-centered evaluation of
+machine translation.}
