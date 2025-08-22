@@ -6,6 +6,10 @@
 \thispagestyle{nlpstyle}
 \section{BLEU}
 \subsection{Bilingual Evaluation Understudy}
+% references:
+% https://aclanthology.org/P02-1040.pdf
+
+
 
 BLEU is one of the earliest and most widely used metrics for evaluating machine translation and other
 text generation tasks. It measures how similar a machine-generated text is to one or more human
@@ -49,6 +53,9 @@ wide acceptance in machine translation research.}
 
 
 % ---------- Metric for Evaluation of Translation with Explicit ORdering ----------
+% references:
+% https://aclanthology.org/W05-0909.pdf
+
 \clearpage
 \thispagestyle{nlpstyle}
 \section{METEOR}
@@ -95,3 +102,52 @@ rules and synonym dictionaries for the target language.
 
 \orangebox{Did you know that...}
 {METEOR was developed at Carnegie Mellon University in 2005 as a direct response to BLEU’s shortcomings.}
+
+
+% ---------- Recall-Oriented Understudy for Gisting Evaluation ----------
+% references:
+% https://aclanthology.org/W04-1013.pdf
+% https://aclanthology.org/E17-2007.pdf
+
+\clearpage
+\thispagestyle{nlpstyle}
+\section{ROUGE}
+\subsection{Recall-Oriented Understudy for Gisting Evaluation}
+
+ROUGE is a family of metrics designed to evaluate automatic summarization and machine translation by
+comparing the overlap between a system-generated text and one or more reference texts.
+Unlike precision-oriented measures, ROUGE emphasizes recall, how much of the important content from
+the reference is captured by the system output.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+ROUGE scores range between 0 and 1, with higher values indicating higher similarity between the
+system-generated text and the reference.
+
+\textbf{When to use ROUGE?}
+
+ROUGE is widely used in text summarization, where recalling important phrases is crucial, in machine
+translation evaluation, and in other generation tasks such as captioning or dialogue, when
+benchmarking against human-written references.
+
+\coloredboxes{
+\item Easy to compute and understand.
+\item Many flexible variants available: ROUGE-N, ROUGE-L, and ROUGE-S capture different linguistic
+overlaps (local n-grams, subsequences, or flexible structures).
+}
+{
+\item ROUGE relies on lexical overlap and often misses semantic similarity.
+\item Some studies have found that even human-written summaries can score poorly under ROUGE.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{ROUGE was introduced by Chin-Yew Lin in 2004 and quickly became a popular benchmark in text
+summarization challenges. Despite its limitations, it is still one of the most reported
+metrics in NLP.}
