@@ -1,8 +1,51 @@
 \chapter{GenAI}
 
 
-% ---------- GenAI Sample Metric ----------
+% ---------- Perplexity ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{GenAI Sample Metric}
-\subsection{GenAI Sample Metric}
+\section{Perplexity}
+\subsection{Perplexity}
+
+% reference:
+% https://aclanthology.org/2021.deelio-1.5.pdf
+% https://kilthub.cmu.edu/articles/journal_contribution/Evaluation_Metrics_For_Language_Models/6605324/1?file=12095765
+% https://huggingface.co/docs/transformers/perplexity
+% https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/
+
+Perplexity is a widely used metric for evaluating language models. At its core, perplexity measures how well a probability distribution or model
+predicts a sample. Mathematically, it is defined as the exponential of the average negative log-likelihood of the sequence. Intuitively, you can
+think of it as the “average branching factor” — the number of equally likely choices the model considers at each step.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A lower perplexity indicates that the model assigns higher probabilities to the observed text, meaning it is less “surprised”.
+
+\textbf{When to use Perplexity?}
+
+Perplexity is most commonly used when evaluating language models during training or benchmarking. It helps track how well a model fits text data and
+is especially useful for comparing models trained on the same dataset. However, perplexity is best suited for probabilistic next-token prediction
+tasks and less reliable as a direct measure of end-user text quality.
+
+\coloredboxes{
+\item Simple and interpretable. Lower perplexity values generally mean better predictive performance.
+\item Efficient for training evaluation. It provides a direct signal for model optimization without requiring human evaluation.
+}
+{
+\item Models with low perplexity may still generate incoherent or unhelpful text.
+\item Sensitive to tokenization and normalization choices.
+\item Not well-defined for masked language models. Architectures like BERT predict missing tokens rather than generating sequences left-to-right,
+making perplexity unsuitable for evaluating them.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Perplexity is closely related to entropy in information theory. In fact, $Perplexity = 2^{H(P)}$
+where \(H(P)\) is the entropy. This means that perplexity can be seen as the effective 
+number of equally likely words the model is choosing from at each step!}
