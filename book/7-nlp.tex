@@ -238,3 +238,41 @@ is unacceptable (e.g., API calls, database queries).
 benchmark. However, because it is so strict, researchers often report both EM and F1 score.
 EM for exact correctness, and F1 to give partial credit when a prediction overlaps significantly with
 the ground truth.}
+
+% ---------- Word Error Rate ----------
+\clearpage
+\thispagestyle{nlpstyle}
+\section{WER}
+\subsection{Word Error Rate}
+
+Word Error Rate (WER) is one of the most widely used metrics for evaluating the performance of automatic speech recognition (ASR) systems.
+It measures the difference between the predicted transcription and the reference transcription by counting the minimum number of word-level edits
+required to transform one into the other. These edits include insertions, deletions, and substitutions. The metric is normalized by the total number
+of words in the reference.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+A WER of 0 indicates a perfect transcription, while higher values mean more errors. Interestingly, WER can even exceed 1 if the number of insertions
+and substitutions is very large relative to the reference length.
+
+\textbf{When to use WER?}
+
+WER is best used for evaluating ASR systems, voice-to-text tools, and spoken dialogue systems where accurate transcription is essential.
+
+\coloredboxes{
+\item It provides a clear and interpretable measure of how closely the system output matches the ground truth.
+\item Fine-grained. Captures insertion, deletion, and substitution errors separately, providing diagnostic insight.
+}
+{
+\item Insensitive to meaning. WER penalizes all errors equally, even if substitutions do not change the overall meaning of the sentence.
+}
+
+\clearpage
+
+\orangebox{Did you know that...}
+{Word Error Rate is essentially a specialized form of the Levenshtein distance, a string metric introduced in 1965 to measure how many
+single-character edits are needed to transform one word into another. WER applies the same idea at the word level instead of characters,
+counting insertions, deletions, and substitutions of words to compute the distance between the predicted and reference transcriptions.}
