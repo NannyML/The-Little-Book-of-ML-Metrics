@@ -142,3 +142,50 @@ a low score.
 \orangebox{Did you know that...}
 {MAUVE was introduced in 2021 and quickly became popular because it correlated better with human ratings than older metrics like perplexity.
 It even won a Outstanding Paper Award at NeurIPS 2021.}
+
+% ---------- Fréchet Inception Distance ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{FID}
+\subsection{Fréchet Inception Distance}
+
+% reference:
+% https://papers.nips.cc/paper_files/paper/2017/file/8a1d694707eb0fefe65871369074926d-Paper.pdf
+% https://arxiv.org/pdf/2401.09603
+
+The Fréchet Inception Distance (FID) is one of the most widely used metrics to evaluate the quality of images produced by generative models,
+such as GANs. Instead of comparing pixels directly, FID compares the distributions of generated and real images in a feature space extracted
+from a pretrained Inception-v3 network.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+Mathematically, it models these feature distributions as multivariate Gaussians and computes the Fréchet distance Wasserstein-2 distanc between them.
+A smaller FID score indicates that generated images are closer to the real ones in terms of both quality and diversity.
+
+\textbf{When to use FID?}
+
+Use FID when you want to evaluate image generation quality and diversity in a way that aligns better with human perception than pixel-level metrics.
+It is especially useful in comparing different generative models or monitoring improvements during training.
+
+\coloredboxes{
+\item By working in the feature space of a neural network trained on ImageNet, FID captures semantic similarity rather than raw pixel similarity.
+\item Diversity-aware. Unlike Inception Score, FID penalizes mode collapse (when the model generates limited varieties of images).
+}
+{
+\item FID is statistically biased. Its expected value on finite samples does not equal the true value, which can lead to misleading
+comparisons when datasets are small.
+\item Not suited for all setups. FID measures the Wasserstein distance to a fixed ground-truth distribution, so it is inadequate for
+evaluating models in domain adaptation or zero-shot generation, where the target distribution is unclear.
+\item FID assumes Inception embeddings follow a multivariate normal distribution.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The Fréchet Inception Distance gets its name from Maurice Fréchet, a French mathematician who introduced the concept of metric spaces in 1906.
+More than a century later, his work is now central to evaluating the realism of AI-generated images!}
