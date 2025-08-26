@@ -49,3 +49,49 @@ making perplexity unsuitable for evaluating them.
 {Perplexity is closely related to entropy in information theory. In fact, $Perplexity = 2^{H(P)}$
 where \(H(P)\) is the entropy. This means that perplexity can be seen as the effective 
 number of equally likely words the model is choosing from at each step!}
+
+% ---------- BERTScore ----------
+\clearpage
+\thispagestyle{genaistyle}
+\section{BERTScore}
+\subsection{BERTScore}
+
+% reference:
+% https://arxiv.org/pdf/1904.09675
+% https://wiki.math.uwaterloo.ca/statwiki/index.php?title=BERTScore:_Evaluating_Text_Generation_with_BERT
+
+BERTScore is a metric for evaluating text generation that leverages contextual embeddings from pre-trained language models like BERT.
+Instead of relying solely on surface-level n-gram overlap (as in BLEU or ROUGE), BERTScore computes similarity by aligning tokens from the
+candidate and reference sentences in embedding space.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+Mathematically, for each token in a candidate sentence, BERTScore finds its most similar token in the reference sentence (and vice versa)
+using cosine similarity. Precision, recall, and F1 are then aggregated over all pairs, yielding a semantic-oriented score that correlates
+strongly with human judgments.
+
+\textbf{When to use the BERTScore?}
+
+Use BERTScore when evaluating tasks where semantic similarity matters more than exact wording, such as machine translation, summarization, or
+dialogue generation. It is especially useful when generated text can be phrased differently from references but still convey the same meaning.
+
+\coloredboxes{
+\item Context-aware. Uses deep contextual embeddings, capturing meaning beyond surface word matches
+\item Better correlation with humans. Empirical studies show BERTScore aligns more closely with human evaluation than BLEU or ROUGE.
+}
+{
+\item Computationally heavy. Requires embedding extraction with large pre-trained models, making it slower than n-gram metrics.
+\item Model dependence. Performance varies depending on which pre-trained model (e.g., BERT, RoBERTa, multilingual-BERT) is used.
+\item Bias inheritance. Any biases in the underlying language model embeddings can influence the scores.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The original BERTScore paper included a picture of Bert from Sesame Street paying homage to the model’s namesake and adding a playful touch to an
+otherwise technical paper.}
