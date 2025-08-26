@@ -79,7 +79,7 @@ Use BERTScore when evaluating tasks where semantic similarity matters more than 
 dialogue generation. It is especially useful when generated text can be phrased differently from references but still convey the same meaning.
 
 \coloredboxes{
-\item Context-aware. Uses deep contextual embeddings, capturing meaning beyond surface word matches
+\item Context-aware. Uses deep contextual embeddings, capturing meaning beyond surface word matches.
 \item Better correlation with humans. Empirical studies show BERTScore aligns more closely with human evaluation than BLEU or ROUGE.
 }
 {
@@ -95,3 +95,50 @@ dialogue generation. It is especially useful when generated text can be phrased 
 \orangebox{Did you know that...}
 {The original BERTScore paper included a picture of Bert from Sesame Street paying homage to the model’s namesake and adding a playful touch to an
 otherwise technical paper.}
+
+% ---------- MAUVE ----------
+\clearpage
+\thispagestyle{genaistyle}
+\section{MAUVE}
+\subsection{MAUVE}
+
+% reference:
+% https://arxiv.org/pdf/2212.14578
+% https://arxiv.org/pdf/2102.01454
+% https://krishnap25.github.io/mauve/
+
+MAUVE is a metric that measures how close the text written by a model is to the distribution of human text. Instead of checking for word overlap,
+it looks at the shape of the two text distributions. It does this by taking samples from both human and model outputs, turning them into embeddings
+using a large language model, and then comparing them. The comparison is done using a KL divergence in this embedding space. 
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+In simple terms, MAUVE asks: “If I look at a pile of human texts and a pile of model texts, do they look like they came from the same source?”
+A higher MAUVE score means the model text is statistically closer to human text.
+
+\textbf{When to use the MAUVE?}
+
+Use MAUVE when you want to evaluate open-ended generation tasks like stories, dialogues, or summaries. It’s especially helpful when you care
+about both fluency and diversity.
+
+\coloredboxes{
+\item Balances quality and diversity. Unlike BLEU or ROUGE, MAUVE doesn’t just check for overlap. It rewards outputs that are fluent and varied.
+\item MAUVE has been shown to correlate strongly with how humans rate generated text.
+}
+{
+\item Works best with thousands of examples (the original paper used 5,000). With fewer, results may be unstable.
+\item MAUVE only measures similarity as seen by the embedding model. If the style, topics, or length of texts differ, good text can still get
+a low score.
+\item Heavy to run. By default, it uses GPT-2 large embeddings. Smaller models can be used, but results may differ.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{MAUVE was introduced in 2021 and quickly became popular because it correlated better with human ratings than older metrics like perplexity.
+It even won a Outstanding Paper Award at NeurIPS 2021.}
