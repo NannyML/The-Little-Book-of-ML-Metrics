@@ -143,6 +143,50 @@ a low score.
 {MAUVE was introduced in 2021 and quickly became popular because it correlated better with human ratings than older metrics like perplexity.
 It even won a Outstanding Paper Award at NeurIPS 2021.}
 
+
+% ---------- Inception Score ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{IS}
+\subsection{Inception Score}
+
+The Inception Score (IS) is a popular metric for evaluating generative image models, especially GANs. It measures both the quality and the
+diversity of generated images by using a pre-trained Inception v3 network.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+The idea is simple, a good generative model should produce images that are easily classifiable into distinct categories (high confidence
+predictions) and cover a wide range of categories overall (diverse outputs). IS combines these two aspects into a single score,
+where higher is better.
+
+\textbf{When to use IS?}
+
+Use IS when you want a reference-free evaluation metric for image generative models.
+It’s often used to compare GAN architectures during research and prototyping.
+
+
+\coloredboxes{
+\item IS evaluates generated images directly, without requiring access to ground-truth samples.
+\item Encourages models to generate sharp, realistic, and varied images.
+}
+{
+\item A model can achieve a high score while still producing limited or repetitive variations within each class.
+\item Since it relies on the Inception v3 network trained on ImageNet, it may not be meaningful for domains far from natural
+images (e.g., medical scans, satellite imagery).
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The Inception Score was introduced in 2016 by Tim Salimans, Ian Goodfellow and colleagues at OpenAI in their paper Improved Techniques
+for Training GANs. It quickly became the standard benchmark for evaluating GANs, since it offered one of the first automated ways to score
+generated images without human annotators.}
+
 % ---------- Fréchet Inception Distance ---------
 \clearpage
 \thispagestyle{genaistyle}
@@ -189,3 +233,8 @@ evaluating models in domain adaptation or zero-shot generation, where the target
 \orangebox{Did you know that...}
 {The Fréchet Inception Distance gets its name from Maurice Fréchet, a French mathematician who introduced the concept of metric spaces in 1906.
 More than a century later, his work is now central to evaluating the realism of AI-generated images!}
+
+\textbf{FID vs IS}
+
+The main difference with the Inception Score (IS) is that while IS only measures the quality and diversity of generated images, FID also
+compares them directly to real images, making it more sensitive to how closely the generated distribution matches reality.
