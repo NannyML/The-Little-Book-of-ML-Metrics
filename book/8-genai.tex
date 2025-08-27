@@ -238,3 +238,46 @@ More than a century later, his work is now central to evaluating the realism of 
 
 The main difference with the Inception Score (IS) is that while IS only measures the quality and diversity of generated images, FID also
 compares them directly to real images, making it more sensitive to how closely the generated distribution matches reality.
+
+
+% ---------- Learned Perceptual Image Patch Similarity ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{LPIPS}
+\subsection{Learned Perceptual Image Patch Similarity}
+
+LPIPS calculates the perceptual similarity between two images, aiming to reflect how similar they appear to human observers.
+Instead of comparing pixel values directly(like PSNR or SSIM), LPIPS uses the internal activations of deep neural networks trained for
+visual recognition. The idea is that these network features capture aspects of visual perception better than raw pixels.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+LPIPS calculates perceptual similarity between two images using deep network features. Features are extracted from different layers of a
+pretrained neural network, normalized, and then compared. These distances are averaged and weighted so they align with human perceptual judgments.
+A lower LPIPS score means images look more alike and higher scores mean they appear more different.
+
+\textbf{When to use LPIPS?}
+
+Use LPIPS when you want to evaluate how similar generated or reconstructed images feel to humans, rather than how close they are pixel by pixel.
+It is widely used in image generation, style transfer, and super-resolution tasks where perceptual quality is more important than exact fidelity.
+
+\coloredboxes{
+\item LPIPS correlates well with human judgments of similarity, often outperforming traditional metrics like SSIM and FSIM.
+\item Handles complex distortions and perceptual changes that pixel-based metrics miss.
+}
+{
+\item Since LPIPS relies on deep network features, it can be tricked by adversarial perturbations.
+\item More expensive to compute than simpler metrics like PSNR or SSIM.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{LPIPS was introduced in 2018 by Richard Zhang and colleagues at UC Berkeley, OpenAI and Adobe. They showed that off-the-shelf deep features—even
+from different architectures—already align surprisingly well with human perception. Later, they refined the metric by learning weights from
+large-scale human preference studies.}
