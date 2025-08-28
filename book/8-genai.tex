@@ -246,6 +246,8 @@ compares them directly to real images, making it more sensitive to how closely t
 \section{LPIPS}
 \subsection{Learned Perceptual Image Patch Similarity}
 
+% references: https://arxiv.org/pdf/1801.03924
+
 LPIPS calculates the perceptual similarity between two images, aiming to reflect how similar they appear to human observers.
 Instead of comparing pixel values directly(like PSNR or SSIM), LPIPS uses the internal activations of deep neural networks trained for
 visual recognition. The idea is that these network features capture aspects of visual perception better than raw pixels.
@@ -281,3 +283,53 @@ It is widely used in image generation, style transfer, and super-resolution task
 {LPIPS was introduced in 2018 by Richard Zhang and colleagues at UC Berkeley, OpenAI and Adobe. They showed that off-the-shelf deep features—even
 from different architectures—already align surprisingly well with human perception. Later, they refined the metric by learning weights from
 large-scale human preference studies.}
+
+
+% ---------- CLIPScore ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{CLIP Score}
+\subsection{CLIP Score}
+
+% reference:
+% https://arxiv.org/pdf/2104.08718
+% https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html
+
+The CLIP Score is a reference-free metric used to evaluate how well a generated caption matches the
+actual content of an image. It relies on the CLIP model, which embeds both text and images into the same semantic space. To compute it,
+the image and the candidate caption are passed through CLIP’s feature extractors, and their cosine similarity is measured. The score is then
+rescaled, so higher values indicate stronger alignment between text and image.
+
+% equation
+\begin{center}
+    % CLIP-S(c,v)=w⋅max(cos(c,v),0)
+    FORMULA GOES HERE
+\end{center}
+
+A higher CLIP Score indicates better alignment between text and image. The score ranges from 0 (no alignment) up to w (the scaling weight,
+commonly set to 2.5), with larger values reflecting stronger semantic similarity.
+
+\textbf{When to use CLIP Score?}
+
+Use CLIP Score when you need to assess the quality of text-to-image or image-to-text generation without requiring human-written reference captions.
+It is particularly useful for evaluating generative models in tasks like image captioning, text-to-image synthesis, or retrieval,
+where semantic alignment matters more than exact word overlap.
+
+\coloredboxes{
+\item Does not require ground-truth captions.
+\item Correlates with human judgment. Has been shown to align well with how humans assess caption-image relevance.
+}
+{
+\item Model-dependent. The quality of the score depends heavily on the CLIP model and its training data; biases in CLIP can affect results.
+\item Insensitive to linguistic nuances. Two captions with very different readability or fluency may still achieve similar scores
+if they mention the right objects.
+\item Prompt sensitivity. Small wording changes (e.g., starting captions with “A photo of...”) can influence the score.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The CLIP Score was introduced in 2022 by researchers at the Allen Institute for AI and The University of Washington and has quickly become a
+standard way to evaluate multimodal AI, thanks to the popularity of CLIP, which was originally developed by OpenAI.}
