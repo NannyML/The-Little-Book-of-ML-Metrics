@@ -433,3 +433,48 @@ or detailed situations. It can also extend to evaluating video and 3D generation
 
 \orangebox{Did you know that...}
 {VQAScore was introduced in 2024 by researchers at Carnegie Mellon University in collaboration with Meta.}
+
+
+% ---------- Mean Opinion Score ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{MOS}
+\subsection{Mean Opinion Score}
+
+% reference:
+% https://arxiv.org/pdf/2204.02249
+
+Mean Opinion Score (MOS) is one of the simplest and most widely used ways to evaluate the quality of audio, particularly speech and
+generative audio outputs. It works by asking human listeners to rate audio samples on a simple scale, usually from 1 (bad) to 5 (excellent).
+The final score is the average across all listeners.
+
+% equation
+\begin{center}
+    FORMULA GOES HERE
+\end{center}
+
+\textbf{When to use MOS?}
+
+Use MOS when you want to measure how natural or pleasant generated audio sounds to people. It is especially useful for comparing different
+generative models, evaluating speech synthesis systems, or benchmarking voice quality in audio applications like
+text-to-speech or music generation.
+
+\coloredboxes{
+\item Directly reflects human perception of quality.
+\item Easy to understand and communicate, thanks to its simple 1–5 scale.
+\item Works across different types of audio (speech, music, environmental sounds).
+}
+{
+\item Requires human listeners, making it expensive and time-consuming.
+\item Not reproducible in the same way as automated metrics; results can be noisy.
+\item When MOS is compute from categorical ratings, averaging them is mathematically questionable, the median should be used instead.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{MOS was first widely adopted in the telecommunications industry in the 20th century, where human listeners rated the clarity of phone calls.
+It became the gold standard for assessing voice quality long before automated metrics were available, and it is still referenced in
+ITU standards today.}
