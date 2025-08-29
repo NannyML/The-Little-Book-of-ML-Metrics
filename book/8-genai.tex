@@ -386,3 +386,50 @@ relationships, such as “a person holding a red umbrella next to a dog.”
 {The “Davidsonian” in Davidsonian Scene Graph comes from the American philosopher Donald Davidson, who argued that the meaning of a sentence can
 be broken down into atomic events and their relations. DSG borrows this idea, turning a text prompt into small, testable propositions like
 “there is a cat” or “the cat sits on the chair.”}
+
+% ---------- Visual Question Answering Score ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{VQAScore}
+\subsection{Visual Question Answering Score}
+
+% reference:
+% https://arxiv.org/pdf/2404.01291
+% https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/
+
+VQAScore is a metric for evaluating text-to-image models. It measures how well a generated image matches a given prompt by reframing the prompt
+into a yes-or-no question. For example, with the prompt “a cow jumps over the moon”, the model is asked: “Does this image show a cow jumping over
+the moon? Please answer yes or no.”
+
+% equation
+\begin{center}
+    % VQAScore=P(“Yes”∣image,Does this image show ‘prompt’?)
+    FORMULA GOES HERE
+\end{center}
+
+Technically, the image and the tokenized question are passed into a VQA system with two parts: an image-question encoder, which fuses visual and
+textual information, and an answer decoder, which produces the probability that the answer is “Yes.” That probability is the VQAScore. A higher score
+indicates stronger alignment between text and image.
+
+\textbf{When to use VQAScore?}
+
+Use VQAScore when you need a direct way to check if an image illustrates what was asked. It is particularly helpful for prompts that describe uncommon
+or detailed situations. It can also extend to evaluating video and 3D generation.
+
+\coloredboxes{
+\item Works with existing VQA models, no fine-tuning needed.
+\item More precise than “LLM-as-a-judge” approaches, which often give inflated and uninformative scores.
+\item Avoids the pitfalls of prompt decomposition, which can generate irrelevant or misleading sub-questions.
+}
+{
+\item Dependent on the quality and biases of the underlying VQA model.
+\item Limited to yes/no framing, which may oversimplify nuanced prompts.
+\item Performance may degrade if the VQA model struggles with unusual concepts or rare objects.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{VQAScore was introduced in 2024 by researchers at Carnegie Mellon University in collaboration with Meta.}
