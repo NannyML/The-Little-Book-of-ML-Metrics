@@ -333,3 +333,53 @@ if they mention the right objects.
 \orangebox{Did you know that...}
 {The CLIP Score was introduced in 2022 by researchers at the Allen Institute for AI and The University of Washington and has quickly become a
 standard way to evaluate multimodal AI, thanks to the popularity of CLIP, which was originally developed by OpenAI.}
+
+
+% ---------- Davidsonian Scene Graph ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{DSG}
+\subsection{Davidsonian Scene Graph}
+
+The Davidsonian Scene Graph (DSG) measures how well a text-to-image model captures the meaning of a prompt by checking if the image has the right 
+objects, attributes, and relations—not just if it looks good.
+
+% no formula for this metric
+It builds on the idea of scene graphs—structured representations of an image in terms of “who does what to whom.” For example, the sentence
+“a cat sitting on a chair” can be represented as cat — sitting on — chair.
+
+DSG checks this alignment through two steps. First, a Question Generation module takes the prompt and breaks it into small yes/no questions
+that cover its meaning. It asks things like “Is there a cat?”, “Is it sitting?”, “Is it on a chair?”. These questions are arranged in a graph,
+so if one answer is “no” (say there is no cat), then the follow-up questions about that cat are skipped.
+
+Then, a Visual Question Answering module asks the same questions to the image. If the answers from the image match the answers from the text,
+the scene is captured correctly.
+
+The final DSG score is simply how well the image answered the full set of questions derived from the prompt. A higher score means the picture
+respects the objects, attributes, and relations described in the text.
+
+
+\textbf{When to use DSG?}
+
+Use DSG when you want to evaluate whether an image generation model respects the semantic structure of a text prompt, not just
+superficial resemblance. It is especially useful for benchmarking text-to-image systems on prompts that involve multiple entities and
+relationships, such as “a person holding a red umbrella next to a dog.”
+
+\coloredboxes{
+\item Semantics-aware. Goes beyond pixels and aesthetics by checking whether objects and their relations are correct.
+\item Captures whether multiple parts of a prompt are faithfully represented, not just the most prominent one.
+}
+{
+\item Some subtle visual details (e.g., style, texture, artistic quality) are not captured.
+\item Building and comparing scene graphs is more complex than simple embedding-based metrics like CLIPScore.
+}
+
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{The “Davidsonian” in Davidsonian Scene Graph comes from the American philosopher Donald Davidson, who argued that the meaning of a sentence can
+be broken down into atomic events and their relations. DSG borrows this idea, turning a text prompt into small, testable propositions like
+“there is a cat” or “the cat sits on the chair.”}
