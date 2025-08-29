@@ -27,7 +27,7 @@ The book covers a broad range of metrics from different contexts:
 - **GenAI** 
 - **Probabilistic**
 - **Bias and Fairness**
-- **Business**
+- **Data Observability**
 
 ## How to Contribute
 
