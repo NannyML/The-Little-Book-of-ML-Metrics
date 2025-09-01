@@ -516,3 +516,42 @@ interpretable score that correlates strongly with human judgments.
 {PESQ was standardized by the ITU-T in 2001 and quickly became the go-to tool for testing phone call quality worldwide. 
 In fact, telecom engineers used it to benchmark mobile networks long before smartphones became common, making it one of the
 first AI-adjacent metrics to shape how we all experience everyday communication.}
+
+% ---------- Short-Time Objective Intelligibility ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{STOI}
+\subsection{Short-Time Objective Intelligibility}
+
+% reference:
+% https://lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html
+% https://stackoverflow.com/questions/60267864/pesq-stoi-score-speech-quality-for-different-languagesnon-english
+% https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html
+% https://arxiv.org/pdf/2011.04292
+
+
+STOI is an audio metric designed to predict how intelligible speech is in noisy conditions. Instead of measuring overall sound quality,
+STOI focuses on whether words and syllables can be correctly understood. It compares clean and processed speech by looking at short-time
+spectral envelopes and computing their correlation. The score ranges from 0 to 1, with higher values indicating clearer and more
+intelligible speech.
+
+\textbf{When to use STOI?}
+
+Use STOI when evaluating generative audio models that aim to improve speech intelligibility, especially in scenarios with background noise
+or distortions. It is particularly relevant for applications like speech enhancement, hearing aids, and robust speech recognition.
+
+\coloredboxes{
+\item Strong correlation with human intelligibility tests
+\item Works well in noisy environments, where intelligibility is most affected.
+}
+{
+\item Limited to noisy speech scenarios. Less reliable in clean or high-quality audio.
+\item Free reference code restricted to research use, commercial use requires licensing
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{STOI was originally developed at Delft University of Technology in the Netherlands, together with Oticon, a hearing aid company in Denmark.}
