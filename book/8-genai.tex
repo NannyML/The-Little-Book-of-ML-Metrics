@@ -555,3 +555,162 @@ or distortions. It is particularly relevant for applications like speech enhance
 
 \orangebox{Did you know that...}
 {STOI was originally developed at Delft University of Technology in the Netherlands, together with Oticon, a hearing aid company in Denmark.}
+
+
+% ---------- Benchmarks ---------
+\clearpage
+\thispagestyle{genaistyle}
+\section{Benchmarks}
+\subsection{Benchmarks}
+
+\textbf{GLUE — General Language Understanding Evaluation}
+% reference:
+% https://arxiv.org/pdf/1905.00537
+% https://arxiv.org/pdf/1804.07461
+% https://gluebenchmark.com/
+% https://super.gluebenchmark.com/
+
+The General Language Understanding Evaluation (GLUE) benchmark, introduced in 2018 by researchers at NYU, DeepMind, and University of Washington,
+is one of the most influential benchmarks in natural language processing. It was designed to evaluate and compare models on a broad set
+of language understanding tasks.
+
+GLUE brings together nine diverse sentence and sentence-pair tasks, from sentiment classification to natural language inference, plus a diagnostic
+dataset to test how well models capture fine-grained linguistic phenomena. A public leaderboard and visualization tools made it a central hub for
+tracking progress in NLP.
+
+GLUE was particularly useful for transfer learning approaches, like BERT, where knowledge gained on one task can benefit others. Its format
+encouraged the development of models that are not only accurate but also general and robust across tasks.
+
+As models quickly reached human-level performance on GLUE, the community introduced SuperGLUE in 2019. SuperGLUE is a more challenging successor
+with harder tasks, better coverage of linguistic phenomena, and new evaluation protocols, ensuring that benchmarks keep pushing the limits of
+general language understanding.
+
+\textbf{IFEval — Instruction-Following Eval}
+
+% reference:
+% https://arxiv.org/pdf/2311.07911
+
+Instruction-Following Eval (IFEval) was introduced in 2023 as a way to measure how well large language models can follow instructions.
+Human ratings are slow and subjective, and letting one model judge another comes with bias.
+IFEval avoids these problems by focusing only on verifiable instructions—rules that can be checked automatically.
+
+The benchmark includes about 500 prompts, each with one or more constraints like “write more than 400 words” or “mention the word AI at
+least three times.” In total, there are 25 types of instructions, chosen to cover a variety of styles and requirements.
+Evaluation is simple: a response either meets the condition or it does not.
+
+This makes IFEval easy to reproduce, objective, and fast. It is particularly useful for comparing instruction-tuned models, where the question
+is not just what they say, but whether they actually follow the rules they were given.
+
+\textbf{BBH — Big Bench Hard}
+
+% reference:
+% https://arxiv.org/pdf/2206.04615
+% https://arxiv.org/pdf/2210.09261
+% https://arxiv.org/pdf/2502.19187
+
+BIG-Bench Hard (BBH) is a benchmark introduced in 2022 as a filtered subset of the larger Beyond the Imitation Game Benchmark (BIG-Bench).
+BIG-Bench itself was a massive collection of over 200 tasks created by more than 400 researchers to test the capabilities and limits of large
+language models. However, many of its tasks quickly became easy for newer models, making it less useful for distinguishing progress.
+
+BBH solves this by selecting the 23 tasks from BIG-Bench where models still struggled, even those with billions of parameters. These “hard”
+tasks include areas such as logical reasoning, mathematical problem solving, and multi-step commonsense reasoning—capabilities where humans still
+have a clear advantage.
+
+The result is a more challenging and focused benchmark that highlights the limits of current models rather than their strengths. BBH has since
+inspired BIG-Bench Extra Hard (BBEH), released in 2025, which extends the same philosophy with new, even tougher tasks to keep pace with rapidly
+improving models.
+
+\textbf{MATH}
+
+% reference:
+% https://arxiv.org/pdf/2103.03874
+
+The MATH benchmark, introduced in 2021, was designed to evaluate how well language models can solve mathematical problems. Unlike simple arithmetic
+or word problems, MATH draws from real competition-level datasets, including problems from middle school to high school contests. This makes it a
+much harder test of reasoning, multi-step calculation, and precise symbolic manipulation.
+
+The dataset contains over 12,000 problems across algebra, geometry, number theory, probability, and more. Each problem comes with a step-by-step
+solution, which allows models not only to be graded on their final answer but also analyzed for where their reasoning may have gone wrong.
+
+MATH has become an important benchmark for measuring progress in reasoning-oriented models. It is particularly useful for evaluating techniques
+like chain-of-thought prompting or specialized training on symbolic reasoning, where the ability to carry out multi-step derivations is key.
+
+\textbf{GPQA — Graduate-Level Google-Proof Q\&A}
+
+% reference:
+% https://arxiv.org/pdf/2311.12022
+
+The Graduate-Level Google-Proof Q\&A (GPQA) benchmark was introduced in 2023 to test large language models on expert-level questions that cannot
+be solved by simple Googling, hence the name “Google-Proof.” Many benchmarks can be “gamed” by memorizing surface patterns or retrieving facts,
+but GPQA is designed to demand genuine reasoning.
+
+The dataset consists of 448 carefully crafted multiple-choice questions at the graduate level, spanning fields such as
+physics biology, and chemistry.
+
+GPQA is especially relevant for evaluating models aimed at advanced reasoning tasks, where success depends on integrating knowledge with
+logical problem solving. Unlike benchmarks focused on everyday language or commonsense, GPQA tests whether models can engage with specialized
+domains at the depth expected of human experts.
+
+\textbf{MuSR — MultiStep Soft Reasoning}
+
+% reference:
+% https://arxiv.org/pdf/2310.16049
+
+The MultiStep Soft Reasoning (MuSR) benchmark was introduced in 2023 to test whether language models can reason across several steps without
+losing track along the way. Many benchmarks only check the final answer, but MuSR is built to see if models can stay consistent throughout the
+reasoning process.
+
+It covers tasks like multi-hop question answering and logical deduction, where information must be combined piece by piece. The idea of soft
+reasoning means there isn’t always a single rigid path—several routes may work—but the model has to connect them carefully to get the right result.
+
+MuSR is especially useful for evaluating models that rely on chain-of-thought or other reasoning techniques, since it shows whether
+they can sustain accuracy over multiple steps instead of just guessing the final answer.
+
+\textbf{MMLU-Pro}
+
+% references:
+% https://arxiv.org/pdf/2406.01574
+% https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro
+
+MMLU-Pro was introduced in 2024 as a successor to the well-known MMLU benchmark, which measured model performance across 57 academic subjects.
+While MMLU became a standard test of broad knowledge, it soon became too easy for modern models, with many scoring at or above human expert levels.
+
+MMLU-Pro makes three key changes. First, instead of four answer options per question, it now offers ten. This makes the test more realistic and
+harder to game—random guessing. Second, the new dataset includes more reasoning-heavy questions, not just knowledge recall.
+As a result, models that use chain-of-thought prompting can score up to 20\% higher than those relying only on perplexity. 
+Finally, the overall problem difficulty has been raised to better separate strong models from weaker ones.
+
+\textbf{SQuAD}
+
+% reference:
+% https://arxiv.org/pdf/1806.03822
+% https://rajpurkar.github.io/SQuAD-explorer/
+
+The Stanford Question Answering Dataset (SQuAD) is one of the most widely used benchmarks for reading comprehension. In its first release,
+SQuAD 1.1, the task was straightforward: given a paragraph, answer a question by selecting the exact span of text where the answer appears.
+With over 100,000 examples, it set the standard for extractive question answering and quickly drove rapid improvements in model performance.
+
+But SQuAD 1.1 had a limitation, every question was guaranteed to have an answer in the passage. To make the benchmark more realistic, SQuAD 2.0
+added over 50,000 unanswerable questions crafted by crowdworkers to look deceptively similar to answerable ones. Now, models had to do more
+than extract spans, they had to decide when no answer exists.
+
+\textbf{ARC-AGI}
+
+% reference:
+% https://arxiv.org/pdf/1911.01547
+% https://arcprize.org/arc-agi
+
+The Abstraction and Reasoning Corpus (ARC) was introduced in 2019 as a benchmark to measure progress toward general intelligence. Unlike datasets 
+built on language or vision, ARC is made up of small grid-based puzzles. Each puzzle provides a few input–output examples, and the task is to infer
+the underlying transformation and apply it to new cases. Success requires abstract reasoning and the ability to generalize from very little
+data, skills that humans use naturally, but machines often struggle with.
+
+The original release, now called ARC-AGI 1, contained 400 training tasks and 600 evaluation tasks. What makes it challenging is that
+the puzzles are deliberately diverse: they are not drawn from a single domain, but instead cover concepts like symmetry, counting, and object
+manipulation. This forces models away from memorization and toward flexible reasoning.
+
+ARC-AGI 2 builds on this foundation with updated evaluation protocols, new tasks, and a public prize competition to encourage fresh approaches.
+The emphasis remains the same: testing whether models can learn to reason in a way that is general rather than specialized.
+
+ARC-AGI stands out because it is not about beating human performance at a single benchmark, it is about probing whether machines can learn the
+kind of abstract reasoning that humans take for granted.
