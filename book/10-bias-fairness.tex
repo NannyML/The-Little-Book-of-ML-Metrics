@@ -142,3 +142,52 @@ In that paper, they introduced both Equality of Odds and its less stricter sibli
 in the fairness in ML literature.}
 
 % For second page we can follow The ROC Curves example of this resource: https://mlu-explain.github.io/equality-of-odds/
+
+% ---------- Predictive Parity ----------
+\clearpage
+\thispagestyle{biasfairnesstyle}
+\section{Predictive Parity}
+\subsection{Predictive Parity}
+
+references:
+% https://fairware.cs.umass.edu/papers/Verma.pdf
+% https://njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf
+% https://afraenkel.github.io/fairness-book/content/05-parity-measures.html#predictive-value-parity-ppv-parity-and-npv-parity
+
+Predictive Parity, also known as predictive value parity or the outcome test, is a fairness metric that checks whether a model’s precision 
+(positive predictive value, PPV) is the same across different demographic groups. In simple terms, if a model predicts that someone belongs to
+the positive class (e.g., “approved for a loan”), Predictive Parity requires that the probability of this prediction being correct is equal for
+all groups.
+
+% Formula
+\begin{center}
+    % P(Y=1∣Y^=1,A=a)=P(Y=1∣Y^=1,A=b)
+    FORMULA GOES HERE
+\end{center}
+
+If predictive parity holds, then the false discovery rate (FDR) will also be equal across groups, since $FDR = 1 − PPV$.
+
+\textbf{When to use Predictive Parity?}
+
+Predictive Parity is most relevant when the cost of false positives is high, and we care about ensuring that predicted positives are equally
+reliable across groups. For example, in credit scoring, it ensures that an approved loan is equally likely to be repaid whether the applicant
+belongs to one demographic group or another.
+
+\coloredboxes{
+\item Ensures the same fraction of correct positive predictions across groups.
+\item Easy to interpret: it directly extends the familiar concept of precision.
+}
+{
+\item Incompatible with other fairness metrics (such as equalized odds) when base rates differ across groups. It is mathematically
+impossible to satisfy both simultaneously.
+\item Equal PPVs can hide differences in false negative rates or access to positive outcomes.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Predictive parity gained attention during the debate around the COMPAS recidivism tool. ProPublica’s 2016 investigation argued that COMPAS was
+unfair because it did not satisfy equalized odds, while its developers countered that the tool did satisfy predictive parity, illustrating how
+different fairness definitions can conflict and fuel controversy.}
