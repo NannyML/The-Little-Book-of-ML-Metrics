@@ -1,8 +1,49 @@
 \chapter{Bias \& Fairness}
 
 
-% ---------- Bias Sample Metric ----------
+% ---------- Demographic Parity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Bias Sample Metric}
-\subsection{Bias Sample Metric}
+\section{Demographic Parity}
+\subsection{Demographic Parity}
+
+% reference:
+% https://developers.google.com/machine-learning/crash-course/fairness/demographic-parity
+% https://afraenkel.github.io/fairness-book/content/05-parity-measures.html#demographic-parity
+% https://fairmlbook.org/classification.html
+
+Demographic Parity (also known as Statistical Parity) is one of the most widely cited fairness metrics in machine learning.
+It requires that the decision of a model be independent of a protected attribute (such as gender, race, or age). In other words,
+the probability of receiving a positive prediction should be the same across groups, regardless of whether the prediction is correct.
+
+% Formula
+\begin{center}
+    % P(Y^=1∣A=a)=P(Y^=1∣A=b)∀a,b
+    FORMULA GOES HERE
+\end{center}
+
+A model satisfies demographic parity if members of different demographic groups are selected at equal rates. For example, in a loan approval
+system, demographic parity would mean that the proportion of approved applications is the same across groups, independent of creditworthiness.
+
+\textbf{When to use Demographic Parity?}
+
+Use demographic parity when the fairness objective is equal treatment across groups in terms of outcomes, even if this comes at the cost
+of predictive accuracy. It is often applied in contexts such as hiring, lending, or college admissions, where ensuring equal access is a
+primary concern.
+
+\coloredboxes{
+\item Simple to compute and easy to explain to non-technical stakeholders.
+\item Guarantees equal selection rates across groups, supporting inclusion.
+}
+{
+\item It only looks at whether groups get the same share of positive outcomes, but not at whether those predictions are actually correct.
+\item Can reduce overall model accuracy if the underlying distributions differ.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Demographic parity goes by several other names in the literature, often referred to as statistical parity, group fairness, or even
+independence criterion. Different research communities picked different terms, but they all describe the same idea.}
