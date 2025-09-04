@@ -93,3 +93,52 @@ is more meaningful than enforcing equal acceptance rates.
 {Equality of Opportunity was popularized in the 2016 paper “Equality of Opportunity in Supervised Learning” by Hardt, Price, and Srebro. 
 In that paper, they introduced both Equality of Opportunity and its stricter sibling, Equalized Odds. The terms have since become standard
 in the fairness in ML literature.}
+
+% ---------- Equality of Odds ----------
+\clearpage
+\thispagestyle{biasfairnesstyle}
+\section{Equality of Odds}
+\subsection{Equality of Odds}
+
+% resources:
+% https://arxiv.org/pdf/1610.02413
+% https://mlu-explain.github.io/equality-of-odds/
+
+Equality of Odds is a fairness metric that requires a model to have equal true positive rates (TPR) and equal false positive rates (FPR)
+across different demographic groups. In other words, the model should be equally good at identifying positives and equally bad at making mistakes,
+no matter which group an individual belongs to.
+
+% Formula
+\begin{center}
+    % P(Y^=1∣Y=y,A=a)=P(Y^=1∣Y=y,A=b)∀y∈{0,1},a,b∈A
+    FORMULA GOES HERE
+\end{center}
+
+Equalized Odds is stricter than Equality of Opportunity, which only enforces equality on the true positive rate. If we relax the Equalized Odds
+condition to focus only on the case where $Y = 1$, we obtain the Equality of Opportunity formula.
+
+\textbf{When to use Equality of Odds?}
+
+Use Equality of Odds when both types of classification errors, false positives and false negatives, carry important consequences.
+For example, in loan approvals, we want to ensure that different groups are not only equally likely to receive a loan when they are
+truly creditworthy, but also equally likely to be mistakenly given a loan when they are not.
+
+\coloredboxes{
+\item Captures fairness across both positive and negative outcomes.
+\item More comprehensive than Equality of Opportunity, which only balances true positive rates.
+}
+{
+\item May be difficult or impossible to satisfy perfectly, especially when the distribution of labels differ across groups.
+\item Enforcing Equality of Odds can reduce overall model accuracy, creating a trade-off between fairness and performance.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Equality of Odds was popularized in the 2016 paper “Equality of Opportunity in Supervised Learning” by Hardt, Price, and Srebro. 
+In that paper, they introduced both Equality of Odds and its less stricter sibling, Equality Opportunity. The terms have since become standard
+in the fairness in ML literature.}
+
+% For second page we can follow The ROC Curves example of this resource: https://mlu-explain.github.io/equality-of-odds/
