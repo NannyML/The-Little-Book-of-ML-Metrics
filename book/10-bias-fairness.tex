@@ -47,3 +47,49 @@ primary concern.
 \orangebox{Did you know that...}
 {Demographic parity goes by several other names in the literature, often referred to as statistical parity, group fairness, or even
 independence criterion. Different research communities picked different terms, but they all describe the same idea.}
+
+
+% ---------- Equality of Opportunity ----------
+\clearpage
+\thispagestyle{biasfairnesstyle}
+\section{Equality of Opportunity}
+\subsection{Equality of Opportunity}
+
+Equality of Opportunity is a fairness metric that focuses on ensuring that individuals who truly belong to the positive class
+(e.g., qualified applicants) have an equal chance of being correctly identified across different demographic groups.
+Formally, the metric requires that the True Positive Rate (TPR) be equal across groups.
+
+% Formula
+\begin{center}
+    % P(Y^=1∣Y=1,A=a)=P(Y^=1∣Y=1,A=b)
+    FORMULA GOES HERE
+\end{center}
+
+In other words, if two people are equally qualified, their chance of being recognized as such by the model should not depend on their
+demographic group.
+
+\textbf{When to use Equality of Opportunity?}
+
+This metric is particularly useful in high-stakes scenarios where false negatives carry large consequences, such as university admissions,
+medical diagnoses, or loan approvals. It ensures that qualified individuals are treated equally, regardless of group membership.
+
+\coloredboxes{
+\item Ensures qualified individuals have equal chances across groups, even if overall acceptance rates differ.
+\item Models can vary in their ratio of positive to negative predictions across groups, as long as the true positives are treated fairly.
+\item Can be more aligned with fairness in practical scenarios, where ensuring equal opportunity for qualified candidates
+is more meaningful than enforcing equal acceptance rates.
+}
+{
+\item Only applies when there is a clearly preferred label (e.g., “qualified”), limiting its use to such contexts.
+\item Does not guarantee fairness for the negative class, unlike metrics such as Equalized Odds.
+\item Requires demographic group labels to compare outcomes. If group membership is unavailable, the metric cannot be applied.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Equality of Opportunity was popularized in the 2016 paper “Equality of Opportunity in Supervised Learning” by Hardt, Price, and Srebro. 
+In that paper, they introduced both Equality of Opportunity and its stricter sibling, Equalized Odds. The terms have since become standard
+in the fairness in ML literature.}
