@@ -191,3 +191,45 @@ impossible to satisfy both simultaneously.
 {Predictive parity gained attention during the debate around the COMPAS recidivism tool. ProPublica’s 2016 investigation argued that COMPAS was
 unfair because it did not satisfy equalized odds, while its developers countered that the tool did satisfy predictive parity, illustrating how
 different fairness definitions can conflict and fuel controversy.}
+
+% ---------- Calibration within Groups ----------
+\clearpage
+\thispagestyle{biasfairnesstyle}
+\section{Calibration within Groups}
+\subsection{Calibration within Groups}
+
+Calibration within groups is a fairness notion that requires predicted scores to have the same meaning across demographic groups.
+Formally, for any score value $s$ and group $a$
+
+% Formula
+\begin{center}
+    % P(Y=1∣S=s,A=a)=s
+    FORMULA GOES HERE
+\end{center}
+
+This means that if a model assigns a score of $s$, then the probability of the outcome being positive should equal $s$,
+no matter which group the individual belongs to.
+
+\textbf{When to use Calibration within Groups?}
+
+Calibration within Groups is useful when decisions depend not only on binary predictions but also on the probabilities behind them, 
+such as in credit scoring, healthcare risk prediction, or hiring assessment. It ensures that scores can be trusted equally across groups,
+making downstream thresholds and policies more reliable.
+
+\coloredboxes{
+\item Provides a clear, interpretable fairness guarantee for probability scores.
+\item Fits real-world settings where calibrated scores are central to decision-making.
+}
+{
+\item Difficult to achieve simultaneously with other fairness criteria, like equalized odds.
+\item Guarantees fairness of scores but not of threshold-based outcomes.
+}
+
+\clearpage
+
+\thispagestyle{customstyle}
+
+\orangebox{Did you know that...}
+{Probablity calibration first became popular in weather forecasting. In the 1950s, meteorologists asked whether a 
+“70\% chance of rain” really meant that it rained on 7 out of 10 such days. This led to the creation of the Brier Score in 1950, one of the
+first formal ways to measure how well probabilities match reality, a concept that later inspired calibration metrics in machine learning.}
