@@ -3,7 +3,122 @@
 % ---------- Confusion Matrix ----------
 \thispagestyle{classificationstyle}
 \section{Confusion Matrix}
-\subsection{Confusion Matrix}
+A confusion matrix is a table that shows how well a classification model makes predictions.
+It compares the model's predicted labels with the true labels.
+
+\vspace{-0.5em}
+\begin{center}
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+$\displaystyle
+C_{\textcolor{nmlred}{i}\,\textcolor{nmlcyan}{j}}
+= \sum_{n=1}^{M} 
+\mathbf{1}\{ \; y_n = \textcolor{nmlred}{i} \;\land\; \hat{y}_n = \textcolor{nmlcyan}{j} \;\}
+$
+};
+\draw[-latex,nmlred, semithick] ($(a.north west)+(6.2,0)$)
+ to[bend left=15] node[pos=1, left] {Actual class $i$} +(-.5,.3);
+\draw[-latex,nmlcyan, semithick] ($(a.north east)+(-.2,0)$)
+ to[bend left=15] node[pos=1, right] {Predicted class $j$} +(.5,.3);
+}
+\end{center}
+\vspace{-0.5em}
+
+
+A simple 2x2 example for binary classification with four categories: True Positive (TP), True Negatives (TN), False Positive (FP), False Negative (FN).
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\vspace{0.3em}
+\begin{minipage}{0.46\linewidth}
+\centering
+\begin{tabular}{|C{1.4cm}|C{1.4cm}|}
+\hline
+Actual & Predicted \\ \hline
+1 & 1 \\
+1 & 0 \\
+0 & 1 \\
+0 & 0 \\
+1 & 1 \\
+0 & 0 \\
+\hline
+\end{tabular}
+\end{minipage}%
+\begin{minipage}{0.54\linewidth}
+\renewcommand{\arraystretch}{1.8}
+\centering
+\begin{tabular}{|C{1.8cm}|C{1.8cm}|C{1.8cm}|}
+\hline
+& Predicted 1 & Predicted 0 \\ \hline
+Actual 1 & \cellcolor{nmlgreen!20}TP = 2 & \cellcolor{nmlred!20}FP = 1 \\ \hline
+Actual 0 & \cellcolor{nmlred!20}FN = 1 & \cellcolor{nmlgreen!20}TN = 2 \\ \hline
+\end{tabular}
+\end{minipage}
+
+\vspace{0.8em}
+\textbf{When to use Confusion Matrix?}
+
+Use a confusion matrix whenever you are dealing with a classification task.
+It is the fundamental tool from which most other performance metrics are derived,
+making it unavoidable if you need to calculate precision, recall, F1-score, or other related measures.
+
+\vspace{0.3em}
+\coloredboxes{
+\item Provides a detailed breakdown of correct and incorrect classifications.
+\item Forms the foundation for many key performance metrics (e.g., precision, recall, F1).
+\item Works for both binary and multi-class classification.
+}
+{
+\item Can become large and harder to interpret for problems with many classes.
+\item Does not directly provide a single performance score (requires additional derived metrics).
+\item Sensitive to class imbalance; raw counts may be misleading without normalization.
+}
+\clearpage
+In some interesting real-world industries, it is difficult to construct a standard confusion matrix. 
+
+For instance, in predictive maintenance, machine learning models predict when a machine might fail so maintenance can be scheduled in advance.
+
+If the model predicts a breakdown and maintenance is performed, the machine may never actually fail. This means the usual true positives (TP) are no longer observable.
+
+This raises the question: How can we be sure the model was correct? Is there a way to know whether or not our machine would have failed if we had not maintained it?
+This lack of failure is our original goal, and it is beneficial. However, it also results in no immediate failure or target data to validate the model’s prediction. 
+The critical feedback is delayed, and the resultant confusion matrix is “censored”.
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{2.5}
+\begin{tabular}{|C{2cm}|C{2cm}|C{2cm}|C{2cm}|}
+\hline
+& \multicolumn{3}{c|}{\textbf{Model predicts machine failure}} \\
+\cline{2-4}
+X & Total Population (P+N)& 
+Positive & 
+Negative \\
+\hline
+\multirow{2}{2cm}{\textbf{Does Machine fail in Reality?}} & 
+Positive & 
+Not available  & 
+Delayed \\
+\cline{2-4}
+& 
+Negative & 
+Not available & 
+Delayed \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\orangebox{%
+Did you know that...}
+{It is also known as error matrix typically in a supervised learning usecase; in unsupervised learning it is usually called a matching matrix. 
+}
+
+\textbf{Other related metrics}
+Metrics that one can derive from confusion matrix like accuracy, precision, recall and more. 
+
+
+
 
 % ---------- FPR ----------
 \clearpage
@@ -705,7 +820,8 @@ particularly in segmentation tasks. It measures the overlap between the predicte
 
 The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
 and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
-$FN$ as: $J = \frac{TP}{TP + FP + FN}$. 
+$FN$ as: $J = \frac{TP}{TP + FP + FN}$. Additionally, the Jaccard Index is a popular metric for evaluating computer vision
+models for image segmentation tasks, in those cases it is communly known as Intersection over Union (IoU).
 
 \textbf{When to use the Jaccard Index}
 
@@ -713,65 +829,13 @@ It is particularly useful when we need to measure the similarity between two set
 evaluate preferences in recommender systems, or measure the similarity between genetic sequences.
 
 \coloredboxes{
-    \item Simple and intuitive since it directly measures the proportion of shared elements between two sets.  
-    \item Bounded between 0 and 1 which makes it easy to interpret across different applications.  
+    \item Intuitive interpretation. It provides a straightforward measure of overlap, useful for visualization.
+    \item Scale-Invariance. The Jaccard Index is not affected by the size of the sets being compared.
 }
 {
-    \item Calculating intersections and unions can be expensive for very large or high-dimensional datasets.  
+    \item Can be computationally expensive. Calculating the intersection and union for large or high dimensonal sets can be resource-intensive.
 }
 
-\clearpage
-% inspo : https://towardsdatascience.com/you-dont-know-jacc-ard-f2c05c7ea039/
-
-Additionally, the Jaccard Index is a popular metric for evaluating computer vision
-models for image segmentation tasks, in those cases it is communly known as Intersection over Union (IoU).
-
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/Jaccard_Low.png}
-  \label{fig:test1}
-\end{minipage}%
-\begin{minipage}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/Jaccard_High.png}
-  \label{fig:test2}
-\end{minipage}%
-
-\begin{center}
-    \vspace{0.75em} 
-    \small Comparison of predictions (red) against ground truth (green). 
-    \small Left: Low Jaccard Index Right: High Jaccard Index
-\end{center}
-\begin{center}
-    \small Left: Low Jaccard Index Right: High Jaccard Index
-\end{center}
-
-The Jaccard Index can be misleading because it treats similarity as a purely reciprocal relationship i.e. it only considers the proportion of overlap relative to the total union of the sets. 
-
-This means it cannot distinguish cases where one set is almost entirely contained within the other from cases where they only partially overlap. 
-
-Suppose 100 students take Physics, 1000 take Math, and 90 take both. 
-
-\begin{center}
-    \begin{tabular}{|c|c|c|}
-\hline
-    & In Math & Not in Math \\
-\hline
-In Physics & \cellcolor[HTML]{edf7ec} 90 & 10 \\
-\hline
-Not in Physics & \cellcolor[HTML]{fbecec} 910 & 0 \\
-\hline
-\end{tabular}
-\end{center}
-The Jaccard Index of 0.09 would suggest very low similarity between the two subjects. 
-But that is not really the case. Almost every Physics student is also in Math (90 out of 100) but it is missed because the denominator includes all 910 Math-only students, which dilutes the score. 
-
-
-\orangebox{Did you know that...}
-{The Jaccard Index is also referred to as the Tanimoto Index, and in meteorology it is commonly known as the Critical Success Index.}
-
-\textbf{Other related metrics}
-Overlap Coefficient, Cosine Similarity and Dice Coefficient address some limitations of Jaccard Index.
 
 % ---------- D-squared Log Loss Score ----------
 \clearpage
