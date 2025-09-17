@@ -6,17 +6,29 @@
 \section{Pixel Accuracy}
 \subsection{Pixel Accuracy}
 
+
 Pixel Accuracy is one of the most straightforward evaluation metrics for image segmentation tasks. It measures the proportion
 of correctly classified pixels across the entire image, comparing the predicted segmentation mask to the ground truth.
 
-\begin{center}
-    FORMULA GOES HERE
-\end{center}
+\noindent
+\tikz{
 
-A Pixel Accuracy of 1.0 indicates perfect segmentation, while lower values suggest a higher proportion of misclassified pixels.
-A common variation, Mean Pixel Accuracy (MPA), calculates accuracy per class and then averages across all classes.
-This adjustment ensures that smaller classes are not overshadowed by dominant ones, making MPA a more balanced evaluation
-metric in class-imbalanced datasets.
+\node[inner sep=2pt, font=\Large] (a) {
+\centering
+{
+$\displaystyle
+Pixel Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\color{nmlpurple}t_{j}}}
+$
+}
+};
+\noindent
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(2.5,0.05)$) to[bend left=15] node[pos=1, right] {Correctly Predicted Pixels} +(1,.5); 
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(2.5,-0.05)$) to[bend left=15] node[pos=1, left] {Total Number of Pixels} +(-1,-.5); 
+}
+\vspace{-0.5\baselineskip} %
+
+A Pixel Accuracy of 1.0 indicates perfect segmentation incase of balanced dataset, while lower values suggest a higher proportion of misclassified pixels.
+
 
 \textbf{When to use Pixel Accuracy?}
 
@@ -34,30 +46,103 @@ evaluations in datasets with dominant background pixels.
 \item Cannot differentiate per-class performance. A high Pixel Accuracy does not guarantee that all classes are well-segmented.
 }
 
+\clearpage
+
+In the example below, there are three classes: 0, 1, and 2. The ground truth contains all three classes, but the model’s predictions do not contain a single instance of class 2. 
+
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
+\renewcommand{\arraystretch}{1.5}
+
+
+
+ \begin{minipage}{0.5\linewidth}
+    \setcounter{table}{0}
+  \centering
+  \begin{tabular}{|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 \\
+\hline
+\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{ffde59} 1 \\
+\hline
+\cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{95e8ed}  2 & \cellcolor[HTML]{95e8ed} 2 \\
+\hline
+\end{tabular}
+ \end{minipage}%
+%
+ \begin{minipage}{0.5\linewidth}
+    \setcounter{table}{0}
+  \centering
+  \begin{tabular}{|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
+\hline
+\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 \\
+\hline
+\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{d8beff} 0 \\
+\hline
+\cellcolor[HTML]{ffde59} 1 &  \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{ffde59} 1 \\
+\hline
+\end{tabular}
+ \end{minipage}%
+
+
+Despite this,
+
+\[
+\text{Pixel Accuracy} = \frac{\text{Correctly predicted pixels}}{\text{Total number of pixels}} = \frac{6}{9} \approx 66\%
+\]
+
+Pixel accuracy therefore reflects overall correctness but does not reveal whether the model performs poorly on minority classes. 
+This is to show that high PA does not necessarily indicate superior segmentation performance.
+
+To compensate for this, Mean Pixel Accuracy (MPA), calculates accuracy per class and then averages across all classes.
+This adjustment ensures that smaller classes are not overshadowed by dominant ones, making MPA a more balanced evaluation
+metric in class-imbalanced datasets.
+
+\orangebox{Did you know that...}
+{Pixel Accuracy is part of a family of semantic segmentation evaluation metrics. 
+This family includes several related measures that each capture different aspects of performance.
+They can be sub-grouped into pixel level metrics, region/overlap based metrics, and class balanced metrics.}
+
+\textbf{Other related metrics}
+Other metrics in this family are Mean Pixel Accuracy (mPA), Intersection over Union (IoU) and Frequency Weighted IoU (FWIoU).
+
+
+
 % ---------- PCK ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{PCK}
-\subsection{Percentage of Correct Keypoints}
+\section{Percentage of Correct Keypoints}
+\subsection{PCK}
 
-Percentage of Correct Keypoints (PCK) is a popular metric in computer vision, specifically for evaluating human pose estimation
-and keypoint detection models. It measures the percentage of detected keypoints that fall within a certain distance threshold
-from the ground truth keypoints.
+A keypoint is a specific landmark on an object like an elbow, knee, or ankle in human pose estimation.
+
+PCK measures the percentage of predicted keypoints that are close enough to their true positions.
 
 \begin{center}
-    FORMULA GOES HERE
-    % $PCK = \frac{Number of correctly predicted keypoints}{Total keypoints}$
+\tikz{
+    \node[inner sep=2pt, font=\Large] (a) {
+        $\displaystyle
+        PCK(\alpha) = \frac{1}{\textcolor{nmlgreen}{N}} \sum_{i=1}^{N} 1\!\left(\textcolor{nmlpurple}{d_i} \le \textcolor{nmlyellow}{\alpha L}\right)
+        $
+    };
+    \draw[-latex,nmlyellow, semithick] ($(a.north)+(0.5,0.05)$) to[bend left=15] 
+        node[pos=1, right] {Threshold Radius} +(1,.5); 
+    \draw[-latex,nmlgreen, semithick] ($(a.south)+(-1.15,-0.1)$) to[bend left=15] 
+        node[pos=1, left] {Number of Keypoints} +(-1,-.5); 
+    \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.2,0.05)$) to[bend right=15] 
+        node[pos=1, right] {Euclidean Distance} +(1,-.5); 
+}
 \end{center}
 
-A prediction is considered correct if the Euclidean distance between the predicted keypoint $K_p$ and the ground truth
-keypoint $K_g$ is within a predefined threshold $\tau \geq ||K_p - K_g||$. The threshold $\tau$ is often defined
-relative to an object or body part size, such as $PCK@0.2$ (20\% of the torso length) or $PCKh@0.5$ (50\% of the head size).
+For each keypoint $i$, we measure the Euclidean distance $d_i$ between the prediction and the ground truth.
+A prediction is considered correct if $d_i$ is less than or equal to the threshold radius $\alpha L$, where $L$ is a reference length (for example, head size or torso length).
+
 
 \textbf{When to use PCK?}
 
-PCK is commonly used in tasks requiring keypoint localization, such as human pose estimation, object keypoint detection,
-and facial landmark detection. It is particularly useful when the absolute pixel error is not meaningful due to variations
-in object size.
+PCK is suited for tasks where you care about relative keypoint accuracy rather than raw pixel error.
+It works well in applications like human pose estimation, facial landmark detection, or object keypoint detection. 
 
 \coloredboxes{
 \item Scale Invariance. By normalizing the threshold based on body part size or image scale, PCK accounts for different
@@ -71,25 +156,52 @@ studies.
 \item Not Differentiable. Since it is a threshold-based metric, it cannot be directly used as a loss function for training
 deep learning models.
 }
+\clearpage
+
+\begin{figure}[htbp]
+    \centering
+    \hspace*{-0.5cm}
+    \includegraphics[width=1.1\textwidth]{figures/PCK_threshold_visual.png} % Full width
+    %\caption{Only the predictions within the threshold radius is considered correct.}
+    \label{fig:PCK_threshold}
+\end{figure}
+
+To find correct keypoint(green), we determine whether the predicted keypoint (blue) falls within a threshold distance from the ground truth (black).  
+The threshold is defined as a fraction $\alpha$ of a reference length $L$, typically the torso length.  
+
+The radius of the circle around each ground-truth joint is $r = \alpha \cdot L$.  
+
+In practice, we choose a small $\alpha$ for high-precision tasks, such as hand or facial keypoint detection.  
+We use a larger $\alpha$ when approximate locations suffice, for example in full-body pose estimation for activity recognition.
+
+
+\orangebox{Did you know that...}
+{A popular variant, \textbf{PCKh}, uses head size as the reference length \(L\). }
 
 % ---------- OKS ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{OKS}
-\subsection{Object Keypoint Similarity}
+\section{Object Keypoint Similarity}
+\subsection{OKS}
 
-Object Keypoint Similarity (OKS) is a key metric for evaluating keypoint-based object detection models, especially in human
-pose estimation tasks. It is designed to measure how closely predicted keypoints match the ground truth, considering factors
-like object scale and keypoint visibility.
+Object Keypoint Similarity (OKS) generalizes PCK by replacing the hard threshold with a continuous similarity score.  
 
-\begin{center}
-    FORMULA GOES HERE
-\end{center}
+Where PCK counts a keypoint as correct if it falls within a circle of radius $\alpha L$, OKS assigns a value between 0 and 1 based on how far the predicted keypoint is from the ground truth, normalized by object scale and keypoint-specific tolerance.
 
-OKS is analogous to Intersection over Union (IoU) for bounding boxes but applied to keypoint detection, providing a continuous
-similarity score rather than a strict pass/fail threshold. It ranges from 0 to 1, where 1 indicates a perfect match.
+\noindent
+\tikz{
+\node[inner sep=2pt, font=\Large] (a) {
+\centering
+{
+$\displaystyle
+{similarity}_i = \exp\!
+  -\,\frac{{{distance error}}^{2}}{ {{object scale}}^{2} \, {{tolerance}_i}^{2} }
+$
+}
+};
+}
 
-\textbf{When to use OKS?}
+\textbf{When to use OCK?}
 
 OKS is particularly suited for evaluating pose estimation and keypoint-based object detection models, such as: human pose
 estimation, facial landmark detection and benchmarking keypoint models.

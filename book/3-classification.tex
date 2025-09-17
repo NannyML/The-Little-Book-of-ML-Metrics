@@ -705,8 +705,7 @@ particularly in segmentation tasks. It measures the overlap between the predicte
 
 The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
 and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
-$FN$ as: $J = \frac{TP}{TP + FP + FN}$. Additionally, the Jaccard Index is a popular metric for evaluating computer vision
-models for image segmentation tasks, in those cases it is communly known as Intersection over Union (IoU).
+$FN$ as: $J = \frac{TP}{TP + FP + FN}$. 
 
 \textbf{When to use the Jaccard Index}
 
@@ -714,13 +713,65 @@ It is particularly useful when we need to measure the similarity between two set
 evaluate preferences in recommender systems, or measure the similarity between genetic sequences.
 
 \coloredboxes{
-    \item Intuitive interpretation. It provides a straightforward measure of overlap, useful for visualization.
-    \item Scale-Invariance. The Jaccard Index is not affected by the size of the sets being compared.
+    \item Simple and intuitive since it directly measures the proportion of shared elements between two sets.  
+    \item Bounded between 0 and 1 which makes it easy to interpret across different applications.  
 }
 {
-    \item Can be computationally expensive. Calculating the intersection and union for large or high dimensonal sets can be resource-intensive.
+    \item Calculating intersections and unions can be expensive for very large or high-dimensional datasets.  
 }
 
+\clearpage
+% inspo : https://towardsdatascience.com/you-dont-know-jacc-ard-f2c05c7ea039/
+
+Additionally, the Jaccard Index is a popular metric for evaluating computer vision
+models for image segmentation tasks, in those cases it is communly known as Intersection over Union (IoU).
+
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/Jaccard_Low.png}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/Jaccard_High.png}
+  \label{fig:test2}
+\end{minipage}%
+
+\begin{center}
+    \vspace{0.75em} 
+    \small Comparison of predictions (red) against ground truth (green). 
+    \small Left: Low Jaccard Index Right: High Jaccard Index
+\end{center}
+\begin{center}
+    \small Left: Low Jaccard Index Right: High Jaccard Index
+\end{center}
+
+The Jaccard Index can be misleading because it treats similarity as a purely reciprocal relationship i.e. it only considers the proportion of overlap relative to the total union of the sets. 
+
+This means it cannot distinguish cases where one set is almost entirely contained within the other from cases where they only partially overlap. 
+
+Suppose 100 students take Physics, 1000 take Math, and 90 take both. 
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+\hline
+    & In Math & Not in Math \\
+\hline
+In Physics & \cellcolor[HTML]{edf7ec} 90 & 10 \\
+\hline
+Not in Physics & \cellcolor[HTML]{fbecec} 910 & 0 \\
+\hline
+\end{tabular}
+\end{center}
+The Jaccard Index of 0.09 would suggest very low similarity between the two subjects. 
+But that is not really the case. Almost every Physics student is also in Math (90 out of 100) but it is missed because the denominator includes all 910 Math-only students, which dilutes the score. 
+
+
+\orangebox{Did you know that...}
+{The Jaccard Index is also referred to as the Tanimoto Index, and in meteorology it is commonly known as the Critical Success Index.}
+
+\textbf{Other related metrics}
+Overlap Coefficient, Cosine Similarity and Dice Coefficient address some limitations of Jaccard Index.
 
 % ---------- D-squared Log Loss Score ----------
 \clearpage
