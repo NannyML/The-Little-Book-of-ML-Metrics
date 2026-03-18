@@ -127,7 +127,9 @@ Metrics that one can derive from confusion matrix like accuracy, precision, reca
 \subsection{False Positive Rate}
 \thispagestyle{classificationstyle}
 
-The False Positive Rate (FPR), also known as the false alarm ratio or fall-out, measures how often negative instances are incorrectly classified as positive in binary classification.
+FPR answers: ``Of all the actual negatives, what fraction did we incorrectly flag as positive?'' In a spam filter, FPR is the rate
+at which legitimate emails end up in your spam folder. In medical screening, it's the rate of healthy patients getting a false alarm.
+FPR is one half of the ROC curve — the x-axis.
 
 \begin{center}
 \tikz{
@@ -144,20 +146,21 @@ $
 }
 \end{center}
 
-FPR ranges from 0 (no false alarms) to 1 (all predicted positives are incorrect). FPR can also be interpreted as the probability that a negative instance will be incorrectly identified as positive.
+FPR ranges from 0 (no false alarms) to 1 (every negative is misclassified). FPR = 1 $-$ Specificity (TNR), so a high
+Specificity means a low FPR. In the ROC curve, FPR is the x-axis: a good classifier hugs the left side (low FPR).
 
 \textbf{When to use FPR?}
 
-Use FPR when you need to evaluate how well a classifier avoids false positives, especially when false positives have significant costs, like in medical diagnostics or security systems. It's also useful for understanding the trade-off between true positive rate (sensitivity) and false positive rate.
+Use FPR when false alarms are costly: spam filtering (legitimate email lost), fraud detection (good transactions blocked), medical
+screening (healthy patients subjected to invasive follow-up). When both FPR and FNR matter, use the ROC curve to visualize the tradeoff.
 
 \coloredboxes{
-\item It provides a clear and intuitive measure of a classifier's false positive performance.
-\item It helps identify scenarios where the classifier is overly sensitive and prone to false alarms.
+\item Directly answers ``how often do we cry wolf?'' This is the metric that determines user trust in alert-based systems like fraud detection and intrusion detection.
+\item Independent of prevalence. FPR depends only on how the model treats actual negatives, so it's stable even when the positive class rate changes.
 }
 {
-\item FPR does not consider true positive instances.
-\item FPR can be sensitive to class imbalance, as it may be easier to achieve a low FPR when the negative class is dominant.
-\item FPR doesn't exist in isolation; it's often important to show its relationship with another key metric. (e.g., TPR, Precision, Recall).
+\item Blind to the positive class. A model that never detects any positives (all predictions = negative) achieves FPR = 0, which looks perfect. Always pair FPR with TPR (Recall).
+\item FPR alone doesn't tell you what fraction of your ``positive'' predictions are actually correct — that's Precision, a complementary metric with a very different denominator.
 }
 
 
@@ -203,7 +206,9 @@ Other metrics used alongside or instead of FPR include True Positive Rate (TPR),
 \subsection{False Negative Rate}
 \thispagestyle{classificationstyle}
 
-The False Negative Rate (FNR), also known as the miss rate, measures the proportion of actual positive instances incorrectly classified as negative in binary classification.
+FNR answers: ``Of all actual positives, what fraction did we miss?'' In cancer screening, FNR is the rate of undetected tumors.
+In fraud detection, it's the rate of fraudulent transactions that slip through. FNR = 1 $-$ Recall, so minimizing FNR is equivalent
+to maximizing Recall.
 \begin{center}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
@@ -219,11 +224,13 @@ $
 }
 \end{center}
 
-FNR ranges from 0 (no false negatives) to 1 (all positive instances misclassified). It represents the probability that a positive instance will be incorrectly identified as negative.
+FNR ranges from 0 (no misses) to 1 (every positive is missed). In high-stakes domains, even a small FNR can be
+catastrophic: an FNR of 5\% in airport security means 1 in 20 threats goes undetected.
 
 \textbf{When to use FNR?}
 
-Use FNR when the cost of missing positive cases is high (e.g., in medical diagnostics or fraud detection) or when you must balance false negatives and false positives.
+Use FNR when missing a positive is the primary risk: disease screening (undiagnosed cancer), security systems (missed
+threats), predictive maintenance (undetected failures). If false alarms are the bigger concern, focus on FPR instead.
 
 \coloredboxes{
 \item It directly measures the rate of missed positive cases.
@@ -279,8 +286,9 @@ are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
 \subsection{True Positive Rate (Recall/Sensitivity)}
 \thispagestyle{classificationstyle}
 
-Recall, also known as Sensitivity or True Positive Rate (TPR), is a crucial metric in classification tasks. It measures the proportion of actual
-positive instances that were correctly identified by the model. Recall answers the question: "Of all the positive cases, how many did our model correctly identify?”
+Recall answers: ``Of all actual positives, what fraction did we catch?'' Recall = 0.95 in cancer screening means 95\% of tumors are
+detected. Recall = 1 $-$ FNR, so maximizing Recall is equivalent to minimizing the miss rate. In any domain where missing a positive
+is dangerous (disease, fraud, defects), Recall is the metric you optimize first.
 
 \begin{center}
 \tikz{
@@ -301,18 +309,18 @@ Recall ranges from 0 to 1, where 1 indicates perfect recall (all positive instan
 possible recall (no positive instances were identified).
 
 \textbf{When to use Recall?}
-When the cost of false negatives is high (e.g., missing a fraudulent transaction or a critical medical diagnosis).
-When you need to identify as many positive instances as possible, even at the risk of some false positives. In imbalanced datasets where the positive class is rare but important.
+
+Use Recall in medical screening (catch every disease), fraud detection (catch every fraudulent transaction), security
+(detect every threat). Avoid as the sole metric — a model predicting everything as positive achieves Recall = 1.0 while
+being useless. Always pair with Precision or use F1 as a combined measure.
 
 \coloredboxes{
-\item Focuses on minimizing false negatives, which is crucial in many high-stakes applications.
-\item Provides insight into a model's ability to find all positive instances.
-\item Useful in scenarios where missing a positive is more costly than incorrectly labeling a negative
+\item The go-to metric when missing a positive is the worst outcome. In medical diagnosis, a Recall of 0.95 means 5\% of cases go undetected — the clinical implication of that number is immediately clear.
+\item Independent of the negative class. Recall depends only on TP and FN, so it's stable even when the number of negatives changes dramatically.
 }
 {
-\item Doesn't account for false positives, which can lead to high recall but poor precision.
-\item Can be misleading when used in isolation, as a model that predicts everything as positive would have perfect recall.
-\item Ignores performance on negative examples, which may be important in some contexts.
+\item Easily gamed. Predicting everything as positive gives perfect Recall (1.0) but floods the system with false positives. The Precision-Recall tradeoff is inescapable.
+\item Ignores true negatives entirely. A model that correctly rejects 99\% of negatives gets no credit from Recall. For a complete picture, combine with Specificity or use MCC.
 }
 
 
@@ -357,8 +365,9 @@ Other metrics used alongside or instead of Recall are Precision, F1-Score, F-bet
 \section{TNR (Specificity)}
 \subsection{True Negative Rate (Specificity)}
 
-True Negative Rate (TNR), also known as specificity, measures the proportion of actual negative instances correctly identified as such in binary classification.
-Specificity is a crucial metric in evaluating diagnostic tests and classification models.
+Specificity answers: ``Of all actual negatives, what fraction did we correctly identify as negative?'' It's the mirror of Recall —
+while Recall measures how well you detect positives, Specificity measures how well you reject negatives. TNR = 1 $-$ FPR.
+In a drug test, high Specificity means few false accusations; in email filtering, it means few legitimate emails marked as spam.
 
 \begin{center}
     \tikz{
@@ -420,8 +429,9 @@ Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall).
 \section{Accuracy}
 \subsection{Accuracy} 
 
-Accuracy is a frequently used classification metric as it provides an intuitive answer to the question, "How often is the classifier correct?”.
-Accuracy measures a model's overall correctness across all classes by calculating the proportion of correct predictions among the total number of cases examined.
+Accuracy answers the simplest possible question: ``What fraction of predictions were correct?'' If accuracy is 0.92, the model
+gets it right 92 times out of 100. Its simplicity is both its greatest strength and its most dangerous weakness — accuracy
+can be fatally misleading on imbalanced datasets (see the accuracy paradox below).
 
 % formula
 \begin{center}
@@ -440,20 +450,22 @@ Accuracy measures a model's overall correctness across all classes by calculatin
     }
 \end{center}
 
-Accuracy ranges from 0 to 1, with 1 representing perfect classification. While accuracy may be easy to understand, it can be misleading when dealing with imbalanced datasets.
-It is best used when the classes in the dataset are roughly balanced, and all misclassification errors are equally costly.
+Accuracy ranges from 0 to 1. But here's the trap: on a dataset with 99\% negatives, a model that always predicts ``negative''
+achieves 99\% accuracy while being completely useless. This is the \textbf{accuracy paradox} — high accuracy can mask total failure on the minority class.
 
 \textbf{When to use Accuracy?}
 
-Use accuracy when you need a simple, interpretable metric and your dataset is balanced. Avoid using it as the sole metric for imbalanced datasets or when different errors have varying costs.
+Use accuracy only when your classes are roughly balanced AND all errors are equally costly. Good for: multi-class image classification
+(ImageNet), sentiment analysis with balanced datasets. Avoid for: fraud detection (0.1\% positive), medical diagnosis, churn prediction — use
+F1, PR AUC, or Balanced Accuracy instead.
 
 \coloredboxes{
-\item Accuracy provides an easily understandable measure of model performance.
-\item It works well for balanced datasets where all classes are equally important.
+\item Universally understood. ``The model is 94\% accurate'' needs no explanation. This makes accuracy the default metric for non-technical stakeholder communication.
+\item Correct for balanced multi-class problems. When you have 10 balanced classes, accuracy directly reflects per-class performance.
 }
 {
-\item Accuracy can be misleading for imbalanced datasets, potentially hiding poor performance in minority classes.
-\item It doesn't distinguish between different types of errors (false positives vs. false negatives).
+\item The accuracy paradox. On a 99\% negative dataset, predicting all negative gives 99\% accuracy. Always check: ``what's the accuracy of a trivial baseline?'' If yours is barely higher, the model adds no value.
+\item Treats all errors equally. Missing a cancer diagnosis (FN) counts the same as a false alarm (FP). When error costs differ, use metrics that distinguish error types (Precision, Recall, F1).
 }
 
 \clearpage
@@ -541,8 +553,9 @@ If you need to weight classes differently, consider using a weighted average of 
 \section{Precision}
 \subsection{Precision}
 
-Precision measures the accuracy of positive predictions made by a classifier. It is the ratio of correctly predicted positive instances (true positives) to
-the total number of instances predicted as positive (true positives + false positives). It answers the question: “Out of all the cases indicated as positive, how many are actual positives?”
+Precision answers: ``When my model says positive, how often is it right?'' If Precision is 0.80, then 80\% of the items flagged
+as positive are truly positive, and 20\% are false alarms. Precision is critical when the cost of acting on a false positive is high
+— approving a fraudulent loan, recommending an irrelevant product, or sending a patient for unnecessary surgery.
 
 % formula
 \begin{center}
@@ -559,19 +572,21 @@ the total number of instances predicted as positive (true positives + false posi
     }
 \end{center}
 
-Precision ranges from 0 to 1, where 1 indicates perfect precision (all predicted positives are correct), and 0 indicates the worst performance (no predicted positives are correct).
+Precision ranges from 0 to 1. A deceptive edge case: a model that predicts positive only once and gets it right has
+Precision = 1.0 — technically perfect but practically useless. This is why Precision must always be paired with Recall.
 
 \textbf{When to use Precision?}
 
-Precision is important when the cost of false positives is high. For example, in spam detection, you don’t want legitimate emails ending up in the spam folder,
-and in recommendation systems, irrelevant suggestions (false positives) can frustrate users.
+Use Precision when false positives are costly: spam filtering (losing legitimate email), content moderation (censoring valid content),
+recommendation systems (irrelevant suggestions erode trust). Avoid as a standalone metric — a model can achieve perfect Precision by
+being extremely conservative (predict positive rarely). Always pair with Recall or use F1.
 
 \coloredboxes{
-\item Focuses on the accuracy of positive predictions.
-\item Critical in applications where false positives are costly or disruptive.
+\item Directly measures the ``signal-to-noise ratio’’ of your positive predictions. Precision = 0.80 means 80\% signal, 20\% noise.
+\item Independent of the number of actual negatives. Precision stays meaningful even on extremely imbalanced datasets where accuracy would be misleading.
 }
 {
-\item Doesn't account for false negatives, which can lead to high precision but poor recall.
+\item Blind to false negatives. A model that detects only 1 out of 1,000 fraudulent transactions but gets that one right has Precision = 1.0. Always pair with Recall.
 \item It can be misleading when used in isolation, as a model that predicts only one sample as positive and correctly gets it would have perfect precision.
 }
 
@@ -603,9 +618,9 @@ For a threshold-independent evaluation, consider the PR AUC.
 \section{F1-score}
 \subsection{F1-score}
 
-The F1 score or balanced F-score measures a classifier's predictive performance by assessing classes' performance. We can think of the F1-score as the harmonic mean of the model’s
-precision and recall, thus giving equal weight to both these metrics. So, the F1-score is critical when we care equally about avoiding false positives
-(e.g., incorrectly marking an important email as spam) and false negatives (e.g., missing a spam email).
+F1 combines Precision and Recall into a single number using the harmonic mean. Why harmonic, not arithmetic? Because it
+punishes imbalance: a model with 100\% Precision and 1\% Recall gets an arithmetic mean of 50.5\% (misleadingly high) but an
+F1 of just 0.02 (correctly terrible). F1 forces both metrics to be high — you can’t game it by sacrificing one for the other.
 
 
 % formula
@@ -676,8 +691,9 @@ When precision and recall are not equally important, use the F-beta score. For a
 \section{F-beta}
 \subsection{F-beta}
 
-The F-beta Score is a classification evaluation metric that balances the trade-off between precision and recall, allowing us to give different levels of importance to each.
-It is an extension of the F1-score, where the parameter $\beta$ determines the weight of recall relative to precision.
+F-beta generalizes F1 by letting you explicitly weight Precision vs Recall. Set $\beta = 2$ when missing a positive is twice as bad as
+a false alarm (medical screening: catch every disease). Set $\beta = 0.5$ when false alarms are twice as bad as misses (content moderation:
+don't censor valid content). F1 is the special case where $\beta = 1$ (equal weight).
 
 % formula
 \begin{center}
@@ -737,9 +753,9 @@ The F-beta score generalizes the F1-score. If you need a metric that also accoun
 \section{ROC AUC}
 \subsection{Area Under the Receiver Operating Characteristic Curve}
 
-The Receiver Operating Characteristic (ROC) plot illustrates a classifier's performance at different thresholds. The curve helps us understand the trade-off between FPR
-and TPR at different thresholds. ROC curves can be summarized in a single value by calculating their area under the curve (AUC), which ranges from 0 to 1.0.
-Given one randomly selected positive instance and one randomly chosen negative example, the AUC is the probability that the classifier will be able to tell which is which.
+ROC AUC is the single most popular threshold-independent classification metric. It has an elegant probabilistic interpretation:
+pick one random positive and one random negative — AUC is the probability that the model ranks the positive higher. AUC = 0.90
+means the model correctly ranks a random positive above a random negative 90\% of the time.
 
 % formula
 \begin{center}
@@ -760,13 +776,15 @@ Given one randomly selected positive instance and one randomly chosen negative e
     }
 \end{center}
 
-A common misconception is that a model with an AUC of 0.5 implies that the classifier is no better than random guessing. This misconception is a "fallacy of the undistributed middle":
-all random models score an AUC of 0.5, but not every model that scores an AUC of 0.5 is random.
+AUC = 1.0 is perfect, 0.5 is random. Common misconception: AUC = 0.5 doesn't always mean the model is random — a
+deliberately adversarial model can also score 0.5. But in practice, AUC near 0.5 strongly suggests the model has no
+discriminative power. AUC $>$ 0.9 is generally excellent; 0.7-0.9 is good; below 0.7 warrants investigation.
 
 \textbf{When to use ROC AUC?}
 
-ROC AUC is ideal when you need a threshold-independent measure to evaluate and compare different classifiers across various operating points. It's especially helpful when the costs of
-false positives and false negatives are unknown or equally important.
+Use ROC AUC when you want to evaluate a model's ranking ability across all possible thresholds — before choosing a deployment
+threshold. Ideal for comparing models (``Model A has AUC 0.92 vs Model B's 0.87''). Avoid for severely imbalanced datasets
+where the positive class is rare ($<$1\%) — use PR AUC instead, as ROC AUC can be misleadingly optimistic.
 
 \clearpage
 \thispagestyle{customstyle}
@@ -801,9 +819,9 @@ For imbalanced datasets where the positive class is rare, PR AUC is often prefer
 \section{PR AUC}
 \subsection{Area Under the Precision-Recall Curve}
 
-The Precision-Recall (PR) curve focuses on the trade-off between precision (positive predictive value) and recall (true positive rate) across various thresholds.
-Precision measures how many of the predicted positives are actually positive, while recall captures how many actual positives were identified.
-The PR AUC represents the area under this curve, offering a single-value summary of a model's performance.
+PR AUC is the metric of choice for imbalanced datasets where ROC AUC can be misleadingly optimistic. On a dataset with 1\% positives,
+a model that catches 90\% of positives but generates 10x as many false positives can still have ROC AUC = 0.95 — yet its PR AUC will be much
+lower, correctly exposing the flood of false alarms. PR AUC directly measures how useful your positive predictions are.
 
 % formula
 \begin{center}
@@ -863,8 +881,9 @@ For probability calibration assessment, consider the Brier Score or Log Loss.
 \section{Brier Score Loss}
 \subsection{Brier Score Loss}
 
-The Brier Score Loss is a metric used to evaluate the accuracy of predicted probabilities in binary classification problems.
-It calculates the mean squared error between the predicted probabilities and the actual binary outcomes, providing a measure of how well-calibrated the predictions are.
+The Brier Score is MSE applied to probabilities: it measures the mean squared difference between predicted probabilities and actual
+outcomes (0 or 1). If your model says ``70\% chance of rain'' and it doesn't rain, the Brier Score for that prediction is $(0.7 - 0)^2 = 0.49$.
+A well-calibrated model (where 70\% predictions actually happen 70\% of the time) achieves a low Brier Score.
 
 % formula
 \begin{center}
@@ -925,8 +944,10 @@ confident wrong predictions. For classification-based (non-probabilistic) evalua
 \section{Log Loss}
 \subsection{Log Loss}
 
-The Log Loss, also known as cross-entropy loss or logistic regression loss is a classification metric that evaluates the accuracy of predicted probabilities by
-penalizing predictions that are both incorrect and overly confident. It measures the distance between the predicted probabilities and the actual class labels.
+Log Loss brutally punishes confident wrong predictions. If your model says ``99\% chance this is spam'' and it's not spam,
+Log Loss for that prediction is $-\log(0.01) = 4.6$ — a massive penalty. Compare this to Brier Score which would give
+$(0.99)^2 = 0.98$. This makes Log Loss the go-to loss function for training classifiers, and a powerful metric for evaluating
+probability calibration.
 
 % formula
 \begin{center}
@@ -1232,9 +1253,9 @@ inter-annotator agreement, consider MCC or Balanced Accuracy instead.
 \section{MCC}
 \subsection{Matthews Correlation Coefficient}
 
-The Matthews Correlation Coefficient, also known as Phi coefficient for binary classification, is a measure of association between predicted and actual classifications
-that is particularly robust to imbalanced datasets. It can be interpreted as a correlation coefficient between binary variables. In binary classification the MCC can
-be written in terms of the confusion matrix elements.
+MCC is arguably the single best metric for binary classification. It's the only metric that uses all four confusion matrix values
+(TP, TN, FP, FN) and produces a high score only when a model does well on \textit{both} positive and negative classes. Unlike F1,
+which ignores true negatives, and unlike accuracy, which can be gamed on imbalanced data, MCC gives a balanced assessment.
 
 % formula
 \begin{center}
@@ -1252,20 +1273,22 @@ be written in terms of the confusion matrix elements.
     }
 \end{center}
 
-The coefficient ranges from -1 to 1, where 1 represents perfect prediction, 0 indicates random prediction, and -1 represents total disagreement between prediction and
-observation.
+MCC ranges from $-1$ (total disagreement) through 0 (random) to $+1$ (perfect). Think of it as Pearson correlation
+between the actual and predicted binary labels. MCC = 0.0 on an imbalanced dataset genuinely means ``no better than random,''
+unlike accuracy which can be 95\%+ while being useless.
 
 \textbf{When to use MCC?}
 
-When you need a balanced measure of classification performance that works well with imbalanced datasets and provides a single score that captures both the positive and
-negative class performance.
+Use MCC as your primary single-number metric for any binary classification task, especially with class imbalance. It should replace accuracy
+as the default in medical diagnosis, fraud detection, and anomaly detection. Avoid only when you specifically need to optimize for one class
+(use F1 or Recall instead) or need threshold-independent evaluation (use AUC).
 
 \coloredboxes{
-    \item Handles imbalanced datasets well.
-    \item Considers all aspects of the confusion matrix.
+    \item The only metric using all four confusion matrix entries. A model that cheats accuracy by always predicting the majority class gets MCC $\approx$ 0, correctly exposing it.
+    \item Symmetric: swapping positive and negative labels gives the same MCC. This means it's equally fair to both classes.
 }
 {
-    \item More complex to interpret than simpler metrics like accuracy or F1-score.
+    \item Harder to interpret than accuracy or F1. ``MCC = 0.65'' doesn't have the immediate intuition of ``accuracy = 92\%.'' But the interpretive effort is worth the reliability.
 }
 
 \clearpage
@@ -1276,17 +1299,20 @@ negative class performance.
     \includegraphics[width=0.6\textwidth]{figures/MCC_3d_surface.png}
 \end{figure*}
 
-\textbf{Figure. MCC} as a function of TP and FP, with FN=20 and TN=80 fixed. MCC increases as true positives grow and decreases as
-false positives accumulate. Notice MCC can become negative when the classifier performs worse than random.
+\textbf{Figure. MCC} as a function of TP and FP (with FN=20, TN=80 fixed). MCC rises when both TP is high and FP is low —
+it cannot be cheated by optimizing only one quadrant of the confusion matrix. Notice MCC goes negative when the classifier
+is worse than random.
 
 \orangebox{Did you know that...}
-{MCC was introduced by biochemist Brian W. Matthews in 1975 for assessing the quality of protein secondary structure predictions. It has since become one of the most
-recommended metrics in machine learning, with several studies arguing it should replace accuracy and F1-score as the standard evaluation metric for binary classification.}
+{A 2020 study by Chicco and Jurman (``The advantages of MCC over F1 score and accuracy'') showed that MCC is the only binary classification
+metric that produces a correct assessment even when the dataset is extremely imbalanced. They recommended it should replace accuracy and
+F1 as the standard metric. The ML community has been slow to adopt this, largely due to F1's familiarity.}
 
 \textbf{Other related metrics}
 
-Other metrics commonly explored alongside MCC are the F1-score, Cohen's Kappa, and Balanced Accuracy. Unlike F1, MCC takes into account all four confusion matrix categories and is
-generally regarded as a more informative single score for binary classification evaluation.
+If MCC is high but F1 is low (or vice versa), it signals that your model handles one class much better than the other. MCC $\approx$ F1
+means performance is balanced across classes. For threshold-independent evaluation, ROC AUC is complementary.
+Cohen's Kappa is mathematically related but designed for inter-annotator agreement, not classification evaluation.
 
 % ---------- EC ----------
 \clearpage
@@ -1294,7 +1320,9 @@ generally regarded as a more informative single score for binary classification 
 \section{EC}
 \subsection{Expected Cost}
 
-The Expected Cost (EC) metric is designed to evaluate the performance of decision-making systems. It is the expected value of a cost function that assigns a penalty to each combination of the system's decision and the true class of a sample. 
+Expected Cost bridges classification metrics and business economics. Instead of treating all errors equally (accuracy) or weighting
+by class (F1), EC lets you assign explicit dollar costs to each type of mistake. Approving a fraudulent loan costs \$80K;
+rejecting a good applicant costs \$40K. EC computes the expected monetary cost of the model's decisions. 
 
 \begin{center}
 \tikz{
