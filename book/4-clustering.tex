@@ -134,19 +134,20 @@ The Calinski-Harabasz (CH) Index scores a clustering without ground-truth labels
     }
 \end{center}
 
-CH has no upper bound, and the absolute value depends on the data, so $CH = 3000$ on one dataset says nothing about $CH = 5000$ on another. Its main use is picking $k$: compute CH across candidate values of $k$ on the same data and take the maximum. The degrees-of-freedom normalization ($k-1$ and $N-k$) is what stops the score from drifting upward as $k$ grows.
+CH has no upper bound and absolute values are not comparable across datasets --- its main use is picking $k$ by maximizing CH on the same data. The degrees-of-freedom normalization ($k-1$ and $N-k$) is what stops the score from drifting upward as $k$ grows.
 
 \textbf{When to use the CH Index?}
 
-When you have no ground-truth labels and need to choose $k$, or quickly score a clustering's compactness-vs-separation. Avoid CH when clusters are non-convex or have very different sizes --- it favors convex, equally-sized blobs and will misrank elongated or hierarchical structure. Use the Silhouette Score for those cases.
+When you have no ground-truth labels and need to choose $k$, or quickly score a clustering's compactness-vs-separation. Avoid CH on non-convex or unequally-sized clusters --- it favors convex, equally-sized blobs and misranks elongated or hierarchical structure. Use the Silhouette Score there.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Fast to compute. CH only needs cluster centroids and point-to-centroid distances, so it scales linearly in $n$. The Silhouette Score is $O(n^2)$ in the worst case --- CH is the natural choice when sweeping $k$ on $100\text{k}+$ points.
+    \item Fast: only needs centroids and point-to-centroid distances, so it scales linearly in $n$. Silhouette is $O(n^2)$ --- CH is the natural choice when sweeping $k$ on $100\text{k}+$ points.
     \item Degrees-of-freedom normalization keeps CH comparable across different $k$ on the same dataset, which is what makes the elbow/maximum trick work.
 }
 {
-    \item Assumes Euclidean geometry. Both BCSS and WCSS are sums of squared Euclidean distances, so CH misranks clusterings on non-Euclidean data (text embeddings with cosine distance, graph data). Compute CH in an embedding space where Euclidean distance is meaningful.
-    \item Favors convex, equally-sized clusters. Long, curved, or nested clusters score low even when they reflect real structure --- DBSCAN-style clusterings can look terrible by CH despite being correct.
+    \item Assumes Euclidean geometry. CH misranks clusterings on non-Euclidean data (text embeddings with cosine distance, graph data); compute it in an embedding where Euclidean distance is meaningful.
+    \item Favors convex, equally-sized clusters. Long, curved, or nested clusters score low even when they reflect real structure --- DBSCAN clusterings can look terrible by CH despite being correct.
 }
 
 \clearpage
@@ -304,7 +305,7 @@ When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the 
 \section{Completeness Score}
 \subsection{Completeness Score}
 
-The Completeness Score asks one question: are all members of a true class together in the same cluster? It is asymmetric --- a clustering that lumps every point into one giant cluster scores Completeness $= 1$ trivially, because every class is contained somewhere, even though the clustering conveys no information. This is why Completeness is always reported alongside Homogeneity, never alone.
+The Completeness Score asks one question: are all members of a true class together in the same cluster? It is asymmetric --- lumping every point into one giant cluster scores Completeness $= 1$ trivially, even though the clustering conveys no information. This is why Completeness is always reported alongside Homogeneity, never alone.
 
 \begin{center}
     \tikz{
@@ -320,15 +321,16 @@ The Completeness Score asks one question: are all members of a true class togeth
     }
 \end{center}
 
-$H(K \mid C)$ measures how much uncertainty about cluster labels remains once you know the class --- it falls to $0$ when each class lands in exactly one cluster. Dividing by $H(K)$ rescales to $[0, 1]$: $1$ means classes never get split across clusters, $0$ means class membership tells you nothing about cluster assignment.
+$H(K \mid C)$ is the uncertainty about cluster labels that remains once you know the class --- it falls to $0$ when each class lands in exactly one cluster. Dividing by $H(K)$ rescales to $[0, 1]$: $1$ means classes never get split, $0$ means class membership tells you nothing about cluster assignment.
 
 \textbf{When to use the Completeness Score?}
 
-When the task explicitly requires that all members of a class stay together: topic modeling where one topic shouldn't be split across clusters, customer cohort discovery where the high-value cohort shouldn't fragment. Always pair with Homogeneity (or use V-Measure for a single number); Completeness alone is gameable by collapsing every point into one cluster.
+When the task requires that all members of a class stay together: topic modeling where one topic shouldn't be split, customer cohort discovery where a cohort shouldn't fragment. Always pair with Homogeneity (or use V-Measure); Completeness alone is gameable by merging everything.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Diagnoses class fragmentation directly. If Completeness drops while Homogeneity stays high, the algorithm is over-clustering --- splitting real classes into too many pieces, which is the exact failure mode the score is designed to surface.
-    \item Clean interpretation in $[0, 1]$: $1$ means every class lives in one cluster, $0$ means the conditional entropy equals the marginal entropy --- class membership conveys nothing about cluster assignment.
+    \item Diagnoses class fragmentation directly. If Completeness drops while Homogeneity stays high, the algorithm is over-clustering --- splitting real classes into too many pieces.
+    \item Clean interpretation in $[0, 1]$: $1$ means every class lives in one cluster, $0$ means class membership conveys nothing about cluster assignment.
 }
 {
     \item Gameable by merging. A single cluster containing every point scores Completeness $= 1$ trivially. Always evaluate alongside Homogeneity, V-Measure, or NMI.
