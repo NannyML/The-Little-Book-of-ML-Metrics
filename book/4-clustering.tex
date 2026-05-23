@@ -7,8 +7,7 @@
 \section{Mutual Info Score}
 \subsection{Mutual Info Score}
 
-The Mutual Information (MI) Score can be used to quantify the amount of information shared between two clustering assignments.
-It's also particularly useful for comparing the similarity between ground-truth labels and predicted clustering labels.
+Mutual Information (MI) measures how much knowing one variable reduces uncertainty about another. In clustering, that's how much knowing the predicted cluster label tells you about the true class. A cluster that contains only one class gives high MI; a cluster that mixes classes evenly gives MI near $0$.
 
 % Formula
 \begin{center}
@@ -26,27 +25,19 @@ It's also particularly useful for comparing the similarity between ground-truth 
     }
 \end{center}
 
-The MI score ranges from 0 to +infinity, where 0 indicates no mutual information and higher values signify greater
-similarity. To address certain limitations of the standard MI score, such as lack of normalization and agreement by chance, variations like the
-Normalized Mutual Information (NMI) score and the Adjusted Mutual Information (AMI) score were developed.
-
-NMI ranges from 0 to 1, while AMI ranges from -1 to 1. The key difference between AMI and NMI is that AMI adjusts for chance. 
-AMI equals 0 when the clustering assignments are no more similar than would be expected by chance.
+MI ranges from $0$ (no information) to $+\infty$. The upper bound depends on label entropy, so raw MI is not comparable across datasets. NMI rescales to $[0, 1]$; AMI further subtracts chance agreement and ranges from $-1$ to $1$.
 
 \textbf{When to use Mutual Info Scores?}
 
-Use MI you need a basic measure of shared information between two clusterings. NMI when comparing clustering results with different numbers of
-clusters, as it normalizes the score to a standard range. AMI when you want to account for chance.
+When you have ground-truth labels and want to compare clusterings across runs or algorithms. Use NMI for cross-dataset comparison, AMI when chance agreement could inflate the score (few clusters, balanced classes). Avoid raw MI alone --- the unbounded scale is hard to interpret.
 
 \coloredboxes{
-    \item Symmetric. Switching true label with predicted ones will return the same score.
-    \item Lower and upper bounded in the case of the NMI and AMI variations.
-    \item Can be used as a consensus score.
+    \item Permutation-invariant. MI doesn't care which integer label is assigned to a cluster --- $\text{MI}([0,0,1],[0,0,1]) = \text{MI}([0,0,1],[1,0,0])$. This matters because cluster algorithms output arbitrary integer labels.
+    \item Detects partial structure that purity-style metrics miss. If a class is split into two clusters that each contain only that class, MI rewards the alignment; purity would treat it as a failure.
 }
 {
-    \item Requires knowledge of ground truth classes.
-    \item A permutation of the cluster label values doesn't change the score value in any way. eg. IM([0, 0, 1], [0, 0, 1]) = IM([0, 0, 1], [1, 0, 0])
-
+    \item Raw MI has no upper bound, so a high value on one dataset doesn't mean anything compared to a high value on another. Always report NMI or AMI instead.
+    \item Requires ground-truth labels. For unsupervised evaluation without labels, use the Silhouette Score or Davies-Bouldin Index.
 }
 
 \clearpage
@@ -57,16 +48,14 @@ clusters, as it normalizes the score to a standard range. AMI when you want to a
     \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} Comparison of external clustering metrics on well-separated vs overlapping clusters. All metrics score higher for well-separated data, but MI (unbounded) shows the largest absolute difference.
+\textbf{Figure.} Six external clustering metrics on the same 3-class problem, comparing well-separated clusters (cyan) against overlapping ones (red). All metrics drop on the overlapping case. Note that the MI scale depends on the number of classes (here bounded by $\log 3 \approx 1.1$) --- raw MI is not directly comparable across datasets, which is why NMI and AMI exist.
 
 \orangebox{Did you know that...}
-{Mutual Information comes from information theory, where it measures how much knowing one variable reduces uncertainty about another.
-In clustering, this translates to: how much does knowing the cluster assignment tell us about the true class labels?}
+{MI is the Kullback-Leibler divergence between the joint distribution of two labelings and the product of their marginals. If clusters and classes were statistically independent, MI would be exactly $0$ --- so MI literally measures how far the two labelings are from being independent. This is also why MI shows up in feature selection: the same formula measures how much a feature tells you about a target.}
 
 \textbf{Other related metrics}
 
-For a normalized version bounded [0,1], use NMI. For a chance-adjusted version, use AMI.
-Other external metrics include the Adjusted Rand Index and V-Measure.
+For cross-dataset comparison on a bounded $[0, 1]$ scale, use NMI. For chance-adjusted scoring, use AMI. When MI ranks two clusterings very differently from the Adjusted Rand Index, it usually means one of them captures partial structure (multiple clusters splitting a single class) that pair-counting metrics miss.
 
 % ---------- rand index ----------
 \clearpage
