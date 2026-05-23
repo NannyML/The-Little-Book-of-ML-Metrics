@@ -304,13 +304,7 @@ When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the 
 \section{Completeness Score}
 \subsection{Completeness Score}
 
-The Completeness Score evaluates the degree to which members of a ground-truth class are assigned to the same cluster in a
-clustering solution. It is one of two complementary measures (the other being Homogeneity Score) used to assess the quality of
-clustering. Completeness is mathematically defined using conditional entropy between cluster labels and assignments.
-
-% \[
-% \text{Completeness} = 1 - \frac{H(K \mid C)}{H(K)}
-% \]
+The Completeness Score asks one question: are all members of a true class together in the same cluster? It is asymmetric --- a clustering that lumps every point into one giant cluster scores Completeness $= 1$ trivially, because every class is contained somewhere, even though the clustering conveys no information. This is why Completeness is always reported alongside Homogeneity, never alone.
 
 \begin{center}
     \tikz{
@@ -326,26 +320,19 @@ clustering. Completeness is mathematically defined using conditional entropy bet
     }
 \end{center}
 
-A perfect completeness score of 1 indicates that all members of a single class are contained within a single cluster. 
-A score of 0 means the clustering completely fails to keep members of the same class together.
+$H(K \mid C)$ measures how much uncertainty about cluster labels remains once you know the class --- it falls to $0$ when each class lands in exactly one cluster. Dividing by $H(K)$ rescales to $[0, 1]$: $1$ means classes never get split across clusters, $0$ means class membership tells you nothing about cluster assignment.
 
 \textbf{When to use the Completeness Score?}
 
-The Completeness Score is particularly useful when you need to evaluate how well a clustering algorithm preserves class membership
-within individual clusters. It is commonly applied in scenarios such as document clustering, where documents belonging to the same
-topic should ideally belong to one cluster.
+When the task explicitly requires that all members of a class stay together: topic modeling where one topic shouldn't be split across clusters, customer cohort discovery where the high-value cohort shouldn't fragment. Always pair with Homogeneity (or use V-Measure for a single number); Completeness alone is gameable by collapsing every point into one cluster.
 
 \coloredboxes{
-    \item Class-Focused Evaluation. Completeness measures how well class integrity is preserved in clustering,
-    providing a clear diagnostic for one aspect of clustering quality.
-    \item Lower and upper bounded.
-    \item Clustering algorithm agnostic.
+    \item Diagnoses class fragmentation directly. If Completeness drops while Homogeneity stays high, the algorithm is over-clustering --- splitting real classes into too many pieces, which is the exact failure mode the score is designed to surface.
+    \item Clean interpretation in $[0, 1]$: $1$ means every class lives in one cluster, $0$ means the conditional entropy equals the marginal entropy --- class membership conveys nothing about cluster assignment.
 }
 {
-    \item Requires ground-truth labels.
-    \item Trade-Off with Homogeneity. Completeness tends to decrease as homogeneity increases, creating a challenge when
-    trying to optimize both simultaneously.
-    \item Not normalized with regards to random labeling.
+    \item Gameable by merging. A single cluster containing every point scores Completeness $= 1$ trivially. Always evaluate alongside Homogeneity, V-Measure, or NMI.
+    \item Not chance-adjusted. Random clusterings can produce non-trivial Completeness scores; AMI corrects for this baseline when needed.
 }
 
 \clearpage
@@ -354,17 +341,17 @@ topic should ideally belong to one cluster.
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Clustering_good_vs_bad.png}
+    \includegraphics[width=\textwidth]{figures/Completeness_Score_tradeoff.png}
 \end{figure*}
 
-\textbf{Figure.} Well-separated clusters (left) achieve high Completeness: all members of each class end up in the same cluster. Overlapping clusters (right) lower the score as class members scatter across clusters.
+\textbf{Figure.} Three clusterings of the same $3$-class data. With $k=3$, both scores hit $1$. Collapsing into one big cluster keeps Completeness at $1$ (every class is fully contained somewhere) but sends Homogeneity to $0$ --- the inflation that makes Completeness misleading on its own. Over-splitting into $k=9$ does the opposite: every cluster is pure, but each class spreads across multiple clusters and Completeness falls to $0.50$.
+
+\orangebox{Did you know that...}
+{Completeness and Homogeneity are the same formula with the arguments swapped: $\text{Homogeneity} = 1 - H(C \mid K)/H(C)$ and $\text{Completeness} = 1 - H(K \mid C)/H(K)$. So Completeness on (true, predicted) equals Homogeneity on (predicted, true). This is why V-Measure --- the harmonic mean of the two --- is symmetric in its arguments and doesn't care which side you call ``true.''}
 
 \textbf{Other related metrics}
 
-The Completeness Score is best used in conjunction with the Homogeneity Score or V-Measure. While completeness focuses on
-ensuring all members of a class are in the same cluster, homogeneity ensures that clusters do not mix members from different
-classes. V-Measure provides a balanced harmonic mean of these two metrics, offering a single comprehensive evaluation of
-clustering quality​.
+Completeness and Homogeneity always need to be read together; one without the other is incomplete. If Completeness is high and Homogeneity is low, you're over-merging; the opposite signals over-splitting. V-Measure gives the harmonic-mean summary, and AMI provides the chance-corrected version of the same intuition.
 
 % ---------- Homogeneity Score ----------
 \clearpage
