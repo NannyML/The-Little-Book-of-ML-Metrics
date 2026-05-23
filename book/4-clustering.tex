@@ -475,54 +475,37 @@ For chance correction, use AMI --- the information-theoretic analog of V-Measure
 \section{Davies Bouldin Index}
 \subsection{Davies Bouldin Index}
 
-The Davies-Bouldin Index measures the quality of clustering by evaluating the average similarity between each cluster \( C_i \) and its most similar neighboring cluster 
-\( C_j \) for $i,j = 1, 2, ... k$. This similarity \( R_{ij} \) is calculated as the ratio of the within-cluster distance (how tightly packed the cluster is) to the between-cluster distance (how far apart the clusters are).
-
-% The Davies Bouldin score is the average similairty measure of each cluster $C_{i}$ for $i = 1,2,...k$  with its most similar cluster $C_{j}$, where similarity $R_{ij}$ is the ratio of within-cluster distances to between cluster distance. So the clusters which are farther apart and less dispersed will result in a better score. The Davis Bouldin Index is defined as 
+The Davies-Bouldin (DB) Index scores a clustering without labels by asking, for each cluster, how much it overlaps with its worst neighbor. It takes the maximum of $(s_i + s_j)/d_{ij}$ over neighboring clusters --- sum of cluster widths divided by centroid distance --- then averages those worst-case ratios across $k$. Lower is better; the minimum identifies the optimal $k$.
 
 \begin{center}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
     {
     $\displaystyle
-    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} max_{{\color{nmlpurple}i} \neq {\color{cyan}j}} R_{{\color{nmlpurple}i}{\color{cyan}j}}
-    $
-    }
-    }; 
-    }
-% \end{center}
-
-% \begin{center}
-    \tikz{
-    \node[inner sep=2pt, font=\Large] (a) {
-    {
-    $\displaystyle
+    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} \max_{{\color{nmlpurple}i} \neq {\color{cyan}j}} R_{{\color{nmlpurple}i}{\color{cyan}j}}, \qquad
     R_{{\color{nmlpurple}i}{\color{cyan}j}} = \frac{s_{\color{nmlpurple}i} + s_{\color{cyan}j}}{d_{\color{nmlpurple}i\color{cyan}j}}
     $
     }
-    }; 
-    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.2,0.05)$) to[bend left=15] node[pos=1, right] {cluster diameter} +(1,.5); 
-    \draw[overlay,-latex,cyan, semithick] ($(a.south)+(0.6,-0.05)$) to[bend left=15] node[pos=1, left] {distance between centroids} +(-1,-.5); 
+    };
+    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,0.05)$) to[bend left=15] node[pos=1, right] {within-cluster spread} +(1,.5);
+    \draw[overlay,-latex,cyan, semithick] ($(a.south)+(2.5,-0.05)$) to[bend left=15] node[pos=1, right] {centroid distance} +(1,-.5);
     }
 \end{center}
 
-% A lower Davies-Bouldin score indicates better clustering, as it suggests that clusters are more compact and well-separated from one another.
-% where $s_{i}$ is the average distance between each point of cluster $i$ and centroid of that cluster and $d_{ij}$ is the distance between cluster centroids $i$ and $j$. The minium Davies Bouldin score is zero, with lower values indicating better clustering.
-
-Here, \( s_i \) represents the average distance between each point in cluster \( i \) and the centroid of that cluster,
-while \( d_{ij} \) is the distance between the centroids of clusters \( i \) and \( j \). The Davies-Bouldin score has a
-minimum value of zero, with lower scores indicating better-defined clusters that are compact and well-separated.
+$s_i$ is the average point-to-centroid distance inside cluster $i$ and $d_{ij}$ is the centroid distance between $i$ and $j$. DB is bounded below by $0$; in practice, $0.2$--$0.5$ is a strong clustering, values above $1$ indicate significant overlap, and the optimal $k$ is the one that \emph{minimizes} the score.
 
 \textbf{When to use the Davies-Bouldin Index?}
 
-Davies-Bouldin Index is particularly useful when we have ground truth labels and clusters are roughly spherical and centroid-based.
+When you have no labels and need a cheap internal score for picking $k$, especially when the worst-overlapping pair matters most. Avoid DB on non-convex or density-based clusters --- the centroid distance assumes Euclidean geometry, and the max over neighbors makes the score sensitive to one bad cluster pair. Use the Silhouette Score there.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item The computation of Davies-Bouldin Index is simpler than that of Silhouette scores, zero is the lowest possible score and closer the value to zero indicate a better separation.
+    \item Fast and label-free. Only needs centroids and within-cluster distances --- $O(nk)$, cheaper than Silhouette's $O(n^2)$. Practical for sweeping $k$ on large datasets.
+    \item Surfaces the worst neighbor pair. The $\max$ over $j$ means a single overlapping pair drags the score down --- useful for catching one bad cluster among otherwise good ones.
 }
 {
-\item Davies-Bouldin Index can generally be higher for convex clusters than other clusters, such as density based clusters.
-\item The usage of centroid distance limits the distance metric to Euclidean space.
+    \item Assumes Euclidean centroids. Built on within-cluster distance to centroid plus centroid-to-centroid distance, so it misranks non-Euclidean clusterings and density-based clusters (DBSCAN-style) just like CH.
+    \item Sensitive to within-cluster outliers. A single outlier inflates $s_i$, raising every $R_{ij}$ involving cluster $i$ even if the rest of the cluster is fine.
 }
 
 \clearpage
@@ -530,19 +513,17 @@ Davies-Bouldin Index is particularly useful when we have ground truth labels and
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Davies_Bouldin_elbow.png}
+    \includegraphics[width=0.75\textwidth]{figures/Davies_Bouldin_elbow.png}
 \end{figure*}
 
-\textbf{Figure.} Davies-Bouldin Index vs number of clusters. The minimum at k=4 identifies the optimal cluster count. Lower values indicate better-separated, more compact clusters.
+\textbf{Figure.} DB against $k$ on data with $4$ true clusters. The minimum at $k=4$ recovers the correct count; values to the left (under-clustering) leave clusters too wide, values to the right (over-clustering) shrink centroid distances and inflate $R_{ij}$. DB $=0.24$ at the minimum is a strong clustering; values above $1$ would signal significant overlap.
 
 \orangebox{Did you know that...}
-{The Davies-Bouldin Index was proposed by David L. Davies and Donald W. Bouldin in 1979. Unlike the Silhouette Score which evaluates each data point individually,
-the Davies-Bouldin Index works at the cluster level, making it computationally cheaper for large datasets.}
+{DB and CH read the same data and can disagree on the optimal $k$. CH averages between-cluster dispersion and rewards equal-sized clusters; DB takes the worst-case max and rewards uniformly well-separated pairs. When they disagree, DB usually picks a $k$ that gives a few compact clusters at the expense of the rest, while CH prefers configurations where the typical pair is well-separated. Reading both is the safest sanity check.}
 
 \textbf{Other related metrics}
 
-The Davies-Bouldin Index is an internal metric like the Silhouette Score and Calinski-Harabasz Index.
-Lower Davies-Bouldin values indicate better clustering, while higher Silhouette and CH values indicate better clustering.
+The Silhouette Score is the other label-free option, costing $O(n^2)$ but handling non-convex clusters better. CH is the third internal candidate --- it's maximized rather than minimized. When DB picks a different $k$ than Silhouette, DB has been swayed by one bad cluster pair (the $\max$ in the formula); Silhouette averages every point's neighbor distance and tends to be more robust to a single ugly cluster.
 
 % ---------- Fowlkes-Mallows Index ----------
 \clearpage
