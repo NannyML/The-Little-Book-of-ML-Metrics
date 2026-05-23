@@ -589,45 +589,40 @@ FMI is the pair-counting cousin of RI and ARI. When FMI is high but ARI is low, 
 \section{Silhouette Score}
 \subsection{Silhouette Score}
 
-The Silhouette Coefficient measures how well a data point fits within its assigned cluster compared to other clusters. 
-It quantifies how similar a sample is to its own cluster (cohesion) compared to the nearest neighboring cluster (separation).
-The Silhouette Coefficient $s(i)$ for a given data point $i$ in the cluster $C_I$, where $|C_I|$ is the number of data points in $C_I$, is given by:
+The Silhouette Score asks one question per point: are you closer to the rest of your cluster, or to the nearest other cluster? Averaging the per-point silhouette gives a score in $[-1, 1]$: $+1$ means every point clearly belongs where it was assigned, $0$ means points sit on cluster boundaries, $-1$ means points have been placed in the wrong cluster.
 
 \begin{center}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
 $\displaystyle
-s(i) = 
+s(i) =
 \begin{cases}
-\frac{{\color{cyan}b(i)} - {\color{nmlpurple}a(i)}}{max\left\{ {\color{nmlpurple}a(i)}, {\color{cyan}b(i)} \right\}}  & if\, |C_I| > 1 \\
-0  & if\, |C_I| = 1
+\dfrac{{\color{cyan}b(i)} - {\color{nmlpurple}a(i)}}{\max\left\{ {\color{nmlpurple}a(i)}, {\color{cyan}b(i)} \right\}}  & \text{if}\; |C_I| > 1 \\[4pt]
+0  & \text{if}\; |C_I| = 1
 \end{cases}
 $
 }
 };
-\draw[overlay,-latex,cyan, semithick] ($(a.north)+(-0.9,0.05)$) to[bend right=15] node[pos=1, left] {measures cohesion} +(-1,.5); 
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.2,0.05)$) to[bend left=15] node[pos=1, right] {measures separation} +(1,.5); 
-% \draw[overlay,-latex,nmlpurple, semithick] ($(b.north)+(0.1,0.05)$) to[bend left=15] node[pos=1, left] {True negatives} +(-1,-.5); 
+\draw[overlay,-latex,cyan, semithick] ($(a.north)+(-0.9,0.05)$) to[bend right=15] node[pos=1, left] {separation} +(-1,.5);
+\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.2,0.05)$) to[bend left=15] node[pos=1, right] {cohesion} +(1,.5);
 }
 \end{center}
 
-Where  $a(i)$ is the mean distance between a sample and all other points in the same cluster (mean intra-cluster distance), 
-and  $b(i)$ is the mean distance between a sample and all points in the nearest different cluster (mean nearest-cluster distance). 
-The value of  $s(i)$ lies between -$1$ and  $1$, where  $s(i) \approx 1$ indicates that the data point is well-clustered, 
- $s(i) \approx 0$ means the data point is on or very close to the boundary between two clusters, and  $s(i) \approx -1$ 
-suggests that the data point has been misclassified into the wrong cluster.
+$a(i)$ is the mean distance from point $i$ to other points in its own cluster (cohesion); $b(i)$ is the mean distance to points in the nearest other cluster (separation). Average $S$ above $0.7$ is strong, $0.5$--$0.7$ is reasonable, below $0.25$ usually means the clustering doesn't reflect the data's geometry. Because the score is defined per-point, you can inspect which points are poorly assigned --- something CH and Davies-Bouldin cannot offer.
 
-\textbf{When to use Silhouette Score?}
+\textbf{When to use the Silhouette Score?}
 
-Use Silhouette Score when the ground truth labels are unknown and the evaluation must be performed using the model itself.
+When you have no labels, need to handle non-convex clusters or non-Euclidean distance, or want per-point diagnostics from the silhouette plot. Avoid Silhouette on very large datasets ($n > 100\text{k}$): the $O(n^2)$ pairwise computation gets expensive, and CH or Davies-Bouldin will usually pick the same $k$ much faster.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item It provides a clear and intuitive measure of how well clusters are separated, +1 highly dense and -1 for incorrect clustering.
+    \item Per-point granularity. The silhouette is defined for every point, so you can plot the silhouette diagram and identify exactly which clusters contain misassigned points (those with $s(i) < 0$).
+    \item Works with any pairwise distance --- cosine, edit distance, custom metric. Unlike CH and Davies-Bouldin, no Euclidean assumption is baked in.
 }
 {
-\item Silhouette Score can generally be higher for convex clusters than other clusters, such as density based clusters.
-\item Higher Silhouette Score doesn't necessarily indicate that the clusters will have equal sizes; the clusters can still vary in cardinality.
+    \item $O(n^2)$ to compute. Naive pairwise distance gets slow past $100\text{k}$ points; CH and Davies-Bouldin are the practical alternatives at that scale.
+    \item Favors convex, well-separated clusters. Density-based clusters (DBSCAN) and elongated shapes often score lower than k-means blobs even when they capture more meaningful structure.
 }
 
 \clearpage
@@ -638,13 +633,11 @@ Use Silhouette Score when the ground truth labels are unknown and the evaluation
     \includegraphics[width=\textwidth]{figures/Silhouette_Score_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} Silhouette plots for well-separated (S=0.88) vs overlapping (S=0.63) clusters. Each horizontal bar represents a data point; wider bars indicate better-assigned points. The dashed line shows the average score.
+\textbf{Figure.} Silhouette plots for well-separated ($S = 0.88$) vs overlapping ($S = 0.63$) clusterings. Each horizontal bar is a single point's silhouette, sorted within its cluster; the dashed line marks the dataset average. The overlapping case has many points near $0$ (boundary points) --- the per-point view shows exactly which points are ambiguous, which the average $S$ alone would hide.
 
 \orangebox{Did you know that...}
-{The Silhouette Coefficient was introduced by Peter Rousseeuw in 1987. Silhouette plots, which visualize the coefficient for each data point sorted by cluster,
-are one of the most popular tools for visually assessing cluster quality and choosing the optimal number of clusters.}
+{The silhouette plot is the actual practitioner tool, not the average score. The shape of the plot tells you more than the number: a single cluster with mostly low silhouette flags one bad cluster; uniformly mediocre silhouette across every cluster means the geometry isn't separable in this feature space; a few negative bars within an otherwise good cluster point to specific misassigned samples. The average collapses all three stories into one number.}
 
 \textbf{Other related metrics}
 
-The Silhouette Score is an internal metric (no ground truth needed), like the Davies-Bouldin Index and Calinski-Harabasz Index.
-For external evaluation when labels are available, consider the Adjusted Rand Index or Normalized Mutual Information.
+CH and Davies-Bouldin pick $k$ faster but assume Euclidean centroids; Silhouette is the right choice when distance is non-Euclidean (text embeddings with cosine, graphs, custom). When Silhouette picks a different $k$ than CH or Davies-Bouldin, the disagreement is usually about cluster size uniformity --- both CH and Davies-Bouldin penalize uneven sizes more than Silhouette, which averages each point's local view.
