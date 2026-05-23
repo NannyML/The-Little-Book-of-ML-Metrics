@@ -361,8 +361,7 @@ Completeness and Homogeneity always need to be read together; one without the ot
 \section{Homogeneity Score}
 \subsection{Homogeneity Score}
 
-The Homogeneity Score measures how well each cluster contains only data points from a single ground-truth class.
-It is designed to assess the purity of clusters by evaluating the entropy of class distributions within each cluster.
+The Homogeneity Score is the mirror question of Completeness: is each cluster made of points from a single true class? It's asymmetric --- splitting every point into its own cluster gives Homogeneity $= 1$ trivially, because every one-point cluster is pure by definition, even when the clustering reveals no structure. This is why Homogeneity is always paired with Completeness, never reported alone.
 
 \begin{center}
     \tikz{
@@ -378,26 +377,20 @@ It is designed to assess the purity of clusters by evaluating the entropy of cla
     }
 \end{center}
 
-A score of 1.0 indicates perfect homogeneity, meaning every cluster contains data points from only one class. 
-A score of 0.0 indicates that the class distribution within clusters mirrors the overall dataset distribution,
-showing no class distinction within clusters.
+$H(C \mid K)$ is the class uncertainty that remains once you know the cluster --- it falls to $0$ when each cluster contains points from only one class. Dividing by $H(C)$ rescales to $[0, 1]$: $1$ means clusters are perfectly pure, $0$ means cluster assignment tells you nothing about class membership.
 
 \textbf{When to use the Homogeneity Score?}
 
-The Homogeneity Score is particularly valuable when evaluating the ability of a clustering algorithm to form well-defined,
-class-pure clusters. Common applications include customer segmentation, where customers within a cluster should share similar characteristics.
-Topic modeling, where documents within a cluster should belong to the same topic.
+When the task requires each cluster to be class-pure: customer segmentation where one segment shouldn't mix profiles, document clustering where one cluster shouldn't span topics. Always pair with Completeness (or use V-Measure); Homogeneity alone is gameable by over-splitting --- in the limit, $k = n$ gives Homogeneity $= 1$ trivially.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Cluster Purity Focus. Homogeneity emphasizes the purity of clusters, providing a clear diagnostic of whether
-    clusters contain mixed classes.
-    \item Lower and upper bounded.
-    \item Clustering algorithm agnostic.
+    \item Surfaces over-merging directly. If Homogeneity drops while Completeness stays high, the algorithm has merged distinct classes into the same cluster --- the exact failure mode the score is designed to detect.
+    \item Clean $[0, 1]$ interpretation: $1$ means each cluster contains a single class, $0$ means clusters mirror the marginal class distribution and convey no information.
 }
 {
-    \item Requires ground-truth labels.
-    \item Trade-Off with Completeness. Homogeneity tends to decrease as completeness increases, creating a challenge when trying to optimize both simultaneously.
-    \item Not normalized with regards to random labeling.
+    \item Gameable by over-splitting. Setting $k = n$ (each point its own cluster) gives Homogeneity $= 1$ trivially. Always pair with Completeness or report V-Measure.
+    \item Not chance-adjusted. Random clusterings can produce non-trivial Homogeneity scores; AMI corrects for this baseline.
 }
 
 
@@ -407,16 +400,17 @@ Topic modeling, where documents within a cluster should belong to the same topic
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Clustering_good_vs_bad.png}
+    \includegraphics[width=\textwidth]{figures/Completeness_Score_tradeoff.png}
 \end{figure*}
 
-\textbf{Figure.} Well-separated clusters (left) achieve high Homogeneity: each cluster contains only one class. Overlapping clusters (right) mix classes within clusters, lowering the score.
+\textbf{Figure.} The same three clusterings as the Completeness page, read from Homogeneity's angle. With $k=3$, Homogeneity hits $1$. Collapsing into one big cluster sends Homogeneity to $0$ --- one cluster containing every class, the symmetric failure mode that Completeness alone cannot detect. Over-splitting into $k=9$ pushes Homogeneity to $1$ trivially, exposing its gameable direction.
+
+\orangebox{Did you know that...}
+{At the extremes, Homogeneity and Completeness behave like precision and recall. $k = 1$ scores Completeness $= 1$ but Homogeneity $= 0$ (one big bucket, all classes mixed); $k = n$ scores Homogeneity $= 1$ but Completeness near $0$ (every point its own bucket, classes scattered). V-Measure takes their harmonic mean precisely to penalize both extremes --- the same trick that makes the F-score useful when precision and recall pull in opposite directions.}
 
 \textbf{Other related metrics}
 
-Homogeneity is best used alongside Completeness or V-Measure. While Homogeneity ensures clusters are internally consistent with
-respect to class membership, Completeness ensures that all members of a class are grouped together. V-Measure combines the two
-into a single harmonic mean, providing a balanced evaluation of clustering quality
+Homogeneity and Completeness mirror each other: if Homogeneity is high but Completeness is low, the algorithm is over-splitting; the opposite signals over-merging. V-Measure summarizes the pair as a harmonic mean; AMI provides the chance-corrected information-theoretic version of the same intuition.
 
 % ---------- V Measure ----------
 \clearpage
