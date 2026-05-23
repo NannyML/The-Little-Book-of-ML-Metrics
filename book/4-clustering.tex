@@ -226,9 +226,7 @@ The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ tab
 \section{Pair Confusion Matrix}
 \subsection{Pair Confusion Matrix}
 
-The Pair Confusion Matrix is a clustering evaluation metric used to assess the similarity between two clusterings by
-comparing pairwise relationships between data points. It is a $2x2$ matrix that extends the idea of the confusion matrix
-to clustering scenarios, focusing on whether pairs of points are grouped together or not.
+The Pair Confusion Matrix is a $2 \times 2$ table that asks one binary question for every pair of points: do the two clusterings agree on whether the pair belongs together? It collapses arbitrary clusterings (any $k$, any $C$) into the same four-entry summary, which is the structure that powers RI, ARI, and the Fowlkes-Mallows Index.
 
 \begin{center}
     $\displaystyle
@@ -239,21 +237,19 @@ to clustering scenarios, focusing on whether pairs of points are grouped togethe
     $
 \end{center}
 
-It has four key components, each representing a count of point pairs in specific configurations across two clusterings. It can
-also be shown that $C_{00} + C_{11} + C_{10} + C_{01} = \frac{n(n-1)}{2}$
+$C_{00}$ counts pairs both clusterings separated, $C_{11}$ counts pairs both kept together, and $C_{01}, C_{10}$ are the disagreements. The four entries always sum to all point pairs $\binom{n}{2}$ --- sklearn's implementation counts each pair in both orderings, so its entries sum to $n(n-1)$, a $2\times$ scaling that cancels out in every derived metric.
 
 \textbf{When to use the Pair Confusion Matrix?}
 
-Use the Pair Confusion Matrix when evaluating clustering algorithms that produce hard cluster assignments and when ground truth
-is available.
+When you want to debug a clustering at the pair-counting level --- to see whether the algorithm is over-splitting (high $C_{10}$: same true class, different predicted cluster) or over-merging (high $C_{01}$: different true class, same predicted cluster). Avoid for large $n$; counting $\binom{n}{2}$ pairs scales quadratically and gets slow past a few hundred thousand points.
 
 \coloredboxes{
-    \item Breaks down clustering agreements and disagreements into familiar components (TP, TN, FP, FN).
+    \item Separates failure modes that summary metrics hide. $RI = 0.85$ doesn't tell you whether the algorithm is over-splitting or over-merging; comparing $C_{01}$ and $C_{10}$ does.
+    \item Works for any $k$ and $C$. The Contingency Matrix can't handle a $10$-class problem clustered into $3$ groups cleanly; the pair confusion matrix just counts pairs and stays $2 \times 2$.
 }
 {
-    \item Requires ground-truth labels.    
-    \item Computation can be slow for large datasets due to the pairwise comparison of all points.
-    \item Does not provide a single score.
+    \item $O(n^2)$ to construct naively. Heavy for very large datasets --- sample first or use a sparse implementation.
+    \item Same vs different is a coarse view: two clusterings can produce identical pair confusion matrices and still disagree on which specific class each cluster represents.
 }
 
 \clearpage
@@ -265,28 +261,26 @@ is available.
     \includegraphics[width=0.45\textwidth]{figures/Pair_Confusion_Matrix.png}
 \end{figure*}
 
-Analyse the following example to understand how to build the matrix. Lets say we have the following clustering results.
+\textbf{Figure.} Pair Confusion Matrix on a $300$-point clustering: $C_{00} = 58{,}812$ pairs separated by both clusterings, $C_{11} = 28{,}544$ pairs kept together, and roughly $1{,}200$ disagreements each way. The diagonal dominates because pairs that should be apart vastly outnumber pairs that should be together --- exactly the $TN$-heavy baseline that inflates raw RI and motivates ARI's chance correction.
 
+To see how the matrix is built, take a $4$-point clustering:
 \[
-\begin{array}{l|cccccc}
-    & \text{$obj_{1}$} & \text{$obj_{2}$} & \text{$obj_{3}$} & \text{$obj_{4}$} \\
+\begin{array}{l|cccc}
+    & obj_{1} & obj_{2} & obj_{3} & obj_{4} \\
 \hline
-\text{True Labels} & 0 & 0 & 1 & 0 \\
-\text{Pred Labels} & 0 & 1 & 0 & 1 \\
+\text{true} & 0 & 0 & 1 & 0 \\
+\text{pred} & 0 & 1 & 0 & 1 \\
 \end{array}
 \]
 
-With this we can compute $C_{00}$, $C_{11}$, $C_{10}$ and $C_{01}$.
-
+Each ordered pair is classified by checking same/different in both clusterings:
 \begin{itemize}
-    \item $C_{00}$: number of pairs with different true and pred labels = $(obj_{2}, obj_{3})$; $(obj_{3}, obj_{4})$; $(obj_{3}, obj_{2})$; $(obj_{4}, obj_{3})$ = $4$
-    \item $C_{11}$: number of pairs with same true and pred labels = $(obj_{2}, obj_{4})$; $(obj_{4}, obj_{2})$ = $2$
-    \item $C_{10}$: number of pairs with same true but different pred labels = $(obj_{1}, obj_{2})$; $(obj_{1}, obj_{4})$;
-    $(obj_{2}, obj_{1})$; $(obj_{4}, obj_{1})$ = $4$
-    \item $C_{01}$: number of pairs with different true but same pred labels = $(obj_{1}, obj_{3})$; $(obj_{3}, obj_{1})$ = $2$
+    \item $C_{00}$ (separated by both): $(obj_{2}, obj_{3})$, $(obj_{3}, obj_{4})$ and their reverses $= 4$
+    \item $C_{11}$ (kept together by both): $(obj_{2}, obj_{4})$ and reverse $= 2$
+    \item $C_{10}$ (same true, different predicted): $(obj_{1}, obj_{2})$, $(obj_{1}, obj_{4})$ and reverses $= 4$
+    \item $C_{01}$ (different true, same predicted): $(obj_{1}, obj_{3})$ and reverse $= 2$
 \end{itemize}
 
-Thus, the final Pair Confusion Matrix looks like:
 \begin{center}
     \[
         C =
@@ -298,14 +292,11 @@ Thus, the final Pair Confusion Matrix looks like:
 \end{center}
 
 \orangebox{Did you know that...}
-{The Pair Confusion Matrix is the foundation for computing the Rand Index. In fact, $RI = (C_{00} + C_{11}) / (C_{00} + C_{11} + C_{10} + C_{01})$,
-making the pair confusion matrix the clustering equivalent of the classification confusion matrix.}
-
+{This matrix is the source for every pair-counting metric. $RI = (C_{00} + C_{11}) / n(n-1)$ is literally classification accuracy applied to the pair-by-pair decision; ARI rescales the same quantity for chance; the Fowlkes-Mallows Index takes a geometric mean of pairwise precision and recall; the Jaccard variant drops $C_{00}$ to avoid the imbalance issue. Four entries, an entire family of metrics.}
 
 \textbf{Other related metrics}
 
-The Pair Confusion Matrix provides the raw counts from which the Rand Index and Adjusted Rand Index are computed.
-For a non-pairwise view, see the Contingency Matrix. For a single summary score, consider the Fowlkes-Mallows Index.
+When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the ``same cluster'' decision) and pair-wise precision drops; when $C_{10} \gg C_{01}$ it's over-splitting, and pair-wise recall drops --- FMI surfaces that asymmetry directly. The Contingency Matrix gives the same information at the class level rather than the pair level; use it when the diagnostic needs to identify \emph{which} classes are conflated, not just \emph{how many} pairs are wrong.
 
 % ---------- Completeness Score ----------
 \clearpage
