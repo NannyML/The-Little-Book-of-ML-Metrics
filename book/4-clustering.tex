@@ -418,10 +418,7 @@ Homogeneity and Completeness mirror each other: if Homogeneity is high but Compl
 \section{V Measure}
 \subsection{V Measure}
 
-V-Measure is an external clustering evaluation metric that combines the strengths of two complementary criteria: Homogeneity
-(how pure clusters are with respect to ground-truth classes) and Completeness (how well all members of a class are grouped into
-the same cluster). It is computed as the harmonic mean of these two scores, similar to how precision and recall are combined into
-the F-score.
+V-Measure is the harmonic mean of Homogeneity and Completeness --- the F-score of clustering. It collapses the two-metric tradeoff into a single bounded number, penalizing extremes the way an F-score penalizes precision-recall imbalance. A clustering with Homogeneity $= 1$ and Completeness $= 0.5$ scores $V = 0.67$, not the arithmetic mean $0.75$.
 
 \begin{center}
     \tikz{
@@ -438,24 +435,20 @@ the F-score.
     }
 \end{center}
 
-By design, V-Measure is bounded between 0.0 and 1.0, with higher scores indicating better clustering quality. A score of 1.0
-means that both homogeneity and completeness are perfectly satisfied.
+At $\beta = 1$ (the default), $V = 2hc/(h+c)$ is the standard harmonic mean. $\beta > 1$ tilts the score toward completeness, $\beta < 1$ toward homogeneity. The range is always $[0, 1]$, with $1$ requiring both components to be exactly $1$.
 
-\textbf{When to use the V-measure?}
+\textbf{When to use V-Measure?}
 
-V-Measure is ideal for evaluating clustering solutions when you need a balanced assessment of both purity within clusters and the
-completeness of class representation.
+When you want a single external clustering score and care about both cluster purity and class preservation. Use $\beta \neq 1$ only when the application weights one side --- topic modeling often takes $\beta = 0.5$ when topic purity matters more. Avoid V-Measure when chance baselines matter; use AMI instead, the chance-corrected information-theoretic analog.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Combines homogeneity and completeness into a single score, providing a holistic evaluation of clustering quality.
-    \item The $\beta$ parameter allows customization to prioritize either homogeneity or completeness based on specific use cases.
-    \item Clustering algorithm agnostic.
+    \item The harmonic mean punishes both gameable extremes ($k=1$ or $k=n$) that fool Homogeneity or Completeness in isolation --- $V$ stays low if either component does.
+    \item Tunable via $\beta$: when the application explicitly weights purity over class preservation (or vice versa), V-Measure adjusts continuously, no need to swap metrics.
 }
 {
-    \item Requires ground-truth labels.
-    \item V-Measure inherits the trade-off between homogeneity and completeness. Adjusting one often impacts the other, making it
-    challenging to optimize both in some scenarios.
-    \item Not normalized with regards to random labeling.
+    \item Not chance-adjusted. Random clusterings can produce non-zero V-Measure; AMI corrects for this baseline.
+    \item Hides the diagnostic. $V = 0.7$ doesn't say whether you're over-merging or over-splitting --- read Homogeneity and Completeness separately to identify the failure mode.
 }
 
 \clearpage
@@ -467,13 +460,14 @@ completeness of class representation.
     \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} V-Measure (rightmost bars) combines Homogeneity and Completeness. All external metrics score higher for well-separated clusters, with V-Measure providing a balanced view.
+\textbf{Figure.} V-Measure (rightmost pair) collapses Homogeneity and Completeness into one number. On this $3$-class problem, well-separated clusters give $V = 1.00$ and the overlapping case drops to $0.91$ --- the same as $H$ and $C$ individually here, because both moved together. When $H$ and $C$ diverge (one inflated, one collapsing), V-Measure exposes the asymmetry that either component hides on its own.
+
+\orangebox{Did you know that...}
+{At $\beta = 1$, V-Measure on (true, predicted) equals V-Measure on (predicted, true) --- it is symmetric in its arguments, because Completeness on (true, predicted) equals Homogeneity on (predicted, true) and the harmonic mean is symmetric in $h$ and $c$. So the same metric works for evaluating against ground truth and for comparing two clusterings to each other --- no need to designate one as the reference.}
 
 \textbf{Other related metrics}
 
-V-Measure excels as a comprehensive metric for clustering evaluation. However, for specific insights, it can be supplemented with
-individual Homogeneity and Completeness scores. Additionally, pair-based measures like Adjusted Rand Index (ARI) or
-information-theoretic measures like Variation of Information (VI) may provide complementary perspectives in specific use cases​.
+For chance correction, use AMI --- the information-theoretic analog of V-Measure with the random baseline subtracted. ARI provides the pair-counting alternative on the same chance-corrected scale. When V-Measure is high but ARI is low, the clustering captures information-theoretic structure (mutual information between labels) but disagrees pair-wise --- often a sign that one true class is split into multiple pure sub-clusters.
 
 % ---------- Davis Bouldin Index ----------
 \clearpage
