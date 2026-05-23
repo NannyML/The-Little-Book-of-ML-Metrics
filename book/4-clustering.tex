@@ -531,8 +531,7 @@ The Silhouette Score is the other label-free option, costing $O(n^2)$ but handli
 \section{FMI}
 \subsection{Fowlkes-Mallows Index}
 
-The Fowlkes–Mallows Index (FMI) is an external evaluation metric used to quantify the similarity between two clustering results
-or between a clustering result and a ground-truth classification. It is defined as the geometric mean of precision and recall.
+The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and recall. For every pair of points, it asks whether the two clusterings agreed on placing them together; FMI scores how often they did, relative to how often each clustering said ``together'' on its own. The geometric mean structure rewards balance --- if either pair-wise precision or recall is low, FMI drops.
 
 \begin{center}
     \tikz{
@@ -548,23 +547,20 @@ or between a clustering result and a ground-truth classification. It is defined 
     }
 \end{center}
 
-The FMI ranges from 0 to 1, where a higher value indicates a greater similarity between the clustering result and the ground
-truth.
+FMI ranges from $0$ to $1$. Unlike raw RI, it does not inflate trivially --- one-sided clusterings get penalized because the geometric mean is bounded above by the smaller of pair-wise precision and recall. Like RI, however, FMI is not chance-adjusted; use AMI or ARI when cross-dataset comparison or a meaningful chance baseline matters.
 
-\textbf{When to use FMI?}
+\textbf{When to use the FMI?}
 
-The Fowlkes–Mallows Index is particularly useful when assessing how well a clustering algorithm performs relative to a
-known classification. Measuring the similarity between two different clustering results to determine consistency.
+When you want a balanced pair-counting score that drops faster than raw RI on partial agreement and chance correction is not essential. Useful for hierarchical clustering evaluation where partial structure matters. Avoid FMI alone for chance-sensitive comparisons --- random clusterings can score $0.3$ or more by chance; use ARI for the chance-corrected pair-counting alternative.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Provides a straightforward measure of clustering quality based on well-understood concepts of precision and recall.
-    \item Can be used to evaluate both flat and hierarchical clustering algorithms.
-    \item Clustering algorithm agnostic.
+    \item Geometric mean penalizes imbalance. Pair-wise precision $= 0.9$ and recall $= 0.5$ gives FMI $= 0.67$, not the arithmetic mean $0.7$ --- one-sided clusterings cannot hide behind a strong precision or recall alone.
+    \item Bounded in $[0, 1]$ with a clear interpretation: $1$ means every pair agreement is exact, $0$ means no pair that one clustering grouped together was also grouped by the other.
 }
 {
-    \item Requires ground-truth labels.
-    \item Relies on pairwise comparisons, which can be computationally intensive for large datasets.
-    \item Not normalized with regards to random labeling.
+    \item Not chance-adjusted. Random clusterings can produce non-trivial FMI values; use ARI when chance correction matters.
+    \item $O(n^2)$ via direct pairwise comparison. Computable in $O(n + c^2)$ from the contingency matrix, but still heavy for very large datasets.
 }
 
 
@@ -577,13 +573,14 @@ known classification. Measuring the similarity between two different clustering 
     \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} FMI (third pair of bars) is the geometric mean of precision and recall for point pairs. Like other external metrics, it scores higher for well-separated clusters.
+\textbf{Figure.} FMI in the third pair of bars: $1.00$ on well-separated clusters drops to $0.96$ on the overlapping case. On the same data ARI moves $1.00 \to 0.94$, slightly more sensitive --- the difference comes from FMI using a geometric mean of pair precision and recall, while ARI subtracts a chance baseline.
+
+\orangebox{Did you know that...}
+{FMI is the only pair-counting metric built as a geometric mean. The pairwise F1 uses the harmonic mean of the same pair-wise precision and recall, ARI subtracts chance from the raw counts, and RI uses arithmetic accuracy --- four different averages, four different sensitivities. The geometric mean sits between the harmonic and arithmetic means, which is why FMI penalizes imbalance more than RI but less than F1 would.}
 
 \textbf{Other related metrics}
 
-While the Fowlkes–Mallows Index provides valuable insights into clustering performance, it is often beneficial to use it
-alongside other metrics to gain a comprehensive evaluation. Metrics such as the Adjusted Rand Index (ARI) and Normalized Mutual
-Information (NMI) can offer additional perspectives.
+FMI is the pair-counting cousin of RI and ARI. When FMI is high but ARI is low, the chance baseline is doing the work --- the clustering looks reasonable on the geometric-mean score but doesn't beat random on the chance-corrected version. Prefer ARI for cross-dataset comparison, FMI for in-dataset sensitivity to balanced precision/recall on pairs.
 
 
 % ---------- Silhouette Score ----------
