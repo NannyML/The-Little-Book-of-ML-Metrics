@@ -787,20 +787,20 @@ of events occurring in a fixed time or space (e.g., website clicks per hour, pho
     }
 \end{center}
 
-MPD ranges from 0 to +infinity, with 0 indicating a perfect model fit for count data. It is particularly sensitive to the underlying Poisson distribution characteristics.
+MPD ranges from 0 (perfect) to $+\infty$. There's no universal ``good'' threshold --- compare your model's MPD against a baseline that predicts the training mean count. MPD is undefined at $Y_t=0$ unless you adopt the convention $0\log 0 = 0$ (which scikit-learn does).
 
 \textbf{When to use MPD?}
 
-When the target variable represents counts, and when the predictions are constrained to be non-negative.
+Use MPD for insurance claim frequency, ad click counts, support-ticket arrivals, defect counts --- anywhere your target is non-negative integers with variance proportional to the mean. Avoid MPD when targets are heavily zero-inflated (use Tweedie deviance) or when business cost is in absolute units, not relative ones (use MAE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Directly relates to the Poisson distribution, making it interpretable when dealing with count data.
-    \item Accounts for relative errors. Larger deviations matter more, e.g., \( MPD(y=100, \hat{y}=150) > MPD(y=1.0, \hat{y}=1.5) \).
+    \item Scales with the count. $\text{MPD}(y{=}100, \hat{y}{=}150) \approx 20.3$ while $\text{MPD}(y{=}1, \hat{y}{=}1.5) \approx 0.2$ --- the same 50\% miss is penalized in proportion to the count, matching Poisson variance.
+    \item Native loss for Poisson GLMs. \texttt{PoissonRegressor} and XGBoost with \texttt{objective="count:poisson"} already optimize MPD --- no train/eval mismatch.
 }
 {
-    \item Sensitive to Zero Counts.
-    \item Requires positive targets and predictions.
+    \item Predictions must be strictly positive --- $\log(\hat{y})$ blows up at zero. Clip predictions to a small floor or use a model with a log link.
+    \item Heavily zero-inflated data makes MPD dominated by the few non-zero rows. Use Tweedie deviance with $1<p<2$ instead.
 }
 
 \clearpage
@@ -811,17 +811,14 @@ When the target variable represents counts, and when the predictions are constra
     \includegraphics[width=0.6\textwidth]{figures/MPD_cross_section.png}
 \end{figure*}
 
-\textbf{Figure. MPD} as a function of predicted value when the actual value is $Y = 10$. The deviance is minimized at $\hat{Y} = Y$ and increases asymmetrically,
-penalizing underpredictions more than overpredictions.
+\textbf{Figure. MPD} as a function of predicted value when $Y=10$. The asymmetric V is the practical takeaway: predicting 5 when the truth is 10 costs more deviance than predicting 15. This matches the business reality of most count problems --- undercounting alerts, tickets, or claims is usually more costly than overcounting them.
 
 \orangebox{Did you know that...}
-{Mean Poisson Deviance is derived from the likelihood ratio test for Poisson regression. It measures how much the model's log-likelihood differs from the saturated model
-(a perfect model that fits every data point exactly). This makes it the natural goodness-of-fit measure for Poisson GLMs.}
+{MPD is twice the gap between the model's log-likelihood and that of a saturated model that fits every point exactly. Minimizing MPD is therefore maximum-likelihood estimation under Poisson assumptions --- which is why \texttt{PoissonRegressor} optimizes MPD directly. Train and eval use the same metric, eliminating loss/score mismatch.}
 
 \textbf{Other related metrics}
 
-MPD is the Poisson counterpart of Mean Gamma Deviance (MGD). For count data where the variance is proportional to the mean, MPD is the natural choice.
-For general regression, consider MAE or MSE.
+MPD, MGD, and Tweedie deviance all live in the same exponential family --- pick based on variance structure: $\propto$ mean (MPD), $\propto$ mean$^2$ (MGD), or between (Tweedie). If MPD ranks two models very differently from MAE, the model with worse MPD is usually biased on high-count rows --- check residuals conditional on predicted count.
 
 % ---------- MGD ----------
 \clearpage
@@ -853,7 +850,7 @@ MGD ranges from 0 to +infinity, with 0 indicating a perfect model fit for contin
 
 \textbf{When to use MGD?}
 
-When the target variable is strictly positive and has a right-skewed distribution (e.g., durations, financial costs).
+Use MGD for claim severity, customer lifetime value, repair costs, latency/duration models --- anything strictly positive and right-skewed. Avoid MGD when targets can be zero (Gamma is undefined at 0 --- use Tweedie deviance) or when business cost is in absolute, not relative, units (use MAE or RMSE).
 
 % strength and weakness box
 \coloredboxes{
@@ -873,17 +870,14 @@ When the target variable is strictly positive and has a right-skewed distributio
     \includegraphics[width=0.6\textwidth]{figures/MGD_cross_section.png}
 \end{figure*}
 
-\textbf{Figure. MGD} as a function of predicted value when the actual value is $Y = 10$. Like MPD, the deviance is minimized at $\hat{Y} = Y$,
-but MGD penalizes relative errors, so the curve is symmetric on a log scale.
+\textbf{Figure. MGD} as a function of predicted value when $Y=10$. The minimum sits at $\hat{Y}=10$ and the penalty rises steeply for under-prediction but gently for over-prediction --- predicting half the truth ($\hat{Y}=5$) costs $\approx 1.6\times$ more than predicting double ($\hat{Y}=20$). MGD depends only on the ratio $\hat{Y}/Y$, so the curve's shape is set by relative error, not absolute. For insurance pricing this is the right behavior, since reserving too little is worse than reserving too much.
 
 \orangebox{Did you know that...}
-{The Gamma distribution is a two-parameter family of continuous probability distributions. MGD is the natural deviance metric for generalized linear models (GLMs)
-with a Gamma link function, commonly used in insurance pricing and survival analysis.}
+{MGD is scale-invariant: multiplying all targets and predictions by any positive constant leaves the score unchanged. Practically, a model trained on dollars scores identically when retrained on cents. This is unique to Gamma deviance --- MAE, MSE, MPD, and RMSE all change under rescaling. It's also why MGD is the standard loss in actuarial pricing, where the same model needs to work across several orders of magnitude.}
 
 \textbf{Other related metrics}
 
-MGD is closely related to Mean Poisson Deviance (MPD). The choice between them depends on the data distribution: use MPD for count data (Poisson) and MGD for
-continuous positive data (Gamma). For general-purpose regression evaluation, consider MAE or RMSE.
+MGD and MPD are both Tweedie-family losses --- the choice is set by your target's variance: $\propto$ mean (MPD), $\propto$ mean$^2$ (MGD), or in between (Tweedie, $1<p<2$). If MGD and RMSE rank models differently, MGD is rewarding the one calibrated in relative terms while RMSE rewards absolute calibration --- pick by which one matches your loss function. For combined frequency $\times$ severity (insurance), Tweedie is usually the right answer.
 
 % ---------- R-squared ----------
 \clearpage
@@ -920,6 +914,7 @@ Use R² when you need a normalized metric to compare models across different tar
 on dataset X'' is meaningful without knowing X's scale. Avoid relying on R² alone for model selection: a model with R²=0.95 and
 terrible tail predictions can be worse than one with R²=0.90 but uniform errors. Always pair R² with RMSE or MAE.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
     \item Scale-free. R² = 0.85 means the same thing whether you're predicting nanometers or light-years. This makes it the standard metric for cross-dataset comparison.
     \item Built-in baseline. R² = 0 is the ``predict the mean'' baseline. Unlike RMSE, you don't need to compute a separate naive model to know if yours adds value.
@@ -933,10 +928,9 @@ terrible tail predictions can be worse than one with R²=0.90 but uniform errors
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
+\begin{center}
     \includegraphics[width=\textwidth]{figures/R2_what_values_look_like.png}
-\end{figure*}
+\end{center}
 
 \textbf{Figure. What R² values look like.} From left to right: R²=0.95 (tight clustering around the diagonal — excellent),
 R²=0.70 (clear trend but noticeable scatter — good), R²=0.30 (weak relationship — marginal), R²=-0.20 (predictions are
@@ -987,14 +981,14 @@ and negative values imply the model performs worse than the naive baseline.
 
 \textbf{When to use D-squared}
 
-In scenarios where outliers can skew traditional metrics like R-squared and MSE. And where absolute errors are preferable over squared errors.
+Use D2 Absolute Score for heavy-tailed targets where R-squared is unstable --- house prices, claim severity, click-through revenue. Avoid D2 when large errors are disproportionately costly (use R-squared or RMSE).
 
 \coloredboxes{
-    \item Absolute differences reduce the influence of extreme values compared to squared errors.
-    \item Shows how much better (or worse) the model performs compared to a naive baseline.
+    \item Outlier-robust. Adding one extreme test point can swing R-squared by 0.1+; D2 barely moves. This makes D2 the more reliable score for small or heavy-tailed test sets.
+    \item Built-in baseline like R-squared. $D^2=0$ means ``no better than predicting the median'' --- no separate naive model needed to judge whether your model adds value.
 }
 {
-    \item By using absolute errors, large deviations are treated equally, which might underemphasize significant mistakes.
+    \item Linear penalty hides catastrophic errors. A model off by 10 on one prediction and 0 on 99 others scores the same as one off by 0.1 on all 100. If a single large miss hurts disproportionately, use R-squared or RMSE.
     \item Be cautious about which value of $\bar{Y}$ to use. Most implementations default to $\bar{Y}_{\text {test }}$ which can lead to information leakage. It is advisable to use $\bar{Y}_{\text {train }}$ instead.
 }
 
@@ -1015,8 +1009,7 @@ to the proportion of absolute variance explained. In scikit-learn, this is avail
 
 \textbf{Other related metrics}
 
-D2 Absolute Score is the absolute-error counterpart of R-squared. For squared-error-based evaluation, use R-squared directly.
-For probabilistic evaluation with different deviance functions, see D-squared Log Loss Score in the Classification chapter.
+D2 and R-squared should agree closely on well-behaved data. A large gap (e.g., R$^2$=0.60 but D2=0.85) signals a few outliers are dragging R-squared down --- investigate the largest residuals before trusting either score. For squared-error evaluation, use R-squared. For probabilistic classification, see D-squared Log Loss in Chapter 3.
 
 % ---------- Pinball Loss ----------
 \clearpage

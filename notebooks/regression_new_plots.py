@@ -67,17 +67,19 @@ print("MPD: done")
 
 # ============================================================
 # MGD: cross-section showing deviance as function of prediction
+# Formula matches the book's LaTeX:
+#     d(y, y_hat) = 2 * ( log(y_hat / y) + y / y_hat - 1 )
 # ============================================================
 y_true = 10.0
-y_pred = np.linspace(1, 30, 200)
-mgd = 2 * (np.log(y_true / y_pred) - (y_true - y_pred) / y_pred)
+y_pred = np.linspace(1, 30, 400)
+mgd = 2 * (np.log(y_pred / y_true) + y_true / y_pred - 1)
 
 fig, ax = create_line_plot()
 ax.plot(y_pred, mgd, c=start_color, **LINE_KW)
 ax.axvline(x=y_true, color='black', linestyle='--', linewidth=1, alpha=0.5)
 ax.set_xlabel(r'Predicted Value ($\hat{Y}$)')
 ax.set_ylabel('Gamma Deviance')
-ax.annotate(f'$Y = {y_true:.0f}$', xy=(y_true, 0), xytext=(y_true + 3, 1),
+ax.annotate(f'$Y = {y_true:.0f}$', xy=(y_true, 0), xytext=(y_true + 4, 1.5),
             fontsize=16, arrowprops=dict(arrowstyle='->', color='black'))
 save_figure(fig, 'MGD_cross_section')
 plt.close()

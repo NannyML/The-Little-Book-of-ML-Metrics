@@ -4,8 +4,7 @@
 \thispagestyle{classificationstyle}
 \section{Confusion Matrix}
 \subsection{Confusion Matrix}
-A confusion matrix is a table that shows how well a classification model makes predictions.
-It compares the model's predicted labels with the true labels.
+Almost every classification metric in this chapter is derived from the same four numbers: TP, TN, FP, FN. The confusion matrix lays them out as a table --- and reading it directly often reveals failure modes that a single summary score hides, like a 95\%-accurate tumor classifier that misses half the malignant cases.
 
 \vspace{-0.5em}
 \begin{center}
@@ -13,7 +12,7 @@ It compares the model's predicted labels with the true labels.
 \node[inner sep=2pt, font=\Large] (a) {
 $\displaystyle
 C_{\textcolor{nmlred}{i}\,\textcolor{nmlcyan}{j}}
-= \sum_{n=1}^{M} 
+= \sum_{n=1}^{M}
 \mathbf{1}\{ \; y_n = \textcolor{nmlred}{i} \;\land\; \hat{y}_n = \textcolor{nmlcyan}{j} \;\}
 $
 };
@@ -25,8 +24,22 @@ $
 \end{center}
 \vspace{-0.5em}
 
+\textbf{When to use Confusion Matrix?}
 
-A simple 2x2 example for binary classification with four categories: True Positive (TP), True Negative (TN), False Positive (FP), False Negative (FN).
+Use the confusion matrix when you want the full per-class breakdown of correct vs incorrect predictions instead of a single summary score. It's the right tool when false positives and false negatives have different costs (medical diagnosis, fraud detection, content moderation). For model selection or hyperparameter tuning, pair it with a derived metric like F1 or MCC.
+
+\coloredboxes{
+\item Reveals asymmetric errors. A model with 90\% accuracy can hide 50\% of the minority class's failures --- the matrix shows you exactly where the mistakes live.
+\item Foundation for every other classification metric. TP/FP/FN/TN are the building blocks of precision, recall, F1, MCC, specificity --- reading the matrix once tells you which derived metric to compute.
+}
+{
+\item Doesn't summarize to a single number. For model selection, leaderboards, or hyperparameter tuning you still need a derived metric.
+\item For more than 5 classes the matrix becomes a heatmap and individual cells lose signal. Switch to per-class precision/recall or a normalized confusion heatmap.
+}
+\clearpage
+\thispagestyle{customstyle}
+
+A simple 2x2 example for binary classification with the four categories: True Positive (TP), True Negative (TN), False Positive (FP), False Negative (FN).
 
 \newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
 \vspace{0.3em}
@@ -45,7 +58,7 @@ Actual & Predicted \\ \hline
 \end{tabular}
 \end{minipage}%
 \begin{minipage}{0.54\linewidth}
-\renewcommand{\arraystretch}{1.8}
+\renewcommand{\arraystretch}{1.3}
 \centering
 \begin{tabular}{|C{1.8cm}|C{1.8cm}|C{1.8cm}|}
 \hline
@@ -55,39 +68,13 @@ Actual 0 & \cellcolor{nmlred!20}FP = 1 & \cellcolor{nmlgreen!20}TN = 2 \\ \hline
 \end{tabular}
 \end{minipage}
 
-\vspace{0.8em}
-\textbf{When to use Confusion Matrix?}
+\vspace{1em}
 
-Use a confusion matrix whenever you are dealing with a classification task.
-It is the fundamental tool from which most other performance metrics are derived,
-making it unavoidable if you need to calculate precision, recall, F1-score, or other related measures.
-
-\vspace{0.3em}
-\coloredboxes{
-\item Provides a detailed breakdown of correct and incorrect classifications.
-\item Forms the foundation for many key performance metrics (e.g., precision, recall, F1).
-\item Works for both binary and multi-class classification.
-}
-{
-\item Can become large and harder to interpret for problems with many classes.
-\item Does not directly provide a single performance score (requires additional derived metrics).
-\item Sensitive to class imbalance; raw counts may be misleading without normalization.
-}
-\clearpage
-\thispagestyle{customstyle}
-In some interesting real-world industries, it is difficult to construct a standard confusion matrix. 
-
-For instance, in predictive maintenance, machine learning models predict when a machine might fail so maintenance can be scheduled in advance.
-
-If the model predicts a breakdown and maintenance is performed, the machine may never actually fail. This means the usual true positives (TP) are no longer observable.
-
-This raises the question: How can we be sure the model was correct? Is there a way to know whether or not our machine would have failed if we had not maintained it?
-This lack of failure is our original goal, and it is beneficial. However, it also results in no immediate failure or target data to validate the model’s prediction. 
-The critical feedback is delayed, and the resultant confusion matrix is “censored”.
+That's the standard case. But in some real-world settings, you can't actually fill in all four cells. Predictive maintenance is the canonical example: if the model predicts a breakdown and maintenance is performed, the machine may never fail --- so you can't observe the true positive at all. The feedback is delayed indefinitely, and the resulting matrix is ``censored.''
 
 \begin{table}[h]
 \centering
-\renewcommand{\arraystretch}{2.5}
+\renewcommand{\arraystretch}{1.5}
 \begin{tabular}{|C{2cm}|C{2cm}|C{2cm}|C{2cm}|}
 \hline
 & \multicolumn{3}{c|}{\textbf{Model predicts machine failure}} \\
@@ -112,11 +99,12 @@ Delayed \\
 
 \orangebox{%
 Did you know that...}
-{It is also known as error matrix typically in a supervised learning usecase; in unsupervised learning it is usually called a matching matrix. 
+{Normalize the matrix by rows and you get per-class recall; normalize by columns and you get per-class precision. Every metric in this chapter is just a different read of those four corners --- which is why a single matrix can replace half a dozen derived scores when you're diagnosing failures.
 }
 
 \textbf{Other related metrics}
-Metrics that one can derive from confusion matrix like accuracy, precision, recall and more. 
+
+When derived metrics disagree (accuracy is high but MCC is low), look at the matrix to see which off-diagonal cell is doing the damage. For multi-class problems beyond 5 classes, use a normalized heatmap.
 
 
 
@@ -493,8 +481,7 @@ These metrics provide a more nuanced view of classifier performance across all c
 \section{Balanced Accuracy}
 \subsection{Balanced Accuracy}
 
-Balanced Accuracy is a classification evaluation metric that accounts for class imbalance. In binary classification it can be understood as the arithmetic mean between
-specificity and sensitivity (recall). In multi-class classification Balanced Accuracy is the average of the recall obtained in each class, i.e. the macro-average of recall scores per class.
+Balanced accuracy is the metric you reach for first whenever class balance might be inflating your accuracy score. Take a 95\% negative class: a model that predicts ``negative'' for everything scores 95\% accuracy --- but it's useless. Balanced accuracy fixes this by averaging how well the model does on each class, so the trivial all-negative model scores 50\%.
 
 % formula
 \begin{center}
@@ -512,20 +499,19 @@ specificity and sensitivity (recall). In multi-class classification Balanced Acc
     }
 \end{center}
 
-It is particularly useful when working with datasets where some classes are significantly underrepresented, ensuring that the performance of all classes is treated equally.
-The score ranges from 0 to 1. If the dataset is balanced, then Balanced Accuracy score reduces to the conventional Accuracy.
+Balanced accuracy ranges from 0 to 1, with 0.5 as the ``random or single-class-prediction'' baseline. On balanced data, it reduces to regular accuracy; on imbalanced data, the gap between the two reveals how much the majority class is inflating your accuracy score.
 
 \textbf{When to use Balanced Accuracy?}
 
-When dealing with class imbalance. Balanced Accuracy ensures that underrepresented classes are not overshadowed by majority classes in the performance metric.
+Use balanced accuracy for fraud detection, medical screening, defect detection, anomaly detection --- anywhere your class distribution is skewed by more than 70/30. Avoid balanced accuracy when false positives and false negatives have very different costs (use F-beta or MCC), or when one class matters much more than the others (use a weighted average of per-class recall).
 
 \coloredboxes{
-\item Unlike standard accuracy, it gives equal importance to all classes, making it more reliable for imbalanced datasets.
-\item Provides an intuitive measure of how well the model performs across all classes.
+\item Robust to class imbalance. The 95/5 ``always predict negative'' trick scores 95\% accuracy but only 50\% balanced accuracy --- the gap immediately reveals a useless model.
+\item Reduces to accuracy when classes are balanced, so it's safe to default to in any binary classification report. Cheap insurance against being fooled by skewed data.
 }
 {
-\item Treats all classes equally, which may not be ideal if some classes are more critical than others.
-\item Under extreme class imbalance or small sample sizes, balanced accuracy can show high variance, as the performance of the minority class has a strong impact on the overall score.
+\item Treats all classes as equally important. If missing a positive (e.g., tumor) costs 100x more than a false positive, balanced accuracy doesn't capture that --- use cost-sensitive metrics.
+\item Variance bomb on tiny minority classes. With 5 positives in your test set, one extra mistake swings balanced accuracy by 10 points. Always pair with sample-size context.
 }
 
 \clearpage
@@ -544,8 +530,7 @@ When dealing with class imbalance. Balanced Accuracy ensures that underrepresent
 
 \textbf{Other related metrics}
 
-Other metrics designed for imbalanced settings include MCC, the F1-score, and PR AUC.
-If you need to weight classes differently, consider using a weighted average of per-class recall instead.
+When balanced accuracy and accuracy diverge by more than a few points, your data is imbalanced and accuracy is misleading. For a single metric that handles all four confusion-matrix corners (not just the per-class recall), use MCC. For threshold tuning on imbalanced data, PR AUC is more informative than ROC AUC. If class costs differ, use cost-sensitive accuracy or F-beta with tuned $\beta$.
 
 % ---------- Precision ----------
 \clearpage
@@ -1012,8 +997,7 @@ When probabilities are not available, use threshold-based metrics like accuracy 
 \section{Jaccard Index}
 \subsection{Jaccard Index}
 
-The Jaccard Index, or Jaccard Similarity Coefficient, is a similarity metric often used for evaluating the performance of classification models,
-particularly in segmentation tasks. It measures the overlap between the predicted set and the ground truth set.
+The Jaccard Index measures the overlap between two sets: the size of their intersection divided by the size of their union. In binary classification this works out to $TP / (TP + FP + FN)$ --- a stricter version of accuracy that leaves out the true-negative contribution. In computer vision it goes by another name: Intersection over Union (IoU).
 
 \begin{center}
     \tikz{
@@ -1031,22 +1015,20 @@ particularly in segmentation tasks. It measures the overlap between the predicte
     }
 \end{center}
 
-The Jaccard Index ranges from 0 to 1, where 1 indicates perfect overlap between the predicted and true sets (i.e., all predictions are correct),
-and 0 means no overlap at all. In binary classification, the formula can be rewritten in terms of true positives $TP$, false positives $FP$, and false negatives
-$FN$ as: $J = \frac{TP}{TP + FP + FN}$. Additionally, the Jaccard Index is a popular metric for evaluating computer vision
-models for image segmentation tasks, in those cases it is commonly known as Intersection over Union (IoU).
+Jaccard ranges from 0 (no overlap) to 1 (perfect overlap). Because the denominator leaves out true negatives, Jaccard doesn't get inflated when most samples belong to the negative class --- the failure mode that makes accuracy look misleadingly high on imbalanced data.
 
-\textbf{When to use the Jaccard Index}
+\textbf{When to use the Jaccard Index?}
 
-It is particularly useful when we need to measure the similarity between two sets. For example, it can be used to assess the similarity between text documents,
-evaluate preferences in recommender systems, or measure the similarity between genetic sequences.
+Use Jaccard for segmentation, document similarity, recommender deduplication, or any task framed as ``how much do these two sets overlap?'' Avoid Jaccard when true negatives carry information you care about, or when partial credit matters more than strict overlap.
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-    \item Intuitive interpretation. It provides a straightforward measure of overlap, useful for visualization.
-    \item Scale-Invariance. The Jaccard Index is not affected by the size of the sets being compared.
+    \item Ignores true negatives. On a 1\% positive class, accuracy reads 99\% even for a useless model --- Jaccard reads 0. This is the right behavior for segmentation where ``background'' dominates.
+    \item Scale-invariant. Two pixels overlapping or two thousand pixels overlapping give the same score for the same proportion --- lets you compare across object sizes in one report.
 }
 {
-    \item Can be computationally expensive. Calculating the intersection and union for large or high dimensional sets can be resource-intensive.
+    \item Punishes partial overlap heavily. Two sets that overlap 50\% by area give Jaccard $= 1/3$, not 1/2. If you want gentler scoring, use Dice ($J = D/(2-D)$).
+    \item Not a true distance metric --- fails the triangle inequality. Doesn't matter for most ML use, but matters if you're chaining set comparisons in clustering or retrieval.
 }
 
 \clearpage
@@ -1057,16 +1039,14 @@ evaluate preferences in recommender systems, or measure the similarity between g
     \includegraphics[width=\textwidth]{figures/Jaccard_overlap.png}
 \end{figure*}
 
-\textbf{Figure.} The Jaccard Index measures the overlap between two sets. High overlap (left) yields a high score. Low overlap (right) yields a low score.
+\textbf{Figure.} Two binary masks compared. \underline{Left:} large overlap between predicted (cyan) and ground truth (purple) gives Jaccard $\approx 0.82$. \underline{Right:} small overlap gives Jaccard $\approx 0.15$. The metric drops sharply once the two sets diverge --- 50\% overlap by area gives $J = 1/3$, not $1/2$.
 
 \orangebox{Did you know that...}
-{The Jaccard Index was introduced by the Swiss botanist Paul Jaccard in 1901 to compare the similarity of plant species across different regions.
-It is also known as Intersection over Union (IoU) in computer vision, where it is the standard metric for object detection and image segmentation tasks.}
+{Jaccard and the Sørensen-Dice coefficient are monotonically related through $\text{Jaccard} = \text{Dice}/(2 - \text{Dice})$. They always rank pairs of models the same way, so picking one or the other is purely a presentational choice.}
 
 \textbf{Other related metrics}
 
-The Jaccard Index is closely related to the Dice Coefficient (also known as the S\o rensen--Dice coefficient). For two sets A and B:
-$Dice = \frac{2 \cdot |A \cap B|}{|A| + |B|}$. The Jaccard Index and Dice are monotonically related: $Jaccard = \frac{Dice}{2 - Dice}$.
+For evaluations that include true negatives, use accuracy or balanced accuracy. The Sørensen-Dice section in the Computer Vision chapter covers the closely-related Dice coefficient.
 
 % ---------- D-squared Log Loss Score ----------
 \clearpage
@@ -1074,8 +1054,7 @@ $Dice = \frac{2 \cdot |A \cap B|}{|A| + |B|}$. The Jaccard Index and Dice are mo
 \section{D-squared Log Loss Score}
 \subsection{D-squared Log Loss Score}
 
-The D-squared score log loss is a normalized version of log loss that provides a more interpretable metric for classification performance, similar to R² for regression.
-It measures the relative improvement of a model's log loss compared to a naive baseline model that always predicts the mean probability.
+D-squared Log Loss does for log loss what R² does for MSE: normalizes it against a baseline that always predicts the mean class probability. The result is on the same scale as R² and reads the same way --- $D^2 = 0.85$ means your model reduces log loss by 85\% versus the baseline.
 
 % formula
 \begin{center}
@@ -1092,21 +1071,20 @@ It measures the relative improvement of a model's log loss compared to a naive b
     }
 \end{center}
 
-As with R-squared, D-squared ranges from -infinity to 1, where 1 indicates perfect predictions, 0 suggests the model performs no better than the baseline, and negative values indicate
-worse performance than the baseline. The metric provides a standardized way to compare model performance across different datasets and class distributions.
+$D^2$ ranges from $-\infty$ to 1: $D^2 = 1$ is perfect; $D^2 = 0$ means no better than predicting the training class frequencies; $D^2 < 0$ means actively worse than that baseline. A negative $D^2$ in production is a red flag --- your model has degraded below the trivial baseline and should not be serving predictions.
 
-\textbf{When to use D-squared Log Loss Score}
+\textbf{When to use D-squared Log Loss Score?}
 
-When you need a normalized metric that is both interpretable and comparable across different classification problems. It's particularly useful when working with imbalanced
-datasets or when you want to communicate model performance to non-technical stakeholders who are familiar with R-squared.
+Use D-squared Log Loss when comparing probabilistic classifiers across different datasets or class distributions, where raw log loss isn't directly comparable. Avoid it when you need a threshold-based metric instead (use F1 or accuracy).
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-    \item Provides a normalized score that is easier to interpret than raw log loss.
-    \item Accounts for class imbalance through baseline normalization.
+    \item Normalized scale enables cross-dataset comparison. A fraud model on bank A's data and bank B's data give comparable D² scores even if class balances differ --- raw log loss can't do this.
+    \item Same intuitive ``0 = baseline, 1 = perfect'' interpretation that data scientists already know from R². Easy to communicate to non-ML stakeholders.
 }
 {
-    \item Can be sensitive to outliers and extreme predictions.
-    \item Requires computing the baseline model's performance.
+    \item Requires the trivial baseline to be computed correctly. \texttt{sklearn.d2\_log\_loss\_score} handles this; if you re-implement, use \textit{training} class frequencies (not test) to avoid leakage.
+    \item Inherits log loss's sensitivity to confident wrong predictions. One $\hat{p}=0.001$ on a positive case dominates the score --- clipping probabilities (\texttt{clip(p, 1e-15, 1-1e-15)}) is mandatory.
 }
 
 \clearpage
@@ -1117,7 +1095,7 @@ datasets or when you want to communicate model performance to non-technical stak
     \includegraphics[width=0.6\textwidth]{figures/D2_Log_Loss_curve.png}
 \end{figure*}
 
-\textbf{Figure.} D-squared Log Loss Score vs model log loss. D²=1 at zero loss (perfect), D²=0 at the null model's log loss, and negative for worse-than-baseline models.
+\textbf{Figure.} $D^2$ as a function of model log loss for three class-balance scenarios. The baseline $L_{\mathrm{null}}$ is the log loss of always predicting class frequencies, which is much lower on imbalanced data. The same raw log loss (say 0.4) gives $D^2 \approx 0.4$ on balanced data but a deeply negative value on heavily imbalanced data --- which is why D² is comparable across datasets in a way raw log loss isn't.
 
 \orangebox{Did you know that...}
 {The D-squared framework generalizes R-squared to any deviance function, not just squared error. In scikit-learn, \texttt{d2\_log\_loss\_score} uses log loss as the deviance,
@@ -1125,7 +1103,7 @@ but you can also compute D-squared with other losses like absolute error or Pois
 
 \textbf{Other related metrics}
 
-D-squared Log Loss Score is closely related to Log Loss and the R-squared score. For probability calibration, also consider the Brier Score.
+For calibration quality specifically, the Brier Score is more diagnostic. For threshold-based decision quality, use F1 or MCC. Raw log loss is still the right choice during training (it's a proper loss function); D² is for reporting.
 
 % ---------- P4-metric ----------
 \clearpage
@@ -1133,9 +1111,7 @@ D-squared Log Loss Score is closely related to Log Loss and the R-squared score.
 \section{P4-metric}
 \subsection{P4-metric}
 
-The P4-metric (also known as Symmetric F) is an evaluation metric for binary classifiers that addresses several limitations of the F1 score. Unlike metrics that focus
-on only some aspects of classification performance, P4 comprehensively considers all four key conditional probabilities in binary classification, making it a
-more balanced measure of classifier performance.
+P4 combines all four conditional probabilities of binary classification --- precision, recall, specificity, and negative predictive value (NPV) --- into a single harmonic-mean-style score. Unlike F1, which is the harmonic mean of just precision and recall, P4 also accounts for how well the model handles negatives. So a model that predicts ``positive'' for everything gets F1 = 0.95 on a 95\% positive class but P4 = 0, because specificity and NPV both collapse to zero.
 
 % formula
 \begin{center}
@@ -1153,21 +1129,20 @@ more balanced measure of classifier performance.
     }
 \end{center}
 
-The metric ranges from 0 to 1, where 1 indicates perfect classification (all probabilities equal 1) and 0 indicates complete failure (any probability equals 0).
+P4 ranges from 0 to 1, with 0.5 marking a ``barely useful'' model and 0.8+ indicating strong performance on both classes. Unlike F1, which can stay high while the model fails on negatives, P4 collapses to 0 if any of TP, TN, FP, or FN is zero --- making it impossible to hide a single-class failure mode behind a single number.
 
-\textbf{When to use P4-metric}
+\textbf{When to use P4-metric?}
 
-Use P4 in scenarios where both positive and negative predictions are equally important. Or in cases where F1 score's limitations (ignoring true negatives)
-could be problematic.
+Use P4 for binary classification when both class predictions matter equally --- medical screening, fraud detection, A/B-test classifiers. Avoid P4 when stakeholders expect F1 (P4 is less familiar) or when you need a threshold-tunable metric for selection (use MCC instead).
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-    \item Considers all four fundamental probabilities of binary classification.
-    \item Symmetric with respect to positive and negative classes meaning that it does not change when the dataset labeling is changed.
+    \item All-four-corner penalty. A model with 100 TPs, 100 TNs, 50 FPs, 0 FNs gets F1 $= 0.80$ but P4 $\approx 0.69$ --- the P4 drop reflects the false-positive cost that F1 understates.
+    \item Symmetric: swap class labels and P4 stays the same. F1 doesn't have this property --- it depends on which class you call ``positive,'' which can lead to inconsistent reporting across teams.
 }
 {
-    \item Less widely adopted than traditional metrics.
-    \item May be harder to interpret for non-technical stakeholders.
-    \item Goes to zero if any of the key probabilities goes to zero. This can be a strength too.
+    \item Collapses to 0 if any of TP/TN/FP/FN is zero. This is a feature (it catches single-class failures) but also a brittleness: a tiny test set with one missing corner gives uninformative P4 $= 0$.
+    \item Less widely adopted than F1, MCC, or balanced accuracy. Be ready to explain that it's ``F1 that includes specificity.''
 }
 
 \clearpage
@@ -1178,16 +1153,14 @@ could be problematic.
     \includegraphics[width=0.6\textwidth]{figures/P4_vs_F1.png}
 \end{figure*}
 
-\textbf{Figure.} P4 vs F1 across scenarios. When a model ignores true negatives, F1 stays high but P4 drops significantly, revealing the imbalance that F1 misses.
+\textbf{Figure.} For a model with fixed positive-class performance (precision $=$ recall $= 0.8$), F1 stays constant at 0.80 regardless of how the model handles negatives. P4 moves with specificity: it falls below F1 when the model fails on negatives, climbs above when it doesn't. The gap at low specificity is what F1 hides.
 
 \orangebox{Did you know that...}
-{The P4-metric was introduced by Tharwat (2020) as a response to F1-score's blindness to true negatives. The name P4 comes from the fact that it
-considers all four Probabilities: Precision, Recall (or sensitivity), Specificity, and Negative Predictive Value.}
+{P4 is the harmonic mean of four conditional probabilities --- Precision, Recall, Specificity, and Negative Predictive Value (NPV) --- which is where the name comes from. Introduced by Tharwat (2020) specifically to fix F1's blindness to true negatives.}
 
 \textbf{Other related metrics}
 
-Other metrics that address F1's limitation of ignoring true negatives include MCC and Balanced Accuracy. If you need to weight precision and recall differently,
-consider the F-beta score instead.
+P4 and MCC both fix F1's TN-blindness, but differently: MCC computes a correlation (range $-1$ to 1, 0 is random); P4 computes a harmonic mean (range 0 to 1, 0.5 is barely useful). If your team is comfortable with correlation interpretation, prefer MCC. If F1 is the cultural default, P4 is the drop-in replacement that also includes the TN side. For precision/recall tradeoffs, use F-beta with tuned $\beta$.
 
 % ---------- Cohen's Kappa ----------
 \clearpage
@@ -1195,8 +1168,7 @@ consider the F-beta score instead.
 \section{Cohen's Kappa}
 \subsection{Cohen's Kappa}
 
-Cohen's Kappa is a metric that measures inter-rater reliability and agreement between classifiers while accounting for the agreement that could occur by chance.
-This metric is designed to compare labelings by two different human annotators, not like other metrics that compare a classifier versus a ground truth.
+Cohen's Kappa measures the agreement between two annotators (or between a model and a single annotator) after subtracting the agreement expected by chance. Without this correction, raw agreement is misleading on imbalanced data: two annotators that label items randomly with the majority-class rate already match $68\%$ of the time on an $80/20$ dataset, with no actual skill. Kappa strips that chance baseline out.
 
 % formula
 \begin{center}
@@ -1213,19 +1185,20 @@ This metric is designed to compare labelings by two different human annotators, 
     }
 \end{center}
 
-The score ranges from -1 to 1, where 1 indicates perfect agreement, 0 suggests agreement no better than chance, and negative values indicate worse than chance agreement.
+Cohen's Kappa ranges from $-1$ to $1$. A score of $1$ is perfect agreement, $0$ is chance-level, and negative values mean the annotators agree less often than chance. A common interpretation scale: $\kappa < 0.2$ is slight, $0.2$--$0.4$ is fair, $0.4$--$0.6$ is moderate, $0.6$--$0.8$ is substantial, and $\kappa > 0.8$ is almost perfect. For ML use, $\kappa \geq 0.6$ is the typical threshold.
 
 \textbf{When to use Cohen's Kappa?}
 
-When you want to compute the agreement between two human annotators on a classification task.
+Use Cohen's Kappa when measuring agreement between two annotators (typically before training), or when comparing a model's predictions to a single noisy annotator. Avoid it as a primary model-selection metric --- use MCC for that. For ordinal labels where some disagreements are worse than others, use weighted kappa.
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-    \item Accounts for agreement by chance.
-    \item Widely accepted in many fields.
+    \item Chance-corrected. Random labeling on imbalanced data can produce 80\% agreement by accident --- Kappa subtracts that out, leaving only the agreement that reflects actual skill.
+    \item Works for any number of categories. Doesn't require binary classification --- Kappa is well-defined for multi-class with any $k$ categories.
 }
 {
-    \item It is not advised to use it as a classification metric. Only to measure inter-annotator agreement.
-    \item Some researchers argue that the metric is unreliable when dealing with rare events (unbalanced data).
+    \item The ``Kappa paradox'': on heavily imbalanced data, very different observed-agreement values can give the same Kappa. Always report Kappa alongside the raw agreement percentage to spot this.
+    \item Not advised as the primary classifier metric. Most ML teams use accuracy/F1/MCC for model evaluation and reserve Kappa for annotation quality control.
 }
 
 \clearpage
@@ -1236,7 +1209,7 @@ When you want to compute the agreement between two human annotators on a classif
     \includegraphics[width=0.6\textwidth]{figures/Cohens_Kappa_levels.png}
 \end{figure*}
 
-\textbf{Figure.} Interpretation scale for Cohen's Kappa, from poor agreement (negative) to almost perfect agreement (0.8--1.0).
+\textbf{Figure.} Two annotators that label items randomly with the majority-class rate. As class imbalance grows, raw observed agreement climbs toward $1$ --- they look like they're doing well --- but Cohen's $\kappa$ correctly stays at $0$. The gap between the two lines is what raw agreement hides.
 
 \orangebox{Did you know that...}
 {Cohen's Kappa was introduced by Jacob Cohen in 1960 in his paper \textit{A Coefficient of Agreement for Nominal Scales}. Despite its popularity, Cohen himself
@@ -1244,8 +1217,7 @@ acknowledged its limitations and later introduced weighted kappa (1968) to handl
 
 \textbf{Other related metrics}
 
-Other metrics related to Cohen's Kappa include Fleiss' Kappa (for multiple annotators), Scott's Pi, and Krippendorff's Alpha. For classification evaluation rather than
-inter-annotator agreement, consider MCC or Balanced Accuracy instead.
+For more than two annotators, use Fleiss' Kappa. For ordinal labels with graded disagreement, use weighted kappa. For comparing classifier predictions to ground truth, MCC is the closest analogue and is the more common choice in ML papers. A low $\kappa$ on training data is a signal that your labels are noisy --- adding model capacity won't help if the annotators themselves disagree.
 
 % ---------- MCC ----------
 \clearpage

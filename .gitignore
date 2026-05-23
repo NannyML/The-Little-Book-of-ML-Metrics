@@ -10,3 +10,15 @@
 book/main.fdb_latexmk
 book/main.fls
 book/main.xdv
+
+BOOK_STATUS.md
+FORMULA_FIXES.md
+QUALITY_UPGRADE.md
+# Claude
+CLAUDE.md
+.claude/
+
+# Python / uv
+.venv/
+__pycache__/
+*.pyc
