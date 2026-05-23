@@ -117,9 +117,7 @@ If RI is high but AMI is low, the clustering matches pair-by-pair but loses info
 \section{CH Index}
 \subsection{Calinski Harabasz Index}
 
-The Calinski–Harabasz Index (CH Index), also known as the Variance Ratio Criterion, is a clustering evaluation metric that does
-not require ground-truth labels. It measures the quality of clustering by comparing the dispersion between clusters to the
-dispersion within clusters.
+The Calinski-Harabasz (CH) Index scores a clustering without ground-truth labels by comparing how tight clusters are internally against how far apart they sit from each other. Higher CH means tighter clusters and wider gaps between centers --- the two properties that define a ``good'' partition when there is nothing to compare to.
 
 \begin{center}
     \tikz{
@@ -136,21 +134,19 @@ dispersion within clusters.
     }
 \end{center}
 
-The CH Index is defined as the ratio of the between-clusters dispersion (BCSS) to the within-cluster dispersion (WCSS),
-normalized by their respective degrees of freedom. We normalize BCSS and WCSS by their degrees of freedom to ensure comparability
-across different values of $k$, avoiding artificial inflation of the score for higher cluster counts.
+CH has no upper bound, and the absolute value depends on the data, so $CH = 3000$ on one dataset says nothing about $CH = 5000$ on another. Its main use is picking $k$: compute CH across candidate values of $k$ on the same data and take the maximum. The degrees-of-freedom normalization ($k-1$ and $N-k$) is what stops the score from drifting upward as $k$ grows.
 
-\textbf{When to use Calinski-Harabasz Index?}
+\textbf{When to use the CH Index?}
 
-Use CH Index when no ground-truth labels are available to validate the clustering quality. It can also be used to identify the
-optimal number of clusters by maximizing the CH Index across different cluster counts.
+When you have no ground-truth labels and need to choose $k$, or quickly score a clustering's compactness-vs-separation. Avoid CH when clusters are non-convex or have very different sizes --- it favors convex, equally-sized blobs and will misrank elongated or hierarchical structure. Use the Silhouette Score for those cases.
 
 \coloredboxes{
-    \item The CH Index does not rely on labeled data.
-    \item The use of degrees of freedom normalization ensures fair comparison across varying $k$ and sample sizes.
+    \item Fast to compute. CH only needs cluster centroids and point-to-centroid distances, so it scales linearly in $n$. The Silhouette Score is $O(n^2)$ in the worst case --- CH is the natural choice when sweeping $k$ on $100\text{k}+$ points.
+    \item Degrees-of-freedom normalization keeps CH comparable across different $k$ on the same dataset, which is what makes the elbow/maximum trick work.
 }
 {
-    \item The calculation assumes a Euclidean distance metric, which may limit its applicability for non-Euclidean data.
+    \item Assumes Euclidean geometry. Both BCSS and WCSS are sums of squared Euclidean distances, so CH misranks clusterings on non-Euclidean data (text embeddings with cosine distance, graph data). Compute CH in an embedding space where Euclidean distance is meaningful.
+    \item Favors convex, equally-sized clusters. Long, curved, or nested clusters score low even when they reflect real structure --- DBSCAN-style clusterings can look terrible by CH despite being correct.
 }
 
 \clearpage
@@ -158,19 +154,17 @@ optimal number of clusters by maximizing the CH Index across different cluster c
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Calinski_Harabasz_elbow.png}
+    \includegraphics[width=0.75\textwidth]{figures/Calinski_Harabasz_elbow.png}
 \end{figure*}
 
-\textbf{Figure.} CH Index vs number of clusters for data with 4 true clusters. The peak at k=4 correctly identifies the optimal cluster count. Higher CH values indicate better-defined clusters.
+\textbf{Figure.} CH against $k$ on data with $4$ true clusters. The score climbs steeply as $k$ approaches the true count, peaks at $k=4$, then decays as further splits start fragmenting real clusters. Read the curve as ``where does CH stop rising'' --- the peak is the elbow.
 
 \orangebox{Did you know that...}
-{The Calinski-Harabasz Index is also known as the Variance Ratio Criterion (VRC). It was introduced by Calinski and Harabasz in 1974 and is one of the
-fastest clustering quality metrics to compute, since it only requires cluster centroids and point-to-centroid distances.}
+{CH is structurally the $F$-statistic from one-way ANOVA applied to cluster assignments: between-group variance over within-group variance, normalized by degrees of freedom. That is why it works as a model-selection criterion --- you are literally asking ``is the variance between clusters significantly larger than the variance within them?'', the same question ANOVA answers for group means.}
 
 \textbf{Other related metrics}
 
-The CH Index is an internal metric like the Silhouette Score and Davies-Bouldin Index. All three can be used to select the optimal number of clusters
-when ground truth is unavailable. The CH Index tends to favor convex, equally-sized clusters.
+The Silhouette Score also picks $k$ without labels and handles non-convex clusters better, but costs $O(n^2)$. The Davies-Bouldin Index is minimized at the optimal $k$, the opposite direction from CH --- when CH and Davies-Bouldin disagree on the best $k$, cluster sizes are usually very uneven, which CH penalizes harder than Davies-Bouldin.
 
 % ---------- contingency matrix ----------
 \clearpage
