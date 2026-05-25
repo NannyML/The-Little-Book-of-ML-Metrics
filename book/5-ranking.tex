@@ -36,7 +36,7 @@ Use @K when the user sees a fixed window: search pages, feeds, carousels. Pick $
     \includegraphics[width=0.85\textwidth]{figures/at_K_precision_recall.png}
 \end{figure*}
 
-\textbf{Figure.} Precision@$K$ (blue) falls and Recall@$K$ (red) rises as $K$ grows. The crossover at $K = 20$ is where both curves agree: $60\%$ of relevant items retrieved at $60\%$ precision. Picking $K$ to the left of the crossover means optimizing for a clean top of the list; to the right, for covering more of the relevant set. The shape of the two curves is the practical artifact — the exact crossover shifts with the underlying relevance distribution.
+\textbf{Figure.} Precision@$K$ (blue) falls and Recall@$K$ (red) rises as $K$ grows — the universal trade-off. Precision@$K$ starts high (the top of the list is usually right) and decays as you scoop up more borderline items; Recall@$K$ rises monotonically because more items can only retrieve more of the relevant set. The two curves cross exactly at $K =$ (total relevant items) by construction — $20$ in this example — which is why the crossover itself is not a useful operating point, only the shapes are.
 
 \orangebox{Did you know that...}
 {The choice of $K$ is often driven by UI constraints. If a mobile app shows five cards on screen, $Precision@5$ measures exactly the value of that screen. Reporting $Precision@10$ when only five are visible measures a different product than the one users see.}

@@ -1,9 +1,10 @@
 """
 Precision@K vs Recall@K trade-off plot for the @K Metrics page.
 
-The figure shows the classic shape: as K grows, Precision@K falls and Recall@K
-rises. The crossover point (where the two curves meet) is a useful anchor for
-picking K.
+The figure shows the universal shape: as K grows, Precision@K falls and
+Recall@K rises. NOTE: the two curves cross at K = (total relevant items)
+as a mathematical identity, not as a generalizable insight — so this plot
+deliberately avoids annotating the crossover.
 """
 import sys
 from pathlib import Path
@@ -60,19 +61,6 @@ def main():
             va="center", ha="left", fontsize=13)
     ax.text(50.5, recall_at_k[-1], "Recall@K", color=NML_RED,
             va="center", ha="left", fontsize=13)
-
-    # Mark the crossover.
-    cross_idx = int(np.argmin(np.abs(precision_at_k - recall_at_k)))
-    ax.scatter([K_values[cross_idx]], [precision_at_k[cross_idx]],
-               color="black", zorder=5, s=30)
-    ax.annotate(
-        f"crossover at K={K_values[cross_idx]}",
-        xy=(K_values[cross_idx], precision_at_k[cross_idx]),
-        xytext=(K_values[cross_idx] + 4, precision_at_k[cross_idx] - 0.18),
-        fontsize=12,
-        color="black",
-        arrowprops=dict(arrowstyle="-", color="black", linewidth=0.8),
-    )
 
     fig.tight_layout()
     save_figure(fig, "at_K_precision_recall")
