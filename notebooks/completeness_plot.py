@@ -36,7 +36,7 @@ print(f"C k=9:      C={c_c:.2f}  H={h_c:.2f}")
 palette_3 = [NML_CYAN, NML_PURPLE, NML_RED]
 palette_9 = [nml_cmap(i / 8) for i in range(9)]
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 6))
+fig, axes = plt.subplots(1, 3, figsize=(16, 6), gridspec_kw={"wspace": 0.25})
 
 panels = [
     (axes[0], pred_a, palette_3, c_a, h_a, "$k = 3$ (true count)"),
@@ -71,5 +71,4 @@ for ax, pred, palette, comp, hom, label in panels:
         va="top",
     )
 
-plt.tight_layout()
 save_figure(fig, "Completeness_Score_tradeoff")

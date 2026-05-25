@@ -40,7 +40,7 @@ print(f"well-separated:  RI={ri_sep:.3f}  ARI={ari_sep:.3f}")
 print(f"overlapping:     RI={ri_over:.3f}  ARI={ari_over:.3f}")
 print(f"random labels:   RI={ri_rand:.3f}  ARI={ari_rand:.3f}")
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5.5))
+fig, axes = plt.subplots(1, 3, figsize=(16, 5.5), gridspec_kw={"wspace": 0.25})
 
 panels = [
     (axes[0], X_sep, pred_sep, ri_sep, ari_sep, "well-separated"),
@@ -62,17 +62,16 @@ for ax, X, pred, ri, ari, label in panels:
         ax.spines[sp].set_visible(False)
     ax.set_xticks([])
     ax.set_yticks([])
-    ax.set_title(label, fontsize=16, loc="left", pad=10, color="#333333")
+    ax.set_title(label, fontsize=16, loc="center", pad=14, color="#333333")
     ax.text(
-        0.03,
-        0.97,
-        f"RI  = {ri:.2f}\nARI = {ari:+.2f}",
+        0.5,
+        -0.08,
+        f"RI  = {ri:.2f}    ARI = {ari:+.2f}",
         transform=ax.transAxes,
-        fontsize=17,
+        fontsize=16,
         family="monospace",
-        verticalalignment="top",
+        ha="center",
+        va="top",
         color="#111111",
     )
-
-plt.tight_layout()
 save_figure(fig, "Rand_Index_separation")

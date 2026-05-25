@@ -63,7 +63,7 @@ For cross-dataset comparison on a bounded $[0, 1]$ scale, use NMI. For chance-ad
 \section{Rand Index}
 \subsection{Rand Index}
 
-The Rand Index (RI) counts pair-agreements: out of all pairs of points, what fraction do the predicted clustering and the reference agree on --- either placing the pair together ($TP$) or apart ($TN$). Random labels on $3$ balanced classes already produce $RI \approx 0.56$, which is why the chance-corrected Adjusted Rand Index (ARI) exists.
+The Rand Index (RI) is the fraction of point pairs on which two clusterings agree --- whether they both place the pair together, or both separate them. On three balanced classes with random labels, $RI \approx 0.56$ already: most pairs are correctly apart by chance, so RI inflates regardless of clustering quality. The Adjusted Rand Index (ARI) subtracts that chance baseline, so a score of $0$ means random and $1$ means identical clusterings.
 
 \begin{center}
     \tikz{
@@ -79,7 +79,7 @@ The Rand Index (RI) counts pair-agreements: out of all pairs of points, what fra
     }
 \end{center}
 
-RI ranges from $0$ to $1$, but the chance baseline depends on the number of clusters and approaches $1$ as $k$ grows --- raw RI drifts upward regardless of clustering quality. ARI subtracts that baseline and lands on a $[-0.5, 1]$ scale: $0$ means no better than random, $1$ means identical clusterings.
+RI ranges from $0$ to $1$, but the chance baseline depends on the number of clusters and approaches $1$ as $k$ grows --- raw RI drifts upward regardless of clustering quality. ARI's chance-corrected scale runs from $-0.5$ to $1$.
 
 \textbf{When to use the Rand Index?}
 
@@ -189,7 +189,7 @@ The Contingency Matrix is the clustering analog of a confusion matrix: rows are 
     }
 \end{center}
 
-Reading the matrix is the diagnostic act: large diagonal entries mean clusters align with classes, large off-diagonals identify which classes the algorithm conflates. Row sums recover class sizes and column sums recover cluster sizes --- a mismatch between them flags imbalanced clusters.
+Large diagonal entries mean clusters align with classes; large off-diagonals identify which classes the algorithm conflates. Row sums recover class sizes and column sums recover cluster sizes --- a mismatch flags imbalanced clusters.
 
 \textbf{When to use the Contingency Matrix?}
 
@@ -215,7 +215,7 @@ When you have ground-truth labels and need to diagnose \emph{where} a clustering
 \textbf{Figure.} Contingency Matrix on a $3$-class clustering. The diagonal carries the agreement ($100$, $95$, $99$ out of $100$ per class); the off-diagonals expose the error pattern: class $1$ leaked $4$ points into cluster $0$ and $1$ point into cluster $2$. Read row by row to see where each class went.
 
 \orangebox{Did you know that...}
-{Every external clustering metric is a function of this matrix. NMI is the mutual information between row and column marginals normalized by their entropies; ARI counts agreeing pairs as a quadratic function of the entries; Homogeneity is one minus the conditional entropy of rows given columns. The contingency matrix is to clustering metrics what the confusion matrix is to classification metrics --- one table, every summary downstream.}
+{Every external clustering metric can be derived from this matrix. NMI is the mutual information between row and column marginals normalized by their entropies; ARI counts agreeing pairs as a quadratic function of the entries; Homogeneity is one minus the conditional entropy of rows given columns. The contingency matrix plays the same role for clustering metrics that the confusion matrix plays for classification ones.}
 
 \textbf{Other related metrics}
 
@@ -227,7 +227,7 @@ The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ tab
 \section{Pair Confusion Matrix}
 \subsection{Pair Confusion Matrix}
 
-The Pair Confusion Matrix is a $2 \times 2$ table that asks one binary question for every pair of points: do the two clusterings agree on whether the pair belongs together? It collapses arbitrary clusterings (any $k$, any $C$) into the same four-entry summary, which is the structure that powers RI, ARI, and the Fowlkes-Mallows Index.
+The Pair Confusion Matrix is a $2 \times 2$ table that summarizes, for every pair of points, whether two clusterings agree on keeping the pair together or separating it. It collapses arbitrary clusterings (any $k$, any $C$) into the same four-entry summary, which is the structure that powers RI, ARI, and the Fowlkes-Mallows Index.
 
 \begin{center}
     $\displaystyle
@@ -238,7 +238,7 @@ The Pair Confusion Matrix is a $2 \times 2$ table that asks one binary question 
     $
 \end{center}
 
-$C_{00}$ counts pairs both clusterings separated, $C_{11}$ counts pairs both kept together, and $C_{01}, C_{10}$ are the disagreements. The four entries always sum to all point pairs $\binom{n}{2}$ --- sklearn's implementation counts each pair in both orderings, so its entries sum to $n(n-1)$, a $2\times$ scaling that cancels out in every derived metric.
+$C_{00}$ counts pairs both clusterings separated, $C_{11}$ counts pairs both kept together, and $C_{01}, C_{10}$ are the two kinds of disagreement. The four entries together cover every pair, so the matrix is a complete partition of the pairwise decisions.
 
 \textbf{When to use the Pair Confusion Matrix?}
 
@@ -264,40 +264,14 @@ When you want to debug a clustering at the pair-counting level --- to see whethe
 
 \textbf{Figure.} Pair Confusion Matrix on a $300$-point clustering: $C_{00} = 58{,}812$ pairs separated by both clusterings, $C_{11} = 28{,}544$ pairs kept together, and roughly $1{,}200$ disagreements each way. The diagonal dominates because pairs that should be apart vastly outnumber pairs that should be together --- exactly the $TN$-heavy baseline that inflates raw RI and motivates ARI's chance correction.
 
-To see how the matrix is built, take a $4$-point clustering:
-\[
-\begin{array}{l|cccc}
-    & obj_{1} & obj_{2} & obj_{3} & obj_{4} \\
-\hline
-\text{true} & 0 & 0 & 1 & 0 \\
-\text{pred} & 0 & 1 & 0 & 1 \\
-\end{array}
-\]
-
-Each ordered pair is classified by checking same/different in both clusterings:
-\begin{itemize}
-    \item $C_{00}$ (separated by both): $(obj_{2}, obj_{3})$, $(obj_{3}, obj_{4})$ and their reverses $= 4$
-    \item $C_{11}$ (kept together by both): $(obj_{2}, obj_{4})$ and reverse $= 2$
-    \item $C_{10}$ (same true, different predicted): $(obj_{1}, obj_{2})$, $(obj_{1}, obj_{4})$ and reverses $= 4$
-    \item $C_{01}$ (different true, same predicted): $(obj_{1}, obj_{3})$ and reverse $= 2$
-\end{itemize}
-
-\begin{center}
-    \[
-        C =
-        \begin{bmatrix}
-            4 & 2 \\
-            4 & 2
-        \end{bmatrix}
-    \]
-\end{center}
+When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the ``same cluster'' decision) and pair-wise precision drops; when $C_{10} \gg C_{01}$ it's over-splitting and pair-wise recall drops. So even when the two clusterings get a similar RI score, the imbalance between $C_{01}$ and $C_{10}$ tells you \emph{how} they fail.
 
 \orangebox{Did you know that...}
-{This matrix is the source for every pair-counting metric. $RI = (C_{00} + C_{11}) / n(n-1)$ is literally classification accuracy applied to the pair-by-pair decision; ARI rescales the same quantity for chance; the Fowlkes-Mallows Index takes a geometric mean of pairwise precision and recall; the Jaccard variant drops $C_{00}$ to avoid the imbalance issue. Four entries, an entire family of metrics.}
+{This matrix is the source for every pair-counting metric. $RI$ is the fraction of pairs on the diagonal; ARI rescales the same quantity for chance; the Fowlkes-Mallows Index takes a geometric mean of pairwise precision and recall computed from the same four entries; the Jaccard variant drops $C_{00}$ to avoid inflation from the typically dominant ``both apart'' count.}
 
 \textbf{Other related metrics}
 
-When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the ``same cluster'' decision) and pair-wise precision drops; when $C_{10} \gg C_{01}$ it's over-splitting, and pair-wise recall drops --- FMI surfaces that asymmetry directly. The Contingency Matrix gives the same information at the class level rather than the pair level; use it when the diagnostic needs to identify \emph{which} classes are conflated, not just \emph{how many} pairs are wrong.
+The Fowlkes-Mallows Index surfaces the precision-recall asymmetry between $C_{01}$ and $C_{10}$ as a single number, useful when one direction of error matters more. The Contingency Matrix gives the same information at the class level rather than the pair level; use it when the diagnostic needs to identify \emph{which} classes are conflated, not just \emph{how many} pairs are wrong.
 
 % ---------- Completeness Score ----------
 \clearpage
@@ -305,7 +279,7 @@ When $C_{01} \gg C_{10}$, the algorithm is over-merging (false positives on the 
 \section{Completeness Score}
 \subsection{Completeness Score}
 
-The Completeness Score asks one question: are all members of a true class together in the same cluster? It is asymmetric --- lumping every point into one giant cluster scores Completeness $= 1$ trivially, even though the clustering conveys no information. This is why Completeness is always reported alongside Homogeneity, never alone.
+The Completeness Score measures whether all members of a true class end up in the same cluster. It is asymmetric: lumping every point into one giant cluster gives Completeness $= 1$ trivially, because every class is contained somewhere. That's why Completeness is always reported alongside Homogeneity.
 
 \begin{center}
     \tikz{
@@ -361,7 +335,7 @@ Completeness and Homogeneity always need to be read together; one without the ot
 \section{Homogeneity Score}
 \subsection{Homogeneity Score}
 
-The Homogeneity Score is the mirror question of Completeness: is each cluster made of points from a single true class? It's asymmetric --- splitting every point into its own cluster gives Homogeneity $= 1$ trivially, because every one-point cluster is pure by definition, even when the clustering reveals no structure. This is why Homogeneity is always paired with Completeness, never reported alone.
+The Homogeneity Score is the mirror of Completeness: it measures whether each cluster contains points from only one true class. It is asymmetric the other way --- splitting every point into its own cluster gives Homogeneity $= 1$ trivially, because a one-point cluster is pure by definition. Always paired with Completeness.
 
 \begin{center}
     \tikz{
@@ -531,7 +505,7 @@ The Silhouette Score is the other label-free option, costing $O(n^2)$ but handli
 \section{FMI}
 \subsection{Fowlkes-Mallows Index}
 
-The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and recall. For every pair of points, it asks whether the two clusterings agreed on placing them together; FMI scores how often they did, relative to how often each clustering said ``together'' on its own. The geometric mean structure rewards balance --- if either pair-wise precision or recall is low, FMI drops.
+The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and recall on the ``same cluster'' decision. The geometric mean rewards balance: if either pair-wise precision or recall is low, FMI drops --- one-sided clusterings cannot hide behind a strong score in just one direction.
 
 \begin{center}
     \tikz{
@@ -547,11 +521,11 @@ The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and 
     }
 \end{center}
 
-FMI ranges from $0$ to $1$. Unlike raw RI, it does not inflate trivially --- one-sided clusterings get penalized because the geometric mean is bounded above by the smaller of pair-wise precision and recall. Like RI, however, FMI is not chance-adjusted; use AMI or ARI when cross-dataset comparison or a meaningful chance baseline matters.
+FMI ranges from $0$ to $1$ and is bounded above by the smaller of pair-wise precision and recall. It is not chance-adjusted: random clusterings on $k$ balanced classes score roughly $1/k$ by chance, so use ARI when that baseline matters.
 
 \textbf{When to use the FMI?}
 
-When you want a balanced pair-counting score that drops faster than raw RI on partial agreement and chance correction is not essential. Useful for hierarchical clustering evaluation where partial structure matters. Avoid FMI alone for chance-sensitive comparisons --- random clusterings can score $0.3$ or more by chance; use ARI for the chance-corrected pair-counting alternative.
+When you want a balanced pair-counting score and chance correction is not essential. Useful for hierarchical clustering evaluation where partial structure matters. Avoid FMI alone for chance-sensitive comparisons; use ARI as the chance-corrected pair-counting alternative.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -589,7 +563,7 @@ FMI is the pair-counting cousin of RI and ARI. When FMI is high but ARI is low, 
 \section{Silhouette Score}
 \subsection{Silhouette Score}
 
-The Silhouette Score asks one question per point: are you closer to the rest of your cluster, or to the nearest other cluster? Averaging the per-point silhouette gives a score in $[-1, 1]$: $+1$ means every point clearly belongs where it was assigned, $0$ means points sit on cluster boundaries, $-1$ means points have been placed in the wrong cluster.
+The Silhouette Score compares each point's distance to other points in its own cluster against its distance to the nearest other cluster. Averaging across all points gives a score in $[-1, 1]$: near $+1$ means tight, well-separated clusters; near $0$ means points sit on boundaries; below $0$ means points have been placed in the wrong cluster.
 
 \begin{center}
 \tikz{
@@ -633,7 +607,7 @@ When you have no labels, need to handle non-convex clusters or non-Euclidean dis
     \includegraphics[width=\textwidth]{figures/Silhouette_Score_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} Silhouette plots for well-separated ($S = 0.88$) vs overlapping ($S = 0.63$) clusterings. Each horizontal bar is a single point's silhouette, sorted within its cluster; the dashed line marks the dataset average. The overlapping case has many points near $0$ (boundary points) --- the per-point view shows exactly which points are ambiguous, which the average $S$ alone would hide.
+\textbf{Figure.} Silhouette plots for well-separated ($S = 0.88$) vs overlapping ($S = 0.63$) clusterings. Each horizontal bar is one point's silhouette $s(i)$; bars are sorted within their cluster, so the cluster's ``blade'' tapers from low to high silhouette. A tight, near-square blade (left panel) means most points sit comfortably in their cluster; a long tapered tail toward $0$ (right panel) means many points are near a cluster boundary. The dashed line is the dataset average.
 
 \orangebox{Did you know that...}
 {The silhouette plot is the actual practitioner tool, not the average score. The shape of the plot tells you more than the number: a single cluster with mostly low silhouette flags one bad cluster; uniformly mediocre silhouette across every cluster means the geometry isn't separable in this feature space; a few negative bars within an otherwise good cluster point to specific misassigned samples. The average collapses all three stories into one number.}
