@@ -279,8 +279,7 @@ DCG extends CG by discounting later positions. nDCG normalizes DCG against the i
 \section{DCG}
 \subsection{Discounted Cumulative Gain}
 
-Discounted Cumulative Gain (DCG) improves upon CG by introducing a position-based discounting factor.
-It accounts for the fact that relevant items appearing earlier in the list are more valuable than those appearing later.
+DCG fixes the order-blindness of CG by discounting items further down the list. The position discount $1/\log_2(i + 1)$ is heaviest at rank $1$ (no discount) and decays slowly: rank $2$ gets a factor of $0.63$, rank $10$ gets $0.29$, rank $100$ gets $0.15$. DCG rewards relevance but heavily favors relevance that appears early.
 
 \begin{center}
     \tikz{
@@ -296,21 +295,19 @@ It accounts for the fact that relevant items appearing earlier in the list are m
     }
 \end{center}
 
-This logarithmic discounting ensures that higher-ranked relevant items contribute more to the score.
+The logarithmic discount is gentle compared to MRR's $1/rank$ — DCG still credits items at rank $20$ or $50$, just less. So DCG sees the whole list, with diminishing weight, where MRR effectively only sees the top.
 
 \textbf{When to use DCG?}
 
-Use DCG when you want to measure both the total relevance and the order of relevant items in a ranked list. It is particularly
-useful for search engines, recommendation systems, and ranking models where placing relevant items at the top is crucial.
+Use DCG when relevance is graded (a five-star rating, a three-tier label) and the full ranked list matters. The discount $1/\log_2(i+1)$ models attention decay smoothly. Avoid DCG when you need cross-query comparison — scores depend on each query's relevance budget, so $DCG = 7$ for one and $DCG = 4$ for another is not interpretable without normalization. That is what nDCG is for.
 
 \coloredboxes{
-    \item Accounts for ranking order. Relevant items appearing earlier in the list are weighted more heavily.
-    \item More realistic than CG. Since users are more likely to engage with items at the top, DCG better reflects
-    real-world relevance.
+    \item Rewards both relevance and ordering. Position $1$ gets full weight; position $K$ gets $1/\log_2(K+1)$, slow enough that the tail still counts.
+    \item Works directly with graded relevance, unlike MAP or Hit Rate which need binary judgments.
 }
 {
-    \item Not normalized — DCG values depend on the number and relevance of items, making cross-query comparison difficult.
-    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+    \item Unbounded and not normalized. $DCG = 7$ vs $DCG = 4$ across queries means nothing on its own.
+    \item Discount base is a free parameter. Most implementations use $\log_2$; others use $\log_e$ or $\log_{10}$, so library outputs may not be directly comparable.
 }
 
 \clearpage
@@ -321,15 +318,14 @@ useful for search engines, recommendation systems, and ranking models where plac
     \includegraphics[width=0.6\textwidth]{figures/CG_vs_DCG.png}
 \end{figure*}
 
-\textbf{Figure.} DCG (blue) applies logarithmic discounting, giving more weight to items ranked higher. CG (red) treats all positions equally, making DCG a more realistic measure.
+\textbf{Figure.} CG (red) and DCG (blue) score the same item list. They agree at rank $1$ — the first item contributes its full relevance to both — and diverge as $K$ grows because every subsequent position takes a logarithmic discount in DCG but not in CG. The widening gap is exactly how much rank order matters under DCG's discount.
 
 \orangebox{Did you know that...}
-{The logarithmic discount in DCG was introduced by J\"{a}rvelin and Kek\"{a}l\"{a}inen in 2002. The choice of $\log_2$ is conventional but arbitrary — some implementations use natural log or $\log_{10}$.}
+{The logarithmic discount in DCG was introduced by J\"{a}rvelin and Kek\"{a}l\"{a}inen in 2002. The choice of $\log_2$ is conventional but arbitrary — some implementations use natural log or $\log_{10}$, and scores across libraries are not directly comparable unless the base is the same.}
 
 \textbf{Other related metrics}
 
-DCG builds on CG by adding position discounting. For a normalized version that enables cross-query comparison, use nDCG.
-For binary relevance, MAP may be a simpler alternative.
+For cross-query comparison use nDCG, which divides DCG by the ideal ranking's DCG. For binary relevance, MAP is simpler and avoids the discount-base ambiguity. For top-only evaluation, MRR.
 
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
@@ -337,9 +333,7 @@ For binary relevance, MAP may be a simpler alternative.
 \section{nDCG}
 \subsection{Normalized Discounted Cumulative Gain}
 
-Normalized Discounted Cumulative Gain (nDCG) extends DCG by normalizing it relative to the Ideal Discounted Cumulative Gain
-(IDCG)—the best possible ranking of the same set of items. This ensures that scores are comparable across different users
-and queries.
+nDCG divides DCG by the best possible DCG for the same items (the Ideal DCG, or IDCG). The ratio is bounded in $[0, 1]$: $1$ means the model produced the ideal ordering, $0$ means every relevant item was sorted to the bottom. Because each query is scored against its own ideal, nDCG values from queries with very different relevance budgets are directly comparable.
 
 \begin{center}
     \tikz{
@@ -355,21 +349,19 @@ and queries.
     }
 \end{center}
 
-IDCG is the DCG computed with an optimally ranked list. nDCG values range from 0 to 1, with 1 indicating a perfect ranking.
+IDCG is the DCG of the optimally sorted list (relevant items first, in descending relevance). An $nDCG = 0.85$ means the model achieved $85\%$ of the maximum possible discounted relevance for that query — a directly readable number, unlike raw DCG.
 
 \textbf{When to use nDCG?}
 
-Use nDCG when you need a standardized ranking metric that allows comparison across different recommendation tasks.
-It is widely used in search engines, recommender systems, and ranking models where ranking quality is essential.
+Use nDCG when relevance is graded and you need a single comparable number across queries with different relevance budgets. It is the de facto offline metric for graded-relevance ranking. Avoid nDCG when relevance is purely binary (use MAP — same idea, less machinery) or when only the very top of the list matters (use MRR or Precision@$K$).
 
 \coloredboxes{
-    \item Scale-independent. Since it is normalized, NDCG values are comparable across different datasets and users.
-    \item Captures both relevance and ranking order. It rewards placing highly relevant items early in the list while
-    penalizing poorly ranked relevant items.
+    \item Bounded in $[0, 1]$ and comparable across queries — fixes DCG's main weakness.
+    \item Handles graded relevance natively. A five-star rating gives a richer signal than ``relevant/not'', and nDCG uses it directly.
 }
 {
-    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
-    \item Not ideal for binary relevance. nDCG is designed for graded relevance; for binary relevance, MAP may be more appropriate.
+    \item Requires labeled relevance scores. With missing or noisy labels, IDCG is wrong and nDCG inherits the error.
+    \item Sensitive to the truncation $K$ in $nDCG_K$. Truncating at $K = 5$ vs $K = 100$ gives very different scores; report at the $K$ that matches the product.
 }
 
 \clearpage
@@ -380,15 +372,14 @@ It is widely used in search engines, recommender systems, and ranking models whe
     \includegraphics[width=0.6\textwidth]{figures/nDCG_degradation.png}
 \end{figure*}
 
-\textbf{Figure.} nDCG decreases as we progressively degrade the ranking by random swaps. A perfect ranking scores 1.0; each swap moves relevant items away from their ideal positions.
+\textbf{Figure.} Each random pair-swap degrades the ranking. nDCG drops on average, but noisily: a swap between two irrelevant items barely moves the score, while one involving the top item drops nDCG sharply. After ten swaps the ranking still scores above $0.85$, showing that nDCG is fairly forgiving when swaps happen far from the top.
 
 \orangebox{Did you know that...}
-{nDCG is the standard offline evaluation metric at most major tech companies for search and recommendation systems. It is also the primary metric
-used in the annual TREC Web Track and in Kaggle recommendation competitions.}
+{nDCG is the standard offline evaluation metric at most major tech companies for search and recommendation systems. It is also the primary metric used in the annual TREC Web Track and in Kaggle recommendation competitions — when a search or recsys leaderboard reports one number, it is almost always nDCG.}
 
 \textbf{Other related metrics}
 
-nDCG is the normalized version of DCG. For binary relevance scenarios, consider MAP. For evaluating only the first relevant result, use MRR.
+nDCG is DCG normalized against the ideal ranking. For binary relevance use MAP — simpler and less label-hungry. For known-item search use MRR. For top-only evaluation in product-anchored settings, Precision@$K$.
 
 % great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
 
@@ -399,10 +390,7 @@ nDCG is the normalized version of DCG. For binary relevance scenarios, consider 
 \section{FCP}
 \subsection{Fraction of Concordant Pairs}
 
-Fraction of Concordant Pairs (FCP) is a ranking metric used in recommender systems to evaluate how well a model ranks
-preferred items higher than less preferred ones. It measures the proportion of correctly ordered item pairs among all
-comparable pairs in a recommendation list. Given a user’s interactions, FCP checks whether the model ranks a more relevant
-item above a less relevant one.
+FCP turns ranking into a pairwise question: for every pair of items where the user prefers one over the other, did the model rank them in the right order? The metric is the fraction of such pairs that came out concordant. A coin-flip ranker scores $0.5$; a perfect ranker scores $1$.
 
 \begin{center}
     \tikz{
@@ -418,24 +406,19 @@ item above a less relevant one.
     }
 \end{center}
 
-A concordant pair is one where the model correctly ranks a preferred item above a less preferred one. FCP values range from
-0 to 1, with 1 indicating a perfect ranking and 0 meaning the model fails to rank preferred items higher.
+A comparable pair is one where the ground truth says which item the user prefers. FCP is undefined for pairs the user has no opinion on — a fact that becomes important in sparse implicit-feedback data, where most pairs are unobserved.
 
 \textbf{When to use FCP?}
 
-Use FCP when evaluating recommender systems that generate personalized rankings, especially in cases where relative
-ranking quality is more important than absolute scores. It is particularly useful in implicit feedback scenarios,
-such as e-commerce or media streaming, where explicit relevance scores are unavailable, and user preferences must be
-inferred from interactions.
+Use FCP when relevance is expressed as pairwise preferences rather than absolute scores: ``the user clicked A but not B'', ``finished show X, bailed on Y''. It is the natural metric for learning-to-rank models trained with pairwise losses. Avoid FCP when you have rich graded relevance — collapsing a five-star rating to a binary preference throws away signal that nDCG would use.
 
 \coloredboxes{
-    \item It directly measures how accurately the system's rankings align with user preferences.
+    \item Captures relative ranking quality directly, matching how recommender models are usually trained (pairwise losses).
+    \item Robust to absolute-score noise. If user A rates everything $3$ and user B rates everything $5$, FCP recovers each user's preference order; nDCG would see different score ranges.
 }
 {
-    \item It only evaluates pairs of items where user preferences can be inferred, potentially reducing
-    the number of evaluated pairs.
-    \item Calculating FCP can be resource-intensive for large datasets, as the number of item pairs grows
-    quadratically with dataset size.
+    \item Quadratic in list size. Ranking $1{,}000$ items means $\sim 500{,}000$ pairs per user — expensive at scale.
+    \item Treats all pairs equally. A swap between rank $1$ and rank $2$ counts the same as a swap between rank $500$ and rank $501$.
 }
 
 \clearpage
@@ -446,16 +429,14 @@ inferred from interactions.
     \includegraphics[width=\textwidth]{figures/FCP_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} A good ranking (left, FCP=0.90) shows predicted ranks closely matching true preferences. A poor ranking (right, FCP=0.20) shows little agreement.
+\textbf{Figure.} The left scatter shows predicted ranks closely tracking the true preference order ($FCP = 0.90$) — most pairs are concordant, so points cluster near the diagonal. The right shows a near-random ranker ($FCP = 0.20$): points scatter off the diagonal because most pairs come out backwards. The diagonal is the eye's anchor for ``how concordant are the pairs?''.
 
 \orangebox{Did you know that...}
-{FCP is closely related to Kendall's tau rank correlation coefficient. Both measure pairwise agreement in rankings, but FCP is expressed as a proportion
-while Kendall's tau is normalized to [-1, 1].}
+{FCP is closely related to Kendall's tau rank correlation coefficient. Both measure pairwise agreement in rankings, but FCP is expressed as a proportion in $[0, 1]$ while Kendall's tau is rescaled to $[-1, 1]$. The relationship: $\tau = 2 \cdot FCP - 1$.}
 
 \textbf{Other related metrics}
 
-FCP is a pairwise ranking metric similar to Kendall's tau and Spearman's rank correlation.
-For position-weighted evaluation, use nDCG or MAP instead.
+FCP is structurally Kendall's tau without the rescaling. For position-weighted evaluation use nDCG. For top-only evaluation use MRR or Precision@$K$. For binary-relevance ranking, MAP.
 
 % great references: https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp
 % https://www.ijcai.org/Proceedings/13/Papers/449.pdf
@@ -466,10 +447,7 @@ For position-weighted evaluation, use nDCG or MAP instead.
 \section{Diversity}
 \subsection{Diversity}
 
-Diversity is a ranking metric used in recommender systems to measure how varied the recommended items are within a given list.
-A diverse recommendation set ensures that users are exposed to different categories, genres, or types of content, rather than
-receiving highly similar items. This helps prevent redundancy and enhances user discovery. Diversity is often calculated using
-pairwise dissimilarity between recommended items.
+Diversity scores a recommendation list by how dissimilar its items are from each other on average. Sum the pairwise dissimilarities $d(i, j)$ across all unordered pairs and divide by the number of pairs. A list of ten action movies scores low; a list mixing action, comedy, and documentary scores high.
 
 \begin{center}
     \tikz{
@@ -485,24 +463,19 @@ pairwise dissimilarity between recommended items.
     }
 \end{center}
 
-A higher Diversity score indicates that the recommended items are more distinct from one another, whereas a lower score
-suggests redundancy.
+The choice of $d(i, j)$ drives everything. Common options: $1 - \cos(\text{embedding}_i, \text{embedding}_j)$ when item embeddings are available, or category distance ($0$ same genre, $1$ different) when only labels are. The metric inherits whatever bias the embedding has, so a model evaluated on cosine diversity can rank very differently under category diversity.
 
 \textbf{When to use Diversity?}
 
-Diversity is particularly important when you want to improve user engagement by introducing varied recommendations. Or when
-you want to avoid excessive similarity in recommendations.
+Use Diversity as a guardrail alongside accuracy: an nDCG-optimal recommender often produces ten near-identical items, and the diversity score will flag that. It also fits products where exploration is the explicit value — onboarding feeds, ``something new'' surfaces. Avoid Diversity as the primary objective — maximizing it alone produces random recommendations.
 
 \coloredboxes{
-    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
-    engagement and retention.
-    \item Supports long-tail recommendations. Helps surface less popular items that may still be relevant,
-    avoiding over-recommendation of mainstream content.
+    \item Catches a real failure that accuracy metrics miss: the ``ten of the same'' problem in collaborative filtering.
+    \item Composable. Mix Diversity with nDCG or MAP to define a trade-off curve and pick a model on the Pareto front.
 }
 {
-    \item Potential trade-off with relevance. Increasing diversity may sometimes lead to less relevant recommendations
-    for the user.
-    \item Hard to define optimal diversity. Too much diversity can lead to recommendations that feel random or disconnected.
+    \item Entirely defined by $d(i, j)$. Switching from category-based to embedding-based dissimilarity can flip the ranking of models.
+    \item Trade-off with relevance. Pushing Diversity up usually pushes nDCG down; the optimal point is product-dependent.
 }
 
 \clearpage
@@ -513,16 +486,14 @@ you want to avoid excessive similarity in recommendations.
     \includegraphics[width=\textwidth]{figures/Diversity_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} High diversity (left) spreads recommendations across multiple genres. Low diversity (right) concentrates all recommendations in a single genre.
+\textbf{Figure.} The left list spreads its recommendations across multiple genres — Diversity is high because most pairs cross category boundaries. The right list concentrates in a single genre — every pair scores zero on category dissimilarity, so Diversity collapses. The metric is reading the genre-mix of the list, not the list's accuracy.
 
 \orangebox{Did you know that...}
-{Intra-List Diversity (ILD) is the most common formulation of diversity in recommender systems. The choice of dissimilarity function $d(i,j)$
-is crucial — common options include 1 minus cosine similarity of item feature vectors, or genre/category distance.}
+{Intra-List Diversity (ILD) is the most common formulation of diversity in recommender systems. The choice of dissimilarity function $d(i,j)$ is crucial — common options include $1 - \cos$ of item feature vectors, or genre/category distance. Two papers can both report ``ILD'' and rank models differently because the underlying $d$ is different.}
 
 \textbf{Other related metrics}
 
-Diversity measures how different items are from each other, while Novelty measures how new items are to the user.
-Serendipity combines both relevance and unexpectedness. Coverage measures catalog utilization.
+Diversity captures how different items are from each other; Novelty captures how unfamiliar they are to the user; Serendipity combines relevance with unexpectedness. Coverage measures catalog utilization across all users — a system-level metric that is orthogonal to per-list diversity.
 
 % ---------- Novelty ----------
 \clearpage
@@ -530,35 +501,27 @@ Serendipity combines both relevance and unexpectedness. Coverage measures catalo
 \section{Novelty}
 \subsection{Novelty}
 
-Novelty is a ranking metric in recommender systems that measures how unfamiliar or unexpected the recommended items are to
-the user. A high Novelty score indicates that the system is suggesting items that the user has not encountered before,
-rather than repeating well-known or frequently recommended content. One way to measure Novelty is the following.
+Novelty scores how unfamiliar the recommended items are. The simplest formulation inverts item popularity: items few users have seen score high, mainstream items score low. The information-theoretic version $-\log_2 P(i)$ measures the same thing in bits — a popular item with $P = 0.5$ has $1$ bit of novelty; a rare item with $P = 0.01$ has $6.6$ bits.
 
 \begin{center}
     \[
-        Novelty(i) = 1 - \frac{count(\text{users who got recommended} \: i)}{count(\text{users who have not interacted with} \: i)}
+        Novelty(i) = -\log_2 P(i)
     \]
 \end{center}
 
-In the literature we can find other ways to compute Novelty such as: $Novelty(i) = -log_2 \left( \frac{count(\text{users who got recommended } \: i)}{count(\text{users who have not interacted with} \: i)} \right)$
-or $Novelty = \frac{1}{|S|} \sum_{i \in S} -log P(i)$ where $P(i)$ represents the popularity of item \( i \)
-A higher Novelty score means the recommendations contain less mainstream content, encouraging discovery of new items rather
-than reinforcing existing preferences.
+Other formulations in the literature ($1 - P(i)$, population-conditional variants) rank items the same way; they differ only in scale. Aggregating across a list usually means averaging the per-item scores.
 
 \textbf{When to use Novelty?}
 
-Novelty is especially useful in scenarios where exploration and discovery are important. Such as content, e-commerce and
-retail platforms where recommending new or niche products rather than just trending or best-selling ones can make a difference.
+Use Novelty in products where ``something new'' is the explicit value proposition: discovery feeds, onboarding for new users, content rabbit holes. Pair it with an accuracy metric — a recommender that only shows novel items is just a popularity-inverter. Avoid Novelty in search-style products: users typing a query rarely want unfamiliar results.
 
 \coloredboxes{
-    \item Encourages exploration. Users are exposed to a broader range of content, which can increase
-    engagement and retention.
-    \item Supports discovery of niche content. Helps mitigate the popularity bias by promoting lesser-known items.
+    \item Mitigates the popularity bias of collaborative filtering, which otherwise drowns the long tail.
+    \item Cheap to compute — just popularity counts, no per-user state.
 }
 {
-    \item Potential Trade-off with relevance. High novelty items might be less relevant if the user has no prior
-    interest in them.
-    \item Potentially overwhelming for users. If novelty is too high, recommendations may feel random or disconnected.
+    \item Penalizes popular items even when popular is correct. A hit pop song has high $P(\text{seen})$ and low Novelty.
+    \item Per-item, not per-list. A list of ten different rare items scores high even if they all sit in the same niche.
 }
 
 
@@ -570,22 +533,14 @@ retail platforms where recommending new or niche products rather than just trend
     \includegraphics[width=0.6\textwidth]{figures/Novelty_curve.png}
 \end{figure*}
 
-\textbf{Figure.} Novelty as a function of item popularity. Rare items (low popularity) have high novelty, while mainstream items have near-zero novelty.
+\textbf{Figure.} Novelty as a function of item popularity. The curve is steep near $P = 0$ — going from $P = 0.01$ to $P = 0.05$ drops novelty from $6.6$ to $4.3$ bits — and flat past $P = 0.5$, where every mainstream item looks roughly equally familiar. The dashed line at $P = 0.5$ marks the ``coin-flip'' item: anything more popular has less than $1$ bit of novelty.
 
 \orangebox{Did you know that...}
-{The self-information formulation $Novelty(i) = -\log_2 P(i)$ is borrowed from information theory. A popular item with $P(i) = 0.5$ has novelty of 1 bit,
-while a rare item with $P(i) = 0.01$ has novelty of 6.6 bits.}
-
-\textbf{Novelty vs Diversity}
-
-Novelty focuses on how new or unexpected the recommendations are for the user whereas diversity focuses on how different the
-recommended items are from each other. Both metrics contribute to exploration but in different ways — novelty ensures
-fresh discoveries, while diversity prevents redundancy.
+{The self-information formulation $Novelty(i) = -\log_2 P(i)$ is borrowed from information theory. A popular item with $P(i) = 0.5$ has novelty of $1$ bit, while a rare item with $P(i) = 0.01$ has novelty of $6.6$ bits. The same machinery powers entropy and cross-entropy losses, so a Novelty-aware ranker is structurally close to a self-supervised language model in how it weights rare events.}
 
 \textbf{Other related metrics}
 
-Novelty is complementary to Diversity and Serendipity. For measuring catalog utilization, see Coverage.
-For accuracy-focused ranking evaluation, use nDCG or MAP.
+Novelty is per-item popularity-based; Diversity is per-list pairwise dissimilarity; Serendipity adds relevance to novelty (an item is serendipitous only if it is both novel AND relevant). For catalog-level reach, Coverage.
 
 % ---------- Serendipity ----------
 \clearpage
