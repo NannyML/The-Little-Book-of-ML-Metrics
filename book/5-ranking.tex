@@ -89,10 +89,10 @@ Use MRR for known-item search and Q\&A: each query has one canonical answer and 
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MRR_reciprocal_rank.png}
+    \includegraphics[width=0.95\textwidth]{figures/MRR_ranked_lists.png}
 \end{figure*}
 
-\textbf{Figure.} Each query contributes the reciprocal of its first-relevant rank to the MRR sum. The drop is fast: rank $1$ gives $1.0$, rank $2$ gives $0.5$, rank $5$ gives $0.2$. Past rank $10$ the reciprocal is small enough that it barely matters whether the relevant item appeared at rank $11$ or rank $1000$ — MRR cares almost exclusively about the top of the list.
+\textbf{Figure.} Six example queries, one per row. The filled cyan dot is the first relevant item — the only one MRR scores; open dots are later relevant items that the metric ignores; small gray dots are irrelevant. The per-query reciprocal rank sits on the right; MRR averages them at the bottom. Q1 (relevant at rank $1$) and Q5 (rank $10$) differ by $10\times$ in score; Q6 (no relevant item) contributes zero.
 
 \orangebox{Did you know that...}
 {MRR is the default scorer for question-answering benchmarks like TREC-QA and Natural Questions because the task is structurally known-item: there is one right answer and the user wants it first. Swapping MRR for nDCG only changes the score on queries with multiple plausible answers — for single-answer queries the two are essentially equivalent.}
