@@ -6,33 +6,26 @@
 \section{@K Metrics}
 \subsection{@K Metrics}
 
-The @K variation of ranking metrics is used in recommender systems to evaluate performance within a fixed top-K recommendation
-window. By considering only the top-K retrieved items, these metrics provide a more realistic assessment of user interaction,
-as users typically engage with only a limited number of recommendations.
+Most ranking metrics score the full ordering, but users rarely scroll past the first screen. The @K family restricts evaluation to the top-$K$ items, matching the slice of the ranking that actually drives engagement. Any base metric — Precision, Recall, MRR, MAP, nDCG — has an @K variant that ignores everything below rank $K$.
 
 \begin{center}
-    $\displaystyle Precision@K = \frac{|\text{relevant items in top-K}|}{K}$
+    $\displaystyle Precision@K = \frac{|\text{relevant items in top-}K|}{K}$
 \end{center}
 
-Common @K metrics include Precision@K, Recall@K, Mean Reciprocal Rank (MRR@K), and Mean Average Precision (MAP@K).
-These adaptations help focus evaluation on highly ranked results, ensuring the recommender system prioritizes relevant
-items within the user's attention span.
+The value of $K$ is set by the product, not the model: $K = 5$ for a mobile carousel, $K = 10$ for a search results page. Two models with identical full-ranking scores can disagree completely at small $K$, so the cutoff is part of the evaluation.
 
-\textbf{When to @K metrics?}
+\textbf{When to use @K metrics?}
 
-Use @K metrics when the top-ranked recommendations are more important than the entire ranking. You need to limit evaluation
-to a practical window that reflects real user behavior. Evaluating recommender systems in interactive settings,
-such as search results, product recommendations, or content feeds.
+Use @K when the user sees a fixed window: search pages, feeds, carousels. Pick $K$ from the UI surface. Avoid @K when the full ordering matters downstream (re-ranking, audit) or when $K$ is itself the variable being optimized.
 
 \coloredboxes{
-    \item Focuses on practical recommendations. Evaluates performance within a relevant top-K window, aligning with
-    real-world user engagement.
+    \item Matches what users actually see. $Precision@5$ on a mobile carousel directly measures the relevance of the slice the user is shown.
+    \item Composable across metrics. Every base ranking metric has a clean @K variant, so a single cutoff applies across an evaluation suite.
 }
 {
-    \item Choice of K affects results. The performance of a model may vary significantly depending on the selected K value,
-    requiring careful tuning.
-    \item May not differentiate beyond K. Once an item falls outside the cutoff, it is treated equally regardless of
-    how close it was to inclusion.
+    \item Sensitive to the choice of $K$. Precision@$5$ and Precision@$20$ can order models differently; report at several $K$ or fix $K$ from the product spec.
+    \item Hard cutoff at rank $K$. An item at rank $K+1$ is treated identically to one at rank $1000$, even though it nearly made the list.
+    \item Precision@$K$ has a ceiling when relevant items are scarce. With three relevant items, $Precision@10$ maxes at $0.3$ even for a perfect ranker.
 }
 
 \clearpage
@@ -40,18 +33,17 @@ such as search results, product recommendations, or content feeds.
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Hit_Rate_vs_K.png}
+    \includegraphics[width=0.85\textwidth]{figures/at_K_precision_recall.png}
 \end{figure*}
 
-\textbf{Figure.} Hit Rate increases with K — larger recommendation lists are more likely to contain at least one relevant item. This curve illustrates the trade-off between list size and recommendation quality.
+\textbf{Figure.} Precision@$K$ (blue) falls and Recall@$K$ (red) rises as $K$ grows. The crossover at $K = 20$ is where both curves agree: $60\%$ of relevant items retrieved at $60\%$ precision. Picking $K$ to the left of the crossover means optimizing for a clean top of the list; to the right, for covering more of the relevant set. The shape of the two curves is the practical artifact — the exact crossover shifts with the underlying relevance distribution.
 
 \orangebox{Did you know that...}
-{The choice of K is often driven by UI design constraints. For example, if a mobile app shows 5 recommendations on screen, Precision@5 directly measures how useful
-that screen is to the user.}
+{The choice of $K$ is often driven by UI constraints. If a mobile app shows five cards on screen, $Precision@5$ measures exactly the value of that screen. Reporting $Precision@10$ when only five are visible measures a different product than the one users see.}
 
 \textbf{Other related metrics}
 
-Common @K variants include Precision@K, Recall@K, MAP@K, and nDCG@K. For a binary check of whether any relevant item appears, see Hit Rate.
+Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$, and nDCG@$K$. For a binary check of whether any relevant item appears in the top-$K$, see Hit Rate.
 
 % ---------- Mean Reciprocal Rank ----------
 \clearpage
@@ -59,9 +51,7 @@ Common @K variants include Precision@K, Recall@K, MAP@K, and nDCG@K. For a binar
 \section{Mean Reciprocal Rank}
 \subsection{MRR}
 
-The Mean Reciprocal Rank (MRR) is a metric that evaluates the quality of ranked results, typically in information retrieval
-and recommendation systems. It measures how high the first relevant result appears in the ranking list. MRR is computed as
-the average reciprocal rank across all queries in a dataset.
+MRR scores a system on a narrow question: how high in the list is the first relevant result? Average that reciprocal across all queries and the result is MRR. The metric heavily weights the rank-$1$ result and gives little credit when the first relevant item appears at rank $5$ or $10$ — useful for tasks where users abandon the list after the first miss.
 
 \begin{center}
     \tikz{
@@ -77,24 +67,20 @@ the average reciprocal rank across all queries in a dataset.
     }
 \end{center}
 
-MRR goes from 0 to 1. Where 0 mean no relevant items exist in the ranked results for all queries and 1 is achieved when the
-relevant item is always the first result for every query. In practice a low MRR suggests that users may need to scroll
-significantly to find the relevant result, leading to poor user experience.
+MRR lives in $[0, 1]$. A score of $1$ means the relevant item sits at rank $1$ for every query; $0.5$ means the average first-hit is at rank $2$. The decay is hyperbolic — rank $5$ scores $0.2$, rank $20$ scores $0.05$ — so anything past the first relevant item is essentially invisible.
 
 \textbf{When to use MRR?}
 
-Use MRR when the primary goal is to return the most relevant result as close to the top of the list as possible, or
-when evaluating the quality of systems where only the position of the first relevant result matters.
+Use MRR for known-item search and Q\&A: each query has one canonical answer and the task is to surface it first (``what's the capital of Belgium?''). Avoid MRR when queries have multiple relevant items of comparable value (movies, news) — MRR scores the same whether the slots after the first hit are gold or junk.
 
 \coloredboxes{
-    \item Intuitive metric.
-    \item Aligns with user expectations in applications where relevance at the top matters most.
+    \item Mirrors known-item search. Users want the answer at rank $1$, and MRR penalizes anything below it.
+    \item Bounded in $[0, 1]$ and averageable across queries with no normalization.
 }
 {
-    \item MRR only considers the first relevant result, ignoring subsequent relevant results that might also be important.
-    \item Systems returning shorter rankings can sometimes inflate MRR if the first relevant result appears earlier.
-    \item MRR doesn't handle well cases where multiple relevant items exist with varying degrees of importance.
-
+    \item Ignores items below the first hit. $[\textit{relevant, junk, junk}]$ and $[\textit{relevant, gold, gold}]$ score the same.
+    \item Steep penalty for top-of-list misses. Rank $1$ to rank $2$ halves the score; rank $1$ to rank $10$ drops it by $90\%$.
+    \item Inflatable with short rankings — pair MRR with Recall or coverage.
 }
 
 \clearpage
@@ -106,13 +92,14 @@ when evaluating the quality of systems where only the position of the first rele
     \includegraphics[width=0.6\textwidth]{figures/MRR_reciprocal_rank.png}
 \end{figure*}
 
-\textbf{Figure.} Reciprocal Rank drops rapidly as the first relevant result moves down the list. A relevant item at rank 1 scores 1.0, at rank 5 it scores 0.2, and beyond rank 10 the score is negligible.
+\textbf{Figure.} Each query contributes the reciprocal of its first-relevant rank to the MRR sum. The drop is fast: rank $1$ gives $1.0$, rank $2$ gives $0.5$, rank $5$ gives $0.2$. Past rank $10$ the reciprocal is small enough that it barely matters whether the relevant item appeared at rank $11$ or rank $1000$ — MRR cares almost exclusively about the top of the list.
+
+\orangebox{Did you know that...}
+{MRR is the default scorer for question-answering benchmarks like TREC-QA and Natural Questions because the task is structurally known-item: there is one right answer and the user wants it first. Swapping MRR for nDCG only changes the score on queries with multiple plausible answers — for single-answer queries the two are essentially equivalent.}
 
 \textbf{Other related metrics}
 
-MRR is a concise and effective metric for assessing ranked output but should be complemented by other metrics like
-nDCG (Normalized Discounted Cumulative Gain) or Mean Average Precision when evaluating scenarios with multiple relevant
-items or varying relevance grades.
+For multi-relevant evaluation use MAP. For graded relevance (some items more relevant than others, e.g., a five-star rating system) use nDCG — it credits every relevant item with a position-discounted contribution, whereas MRR collapses the entire list to a single number from the first hit. For a binary top-$K$ check use Hit Rate.
 
 
 % ---------- Mean Average Precision ----------
@@ -121,9 +108,7 @@ items or varying relevance grades.
 \section{Mean Average Precision}
 \subsection{Mean Average Precision}
 
-Mean Average Precision (MAP) is a metric used to evaluate the performance of ranking and recommendation systems. It measures
-both the relevance of the recommended items and the order in which they are presented, rewarding systems that rank relevant
-items higher. The MAP is calculated by averaging the Average Precision (AP) across all users or queries. 
+MAP rewards rankers for placing relevant items high in the list. For each query, walk down the ranking and average the precision at every position where a relevant item appears — that is the Average Precision (AP). MAP is the mean of AP across queries. A relevant item at rank $1$ contributes precision $1.0$; at rank $10$ it contributes $0.1$, so MAP collapses when relevant items are buried.
 
 \begin{center}
     \tikz{
@@ -140,26 +125,20 @@ items higher. The MAP is calculated by averaging the Average Precision (AP) acro
     }
 \end{center}
 
-MAP values range from 0 to 1, with 1 indicating a perfect ranking where all relevant items are placed at the top of the list.
+MAP lives in $[0, 1]$. A perfect ranking — every relevant item ahead of every irrelevant one — scores $1$. The gap between MAP and the prevalence baseline (relevant items / list length) measures how much ordering work the model adds on top of plain retrieval.
 
 \textbf{When to use MAP?}
 
-MAP is particularly useful when evaluating search engines, recommendation systems, and other ranking-based models where
-returning relevant items in the top ranks is critical. It is especially suited for situations where multiple queries exist,
-and precision at various cutoffs matters more than recall.
+Use MAP when relevance is binary, the full ranked list matters, and you want one number for precision plus order. It is the standard for binary-judgment IR benchmarks. Avoid MAP for graded relevance (use nDCG) or top-only evaluation (use MRR or Precision@$K$) — averaging across all positions lets a strong tail mask a weak top.
 
 \coloredboxes{
-    \item Evaluates how well relevant items are ranked.
-    \item Handles multiple queries. MAP averages precision over multiple search instances, providing a holistic evaluation
-    of the model.
+    \item Captures precision and rank order in one number. A model that surfaces relevant items earlier always scores higher.
+    \item Averages cleanly across queries with different numbers of relevant items — AP is already per-query normalized.
 }
 {
-    \item Sensitive to exact ranking positions. A single misplaced relevant item can significantly impact MAP, making it less
-    robust to minor ranking fluctuations.
-    \item Requires known relevance labels. MAP relies on predefined relevance judgments, which may not always be
-    available or objective.
-    \item Complex interpretation.
-
+    \item Assumes binary relevance. No way to say ``item A is more relevant than item B'' the way nDCG can.
+    \item Requires complete labels. If a query has five relevant items and only three are labeled, AP is biased downward.
+    \item Hard to translate to a user-facing story. ``MAP $= 0.42$'' lands flat next to ``$Precision@10 = 0.6$''.
 }
 
 \clearpage
@@ -167,18 +146,17 @@ and precision at various cutoffs matters more than recall.
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/MAP_good_vs_bad.png}
+    \includegraphics[width=0.85\textwidth]{figures/MAP_good_vs_bad.png}
 \end{figure*}
 
-\textbf{Figure.} A good ranking (left, AP=0.94) places relevant items at the top, while a poor ranking (right, AP=0.36) buries them at the bottom.
+\textbf{Figure.} Both rankings retrieve four relevant items. The left places them at ranks $1, 2, 3, 6$ and earns $AP = 0.92$; the right at ranks $4, 7, 9, 10$ and earns $AP = 0.32$. Same recall, very different MAP — exactly the gap MAP exists to measure.
 
 \orangebox{Did you know that...}
-{MAP is one of the most popular metrics in the TREC (Text REtrieval Conference) evaluations, which have been benchmarking information retrieval systems since 1992.}
+{MAP became the default scorer for the TREC (Text REtrieval Conference) evaluations, which have been benchmarking information retrieval systems since 1992. The choice was deliberate: MAP credits precision at every position where a relevant item appears, so a system that surfaces the same items earlier always wins — exactly the property TREC wanted to reward across thirty years of system comparisons.}
 
 \textbf{Other related metrics}
 
-MAP is closely related to Precision@K and nDCG. Unlike nDCG, MAP assumes binary relevance (relevant or not).
-For a simpler binary check, consider Hit Rate. For position-weighted evaluation with graded relevance, use nDCG.
+For graded relevance use nDCG. For top-only evaluation use MRR or Precision@$K$. AP and MAP are related as point and average: AP is the per-query score, MAP is the mean across queries.
 
 % good resources for inpiration for visual: https://juneandrews.com/2014/12/15/mean-average-precision-isnt-so-nice/
 % https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
@@ -189,9 +167,7 @@ For a simpler binary check, consider Hit Rate. For position-weighted evaluation 
 \section{Hit Rate}
 \subsection{Hit Rate}
 
-Hit Rate is a ranking metric used in recommender systems to measure how often a relevant item appears in the top-k
-recommendations. It is a binary metric that checks whether at least one of the user's relevant items is present in the
-recommended list. If at least one relevant item appears, it counts as a "hit"; otherwise, it does not.
+Hit Rate answers a yes-no question per user: did the top-$K$ list contain at least one relevant item? Average that indicator across users and you have the Hit Rate of the system. It ignores how many relevant items appeared and where they were — only whether the user got something or nothing.
 
 \begin{center}
     \tikz{
@@ -208,29 +184,21 @@ recommended list. If at least one relevant item appears, it counts as a "hit"; o
     }
 \end{center}
 
-Hit Rate is particularly useful in top-k recommendation scenarios where the primary goal is to ensure that users receive at
-least one relevant item in their recommendation lists.
+A Hit Rate of $0.72$ means $72\%$ of users got at least one relevant item in their top-$K$ list; the other $28\%$ saw nothing useful. The low bar makes Hit Rate the right metric for catching a specific failure: lists that look diverse but happen to miss every user's actual interests.
 
 \textbf{When to use Hit Rate?}
 
-Use Hit Rate when evaluating recommender systems that generate ranked lists of recommendations, such as e-commerce product
-recommendations, streaming service content suggestions, or news article recommendations. It is best suited for use cases
-where delivering at least one relevant recommendation is critical, rather than ranking all relevant items perfectly.
+Use Hit Rate as a floor for top-$K$ quality: ``what fraction of sessions show at least one relevant item?'' translates directly to product metrics. Avoid Hit Rate as the primary optimization target — a model can score well by recommending broadly, with no signal about whether the hit is buried in junk.
 
 \coloredboxes{
-    \item Simple to compute and interpret. Hit Rate provides an intuitive measure of whether the recommender system is
-    surfacing at least one relevant item.
-    \item Effective for top-k evaluation. This metric is particularly useful when users engage with only a few of
-    the top-ranked recommendations.
-    \item Works well for sparse data. Since it only requires identifying one correct prediction in the top-k list,
-    it is less sensitive to sparsity compared to other ranking metrics.
+    \item Easy to communicate. ``$72\%$ of sessions see at least one relevant item'' maps directly onto product metrics like activation or session quality.
+    \item Robust to sparsity and missing labels. A single relevant item per user is enough to score.
+    \item Endpoint-interpretable. $0$ means total failure; $1$ means every user is served.
 }
 {
-    \item Hit Rate does not account for the position of the relevant item within the top-k list. An item in the first
-    position has the same weight as an item in the last position.
-    \item Hit Rate does not differentiate between multiple relevant hits. This means that if multiple relevant
-    items appear in the top-k list, Hit Rate does not increase—it remains the same as long as at least one relevant
-    item is found.
+    \item Position-blind. A relevant item at rank $1$ scores the same as one at rank $K$.
+    \item Count-blind. A list with one relevant item scores the same as a list with five.
+    \item Saturates fast. At small $K$ the metric undercounts; at large $K$ it pins to $1$. Pick $K$ where Hit Rate still moves between models.
 }
 
 \clearpage
@@ -241,15 +209,14 @@ where delivering at least one relevant recommendation is critical, rather than r
     \includegraphics[width=0.6\textwidth]{figures/Hit_Rate_vs_K.png}
 \end{figure*}
 
-\textbf{Figure.} Hit Rate increases with K. At K=1, only 15\% of users get a relevant recommendation; at K=50, 96\% do.
+\textbf{Figure.} Hit Rate climbs with $K$: at $K = 1$ only $15\%$ of users see a relevant item in the first slot; at $K = 50$ that rises to $96\%$. The curve flattens as $K$ grows because the remaining failures are users with no relevant items anywhere in the top-$50$ — stretching $K$ further does not help that segment.
 
 \orangebox{Did you know that...}
-{Hit Rate is sometimes called Recall@K in the recommender systems literature, though technically Recall@K measures the fraction of all relevant items
-found in the top-K, while Hit Rate is a binary per-user measure.}
+{Recommender systems papers often call Hit Rate ``Recall@$K$'' and use the two interchangeably. They are the same metric only when each user has exactly one relevant item — the typical leave-one-out evaluation setup. With multiple relevant items per user, Recall@$K$ measures the fraction retrieved, while Hit Rate stays binary. The naming clash trips up cross-paper comparisons more often than you would expect.}
 
 \textbf{Other related metrics}
 
-For a more nuanced evaluation that considers ranking position, use MRR or nDCG. For measuring total relevant items retrieved, use Recall@K.
+For position-aware evaluation use MRR or nDCG. For counting how many relevant items the list retrieved, use Recall@$K$. Hit Rate is the binary collapse of Recall@$K$.
 
 % ---------- Cumulative Gain ----------
 \clearpage
@@ -257,9 +224,7 @@ For a more nuanced evaluation that considers ranking position, use MRR or nDCG. 
 \section{CG}
 \subsection{Cumulative Gain}
 
-Cumulative Gain (CG) measures the total relevance score of recommended items, by summing the relevance scores of all
-items in the recommendation list. It provides a simple way to evaluate how much useful content is retrieved but
-does not consider the position of the relevant items.
+Cumulative Gain (CG) sums the relevance scores of the items in a recommendation list. With graded relevance — $3$ for ``perfect'', $1$ for ``marginal'', $0$ for ``irrelevant'' — $CG_K$ is the total relevance packed into the top-$K$. The catch is that CG ignores rank: a relevant item at position $1$ adds the same as one at position $K$.
 
 \begin{center}
     \tikz{
@@ -275,23 +240,20 @@ does not consider the position of the relevant items.
     }
 \end{center}
 
-A higher cumulative gain reflects a greater concentration of relevant items in the recommendations,
-while a lower cumulative gain indicates fewer relevant items in the list.
+CG is unbounded and order-invariant: two lists with the same items in different orders have identical CG. That makes it useful as a baseline number — ``how much total relevance did we retrieve?'' — but not as a standalone ranking metric. DCG and nDCG (next pages) fix the rank-insensitivity by discounting later positions.
 
 \textbf{When to use CG?}
 
-CG is useful when you want a basic measure of total relevance in a recommendation list, without considering the ranking order.
-It can be applied in scenarios where all retrieved relevant items are equally important, regardless of position.
-
+Use CG when only total retrieved relevance matters and ordering is decided downstream (a re-ranker reshuffles the list, or items are shown simultaneously). Avoid CG when position matters to the user — which covers most ranking applications. Use DCG or nDCG instead.
 
 \coloredboxes{
-    \item CG provides a straightforward way to measure how the overall relevance score in the recommended list. 
-    \item If the order of recommended items does not matter, CG is a reasonable metric.
+    \item Simplest relevance aggregation possible: add up the scores. Trivial to compute and explain.
+    \item Works with graded relevance out of the box, unlike Hit Rate or binary $Precision@K$.
 }
 {
-    \item Does not consider the position of relevant items — a relevant item at rank 1 contributes the same as one at rank 100.
-    \item No upper bound — CG values are not normalized, making comparison across queries difficult.
-    \item Human data labelers must provide relevance scores to compute the total accumulated relevance.
+    \item Order-invariant. A list with the best item at rank $1$ scores the same as one with the best item at rank $K$.
+    \item Not normalized. $CG = 12$ vs $CG = 6$ across queries says nothing about which ranking was better.
+    \item Falls back to a raw count of relevant items when only binary labels are available.
 }
 
 \clearpage
@@ -302,14 +264,14 @@ It can be applied in scenarios where all retrieved relevant items are equally im
     \includegraphics[width=0.6\textwidth]{figures/CG_vs_DCG.png}
 \end{figure*}
 
-\textbf{Figure.} CG (red) accumulates relevance without considering position, while DCG (blue) discounts later positions. The gap between curves shows how much position weighting matters.
+\textbf{Figure.} CG (red) and DCG (blue) start at the same point — the first item contributes its full relevance to both. As $K$ grows, DCG falls behind because every position past rank $1$ takes a logarithmic discount, while CG keeps treating every position equally. The widening gap is the cost of ignoring position.
 
 \orangebox{Did you know that...}
-{CG is the simplest member of the CG family. It serves mainly as a building block for DCG and nDCG rather than being used as a standalone evaluation metric.}
+{The order-invariance of CG is its entire design flaw: swap any two items and the score is unchanged, which makes CG useless for ranking. The metric still gets used in retrieval-then-rerank pipelines, where the retrieval stage scores raw recall and a downstream model handles the ordering. Outside that pattern, CG on its own in a results table is a red flag.}
 
 \textbf{Other related metrics}
 
-DCG extends CG by adding position-based discounting. nDCG further normalizes DCG to enable cross-query comparison.
+DCG extends CG by discounting later positions. nDCG normalizes DCG against the ideal ranking, so scores are comparable across queries with different relevance budgets. In practice, CG is the warm-up step toward those two.
 
 % ---------- Discounted Cumulative Gain ----------
 \clearpage
