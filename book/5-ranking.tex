@@ -146,10 +146,10 @@ Use MAP when relevance is binary, the full ranked list matters, and you want one
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/MAP_good_vs_bad.png}
+    \includegraphics[width=\textwidth]{figures/MAP_precision_strips.png}
 \end{figure*}
 
-\textbf{Figure.} Both rankings retrieve four relevant items. The left places them at ranks $1, 2, 3, 6$ and earns $AP = 0.92$; the right at ranks $4, 7, 9, 10$ and earns $AP = 0.32$. Same recall, very different MAP — exactly the gap MAP exists to measure.
+\textbf{Figure.} Two rankings with the same four relevant items. The number under each filled dot is the running precision at that rank: $1/1 = 1.00$ for the first relevant item at rank $1$, $4/6 = 0.67$ for the fourth relevant item landing at rank $6$. AP is exactly the mean of those numbers; a single position shift reshuffles the whole sum. Same recall, very different AP.
 
 \orangebox{Did you know that...}
 {MAP became the default scorer for the TREC (Text REtrieval Conference) evaluations, which have been benchmarking information retrieval systems since 1992. The choice was deliberate: MAP credits precision at every position where a relevant item appears, so a system that surfaces the same items earlier always wins — exactly the property TREC wanted to reward across thirty years of system comparisons.}
