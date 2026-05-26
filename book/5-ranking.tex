@@ -369,10 +369,10 @@ Use nDCG when relevance is graded and you need a single comparable number across
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/nDCG_degradation.png}
+    \includegraphics[width=0.85\textwidth]{figures/nDCG_degradation.png}
 \end{figure*}
 
-\textbf{Figure.} Each random pair-swap degrades the ranking. nDCG drops on average, but noisily: a swap between two irrelevant items barely moves the score, while one involving the top item drops nDCG sharply. After ten swaps the ranking still scores above $0.85$, showing that nDCG is fairly forgiving when swaps happen far from the top.
+\textbf{Figure.} Apply random pair-swaps to a perfectly ranked list and recompute nDCG after each. The descent is noisy: most swaps barely move the score (the long plateau near $1.0$, then again near $0.7$), but a single swap that demotes a rank-$1$ item drops nDCG sharply (the cliff around swap $7$). A spike at swap $16$ shows a swap that put a high-relevance item back to the top. The shape — noisy plateau with rare cliffs — is what generalizes; nDCG mostly tracks where the few most-relevant items sit.
 
 \orangebox{Did you know that...}
 {nDCG is the standard offline evaluation metric at most major tech companies for search and recommendation systems. It is also the primary metric used in the annual TREC Web Track and in Kaggle recommendation competitions — when a search or recsys leaderboard reports one number, it is almost always nDCG.}
@@ -429,7 +429,7 @@ Use FCP when relevance is expressed as pairwise preferences rather than absolute
     \includegraphics[width=\textwidth]{figures/FCP_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} The left scatter shows predicted ranks closely tracking the true preference order ($FCP = 0.90$) — most pairs are concordant, so points cluster near the diagonal. The right shows a near-random ranker ($FCP = 0.20$): points scatter off the diagonal because most pairs come out backwards. The diagonal is the eye's anchor for ``how concordant are the pairs?''.
+\textbf{Figure.} Predicted rank vs true preference rank for the same five items, scored by two rankers. The dashed line is perfect agreement. Left: a good ranking ($FCP = 0.90$) — four of five items sit on the diagonal, the only inversion is the swap between items $2$ and $3$. Right: a near-reversed ranking ($FCP = 0.30$) — most items land far from the diagonal. FCP counts the fraction of point-pairs whose relative order matches the diagonal's slope.
 
 \orangebox{Did you know that...}
 {FCP is closely related to Kendall's tau rank correlation coefficient. Both measure pairwise agreement in rankings, but FCP is expressed as a proportion in $[0, 1]$ while Kendall's tau is rescaled to $[-1, 1]$. The relationship: $\tau = 2 \cdot FCP - 1$.}
@@ -486,7 +486,7 @@ Use Diversity as a guardrail alongside accuracy: an nDCG-optimal recommender oft
     \includegraphics[width=\textwidth]{figures/Diversity_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} The left list spreads its recommendations across multiple genres — Diversity is high because most pairs cross category boundaries. The right list concentrates in a single genre — every pair scores zero on category dissimilarity, so Diversity collapses. The metric is reading the genre-mix of the list, not the list's accuracy.
+\textbf{Figure.} Two six-item recommendation lists rendered as horizontal strips, each tile colored by genre. Top: one item per genre — Intra-List Diversity hits its maximum ($ILD = 1.00$) because every pair of items disagrees on category. Bottom: six action items — every pair matches, so $ILD = 0.00$. The metric reads the visible color mix of the list, not its accuracy.
 
 \orangebox{Did you know that...}
 {Intra-List Diversity (ILD) is the most common formulation of diversity in recommender systems. The choice of dissimilarity function $d(i,j)$ is crucial — common options include $1 - \cos$ of item feature vectors, or genre/category distance. Two papers can both report ``ILD'' and rank models differently because the underlying $d$ is different.}
@@ -533,7 +533,7 @@ Use Novelty in products where ``something new'' is the explicit value propositio
     \includegraphics[width=0.6\textwidth]{figures/Novelty_curve.png}
 \end{figure*}
 
-\textbf{Figure.} Novelty as a function of item popularity. The curve is steep near $P = 0$ — going from $P = 0.01$ to $P = 0.05$ drops novelty from $6.6$ to $4.3$ bits — and flat past $P = 0.5$, where every mainstream item looks roughly equally familiar. The dashed line at $P = 0.5$ marks the ``coin-flip'' item: anything more popular has less than $1$ bit of novelty.
+\textbf{Figure.} Novelty as $-\log_2 P(i)$ over item popularity. Two reference points: a rare item ($P = 0.01$) scores $6.6$ bits; a mainstream one ($P = 0.5$) scores $1$ bit. The curve is steep near $P = 0$ — the long tail spans most of the bits — and flat past $P = 0.5$, where mainstream items all look interchangeably familiar.
 
 \orangebox{Did you know that...}
 {The self-information formulation $Novelty(i) = -\log_2 P(i)$ is borrowed from information theory. A popular item with $P(i) = 0.5$ has novelty of $1$ bit, while a rare item with $P(i) = 0.01$ has novelty of $6.6$ bits. The same machinery powers entropy and cross-entropy losses, so a Novelty-aware ranker is structurally close to a self-supervised language model in how it weights rare events.}
@@ -585,10 +585,10 @@ Use Serendipity in products where ``introduce the user to something they would n
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Serendipity_scatter.png}
+    \includegraphics[width=0.7\textwidth]{figures/Serendipity_scatter.png}
 \end{figure*}
 
-\textbf{Figure.} Each point is a recommended item plotted on relevance (x-axis) and unexpectedness (y-axis); shade encodes the product. The upper-right corner — high on both — is where Serendipity lives. The other three corners all score zero: the upper-left is ``surprising but useless'', the lower-right is ``relevant but obvious'', the lower-left is ``neither''. Most accurate recommenders cluster low-right; most novelty-tuned ones cluster high-left.
+\textbf{Figure.} Each point is one recommended item plotted on (relevance, unexpectedness). The shaded contours are iso-Serendipity curves $rel \cdot unexp = c$; points sitting on a darker contour score higher. The upper-right corner is the only place Serendipity lives — the other three corners all collapse to zero because one factor is small. Most accurate recommenders cluster lower-right (relevant but obvious); novelty-tuned ones cluster upper-left (surprising but irrelevant).
 
 \orangebox{Did you know that...}
 {The term serendipity comes from the 1754 fairy tale ``The Three Princes of Serendip'', whose heroes kept making fortunate discoveries by accident while looking for other things. In recommender systems the metric tries to engineer that ``happy accident'' on purpose — which is the contradiction at the core of the design.}
@@ -639,10 +639,10 @@ Use Coverage on platforms where catalog breadth has business value: marketplaces
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Coverage_comparison.png}
+    \includegraphics[width=\textwidth]{figures/Coverage_comparison.png}
 \end{figure*}
 
-\textbf{Figure.} Three systems compared. System A covers $12\%$ of the catalog — heavy popularity bias, every user sees the same head items. System B covers $48\%$. System C covers $89\%$. Coverage rises left-to-right, but accuracy typically falls in the same direction because the long tail has weaker training signal. The operating point is a Pareto choice — not a maximum on either axis.
+\textbf{Figure.} Three systems shown over the same $100$-item catalog. Each square is one item; cyan if the system ever recommends it, gray if not. System A surfaces only the popular $12\%$ — most of the catalog is invisible. System B fills $48\%$. System C reaches $89\%$. Coverage is just the visible cyan fraction. The trade-off: cyan typically grows at the cost of nDCG, because items in the long tail have weaker training signal — so the goal is a Pareto point, not the maximum.
 
 \orangebox{Did you know that...}
 {Low coverage is the canonical symptom of the ``popularity bias'' problem. Collaborative-filtering models trained on engagement data tend to amplify whatever is already popular, because that is where most of the training signal lives. The fix usually involves explicit exploration (epsilon-greedy, Thompson sampling) or a popularity-debiased loss — not just adding a Coverage term to the offline metric.}
