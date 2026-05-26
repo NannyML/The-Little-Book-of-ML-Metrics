@@ -101,7 +101,7 @@ def main():
     ax.text(
         (K + 1) / 2, -1.6,
         f"MRR = mean of RRs = {mrr:.3f}",
-        ha="center", va="center", fontsize=15, fontweight="bold",
+        ha="center", va="center", fontsize=14,
     )
 
     # Legend strip (compact and well-spaced)
@@ -111,7 +111,7 @@ def main():
             va="center", fontsize=11)
     ax.scatter([6.6], [legend_y], s=SIZE_OTHER, facecolors="none",
                edgecolors=NML_CYAN, linewidths=2.2)
-    ax.text(6.9, legend_y, "later relevant (ignored)",
+    ax.text(6.9, legend_y, "additional relevant (ignored)",
             va="center", fontsize=11)
     ax.scatter([11.6], [legend_y], s=SIZE_IRRELEVANT, color="lightgray")
     ax.text(11.85, legend_y, "irrelevant",
