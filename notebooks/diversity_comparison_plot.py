@@ -10,20 +10,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 import numpy as np
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-from style import save_figure
+from style import nml_cmap, save_figure
 
 
-# Distinct categorical palette — Tableau-like, readable.
-GENRE_COLORS = {
-    "Action":  "#4E79A7",
-    "Comedy":  "#F28E2B",
-    "Drama":   "#E15759",
-    "Sci-Fi":  "#76B7B2",
-    "Horror":  "#59A14F",
-    "Romance": "#B07AA1",
-}
+# Sample six categorical colors from the NannyML gradient (cyan → purple →
+# red → dark red). Spread evenly so adjacent genres look distinct.
+GENRE_NAMES = ["Action", "Comedy", "Drama", "Sci-Fi", "Horror", "Romance"]
+_palette = [mcolors.to_hex(nml_cmap(t)) for t in np.linspace(0.05, 0.95, len(GENRE_NAMES))]
+GENRE_COLORS = dict(zip(GENRE_NAMES, _palette))
 
 
 def ild(genres):
