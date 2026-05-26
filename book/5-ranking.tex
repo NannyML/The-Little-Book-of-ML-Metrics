@@ -261,10 +261,10 @@ Use CG when only total retrieved relevance matters and ordering is decided downs
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/CG_vs_DCG.png}
+    \includegraphics[width=0.8\textwidth]{figures/CG_vs_DCG.png}
 \end{figure*}
 
-\textbf{Figure.} CG (red) and DCG (blue) start at the same point — the first item contributes its full relevance to both. As $K$ grows, DCG falls behind because every position past rank $1$ takes a logarithmic discount, while CG keeps treating every position equally. The widening gap is the cost of ignoring position.
+\textbf{Figure.} CG (red) and DCG (blue) score the same ranked list. Both start at the same point — rank $1$ takes no discount, so the first item contributes its full relevance to both. As $K$ grows, DCG falls behind because every subsequent position takes a logarithmic discount. The shaded gap is exactly the relevance CG counts but DCG discounts away — the price of ignoring position.
 
 \orangebox{Did you know that...}
 {The order-invariance of CG is its entire design flaw: swap any two items and the score is unchanged, which makes CG useless for ranking. The metric still gets used in retrieval-then-rerank pipelines, where the retrieval stage scores raw recall and a downstream model handles the ordering. Outside that pattern, CG on its own in a results table is a red flag.}
@@ -315,10 +315,10 @@ Use DCG when relevance is graded (a five-star rating, a three-tier label) and th
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/CG_vs_DCG.png}
+    \includegraphics[width=0.8\textwidth]{figures/CG_vs_DCG.png}
 \end{figure*}
 
-\textbf{Figure.} CG (red) and DCG (blue) score the same item list. They agree at rank $1$ — the first item contributes its full relevance to both — and diverge as $K$ grows because every subsequent position takes a logarithmic discount in DCG but not in CG. The widening gap is exactly how much rank order matters under DCG's discount.
+\textbf{Figure.} The same ranked list scored by CG (red) and DCG (blue). Both agree at rank $1$, then diverge: DCG applies a $1/\log_2(i+1)$ discount at every subsequent position, CG does not. The shaded area is how much relevance DCG throws away relative to CG by accounting for position. At $K = 10$ the final scores are $CG = 12.0$ and $DCG = 7.16$ — same items, $40\%$ of the total relevance discounted as ``too far down the list''.
 
 \orangebox{Did you know that...}
 {The logarithmic discount in DCG was introduced by J\"{a}rvelin and Kek\"{a}l\"{a}inen in 2002. The choice of $\log_2$ is conventional but arbitrary — some implementations use natural log or $\log_{10}$, and scores across libraries are not directly comparable unless the base is the same.}
