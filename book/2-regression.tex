@@ -929,12 +929,10 @@ terrible tail predictions can be worse than one with R²=0.90 but uniform errors
 \thispagestyle{customstyle}
 
 \begin{center}
-    \includegraphics[width=\textwidth]{figures/R2_what_values_look_like.png}
+    \includegraphics[width=\textwidth]{figures/R2_explained.png}
 \end{center}
 
-\textbf{Figure. What R² values look like.} From left to right: R²=0.95 (tight clustering around the diagonal — excellent),
-R²=0.70 (clear trend but noticeable scatter — good), R²=0.30 (weak relationship — marginal), R²=-0.20 (predictions are
-worse than predicting the mean — the model is broken). This visual calibration helps you interpret R² in practice.
+\textbf{Figure. R² as a ratio of squared-error areas.} Left: the model's residuals drawn as purple squares (side $=|y_i - \hat{y}_i|$, so area $=$ squared error). Their total area is $SS_\text{res}$. Right: the same points but residuals are measured against the mean baseline — red squares with total area $SS_\text{tot}$. R² is one minus the ratio of the two areas. When the purple squares would be \textit{larger} than the red ones — i.e., the model is worse than predicting the mean — R² goes negative.
 
 
 \orangebox{Did you know that...}
