@@ -97,12 +97,10 @@ metric in class-imbalanced datasets.
     \includegraphics[width=\textwidth]{figures/Pixel_Accuracy_imbalance.png}
 \end{figure*}
 
-\textbf{Figure.} When background dominates (85\%), Pixel Accuracy can be misleadingly high (90\%) even if minority classes are poorly segmented. Mean Pixel Accuracy (55\%) reveals the true performance.
+\textbf{Figure.} Each bar is a class: its width is the class's share of pixels and its height is that class's accuracy, so the bar's \emph{area} is the class's contribution to Pixel Accuracy. The wide, well-segmented background pulls PA up to $89\%$; Mean Pixel Accuracy ($54\%$) weights every class equally and so exposes the collapse on the small classes.
 
 \orangebox{Did you know that...}
-{Pixel Accuracy is part of a family of semantic segmentation evaluation metrics. 
-This family includes several related measures that each capture different aspects of performance.
-They can be sub-grouped into pixel level metrics, region/overlap based metrics, and class balanced metrics.}
+{Pixel Accuracy is the \textbf{micro-average} of per-class accuracy --- every pixel votes once, so common classes dominate. Mean Pixel Accuracy is the \textbf{macro-average} --- every class votes once, regardless of size. It is the same micro-versus-macro split you meet in classification F1, and a wide gap between the two is always a symptom of class imbalance.}
 
 \textbf{Other related metrics}
 Other metrics in this family are Mean Pixel Accuracy (mPA), Intersection over Union (IoU) and Frequency Weighted IoU (FWIoU).
@@ -169,7 +167,7 @@ We use a larger $\alpha$ when approximate locations suffice, for example in full
 
 
 \orangebox{Did you know that...}
-{A popular variant, \textbf{PCKh}, uses head size as the reference length \(L\). }
+{The common variant \textbf{PCKh} normalizes by head size instead of torso length --- a head box is far more stable to annotate than a torso that bends and foreshortens, which is why PCKh@$0.5$ is the standard score on the MPII pose benchmark.}
 
 \textbf{Other related metrics}
 
@@ -223,11 +221,10 @@ Use OKS to rank pose-estimation models, or whenever you need one comparable scor
     \includegraphics[width=0.6\textwidth]{figures/OKS_gaussian_falloff.png}
 \end{figure*}
 
-\textbf{Figure.} OKS applies a Gaussian falloff to localization errors. Strict keypoints (eyes, k=0.05) require precise predictions, while lenient keypoints (hips, k=0.20) tolerate larger errors.
+\textbf{Figure.} OKS scores a keypoint with a smooth Gaussian falloff of its distance error: strict keypoints (eyes, $k = 0.05$) demand precise predictions, while lenient ones (hips, $k = 0.20$) tolerate larger errors. The grey step is PCK's hard pass/fail, shown for contrast --- OKS is its continuous generalization.
 
 \orangebox{Did you know that...}
-{OKS is the standard metric for evaluating pose estimation models in the COCO Keypoint Challenge, influencing the development
-of state-of-the-art architectures like OpenPose, HRNet, and DEKR.}
+{OKS is to keypoints what IoU is to bounding boxes: the COCO benchmark thresholds it (at $0.50, 0.55, \dots, 0.95$) to compute a keypoint Average Precision --- the leaderboard score that drove pose models like OpenPose and HRNet.}
 
 \textbf{Other related metrics}
 
@@ -310,21 +307,17 @@ Use PSNR for image compression, denoising, and super-resolution --- tasks with a
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/PSNR_plot.png}
+    \includegraphics[width=\textwidth]{figures/PSNR_plot.png}
     % \caption{Caption}
     \label{PSNR plot}
 \end{figure*}
 
 
-\textbf{Figure 7.1 Image with different PSNR.} Demonstrates noisy images with their corresponding PSNR values compared to the
-original ones. \textbf{Left:} Original image and its noisy version. 
-\textbf{Right:} Illustration of how strong noise signals have been added to the original image.
-The color image is from the popular \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K} dataset.
+\textbf{Figure.} The same image at four noise levels, each labelled with its PSNR. As the noise grows the error rises and PSNR falls; because PSNR $= 10\log_{10}(\mathrm{MAX}^2/\mathrm{MSE})$ it is linear in $\log(\mathrm{MSE})$, so every $10$ dB lost means ten times the error. Roughly, above $30$ dB looks clean and below $20$ dB the artifacts are obvious. Image from the popular \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K} dataset.
 \vspace{-12pt} 
 
 \orangebox{Did you know that...}
-{PSNR is not just for images; it can be applied to \textbf{video, audio, or even signal processing}. Anytime we want to
-measure the quality of \textbf{reconstructed} signal compared to the \textbf{original}, PSNR could be considered.}
+{The ``peak'' in PSNR means the error is measured against the \textbf{maximum possible} pixel value ($255$ for 8-bit), not the image's actual signal --- so a dark photo and a bright one with the same absolute error get the same score. A direct consequence: PSNR values are only comparable at the same bit depth.}
 
 \vspace{-5pt} 
 
@@ -387,11 +380,10 @@ Use Dice for segmentation with class imbalance --- small foreground objects agai
     \includegraphics[width=\textwidth]{figures/Dice_overlap_examples.png}
 \end{figure*}
 
-\textbf{Figure.} Dice coefficient for three levels of overlap between predicted (purple) and ground truth (cyan/red) segmentation masks. The intersection (cyan) drives the score.
+\textbf{Figure.} Dice for three levels of overlap between a predicted mask and the ground truth. Only the intersection (cyan) counts toward the score, so as the masks drift apart Dice falls from $0.85$ to $0.25$. IoU is shown alongside --- always the stricter of the two.
 
 \orangebox{Did you know that...}
-{The S{\o}rensen–Dice coefficient was first introduced in ecology as a way to measure the similarity
-between populations of flora and fauna.}
+{Because Dice is differentiable once you swap the hard $0/1$ masks for predicted probabilities, it doubles as a loss function: ``soft Dice loss'' trains many segmentation networks directly on the metric they are scored by, sidestepping the imbalance that trips up cross-entropy. (Dice and S{\o}rensen introduced the coefficient independently in $1940$s ecology.)}
 
 \textbf{Other related metrics}
 
@@ -451,12 +443,10 @@ Use PQ for panoptic segmentation --- scene parsing for autonomous driving or rob
     \includegraphics[width=0.6\textwidth]{figures/PQ_decomposition.png}
 \end{figure*}
 
-\textbf{Figure.} PQ decomposition into Segmentation Quality (SQ) and Recognition Quality (RQ). Model B has good segmentation but poor detection; Model C is the opposite. PQ captures both aspects.
+\textbf{Figure.} Since $PQ = SQ \times RQ$, each model is a point on the SQ--RQ plane and equal-PQ scores trace hyperbolas. Models B (segments well, misses objects) and C (finds objects, sloppy masks) give up opposite halves yet land on the same low contour --- a strong PQ needs both.
 
 \orangebox{Did you know that...}
-{Panoptic Quality was designed not only as a metric but also as a driver for task definition. The authors
-hoped that having a unified metric would accelerate the adoption of panoptic segmentation as a new standard
-task in vision research.}
+{The IoU $> 0.5$ matching rule hides a neat property: two segments cannot both overlap the same region by more than half, so each prediction matches \emph{at most one} ground-truth segment. The pairing is therefore unique --- no greedy or Hungarian assignment needed, unlike the matching step in object-detection metrics.}
 
 \textbf{Other related metrics}
 
@@ -474,7 +464,7 @@ For semantic-only segmentation, use mean IoU. For instance-only, use Average Pre
 \section{SSIM}
 \subsection{Structural Similarity Index}
 
-SSIM is the image-quality metric most practitioners already recognize, and it earned that ubiquity by tracking human judgment more closely than PSNR. It compares two images on three perceptual fronts --- luminance, contrast, and structure --- over local windows, so two images with the same MSE (say, one faintly brightened, one structurally blurred) get the different scores a person would give them.
+SSIM scores how similar two images look to a person rather than how far apart their pixel values are. It compares them on three fronts --- luminance, contrast, and structure --- within small local windows, which is why it separates distortions that MSE and PSNR rate as identical: two images with the same MSE, one faintly brightened and one structurally blurred, earn the different scores a human would give them.
 
 % equation
 \begin{center}
@@ -514,14 +504,13 @@ Use SSIM for image compression, denoising, and super-resolution where a human vi
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/SSIM_vs_PSNR.png}
+    \includegraphics[width=\textwidth]{figures/SSIM_vs_PSNR.png}
 \end{figure*}
 
-\textbf{Figure.} SSIM vs PSNR (normalized) across distortion types. Both metrics degrade with increasing distortion, but SSIM better captures perceptually significant changes like structural damage.
+\textbf{Figure.} Three distortions tuned to the \emph{same} PSNR ($24$ dB). PSNR cannot separate them, but SSIM tracks how they look: a brightness shift leaves structure intact (SSIM $0.99$), blur softens it (SSIM $0.76$), and noise destroys it (SSIM $0.55$).
 
 \orangebox{Did you know that...}
-{SSIM was introduced in 2004 by Wang et al. as an alternative to PSNR and MSE, and has since become one of
-the most cited metrics in image quality assessment research.}
+{Introduced by Wang et al. in $2004$, SSIM has had rare reach for an image metric: in $2015$ its creators received a Primetime Engineering Emmy Award for how widely it is used to monitor and tune video quality across the television and streaming industry.}
 
 \textbf{Other related metrics}
 
