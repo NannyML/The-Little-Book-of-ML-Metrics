@@ -7,8 +7,7 @@
 \subsection{Pixel Accuracy}
 
 
-Pixel Accuracy is one of the most straightforward evaluation metrics for image segmentation tasks. It measures the proportion
-of correctly classified pixels across the entire image, comparing the predicted segmentation mask to the ground truth.
+Segmentation models assign a class to every pixel in an image, and Pixel Accuracy reports the fraction of those pixels that got the right label --- the direct analog of classification accuracy, computed over pixels instead of samples. It is the first number most practitioners check on a new model. Like plain accuracy, it can flatter a model whose easy majority class --- usually the background --- fills most of the frame.
 
 \begin{center}
 \tikz{
@@ -24,23 +23,20 @@ $
 }
 \end{center}
 
-A Pixel Accuracy of 1.0 indicates perfect segmentation in the case of a balanced dataset, while lower values suggest a higher proportion of misclassified pixels.
+$PA$ runs from $0$ to $1$, but read it against the largest class's frequency, not against zero. If background covers $85\%$ of the frame, a model that labels every pixel ``background'' --- segmenting nothing of interest --- already scores $PA = 0.85$.
 
 
 \textbf{When to use Pixel Accuracy?}
 
-Pixel Accuracy is useful when evaluating segmentation models where all pixel classes are of similar importance.
-It provides a simple and interpretable measure of segmentation performance, making it a good starting point for initial
-evaluation.
+Use it as a quick sanity check on tasks where classes cover comparable areas: foreground/background splits of similar size, or document binarization. Avoid it when one class dominates the frame (medical lesions, road cracks, small objects) --- report mean IoU or Mean Pixel Accuracy instead, which average per-class scores so minority classes still count.
 
 \coloredboxes{
-\item Simple and interpretable.
-\item Provides an initial sense of segmentation quality.
+\item Cheap and unambiguous. A single division over the confusion-matrix diagonal --- no thresholds to set, no per-class weights to agree on.
+\item Honest when classes are balanced. On a roughly even split, $PA = 0.95$ really does mean $95\%$ of pixels are correct.
 }
 {
-\item Insensitive to class imbalance. Heavily biased towards majority classes, leading to overly optimistic
-evaluations in datasets with dominant background pixels.
-\item Cannot differentiate per-class performance. A high Pixel Accuracy does not guarantee that all classes are well-segmented.
+\item Dominated by the majority class. With $85\%$ background, a model that finds none of the foreground still scores $PA = 0.85$. Mean Pixel Accuracy or IoU exposes this.
+\item Hides per-class failure. One global number can't reveal that a model nails roads but misses every pedestrian; for that you need a per-class breakdown.
 }
 
 \clearpage
@@ -119,9 +115,7 @@ Other metrics in this family are Mean Pixel Accuracy (mPA), Intersection over Un
 \section{Percentage of Correct Keypoints}
 \subsection{PCK}
 
-A keypoint is a specific landmark on an object like an elbow, knee, or ankle in human pose estimation.
-
-PCK measures the percentage of predicted keypoints that are close enough to their true positions.
+A keypoint is a labeled landmark on an object --- an elbow, a knee, the corner of an eye. PCK reports the percentage of predicted keypoints that land within a distance threshold of the truth, where the threshold scales with object size: a $10$-pixel miss is serious on a close-up face but negligible on a distant body.
 
 \begin{center}
 \tikz{
@@ -139,26 +133,21 @@ PCK measures the percentage of predicted keypoints that are close enough to thei
 }
 \end{center}
 
-For each keypoint $i$, we measure the Euclidean distance $d_i$ between the prediction and the ground truth.
-A prediction is considered correct if $d_i$ is less than or equal to the threshold radius $\alpha L$, where $L$ is a reference length (for example, head size or torso length).
+For each keypoint $i$ we measure the Euclidean distance $d_i$ to the ground truth and count it correct when $d_i \le \alpha L$, where $L$ is a reference length (head or torso size) and $\alpha$ sets the tolerance. Since the result depends entirely on $\alpha$, PCK is always reported with its threshold, as PCK@$0.2$ or PCK@$0.5$.
 
 
 \textbf{When to use PCK?}
 
-PCK is suited for tasks where you care about relative keypoint accuracy rather than raw pixel error.
-It works well in applications like human pose estimation, facial landmark detection, or object keypoint detection. 
+Use PCK for human pose estimation, facial landmark detection, and animal pose tracking --- anywhere a prediction within a body-scaled tolerance counts as a hit. Avoid it when you need a single number that also rewards sub-threshold precision (use OKS, which scores distance continuously), or when every pixel of error should count.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Scale Invariance. By normalizing the threshold based on body part size or image scale, PCK accounts for different
-object sizes.
-\item Robust to minor localization errors. Small deviations from the exact keypoint location do not significantly impact
-the score.
+\item Scale-invariant by construction. Normalizing the threshold by object size lets you compare a webcam selfie and a full-body stadium shot on the same footing.
+\item Forgiving of small jitter. A few pixels of localization noise won't flip a keypoint from correct to wrong, so the score tracks usable accuracy.
 }
 {
-\item The performance can vary significantly depending on the chosen threshold $\tau$, making comparisons difficult across
-studies.
-\item Not Differentiable. Since it is a threshold-based metric, it cannot be directly used as a loss function for training
-deep learning models.
+\item Threshold-dependent. The same model can post PCK@$0.5 = 0.95$ but PCK@$0.2 = 0.70$; comparing across papers means matching $\alpha$ first.
+\item Not differentiable. As a pass/fail count it can't serve as a training loss --- models optimize a regression loss on coordinates and report PCK only at evaluation.
 }
 \clearpage
 
@@ -193,42 +182,37 @@ PCK variants include PCKh (head-normalized) and PCK@0.2 (fixed threshold at 20\%
 \section{Object Keypoint Similarity}
 \subsection{OKS}
 
-Object Keypoint Similarity (OKS) generalizes PCK by replacing the hard threshold with a continuous similarity score.  
+Object Keypoint Similarity is the scoring rule behind the COCO keypoint leaderboard, and it fixes what PCK discards. Where PCK calls a prediction simply right or wrong, OKS scores each keypoint on a smooth Gaussian of the distance error, normalized by object size so the same miss costs more on a small person than a large one.
 
-Where PCK counts a keypoint as correct if it falls within a circle of radius $\alpha L$, OKS assigns a value between 0 and 1 based on how far the predicted keypoint is from the ground truth, normalized by object scale and keypoint-specific tolerance.
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                \text{similarity}_i = \exp\!\left(-\,\frac{{\color{nmlpurple}d_i}^{2}}{2\,{\color{nmlcyan}s}^{2}\,{\color{nmlyellow}k_i}^{2}}\right)
+                $
+            }
+        };
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.55,-0.15)$) to[bend left=15] node[pos=1, right] {distance error} +(0.8,.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.3,0.15)$) to[bend right=15] node[pos=1, left] {object scale} +(-0.8,-.5);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.35,0.15)$) to[bend left=15] node[pos=1, right] {keypoint tolerance} +(0.9,-.5);
+    }
+\end{center}
 
-\noindent
-\tikz{
-\node[inner sep=2pt, font=\Large] (a) {
-\centering
-{
-$\displaystyle
-{similarity}_i = \exp\!
-  -\,\frac{{{distance error}}^{2}}{ {{object scale}}^{2} \, {{tolerance}_i}^{2} }
-$
-}
-};
-}
+Each keypoint scores in $[0, 1]$ --- $1$ for a perfect hit, falling toward $0$ as the prediction drifts --- and a pose's OKS is the average over its visible keypoints, so occluded or unannotated joints never drag it down.
 
 \textbf{When to use OKS?}
 
-OKS is particularly suited for evaluating pose estimation and keypoint-based object detection models, such as: human pose
-estimation, facial landmark detection and benchmarking keypoint models.
+Use OKS to rank pose-estimation models, or whenever you need one comparable score across objects of very different sizes. Avoid it when you want a result you can state in a sentence (PCK's ``within $X$ pixels'' is far more legible), or when your dataset has no per-keypoint $k_i$ tolerances, since OKS cannot be computed without them.
 
 
 \coloredboxes{
-\item Scale-invariant evaluation. Unlike raw pixel-based metrics, OKS normalizes errors relative to object size,
-ensuring fair evaluation across small and large objects.
-\item Smooth penalization of localization errors.
-Instead of a hard threshold (like in PCK), OKS applies a Gaussian function to penalize errors, making it a more continuous
-and informative measure.
-\item Handles occlusions and visibility issues. The visibility flag $v_i$ ensures that models are not penalized for missing
-occluded or unlabeled keypoints.
+\item Scale-invariant. Normalizing by object size makes a $5$-pixel error cost the same whether the person fills the frame or stands far in the background.
+\item Smooth, not pass/fail. The Gaussian falloff rewards getting closer even once you are already ``correct,'' so a better-localized model scores higher --- a difference PCK cannot see.
 }
 {
-\item Requires keypoint-specific constants. The $k_i$ values must be tuned per dataset, making cross-dataset comparisons
-challenging.
-\item Computationally more complex than PCK.
+\item Needs per-keypoint constants. The $k_i$ tolerances are calibrated from human-annotator variance on one dataset; reuse another dataset's values blindly and the scores stop meaning much.
+\item Harder to read than PCK. OKS $= 0.78$ has no units --- you can't translate it into ``lands within $N$ pixels,'' which makes per-keypoint debugging awkward.
 }
 
 \clearpage
@@ -255,8 +239,7 @@ OKS is the continuous counterpart of PCK. For segmentation rather than keypoint 
 \section{PSNR}
 \subsection{Peak Signal-to-Noise Ratio}
 
-In image generation and reconstruction, it is important to measure how closely the generated images resemble reference images.
-PSNR is a widely used metric that quantifies pixel-level differences.
+PSNR scores how faithfully a reconstructed image matches the original on a decibel scale where higher is better --- the standard number reported for JPEG compression, denoising, and super-resolution. It rescales the mean squared error against the largest possible pixel value, so a score means the same thing whether pixels run $0$--$255$ or $0$--$1$.
 
 % equation
 \begin{center}
@@ -303,24 +286,21 @@ where given an original image $O$ of size $h \times w$ and a reconstructed image
 
 \vspace{-10pt}
 
-The intuition behind PSNR is that it expresses how large the possible signal value is in comparison to the error. 
-If the error is subtle compared to the maximum signal (i.e., a high PSNR), the reconstructed image is relatively similar to
-the target in terms of pixel values. The unit of peak signal-to-noise ratio is decibel (dB) and the image have PSNR from 30 dB
-could be consider as good reconstruction quality.
+Because the scale is logarithmic, every $+10$ dB means the mean squared error fell tenfold, and a perfect match (MSE $= 0$) sends PSNR to infinity. As a rough guide, above $30$ dB usually reads as a clean reconstruction while below $20$ dB the artifacts are obvious.
 
 
 
 \textbf{When to use PSNR?}
 
-PSNR is often chosen as the first metric to provide an overview of how closely the generated image matches the target.
+Use PSNR for image compression, denoising, and super-resolution --- tasks with a clean reference where pixel-level fidelity is what you care about. Avoid it as a proxy for perceived quality: a small brightness shift or a one-pixel spatial offset can crater PSNR while the image still looks fine, so use SSIM or LPIPS when human perception is what matters.
 
 \coloredboxes{
-\item It is a straightforward and widely accepted standard for comparing vision algorithms.
-\item Simple and fast to compute.
+\item A stable, universal baseline. Decades of compression and restoration papers report it, so a PSNR value is directly comparable across methods and datasets.
+\item Cheap and deterministic. It is a closed-form function of MSE --- no training, no parameters, no randomness, so two implementations always agree.
 }
 {
-\item It does not always align with human perception of image quality.
-\item PSNR is sensitive to even small global changes in lighting, contrast, or color.
+\item Poorly correlated with perception. A heavily blurred image and a sharp one with faint noise can post the same PSNR, even though people rank them very differently.
+\item Distracted by global shifts. Adding a constant to every pixel --- a brightness change barely visible to the eye --- raises MSE and drops PSNR sharply.
 }
 
 \clearpage
@@ -352,10 +332,7 @@ measure the quality of \textbf{reconstructed} signal compared to the \textbf{ori
 
 \vspace{-5pt} 
 
-Modern computer vision problems often focus on generating likely realistic images that are perceptually pleasing to humans,
-rather than strictly matching the
-target image pixel by pixel. Therefore, PSNR is typically used in conjunction with other modern metrics like Fréchet Inception
-Distance (FID) or Inception Score (IS).
+Modern vision work often values images that look realistic to humans over an exact pixel match, so PSNR is usually paired with perceptual metrics like Fréchet Inception Distance (FID) or Inception Score (IS).
 
 
 % ---------- Sørensen–Dice Coefficient ----------
@@ -368,9 +345,7 @@ Distance (FID) or Inception Score (IS).
 \subsection{S{\o}rensen–Dice Coefficient}
 
 
-The S{\o}rensen–Dice Coefficient, sometimes simply called the Dice score, is a similarity metric that
-measures the overlap between two sets. In computer vision, it is often used to evaluate segmentation
-models by comparing the predicted mask against the ground-truth mask.
+When a segmentation model outlines a region --- an organ, a road, a building footprint --- the Dice coefficient measures how much the predicted mask overlaps the ground truth, counting the shared area twice and dividing by the total size of both masks. It runs from $0$ (no overlap) to $1$ (a perfect match), and it is the dominant accuracy metric in medical image segmentation.
 
 % equation
 \begin{center}
@@ -387,26 +362,20 @@ models by comparing the predicted mask against the ground-truth mask.
     }
 \end{center}
 
-where $A$ is the set of predicted positives and $B$ is the set of true positives.
-The score ranges between 0 and 1, with 1 indicating perfect overlap and 0 indicating no overlap.
-When applied to binary classification problems, the S{\o}rensen–Dice coefficient is mathematically
-equivalent to the F1-score.
+Here $A$ is the set of predicted-positive pixels and $B$ the set of ground-truth-positive pixels, so the numerator $2|A \cap B|$ is twice their overlap. On binary problems Dice equals the F1-score, the harmonic mean of precision and recall --- which is why it balances false positives against false negatives instead of letting one dominate.
 
 \textbf{When to use S{\o}rensen–Dice Coefficient?}
 
-Use the S{\o}rensen–Dice Coefficient when you need a robust measure of similarity between two binary
-or categorical sets. It is especially popular in image segmentation, information retrieval and
-natural language processing.
+Use Dice for segmentation with class imbalance --- small foreground objects against a large background --- where it rewards overlap without being swamped by the easy background pixels that inflate Pixel Accuracy. Avoid it when boundary precision is the real concern: a mask can score Dice $> 0.9$ while its edges stay visibly ragged, so pair it with a boundary metric like Hausdorff distance.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Intuitive and interpretable. Directly measures the overlap between predicted and true sets.
-\item Balances false positives and false negatives. Equivalent to F1-score, making it well-suited to
-imbalanced data.
+\item Robust to background imbalance. The formula never counts true-negative (background) pixels, so a model gets no credit for the easy, empty majority of the frame.
+\item Balances precision and recall. Being the F1-score, it falls if a model over-segments (false positives) or misses parts of the object (false negatives) --- one cannot hide the other.
 }
 {
-\item Not a true metric, as it does not satisfy the triangle inequality.
-\item Overly optimistic in some contexts. May give high similarity even when boundary alignment
-is poor, which matters in precise applications like medical imaging.
+\item Not a true distance. It breaks the triangle inequality, so it can't be dropped into algorithms (clustering, nearest-neighbor search) that assume metric geometry.
+\item Blind to boundary quality. A mask overlapping most of the target scores high even with a jagged outline, so two predictions with equal Dice can differ sharply at the edges.
 }
 
 \clearpage
@@ -438,10 +407,7 @@ $Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Pan
 \section{PQ}
 \subsection{Panoptic Quality}
 
-Panoptic Quality (PQ) is a computer vision metric designed to evaluate panoptic segmentation, a task
-that unifies semantic segmentation and instance segmentation . Unlike earlier metrics that treated stuff
-(amorphous regions like sky, road) and things (countable objects like cars, people) separately,
-PQ evaluates both in a uniform and consistent way.
+In panoptic segmentation, every pixel gets a class and, for countable objects, an instance ID --- a street scene becomes ``road,'' ``sky,'' and ``car \#1, car \#2, car \#3'' at once. Panoptic Quality grades this in one number, scoring amorphous ``stuff'' (sky, road) and countable ``things'' (cars, people) on the same scale where older pipelines needed a separate metric for each.
 
 % equation
 \begin{center}
@@ -459,33 +425,21 @@ PQ evaluates both in a uniform and consistent way.
     }
 \end{center}
 
-PQ can be decomposed into two interpretable components:
-% equation
-% Segmentation Quality (SQ): the average IoU of matched segments.
-% Recognition Quality (RQ): an F1-like measure that penalizes false positives and false negatives.
-
-\begin{center}
-    $PQ = SQ \times RQ$
-\end{center}
+It also splits into $PQ = SQ \times RQ$, both terms in $[0, 1]$: Segmentation Quality (SQ) is the average IoU of correctly matched segments, and Recognition Quality (RQ) is an F1-score on detection. So a low PQ tells you which half failed --- loose masks (low SQ) or missed and hallucinated objects (low RQ).
 
 \textbf{When to use Panoptic Quality?}
 
-Use PQ when evaluating models that must both classify and segment objects at the pixel level, such
-as in autonomous driving, medical imaging, or robotics. It is especially relevant when your model
-must handle both “stuff” classes and “thing” classes.
+Use PQ for panoptic segmentation --- scene parsing for autonomous driving or robotics, where every pixel needs a label and individual objects (each car, each pedestrian) must be told apart. Avoid it when your task is only half of that: for semantic segmentation with no instances use mean IoU; for instance detection without dense ``stuff,'' use Average Precision (AP).
 
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Unified evaluation: Handles both stuff and things in a single metric.
-\item Balanced penalties. The denominator includes $FP$ and $FN$, ensuring both missed and spurious
-predictions are penalized.
-\item Interpretability: The $SQ$ and $RQ$ decomposition makes it easy to diagnose whether errors
-come from poor segmentation or recognition.
+\item One score for two sub-problems. Stuff and things are graded on the same scale, so you compare a whole scene parser end-to-end instead of juggling separate semantic and instance metrics.
+\item Penalizes both error types. The $\frac{1}{2}|FP|$ and $\frac{1}{2}|FN|$ terms in the denominator dock a model for hallucinated segments and for missed ones, not just for sloppy overlap.
 }
 {
-\item Equal weighting of segments. While useful for fairness, this may undervalue large, important regions in favor of many small segments.
-\item Boundary insensitivity: Since PQ relies on IoU, it may miss fine-grained boundary quality,
-which can matter in domains like medical imaging.
+\item Every segment counts equally. A tiny mislabeled sign and a whole missed building move the score by the same amount, so PQ can understate errors on the regions that matter most.
+\item Inherits IoU's boundary blindness. Matching uses IoU above $0.5$, so a segment can count as ``correct'' yet have a visibly wrong outline --- fine boundary quality goes unmeasured.
 }
 
 \clearpage
@@ -520,10 +474,7 @@ For semantic-only segmentation, use mean IoU. For instance-only, use Average Pre
 \section{SSIM}
 \subsection{Structural Similarity Index}
 
-The Structural Similarity Index Measure (SSIM) is a computer vision metric that evaluates the similarity
-between two images by modeling perceived changes in structural information, rather than relying solely on
-pixel-level differences. Unlike metrics such as MSE or PSNR, which compare absolute differences, SSIM
-incorporates luminance, contrast, and structural components of the images.
+SSIM is the image-quality metric most practitioners already recognize, and it earned that ubiquity by tracking human judgment more closely than PSNR. It compares two images on three perceptual fronts --- luminance, contrast, and structure --- over local windows, so two images with the same MSE (say, one faintly brightened, one structurally blurred) get the different scores a person would give them.
 
 % equation
 \begin{center}
@@ -541,25 +492,20 @@ incorporates luminance, contrast, and structural components of the images.
     }
 \end{center}
 
-The SSIM score ranges from -1 to 1, with 1 indicating perfect structural similarity. In practice, values
-below 0 are rare, and scores closer to 1 indicate higher perceptual similarity.
+SSIM ranges from $-1$ to $1$, though on natural images it rarely falls below $0$; a score of $1$ means the two images are structurally identical. As practical anchors, SSIM above $0.95$ usually looks near-perfect to a viewer, while values near $0.7$ show clearly visible degradation.
 
 \textbf{When to use Structural Similarity Index?}
 
-Use SSIM when the goal is to evaluate image quality in a way that aligns with human visual perception.
+Use SSIM for image compression, denoising, and super-resolution where a human views the result --- it is the standard companion to PSNR. Avoid it when images aren't spatially aligned, since it assumes pixel correspondence and a small shift or crop tanks the score at unchanged quality; for learned perceptual similarity across differing content, use LPIPS.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Perceptual alignment. Incorporates human visual perception by considering luminance, contrast, and
-structural information.
-\item Local sensitivity. SSIM can be applied locally, capturing variations in quality across different
-regions of an image.
+\item Tracks perception. Scoring luminance, contrast, and structure separately, SSIM agrees with human quality ratings far more often than MSE or PSNR --- the reason it became the standard.
+\item Produces a quality map. Computed over local windows, it yields a per-region score, so you can see where an image degraded instead of reading one global number.
 }
 {
-\item Uniform pooling limitation. Averaging local SSIM scores can hide critical localized distortions.
-\item Insensitive to edges. Distortions near sharp transitions may be underestimated, even though edges carry
-important structural information.
-\item Single-scale. Classic SSIM does not account for multi-scale perceptual phenomena, though extensions
-like MS-SSIM address this.
+\item A global average hides local damage. The reported SSIM is the mean over all windows, so one badly corrupted region can be masked by many clean ones --- read the SSIM map, not just the number.
+\item Single-scale. Classic SSIM fixes one window size and misses distortions that appear only at coarser or finer scales; MS-SSIM evaluates several scales and is usually preferred.
 }
 
 \clearpage
