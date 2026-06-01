@@ -998,8 +998,7 @@ Use D2 Absolute Score for heavy-tailed targets where R-squared is unstable --- h
     \includegraphics[width=\textwidth]{figures/D2_abs_comparison.png}
 \end{figure*}
 
-\textbf{Figure. D2 Absolute Score.} \underline{Left:} Without outliers, D2 and R-squared give similar results.
-\underline{Right:} A single outlier (red) causes R-squared to drop significantly, while D2 Absolute Score is more robust due to its use of absolute deviations.
+\textbf{Figure. D2 as a ratio of absolute-error bar heights.} Same structure as the R-squared plot — but with bars (heights $= |y_i - \hat{y}_i|$) instead of squares, and the median as baseline instead of the mean. Left: residuals from the linear fit sum to $SAD_{res} = 10.5$. Right: residuals from the median baseline sum to $SAD_{tot} = 19.5$. $D^2 = 1 - 10.5/19.5 = 0.46$. Without the outlier (red point), the same five points give $R^2 = 0.92$ and $D^2 = 0.72$ — both metrics agree the model fits well. Adding the outlier collapses $R^2$ to $0.30$ but only drops $D^2$ to $0.46$ — the outlier contributes $\sim \text{residual}^2$ to $SS_{res}$ but only $\sim |\text{residual}|$ to $SAD_{res}$.
 
 \orangebox{Did you know that...}
 {The D-squared framework generalizes R-squared to arbitrary deviance functions. Using absolute deviations instead of squared differences makes D2 Absolute Score equivalent
