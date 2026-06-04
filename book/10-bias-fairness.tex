@@ -12,9 +12,10 @@
 % https://afraenkel.github.io/fairness-book/content/05-parity-measures.html#demographic-parity
 % https://fairmlbook.org/classification.html
 
-Demographic Parity (also known as Statistical Parity) is one of the most widely cited fairness metrics in machine learning.
-It requires that the decision of a model be independent of a protected attribute (such as gender, race, or age). In other words,
-the probability of receiving a positive prediction should be the same across groups, regardless of whether the prediction is correct.
+In a hiring screen that advances $30\%$ of applicants, demographic parity asks that the advance rate be the same for every demographic
+group, regardless of who is actually qualified. It measures whether a model’s positive predictions are independent of a protected attribute
+such as gender, race, or age. Because it looks only at selection rates and never at the ground truth, parity can be satisfied by a model
+that is accurate for one group and inaccurate for another.
 
 % Formula
 \begin{center}
@@ -31,22 +32,23 @@ the probability of receiving a positive prediction should be the same across gro
     }
 \end{center}
 
-A model satisfies demographic parity if members of different demographic groups are selected at equal rates. For example, in a loan approval
-system, demographic parity would mean that the proportion of approved applications is the same across groups, independent of creditworthiness.
+This is the independence criterion: the prediction $\hat{Y}$ carries no information about the group $A$. Employment audits often apply the
+four-fifths rule, flagging a model when the lowest group’s selection rate falls below $80\%$ of the highest.
 
 \textbf{When to use Demographic Parity?}
 
-Use demographic parity when the fairness objective is equal treatment across groups in terms of outcomes, even if this comes at the cost
-of predictive accuracy. It is often applied in contexts such as hiring, lending, or college admissions, where ensuring equal access is a
-primary concern.
+Use it when equal representation in the selected set is the goal --- diverse candidate shortlists, outreach campaigns, or fixed slots across
+groups --- especially when the historical labels are themselves suspect. Avoid it when the positive label is legitimately earned at different
+rates per group (use Equality of Opportunity), or when a positive prediction must be equally trustworthy per group (use Predictive Parity).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Simple to compute and easy to explain to non-technical stakeholders.
-\item Guarantees equal selection rates across groups, supporting inclusion.
+\item Needs only predictions and group labels, not ground truth, so it can be audited on live traffic where labels arrive late or never.
+\item Maps onto legal standards: the four-fifths rule used in employment law is a demographic-parity test.
 }
 {
-\item It only looks at whether groups get the same share of positive outcomes, but not at whether those predictions are actually correct.
-\item Can reduce overall model accuracy if the underlying distributions differ.
+\item Ignores correctness. If one group is $56\%$ qualified and another $24\%$, forcing both to a $40\%$ rate means selecting unqualified members of the second to fill the quota.
+\item When base rates differ, enforcing parity pulls predictions away from the labels and lowers accuracy.
 }
 
 \clearpage
@@ -58,17 +60,22 @@ primary concern.
     \includegraphics[width=\textwidth]{figures/Demographic_Parity.png}
 \end{figure*}
 
-\textbf{Figure. Demographic Parity.} \underline{Left:} All groups receive positive predictions at roughly equal rates (~40\%), satisfying parity.
-\underline{Right:} Group A is selected at 65\% while Groups B and C at 30\% and 20\%, violating parity.
+\textbf{Figure. Demographic Parity.} \underline{Left:} both groups are selected at the same $40\%$ rate, so demographic parity is satisfied.
+\underline{Right:} the same selections, split by whether the person was truly qualified. Group A’s picks are $93\%$ qualified, Group B’s only
+$56\%$ --- because Group B’s qualified pool ($24\%$, marked) is smaller than the $40\%$ being selected, the model has to reach into the
+unqualified to meet the rate. Equal rates, unequal merit --- and parity sees only the left panel.
 
 \orangebox{Did you know that...}
-{Demographic parity goes by several other names in the literature, often referred to as statistical parity, group fairness, or even
-independence criterion. Different research communities picked different terms, but they all describe the same idea.}
+{Because demographic parity constrains only the rate of positive predictions, a model can satisfy it without looking at the data at all:
+a coin that comes up heads $40\%$ of the time, flipped for every applicant, selects each group at exactly $40\%$. The same loophole lets a
+model hit its target by filling one group’s quota with its strongest candidates and another’s with its weakest. Equal selection rates are
+not equal merit --- which is why parity is best paired with a metric that checks whether the selected people were the right ones.}
 
 \textbf{Other related metrics}
 
-For a stricter fairness notion that accounts for prediction correctness, consider Equality of Opportunity or Equality of Odds.
-If score calibration matters more than outcome rates, see Calibration within Groups.
+If a model satisfies demographic parity but fails Equality of Opportunity, it is selecting equal fractions of each group while missing the
+qualified members of one --- the picks are landing on the wrong people. When parity and Predictive Parity disagree, a positive prediction
+means something different for each group. Calibration within Groups checks the same concern at the level of scores rather than binary decisions.
 
 % ---------- Equality of Opportunity ----------
 \clearpage
@@ -76,9 +83,10 @@ If score calibration matters more than outcome rates, see Calibration within Gro
 \section{Equality of Opportunity}
 \subsection{Equality of Opportunity}
 
-Equality of Opportunity is a fairness metric that focuses on ensuring that individuals who truly belong to the positive class
-(e.g., qualified applicants) have an equal chance of being correctly identified across different demographic groups.
-Formally, the metric requires that the True Positive Rate (TPR) be equal across groups.
+Among loan applicants who would in fact repay, equality of opportunity asks that the model approve them at the same rate whether they are
+men or women. It restricts attention to the people who genuinely belong in the positive class and requires the true positive rate (TPR) ---
+the share of those people the model correctly identifies --- to be equal across groups. A qualified applicant’s odds of being recognized
+should not depend on their demographic group.
 
 % Formula
 \begin{center}
@@ -96,24 +104,25 @@ Formally, the metric requires that the True Positive Rate (TPR) be equal across 
     }
 \end{center}
 
-In other words, if two people are equally qualified, their chance of being recognized as such by the model should not depend on their
-demographic group.
+This is one half of the separation criterion, which asks the prediction to be independent of the group within each true class. Equality of
+opportunity enforces it only on the positive class ($Y=1$) and says nothing about the truly negative, so two groups can share an identical
+TPR while one is flooded with false positives.
 
 \textbf{When to use Equality of Opportunity?}
 
-This metric is particularly useful in high-stakes scenarios where false negatives carry large consequences, such as university admissions,
-medical diagnoses, or loan approvals. It ensures that qualified individuals are treated equally, regardless of group membership.
+Use it when missing a qualified person is the costly error and that risk should be shared across groups --- shortlisting candidates for
+interview, flagging patients for a beneficial follow-up, or admitting students who would succeed. Avoid it when false positives are also
+harmful and must be balanced (use Equality of Odds), or when fairness should hold at the score level, not one threshold (use Calibration
+within Groups).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Ensures qualified individuals have equal chances across groups, even if overall acceptance rates differ.
-\item Models can vary in their ratio of positive to negative predictions across groups, as long as the true positives are treated fairly.
-\item Can be more aligned with fairness in practical scenarios, where ensuring equal opportunity for qualified candidates
-is more meaningful than enforcing equal acceptance rates.
+\item Equalizes the chance a qualified person is recognized without forcing equal approval rates, avoiding the accuracy hit parity takes when qualified fractions differ.
+\item Reachable by post-processing: tune each group’s threshold until the true positive rates match, no retraining.
 }
 {
-\item Only applies when there is a clearly preferred label (e.g., “qualified”), limiting its use to such contexts.
-\item Does not guarantee fairness for the negative class, unlike metrics such as Equalized Odds.
-\item Requires demographic group labels to compare outcomes. If group membership is unavailable, the metric cannot be applied.
+\item Silent on the negative class. A model can equalize TPR yet hand one group far more false positives --- equal opportunity for the qualified, unequal harm for the rest.
+\item Only meaningful when one label is clearly desirable. For symmetric problems with no preferred outcome, there is no positive class to equalize.
 }
 
 \clearpage
@@ -125,18 +134,23 @@ is more meaningful than enforcing equal acceptance rates.
     \includegraphics[width=\textwidth]{figures/Equality_of_Opportunity.png}
 \end{figure*}
 
-\textbf{Figure. Equality of Opportunity.} \underline{Left:} All groups have similar TPR (~80\%), meaning qualified individuals are equally likely to be identified.
-\underline{Right:} Group A has 90\% TPR while Group C has only 45\%, meaning qualified individuals in Group C are frequently overlooked.
+\textbf{Figure. Equality of Opportunity.} Both panels show only the truly qualified ($Y=1$); the filled bar is the share the model identifies (TPR).
+\underline{Left:} the two groups are caught at nearly the same rate ($86\%$ and $87\%$), so equality of opportunity holds.
+\underline{Right:} Group A reaches $91\%$ while Group B sits at $63\%$, a $28$-point gap --- qualified people in Group B are routinely overlooked,
+even when the groups’ overall approval rates happen to match.
 
 \orangebox{Did you know that...}
-{Equality of Opportunity was popularized in the 2016 paper “Equality of Opportunity in Supervised Learning” by Hardt, Price, and Srebro. 
-In that paper, they introduced both Equality of Opportunity and its stricter sibling, Equalized Odds. The terms have since become standard
-in the fairness in ML literature.}
+{Equality of opportunity is deliberately one-sided. It constrains the true positive rate and nothing else, so a model can pass it while
+flagging the truly unqualified members of one group far more often than another --- equal recall for the deserving, very different
+false-positive rates for everyone else. That asymmetry is intentional: in lending or admissions, missing a qualified person is treated as
+the harm worth equalizing, while the cost of a false positive falls elsewhere. The criterion, and its two-sided sibling Equalized Odds,
+were introduced by Hardt, Price, and Srebro (2016).}
 
 \textbf{Other related metrics}
 
-Equality of Opportunity only constrains the true positive rate. For a stricter version that also constrains the false positive rate,
-see Equality of Odds. For outcome-independent fairness, see Demographic Parity.
+If equality of opportunity holds but Equality of Odds fails, the groups are caught at equal rates when qualified but suffer unequal
+false-positive rates --- the gap lives entirely in the negative class. Demographic Parity ignores the labels altogether, so a model can
+satisfy parity while badly failing equal opportunity, and the reverse.
 
 % ---------- Equality of Odds ----------
 \clearpage
@@ -148,9 +162,9 @@ see Equality of Odds. For outcome-independent fairness, see Demographic Parity.
 % https://arxiv.org/pdf/1610.02413
 % https://mlu-explain.github.io/equality-of-odds/
 
-Equality of Odds is a fairness metric that requires a model to have equal true positive rates (TPR) and equal false positive rates (FPR)
-across different demographic groups. In other words, the model should be equally good at identifying positives and equally bad at making mistakes,
-no matter which group an individual belongs to.
+A recidivism tool can clear one group and over-flag another while still looking accurate overall. Equality of odds rules this out: it
+requires equal true positive rates and equal false positive rates (FPR --- the share of truly negative people wrongly flagged) across groups
+at once, so a model is equally good and equally error-prone for every group.
 
 % Formula
 \begin{center}
@@ -169,22 +183,24 @@ no matter which group an individual belongs to.
     }
 \end{center}
 
-Equalized Odds is stricter than Equality of Opportunity, which only enforces equality on the true positive rate. If we relax the Equalized Odds
-condition to focus only on the case where $Y = 1$, we obtain the Equality of Opportunity formula.
+This is the full separation criterion --- within each true class, the prediction is independent of the group, and strictly stronger than
+equality of opportunity (which remains if you relax it to the $Y=1$ case). Since a (FPR, TPR) pair is one point in ROC space, equalizing both
+rates forces every group onto the same operating point.
 
 \textbf{When to use Equality of Odds?}
 
-Use Equality of Odds when both types of classification errors, false positives and false negatives, carry important consequences.
-For example, in loan approvals, we want to ensure that different groups are not only equally likely to receive a loan when they are
-truly creditworthy, but also equally likely to be mistakenly given a loan when they are not.
+Use it when both error types are consequential and must be balanced across groups --- criminal-risk scoring, fraud flagging, or disease
+screening. Avoid it when only missed positives matter and you want an achievable constraint (use Equality of Opportunity), or when base rates
+differ and predictions must be equally trustworthy per group (use Predictive Parity --- though the two cannot both hold).
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Captures fairness across both positive and negative outcomes.
-\item More comprehensive than Equality of Opportunity, which only balances true positive rates.
+\item Constrains both error types, closing the loophole equality of opportunity leaves open: no buying equal recall by dumping false positives on one group.
+\item Compatible with strong accuracy when score distributions are similar --- if the groups’ ROC curves coincide, one shared threshold satisfies it at no cost.
 }
 {
-\item May be difficult or impossible to satisfy perfectly, especially when the distribution of labels differ across groups.
-\item Enforcing Equality of Odds can reduce overall model accuracy, creating a trade-off between fairness and performance.
+\item Usually unreachable without degrading the model: with different score distributions, the only route to a shared operating point is to randomize or worsen the stronger group.
+\item Cannot coexist with Predictive Parity when base rates differ --- equalizing error rates leaves precision unequal, and no tuning fixes both.
 }
 
 \clearpage
@@ -196,19 +212,22 @@ truly creditworthy, but also equally likely to be mistakenly given a loan when t
     \includegraphics[width=\textwidth]{figures/Equality_of_Odds.png}
 \end{figure*}
 
-\textbf{Figure. Equality of Odds.} \underline{Left:} Both TPR and FPR are consistent across groups (fair). \underline{Right:} Group A has high TPR but low FPR, while Group C has low TPR and high FPR — the model performs well only for Group A.
+\textbf{Figure. Equality of Odds.} Each group is one point in ROC space --- its (false positive rate, true positive rate) pair. \underline{Left:}
+the groups share a curve and land on essentially the same operating point near $(0.16, 0.84)$, so the odds are equalized. \underline{Right:}
+Group A sits at $(0.09, 0.90)$ and Group B at $(0.34, 0.66)$ --- the model catches more of Group A’s positives and raises fewer false alarms on them.
 
 \orangebox{Did you know that...}
-{Equality of Odds was popularized in the 2016 paper “Equality of Opportunity in Supervised Learning” by Hardt, Price, and Srebro. 
-In that paper, they introduced both Equality of Odds and its less strict sibling, Equality of Opportunity. The terms have since become standard
-in the fairness in ML literature.}
+{A classifier’s behavior on a group collapses to a single point in ROC space: its false-positive rate and its true-positive rate. Equality
+of odds demands that every group sit at the same point. When the groups share an ROC curve, that is just a matter of choosing one threshold
+for everyone. But when their curves differ --- as they do whenever the score separates the classes better for one group --- no single point
+lies on both curves, and the only way to meet is to throw information away: randomize some predictions, or move a group to a worse point on
+its own curve. Equalizing the odds can mean making a good model deliberately worse.}
 
 \textbf{Other related metrics}
 
-Equality of Odds is stricter than Equality of Opportunity (which only constrains TPR). For an even simpler criterion that ignores
-prediction correctness, see Demographic Parity. For score-level fairness, see Calibration within Groups.
-
-% For second page we can follow The ROC Curves example of this resource: https://mlu-explain.github.io/equality-of-odds/
+Relax equality of odds to the positive class alone and Equality of Opportunity remains. Predictive Parity asks whether a positive prediction
+is equally trustworthy per group, and is mutually exclusive with equalized odds under different base rates; Demographic Parity ignores the
+labels entirely.
 
 % ---------- Predictive Parity ----------
 \clearpage
@@ -221,10 +240,10 @@ prediction correctness, see Demographic Parity. For score-level fairness, see Ca
 % https://njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf
 % https://afraenkel.github.io/fairness-book/content/05-parity-measures.html#predictive-value-parity-ppv-parity-and-npv-parity
 
-Predictive Parity, also known as predictive value parity or the outcome test, is a fairness metric that checks whether a model’s precision 
-(positive predictive value, PPV) is the same across different demographic groups. In simple terms, if a model predicts that someone belongs to
-the positive class (e.g., “approved for a loan”), Predictive Parity requires that the probability of this prediction being correct is equal for
-all groups.
+When a credit model approves an applicant, predictive parity asks that the approval be equally trustworthy across groups: of everyone the
+model flags as positive, the fraction who truly are should match for men and women alike. That fraction is the positive predictive value
+(PPV), the same quantity as precision --- the share of positive predictions that turn out correct. Predictive parity holds when a “yes” from
+the model carries the same meaning no matter the group.
 
 % Formula
 \begin{center}
@@ -242,22 +261,25 @@ all groups.
     }
 \end{center}
 
-If predictive parity holds, then the false discovery rate (FDR) will also be equal across groups, since $FDR = 1 − PPV$.
+This also equalizes the false discovery rate (FDR) --- the share of positive predictions that are wrong --- since $FDR = 1 - PPV$. Predictive
+parity is the binary-decision form of the sufficiency criterion: the true outcome is independent of group once you condition on what the
+model predicts.
 
 \textbf{When to use Predictive Parity?}
 
-Predictive Parity is most relevant when the cost of false positives is high, and we care about ensuring that predicted positives are equally
-reliable across groups. For example, in credit scoring, it ensures that an approved loan is equally likely to be repaid whether the applicant
-belongs to one demographic group or another.
+Use it when a positive decision triggers a real commitment that must be equally reliable per group --- extending credit, releasing a
+defendant on a risk score, or routing patients to a scarce treatment. Avoid it when you care about catching the qualified rather than the
+reliability of the flagged (use Equality of Opportunity), or when base rates differ and you would rather equalize error rates (use Equality
+of Odds --- you cannot have both).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Ensures the same fraction of correct positive predictions across groups.
-\item Easy to interpret: it directly extends the familiar concept of precision.
+\item A positive prediction means the same thing for everyone: if PPV is $0.8$ in both groups, a flagged person is truly positive $80\%$ of the time either way, so downstream decisions can treat it identically.
+\item Checkable from the confusion matrix alone --- the predicted-positive counts and how many were right per group, no scores or thresholds.
 }
 {
-\item Incompatible with other fairness metrics (such as equalized odds) when base rates differ across groups. It is mathematically
-impossible to satisfy both simultaneously.
-\item Equal PPVs can hide differences in false negative rates or access to positive outcomes.
+\item Cannot hold together with Equality of Odds when base rates differ --- a proven impossibility, not a tuning problem, and the crux of the COMPAS dispute.
+\item Equal precision hides unequal recall: two groups can share a PPV while the model overlooks far more qualified people in one.
 }
 
 \clearpage
@@ -269,18 +291,23 @@ impossible to satisfy both simultaneously.
     \includegraphics[width=\textwidth]{figures/Predictive_Parity.png}
 \end{figure*}
 
-\textbf{Figure. Predictive Parity.} \underline{Left:} All groups have similar PPV (~74\%), meaning a positive prediction is equally trustworthy across groups.
-\underline{Right:} A positive prediction for Group A is correct 85\% of the time but only 40\% for Group C.
+\textbf{Figure. Predictive Parity.} Both panels show only the flagged ($\hat{Y}=1$); the filled bar is the share that is truly positive (PPV).
+\underline{Left:} a positive prediction is correct about $80\%$ of the time for both groups, so predictive parity holds. \underline{Right:}
+a “yes” is right $86\%$ of the time for Group A but only $54\%$ for Group B --- the same prediction carries very different weight, here because
+Group B’s lower base rate leaves fewer true positives to find.
 
 \orangebox{Did you know that...}
-{Predictive parity gained attention during the debate around the COMPAS recidivism tool. ProPublica’s 2016 investigation argued that COMPAS was
-unfair because it did not satisfy equalized odds, while its developers countered that the tool did satisfy predictive parity, illustrating how
-different fairness definitions can conflict and fuel controversy.}
+{The COMPAS recidivism tool set off the most famous dispute in fairness research. ProPublica (2016) showed that black defendants faced higher
+false-positive rates, a violation of equalized odds; Northpointe replied that the tool had equal predictive value across races, satisfying
+predictive parity. Both were right. Chouldechova, and independently Kleinberg, Mullainathan, and Raghavan, soon proved that when base rates
+differ between groups no classifier can satisfy predictive parity and equalized odds at once, short of perfect prediction. The disagreement
+was not a flaw in COMPAS but a mathematical certainty, and it forces practitioners to choose which fairness they are willing to give up.}
 
 \textbf{Other related metrics}
 
-Predictive Parity focuses on precision (PPV). For fairness constraints on recall (TPR), see Equality of Opportunity.
-For constraints on both TPR and FPR, see Equality of Odds. These metrics are mathematically incompatible when base rates differ across groups.
+Predictive Parity constrains precision; Equality of Opportunity constrains recall (TPR); Equality of Odds constrains both error rates. When
+base rates differ, predictive parity and equalized odds cannot both hold, so a disagreement between them is guaranteed rather than
+informative --- the choice of which to enforce is yours. Calibration within Groups is the score-level form of the same sufficiency idea.
 
 % ---------- Calibration within Groups ----------
 \clearpage
@@ -288,8 +315,9 @@ For constraints on both TPR and FPR, see Equality of Odds. These metrics are mat
 \section{Calibration within Groups}
 \subsection{Calibration within Groups}
 
-Calibration within groups is a fairness notion that requires predicted scores to have the same meaning across demographic groups.
-Formally, for any score value $s$ and group $a$
+A health system uses a risk model to enroll patients in a care program and acts on the scores directly: everyone above $0.3$ gets contacted.
+Calibration within groups requires that a score mean the same thing for every group --- among all patients scored $0.3$, the same fraction
+should truly be high-risk whether they are old or young. Formally, for any score value $s$ and group $a$,
 
 % Formula
 \begin{center}
@@ -307,22 +335,24 @@ Formally, for any score value $s$ and group $a$
     }
 \end{center}
 
-This means that if a model assigns a score of $s$, then the probability of the outcome being positive should equal $s$,
-no matter which group the individual belongs to.
+This is the sufficiency criterion in score form: once you know the score, the true outcome carries no further information about the group. It
+is what lets one threshold serve everyone --- if a score of $0.3$ means $30\%$ risk for one group and $45\%$ for another, the same cutoff
+silently treats them differently.
 
 \textbf{When to use Calibration within Groups?}
 
-Calibration within Groups is useful when decisions depend not only on binary predictions but also on the probabilities behind them, 
-such as in credit scoring, healthcare risk prediction, or hiring assessment. It ensures that scores can be trusted equally across groups,
-making downstream thresholds and policies more reliable.
+Use it when the score itself drives decisions --- risk-based pricing, triage thresholds, or any policy that reads probabilities rather than
+yes/no labels --- especially when different teams set their own cutoffs downstream. Avoid it when you only ship hard classifications and
+balancing error rates matters more (use Equality of Odds), or when the goal is equal selection regardless of risk (use Demographic Parity).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Provides a clear, interpretable fairness guarantee for probability scores.
-\item Fits real-world settings where calibrated scores are central to decision-making.
+\item A calibrated score is decision-ready at any threshold: because $0.3$ means $30\%$ for every group, teams can move the cutoff without re-checking fairness.
+\item Often comes for free --- a model trained on log loss or Brier score tends to land roughly calibrated, so no special step is needed, unlike equalized odds.
 }
 {
-\item Difficult to achieve simultaneously with other fairness criteria, like equalized odds.
-\item Guarantees fairness of scores but not of threshold-based outcomes.
+\item Says nothing about error rates: a model can be calibrated within both groups yet flag the truly negative members of one far more often (calibration and equalized odds cannot both hold when base rates differ).
+\item Calibration does not survive thresholding --- two groups with the same curve but different score distributions get different error rates at a fixed cutoff.
 }
 
 \clearpage
@@ -331,17 +361,22 @@ making downstream thresholds and policies more reliable.
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Calibration_within_Groups.png}
+    \includegraphics[width=0.55\textwidth]{figures/Calibration_within_Groups.png}
 \end{figure*}
 
-\textbf{Figure. Calibration within Groups.} Group A's calibration curve closely follows the diagonal (well calibrated), while Group B's curve deviates — a predicted score of 0.3 actually corresponds to a 40\% positive rate for Group B, meaning scores have different meanings across groups.
+\textbf{Figure. Calibration within Groups.} A reliability diagram: predicted score against the observed frequency of $Y=1$, binned from the
+data. Group A tracks the diagonal, so its scores mean what they say; Group B bows away --- a score of $0.25$ corresponds to a $35\%$ true
+rate, not $25\%$ --- so the same number means a different risk depending on the group.
 
 \orangebox{Did you know that...}
-{Probability calibration first became popular in weather forecasting. In the 1950s, meteorologists asked whether a 
-“70\% chance of rain” really meant that it rained on 7 out of 10 such days. This led to the creation of the Brier Score in 1950, one of the
-first formal ways to measure how well probabilities match reality, a concept that later inspired calibration metrics in machine learning.}
+{Calibration looks like the most innocent fairness criterion --- who could object to scores that mean what they say? --- yet it collides with
+the others just as hard. Calibration is a form of the sufficiency criterion, while equalized odds is the separation criterion, and the same
+impossibility result that settled the COMPAS debate shows the two cannot both hold whenever group base rates differ. A model can be flawlessly
+calibrated within every group and still send one group far more false positives than another. “The scores are fair” and “the errors are fair”
+are, in general, different and incompatible promises --- and choosing calibration is choosing which one to keep.}
 
 \textbf{Other related metrics}
 
-For binary outcome fairness rather than score-level fairness, see Demographic Parity, Equality of Opportunity, or Equality of Odds.
-For evaluating calibration quality independently of fairness, see the Brier Score in the Classification chapter.
+Calibration within Groups is the score-level cousin of Predictive Parity --- both are forms of sufficiency. It trades off against the
+separation criteria (Equality of Opportunity and Equality of Odds) when base rates differ. For calibration quality on its own, see the Brier
+Score in the Classification chapter.
