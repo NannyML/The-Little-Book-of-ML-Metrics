@@ -253,11 +253,13 @@ means the same whether pixels run $0$--$255$ or $0$--$1$.
             }
         };
         \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.1,-0)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-0.8,.4);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2,-0.1)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-0.8,-.4);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.east)+(-0.3,-0.35)$) to[bend right=10] node[pos=1, right] {mean squared error} +(0.6,-0.15);
     }
 \end{center}
 
 with $O$ the original and $R$ the reconstruction, both $h \times w$:
+
+\vspace{4pt}
 
 % equation
 \begin{center}
