@@ -51,10 +51,13 @@ When you have ground-truth labels and want to compare clusterings across runs or
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
+    \includegraphics[width=\textwidth]{figures/MI_contingency_contributions.png}
 \end{figure*}
 
-\textbf{Figure. Mutual Info Score.} Six external clustering metrics on the same 3-class problem, comparing well-separated clusters (cyan) against overlapping ones (red). All metrics drop on the overlapping case. Note that the MI scale depends on the number of classes (here bounded by $\log 3 \approx 1.1$) --- raw MI is not directly comparable across datasets, which is why NMI and AMI exist.
+\textbf{Figure. Mutual Info Score.} Two clusterings of the same three-class data as contingency tables. Each cell holds its count and
+its contribution $p \log \frac{p}{p_c\,p_k}$ to the mutual information; MI is the sum of the cells. When clusters and classes line up
+the diagonal carries everything, $1.099$ nats, which is the entropy of three balanced classes and the ceiling. Overlapping clusters spread
+the counts, the off-diagonal cells contribute negative terms, and MI falls to $0.724$.
 
 \orangebox{Did you know that...}
 {MI is the Kullback-Leibler divergence between the joint distribution of two labelings and the product of their marginals. If clusters and classes were statistically independent, MI would be exactly $0$ --- so MI literally measures how far the two labelings are from being independent. This is also why MI shows up in feature selection: the same formula measures how much a feature tells you about a target.}
@@ -380,10 +383,13 @@ When the task requires each cluster to be class-pure: customer segmentation wher
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Completeness_Score_tradeoff.png}
+    \includegraphics[width=\textwidth]{figures/Homogeneity_cluster_composition.png}
 \end{figure*}
 
-\textbf{Figure. Homogeneity Score.} The same three clusterings as the Completeness page, read from Homogeneity's angle. With $k=3$, Homogeneity hits $1$. Collapsing into one big cluster sends Homogeneity to $0$ --- one cluster containing every class, the symmetric failure mode that Completeness alone cannot detect. Over-splitting into $k=9$ pushes Homogeneity to $1$ trivially, exposing its gameable direction.
+\textbf{Figure. Homogeneity Score.} The class composition of every cluster for three clusterings, with each cluster's class entropy
+$H$ above it. Homogeneity is $1 - H(\text{class} \mid \text{cluster}) / H(\text{class})$. Pure clusters have zero entropy and score $1$;
+overlapping clusters mix classes and score $0.66$; one cluster holding everything keeps the full class entropy inside it and scores $0$,
+the failure Completeness alone would never report.
 
 \orangebox{Did you know that...}
 {At the extremes, Homogeneity and Completeness behave like precision and recall. $k = 1$ scores Completeness $= 1$ but Homogeneity $= 0$ (one big bucket, all classes mixed); $k = n$ scores Homogeneity $= 1$ but Completeness near $0$ (every point its own bucket, classes scattered). V-Measure takes their harmonic mean precisely to penalize both extremes --- the same trick that makes the F-score useful when precision and recall pull in opposite directions.}
@@ -437,10 +443,13 @@ When you want a single external clustering score and care about both cluster pur
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
+    \includegraphics[width=0.6\textwidth]{figures/V_Measure_plane.png}
 \end{figure*}
 
-\textbf{Figure. V-Measure.} V-Measure (rightmost pair) collapses Homogeneity and Completeness into one number. On this $3$-class problem, well-separated clusters give $V = 1.00$ and the overlapping case drops to $0.91$ --- the same as $H$ and $C$ individually here, because both moved together. When $H$ and $C$ diverge (one inflated, one collapsing), V-Measure exposes the asymmetry that either component hides on its own.
+\textbf{Figure. V-Measure.} Every clustering is a point in the (homogeneity, completeness) plane and V-Measure is their harmonic mean,
+drawn as iso-$V$ curves. Splitting the data into six pure clusters keeps $h = 1$ but drops $c$ to $0.62$, so $V = 0.76$; merging
+everything into one cluster is the mirror image, $c = 1$ and $h = 0$, so $V = 0$. The harmonic mean sides with the weaker score, which
+is why neither shortcut pays.
 
 \orangebox{Did you know that...}
 {At $\beta = 1$, V-Measure on (true, predicted) equals V-Measure on (predicted, true) --- it is symmetric in its arguments, because Completeness on (true, predicted) equals Homogeneity on (predicted, true) and the harmonic mean is symmetric in $h$ and $c$. So the same metric works for evaluating against ground truth and for comparing two clusterings to each other --- no need to designate one as the reference.}
@@ -550,10 +559,13 @@ When you want a balanced pair-counting score and chance correction is not essent
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Clustering_external_metrics_comparison.png}
+    \includegraphics[width=0.6\textwidth]{figures/FMI_plane.png}
 \end{figure*}
 
-\textbf{Figure. FMI.} FMI in the third pair of bars: $1.00$ on well-separated clusters drops to $0.96$ on the overlapping case. On the same data ARI moves $1.00 \to 0.94$, slightly more sensitive --- the difference comes from FMI using a geometric mean of pair precision and recall, while ARI subtracts a chance baseline.
+\textbf{Figure. FMI.} Every clustering is a point in the plane of pairwise precision (pairs put together that belong together) and
+pairwise recall (pairs that belong together and were put together); FMI is their geometric mean, drawn as iso-FMI curves, with the pairwise
+F1 $= 0.5$ curve dashed for comparison. Over-splitting keeps precision at $1$ and halves recall, FMI $0.71$; one cluster keeps recall at $1$ with
+precision $0.33$, FMI $0.58$ for a partition that ARI, which subtracts chance, scores $0$.
 
 \orangebox{Did you know that...}
 {FMI is the only pair-counting metric built as a geometric mean. The pairwise F1 uses the harmonic mean of the same pair-wise precision and recall, ARI subtracts chance from the raw counts, and RI uses arithmetic accuracy --- four different averages, four different sensitivities. The geometric mean sits between the harmonic and arithmetic means, which is why FMI penalizes imbalance more than RI but less than F1 would.}

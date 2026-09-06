@@ -598,45 +598,31 @@ weighted equally regardless of magnitude (use MAPE), or when you need a baseline
     \item Dominated by high-volume items. If your top product has good predictions but small products are terrible, wMAPE can mask the problem.
 }
 
-\clearpage 
+\clearpage
 \thispagestyle{customstyle}
-%inspiration for this : https://www.baeldung.com/cs/mape-vs-wape-vs-wmape
-To illustrate the real-world use of wMAPE compared to MAPE, consider four sales channels. The table shows each channel's actual and
-forecast sales, the forecast error made by the model, and the weight of each channel based on the revenue it generates.
 
-{
-\footnotesize
-\noindent
-\begin{tabular}{l r r c c c }
-\hline
-\textbf{Channel} & \textbf{Actual} & \textbf{Forecast} & \textbf{MAPE (\%)} & \textbf{Weight (\%)} & \textbf{wMAPE (\%)} \\
-\hline
-B2B          & 110,000     & 99,010     & $9.1$   & $8.3$   & $0.76$ \\
-Online       & 90,000      & 79,990     & $11.1$  & $6.8$   & $0.75$ \\
-Marketplace  & 120,000     & 110,040    & $8.3$   & $9.1$   & $0.76$ \\
-Retail       & 1,000,000   & 900,000    & $10.0$  & $75.8$  & $7.58$ \\
-\hline
-\end{tabular}
-}
 \begin{center}
     \includegraphics[width=\textwidth]{figures/wMAPE_compare_MAPE.png}
 \end{center}
 
-\textbf{Figure. wMAPE.} Channel-wise forecast errors: MAPE (blue) and each channel's contribution to wMAPE (red). Looking only at MAPE,
-the model seems to struggle equally with every channel, with an error of about $10\%$ each. The wMAPE contributions show where the
-risk sits: the retail channel accounts for $76\%$ of revenue, so its $10\%$ error is worth ten times the others combined. MAPE shows
-all the errors; wMAPE shows which one to fix first.
+\textbf{Figure. wMAPE.} Four sales channels of one forecast. \underline{Left:} MAPE per channel; every channel is about $10\%$ off and
+the mean is $9.9\%$. \underline{Right:} each channel's contribution to wMAPE, its absolute error over the total actuals, with bar height
+showing revenue share. Retail is $76\%$ of revenue, so its $10\%$ error contributes $7.6$ of the $9.9$ points. The two totals agree here;
+what wMAPE adds is the attribution: which error to fix first.
+
+\orangebox{Did you know that...}
+{The ``weighted'' in wMAPE is not an extra parameter. Rewriting $\sum_t |e_t| / \sum_t |Y_t|$ as
+$\sum_t \frac{|Y_t|}{\sum |Y|} \cdot \frac{|e_t|}{|Y_t|}$ shows it is MAPE with each item's percentage error weighted by that item's
+share of the total: large actuals count for more and zero actuals count for nothing, which is exactly why the zero-denominator problem
+disappears. It is also MAE divided by the mean actual, so on one dataset wMAPE and MAE rank models identically; the percentage is a
+change of units, not of opinion. Some forecasting teams call the same quantity WAPE.}
 
 \textbf{Other related metrics}
 
-wMAPE is MAE divided by the mean of the actuals, so wMAPE and MAE always rank models the same way on one dataset; they differ only
-in units. When MAPE and wMAPE disagree, the low-volume items are where the model fails: MAPE weights every item equally and wMAPE
-weights by size, so a high MAPE with a low wMAPE means large percentage errors on small actuals.
+When MAPE and wMAPE disagree, the low-volume items are where the model fails: MAPE weights every item equally and wMAPE weights by
+size, so a high MAPE with a low wMAPE means large percentage errors on small actuals. MASE is the other scale-free choice for time
+series, and the one to use when the question is ``better than a naive forecast?'' rather than ``how many percent off?''.
 
-
-
-
-% ---------- MASE ----------
 \clearpage
 \thispagestyle{regressionstyle}
 \section{MASE}
@@ -683,6 +669,15 @@ a naive lag-1 baseline is meaningless.
 
 \clearpage
 \thispagestyle{customstyle}
+
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/MASE_naive_baseline.png}
+\end{center}
+
+\textbf{Figure. MASE.} \underline{Top:} forty days of demand, the model's forecast and the naive forecast that repeats yesterday's
+value. \underline{Bottom:} the absolute error of both, day by day, with their means dashed. MASE is the ratio, $3.22 / 5.03 = 0.64$: the
+model's errors are $36\%$ smaller than the naive baseline's. A MASE above $1$ would mean the model loses to copying yesterday.
+
 
 \orangebox{Did you know that...}
 {MASE was proposed by Hyndman and Koehler (2006) specifically because every existing error metric had a fatal flaw for comparing across

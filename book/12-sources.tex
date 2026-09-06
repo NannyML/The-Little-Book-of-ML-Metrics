@@ -1,0 +1,187 @@
+\chapteropener{Sources}{cyanlight}{cyanaccent}{%
+The pages of this book are summaries; these are the papers, standards and documentation they were written from, grouped by chapter
+and by metric. Where a metric has a founding paper it is listed first. Links were live when the book went to print, and every arXiv
+identifier resolves at \url{https://arxiv.org/abs/<id>}.}{}
+
+\clearpage
+\pagestyle{plain}
+\renewcommand{\sectiontitle}{}
+\small
+\setlength{\parskip}{5pt}
+
+\newcommand{\srchead}[1]{\medskip{\normalsize\bfseries #1}\par\vspace{2pt}}
+\newcommand{\srcname}[1]{\textbf{#1}\quad}
+
+\srchead{Regression}
+\srcname{MAE, MSE, RMSE, MASE} Hyndman, R.~J. and Koehler, A.~B. (2006). Another look at measures of forecast accuracy. \emph{International
+Journal of Forecasting} 22(4). Willmott, C.~J. and Matsuura, K. (2005). Advantages of the mean absolute error (MAE) over the root mean
+square error (RMSE) in assessing average model performance. \emph{Climate Research} 30.\par
+\srcname{MAPE, sMAPE, wMAPE} Makridakis, S. (1993). Accuracy measures: theoretical and practical concerns. \emph{International Journal of
+Forecasting} 9(4). Hyndman, R.~J. and Athanasopoulos, G. \emph{Forecasting: Principles and Practice}, chapter on evaluating forecast
+accuracy, \url{https://otexts.com/fpp3/accuracy.html}. On sMAPE's asymmetry: \url{https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=1865&context=cs_techrep}.
+On wMAPE against MAPE: \url{https://www.baeldung.com/cs/mape-vs-wape-vs-wmape}.\par
+\srcname{MSLE, RMSLE, $R^2$, $D^2$, Explained Variance} scikit-learn, \emph{Metrics and scoring: regression metrics},
+\url{https://scikit-learn.org/stable/modules/model_evaluation.html}.\par
+\srcname{MPD, MGD} McCullagh, P. and Nelder, J.~A. (1989). \emph{Generalized Linear Models}, 2nd ed. Chapman \& Hall; the unit deviances
+of the Poisson and Gamma families.\par
+\srcname{Pinball Loss} Koenker, R. and Bassett, G. (1978). Regression quantiles. \emph{Econometrica} 46(1). Gneiting, T. (2011). Quantiles as
+optimal point forecasts. \emph{International Journal of Forecasting} 27(2).\par
+\srcname{MDA} Blaskowitz, O. and Herwartz, H. (2011). On economic evaluation of directional forecasts. \emph{International Journal of
+Forecasting} 27(4).\par
+
+\srchead{Classification}
+\srcname{Confusion Matrix, FPR, FNR, TPR, TNR, Accuracy, ROC AUC} Fawcett, T. (2006). An introduction to ROC analysis. \emph{Pattern
+Recognition Letters} 27(8). Hanley, J.~A. and McNeil, B.~J. (1982). The meaning and use of the area under a receiver operating
+characteristic (ROC) curve. \emph{Radiology} 143(1).\par
+\srcname{Precision, Recall, F1, F-beta} van Rijsbergen, C.~J. (1979). \emph{Information Retrieval}, 2nd ed. Butterworths. Powers, D.~M.~W.
+(2011). Evaluation: from precision, recall and F-measure to ROC, informedness, markedness and correlation. \emph{Journal of Machine
+Learning Technologies} 2(1).\par
+\srcname{PR AUC} Davis, J. and Goadrich, M. (2006). The relationship between precision-recall and ROC curves. \emph{ICML}. Saito, T. and
+Rehmsmeier, M. (2015). The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced
+datasets. \emph{PLOS ONE} 10(3).\par
+\srcname{Brier Score, Log Loss} Brier, G.~W. (1950). Verification of forecasts expressed in terms of probability. \emph{Monthly Weather
+Review} 78(1). Good, I.~J. (1952). Rational decisions. \emph{Journal of the Royal Statistical Society B} 14(1). Gneiting, T. and
+Raftery, A.~E. (2007). Strictly proper scoring rules, prediction, and estimation. \emph{JASA} 102(477).\par
+\srcname{Balanced Accuracy} Brodersen, K.~H. et al. (2010). The balanced accuracy and its posterior distribution. \emph{ICPR}.\par
+\srcname{Jaccard Index} Jaccard, P. (1901). Étude comparative de la distribution florale dans une portion des Alpes et des Jura.
+\emph{Bulletin de la Société Vaudoise des Sciences Naturelles} 37.\par
+\srcname{D-squared Log Loss Score} scikit-learn, \texttt{d2\_log\_loss\_score}, \url{https://scikit-learn.org/stable/modules/model_evaluation.html}.\par
+\srcname{P4-metric} Sitarz, M. (2023). Extending F1 metric, probabilistic approach. arXiv:2210.11997.\par
+\srcname{Cohen's Kappa} Cohen, J. (1960). A coefficient of agreement for nominal scales. \emph{Educational and Psychological Measurement}
+20(1).\par
+\srcname{MCC} Matthews, B.~W. (1975). Comparison of the predicted and observed secondary structure of T4 phage lysozyme. \emph{Biochimica et
+Biophysica Acta} 405(2). Chicco, D. and Jurman, G. (2020). The advantages of the Matthews correlation coefficient (MCC) over F1 score
+and accuracy in binary classification evaluation. \emph{BMC Genomics} 21(6).\par
+\srcname{EC} Ferrer, L. (2022). Analysis and comparison of classification metrics. arXiv:2209.05355.\par
+
+\srchead{Clustering}
+\srcname{Mutual Info Score} Vinh, N.~X., Epps, J. and Bailey, J. (2010). Information theoretic measures for clusterings comparison: variants,
+properties, normalization and correction for chance. \emph{JMLR} 11.\par
+\srcname{Rand Index, Pair Confusion Matrix} Rand, W.~M. (1971). Objective criteria for the evaluation of clustering methods. \emph{JASA}
+66(336). Hubert, L. and Arabie, P. (1985). Comparing partitions. \emph{Journal of Classification} 2(1).\par
+\srcname{CH Index} Caliński, T. and Harabasz, J. (1974). A dendrite method for cluster analysis. \emph{Communications in Statistics} 3(1).\par
+\srcname{Completeness, Homogeneity, V-Measure} Rosenberg, A. and Hirschberg, J. (2007). V-measure: a conditional entropy-based external
+cluster evaluation measure. \emph{EMNLP-CoNLL}.\par
+\srcname{Davies-Bouldin Index} Davies, D.~L. and Bouldin, D.~W. (1979). A cluster separation measure. \emph{IEEE TPAMI} 1(2).\par
+\srcname{FMI} Fowlkes, E.~B. and Mallows, C.~L. (1983). A method for comparing two hierarchical clusterings. \emph{JASA} 78(383).\par
+\srcname{Silhouette Score} Rousseeuw, P.~J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis.
+\emph{Journal of Computational and Applied Mathematics} 20.\par
+\srcname{Contingency Matrix and all of the above} scikit-learn, \emph{Clustering performance evaluation},
+\url{https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation}.\par
+
+\srchead{Ranking}
+\srcname{@K Metrics, MRR, MAP} Manning, C.~D., Raghavan, P. and Schütze, H. (2008). \emph{Introduction to Information Retrieval}, chapter 8.
+Cambridge University Press, \url{https://nlp.stanford.edu/IR-book/}. Voorhees, E.~M. (1999). The TREC-8 question answering track
+report. On MAP: \url{https://juneandrews.com/2014/12/15/mean-average-precision-isnt-so-nice/} and
+\url{https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html}.\par
+\srcname{Hit Rate, Coverage, Serendipity} Herlocker, J.~L. et al. (2004). Evaluating collaborative filtering recommender systems. \emph{ACM
+TOIS} 22(1). Ge, M., Delgado-Battenfeld, C. and Jannach, D. (2010). Beyond accuracy: evaluating recommender systems by coverage and
+serendipity. \emph{RecSys}.\par
+\srcname{CG, DCG, nDCG} Järvelin, K. and Kekäläinen, J. (2002). Cumulated gain-based evaluation of IR techniques. \emph{ACM TOIS} 20(4).
+\url{https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1}.\par
+\srcname{FCP} Koren, Y. and Sill, J. (2011). OrdRec: an ordinal model for predicting personalized item rating distributions. \emph{RecSys}.
+\url{https://www.ijcai.org/Proceedings/13/Papers/449.pdf}; \url{https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp}.\par
+\srcname{Diversity, Novelty} Castells, P., Hurley, N. and Vargas, S. (2015). Novelty and diversity in recommender systems. In
+\emph{Recommender Systems Handbook}, 2nd ed. Springer.\par
+
+\srchead{Computer Vision}
+\srcname{Pixel Accuracy} Long, J., Shelhamer, E. and Darrell, T. (2015). Fully convolutional networks for semantic segmentation.
+\emph{CVPR}. Everingham, M. et al. (2010). The PASCAL Visual Object Classes (VOC) challenge. \emph{IJCV} 88(2).\par
+\srcname{PCK} Yang, Y. and Ramanan, D. (2013). Articulated human detection with flexible mixtures of parts. \emph{IEEE TPAMI} 35(12).
+Andriluka, M. et al. (2014). 2D human pose estimation: new benchmark and state of the art analysis. \emph{CVPR} (PCKh).\par
+\srcname{OKS} Lin, T.-Y. et al. (2014). Microsoft COCO: common objects in context. \emph{ECCV}. COCO keypoint evaluation,
+\url{https://cocodataset.org/#keypoints-eval}.\par
+\srcname{PSNR, SSIM} Wang, Z., Bovik, A.~C., Sheikh, H.~R. and Simoncelli, E.~P. (2004). Image quality assessment: from error visibility to
+structural similarity. \emph{IEEE Transactions on Image Processing} 13(4), \url{https://www.cns.nyu.edu/pub/lcv/wang03-preprint.pdf}.
+Huynh-Thu, Q. and Ghanbari, M. (2008). Scope of validity of PSNR in image/video quality assessment. \emph{Electronics Letters} 44(13).
+Limits of SSIM: \url{https://espace2.etsmtl.ca/id/eprint/12070/1/Noumeir%20R.%202015%2012070%20Limitations%20of%20the%20SSIM%20quality%20metric.pdf};
+worked example: \url{https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html}.\par
+\srcname{Sørensen--Dice Coefficient} Dice, L.~R. (1945). Measures of the amount of ecologic association between species. \emph{Ecology}
+26(3). Sørensen, T. (1948). A method of establishing groups of equal amplitude in plant sociology. \emph{Biologiske Skrifter} 5(4).
+\url{https://www.nature.com/articles/s41598-023-35605-7}.\par
+\srcname{PQ} Kirillov, A., He, K., Girshick, R., Rother, C. and Dollár, P. (2019). Panoptic segmentation. \emph{CVPR},
+\url{https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf}.\par
+
+\srchead{NLP}
+\srcname{BLEU} Papineni, K., Roukos, S., Ward, T. and Zhu, W.-J. (2002). BLEU: a method for automatic evaluation of machine translation.
+\emph{ACL}, \url{https://aclanthology.org/P02-1040.pdf}.\par
+\srcname{METEOR} Banerjee, S. and Lavie, A. (2005). METEOR: an automatic metric for MT evaluation with improved correlation with human
+judgments. \emph{ACL Workshop}, \url{https://aclanthology.org/W05-0909.pdf}.\par
+\srcname{ROUGE} Lin, C.-Y. (2004). ROUGE: a package for automatic evaluation of summaries. \emph{ACL Workshop},
+\url{https://aclanthology.org/W04-1013.pdf}.\par
+\srcname{TER} Snover, M., Dorr, B., Schwartz, R., Micciulla, L. and Makhoul, J. (2006). A study of translation edit rate with targeted
+human annotation. \emph{AMTA}, \url{https://aclanthology.org/2006.amta-papers.25.pdf}.\par
+\srcname{EM} Rajpurkar, P., Zhang, J., Lopyrev, K. and Liang, P. (2016). SQuAD: 100,000+ questions for machine comprehension of text.
+\emph{EMNLP}, \url{https://nlp.stanford.edu/pubs/rajpurkar2016squad.pdf}.\par
+\srcname{WER} Levenshtein, V.~I. (1966). Binary codes capable of correcting deletions, insertions, and reversals. \emph{Soviet Physics
+Doklady} 10(8). Morris, A.~C., Maier, V. and Green, P. (2004). From WER and RIL to MER and WIL. \emph{Interspeech}.\par
+\srcname{Further reading} \url{https://aclanthology.org/E17-2007.pdf}.\par
+
+\srchead{GenAI}
+\srcname{Perplexity} Jelinek, F., Mercer, R.~L., Bahl, L.~R. and Baker, J.~K. (1977). Perplexity, a measure of the difficulty of speech
+recognition tasks. \emph{JASA} 62(S1). Holtzman, A. et al. (2020). The curious case of neural text degeneration. \emph{ICLR},
+arXiv:1904.09751. \url{https://aclanthology.org/2021.deelio-1.5.pdf}; \url{https://huggingface.co/docs/transformers/perplexity};
+\url{https://kilthub.cmu.edu/articles/journal_contribution/Evaluation_Metrics_For_Language_Models/6605324};
+\url{https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/}.\par
+\srcname{BERTScore} Zhang, T., Kishore, V., Wu, F., Weinberger, K.~Q. and Artzi, Y. (2020). BERTScore: evaluating text generation with
+BERT. \emph{ICLR}, arXiv:1904.09675. Reference implementation: \url{https://github.com/Tiiiger/bert_score}.\par
+\srcname{MAUVE} Pillutla, K. et al. (2021). MAUVE: measuring the gap between neural text and human text using divergence frontiers.
+\emph{NeurIPS}, arXiv:2102.01454. Pillutla, K. et al. (2023). MAUVE scores for generative models: theory and practice.
+arXiv:2212.14578. \url{https://krishnap25.github.io/mauve/}.\par
+\srcname{IS} Salimans, T. et al. (2016). Improved techniques for training GANs. \emph{NeurIPS}, arXiv:1606.03498. Barratt, S. and Sharma,
+R. (2018). A note on the Inception Score. arXiv:1801.01973.\par
+\srcname{FID} Heusel, M. et al. (2017). GANs trained by a two time-scale update rule converge to a local Nash equilibrium. \emph{NeurIPS}.
+Parmar, G., Zhang, R. and Zhu, J.-Y. (2022). On aliased resizing and surprising subtleties in GAN evaluation. \emph{CVPR},
+arXiv:2104.11222. Chong, M.~J. and Forsyth, D. (2020). Effectively unbiased FID and Inception Score. \emph{CVPR}, arXiv:1911.07023.
+Jayasumana, S. et al. (2024). Rethinking FID. \emph{CVPR}, arXiv:2401.09603.\par
+\srcname{LPIPS} Zhang, R., Isola, P., Efros, A.~A., Shechtman, E. and Wang, O. (2018). The unreasonable effectiveness of deep features as a
+perceptual metric. \emph{CVPR}, arXiv:1801.03924.\par
+\srcname{CLIP Score} Hessel, J. et al. (2021). CLIPScore: a reference-free evaluation metric for image captioning. \emph{EMNLP},
+arXiv:2104.08718. \url{https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html}.\par
+\srcname{DSG} Cho, J. et al. (2024). Davidsonian scene graph: improving reliability in fine-grained evaluation for text-to-image
+generation. \emph{ICLR}, arXiv:2310.18235.\par
+\srcname{VQAScore} Lin, Z. et al. (2024). Evaluating text-to-visual generation with image-to-text generation. \emph{ECCV},
+arXiv:2404.01291. \url{https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/}.\par
+\srcname{MOS} ITU-T Recommendation P.800 (1996), \emph{Methods for subjective determination of transmission quality}; P.808 (2018),
+\emph{Subjective evaluation of speech quality with a crowdsourcing approach}. arXiv:2204.02249.\par
+\srcname{PESQ} ITU-T Recommendation P.862 (2001), \emph{Perceptual evaluation of speech quality}; P.862.1 (mapping to MOS-LQO);
+P.862.2 (wideband). \url{https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html}.\par
+\srcname{STOI} Taal, C.~H., Hendriks, R.~C., Heusdens, R. and Jensen, J. (2011). An algorithm for intelligibility prediction of
+time-frequency weighted noisy speech. \emph{IEEE TASLP} 19(7). Shannon, R.~V. et al. (1995). Speech recognition with primarily temporal
+cues. \emph{Science} 270(5234).
+\url{https://lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html};
+\url{https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html}.\par
+\srcname{Benchmarks} GLUE arXiv:1804.07461 and \url{https://gluebenchmark.com/}; SuperGLUE arXiv:1905.00537 and
+\url{https://super.gluebenchmark.com/}; IFEval arXiv:2311.07911; BIG-Bench arXiv:2206.04615; BBH arXiv:2210.09261; BBEH
+arXiv:2502.19187; MATH arXiv:2103.03874; GPQA arXiv:2311.12022; MuSR arXiv:2310.16049; MMLU-Pro arXiv:2406.01574 and
+\url{https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro}; SQuAD 2.0 arXiv:1806.03822 and \url{https://rajpurkar.github.io/SQuAD-explorer/};
+ARC arXiv:1911.01547 and \url{https://arcprize.org/arc-agi}.\par
+
+\srchead{Probabilistic}
+\srcname{ECE} Naeini, M.~P., Cooper, G.~F. and Hauskrecht, M. (2015). Obtaining well calibrated probabilities using Bayesian binning.
+\emph{AAAI}. Guo, C., Pleiss, G., Sun, Y. and Weinberger, K.~Q. (2017). On calibration of modern neural networks. \emph{ICML}.
+DeGroot, M.~H. and Fienberg, S.~E. (1983). The comparison and evaluation of forecasters. \emph{The Statistician} 32(1).\par
+\srcname{CBPE, DLE} NannyML documentation, \emph{How it works: performance estimation},
+\url{https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html}.\par
+\srcname{PAPE} Białek, J., Kuberski, W., Perrakis, N. and Bifet, A. (2024). Estimating model performance under covariate shift without
+labels. arXiv:2401.08348.
+\url{https://docs.nannyml.com/cloud/model-monitoring/how-it-works/probabilistic-adaptive-performance-estimation-pape}.\par
+\srcname{RCD} NannyML documentation, \emph{Reverse concept drift},
+\url{https://docs.nannyml.com/cloud/model-monitoring/how-it-works/reverse-concept-drift-rcd}.\par
+
+\srchead{Bias \& Fairness}
+\srcname{All five criteria} Barocas, S., Hardt, M. and Narayanan, A. (2023). \emph{Fairness and Machine Learning: Limitations and
+Opportunities}. MIT Press, \url{https://fairmlbook.org/classification.html}. Verma, S. and Rubin, J. (2018). Fairness definitions
+explained. \emph{FairWare}, \url{https://fairware.cs.umass.edu/papers/Verma.pdf}.
+\url{https://afraenkel.github.io/fairness-book/content/05-parity-measures.html}.\par
+\srcname{Demographic Parity} \url{https://developers.google.com/machine-learning/crash-course/fairness/demographic-parity}.\par
+\srcname{Equality of Opportunity, Equality of Odds} Hardt, M., Price, E. and Srebro, N. (2016). Equality of opportunity in supervised
+learning. \emph{NeurIPS}, arXiv:1610.02413. \url{https://mlu-explain.github.io/equality-of-odds/}.\par
+\srcname{Predictive Parity, Calibration within Groups} Chouldechova, A. (2017). Fair prediction with disparate impact: a study of bias in
+recidivism prediction instruments. \emph{Big Data} 5(2). Kleinberg, J., Mullainathan, S. and Raghavan, M. (2017). Inherent trade-offs
+in the fair determination of risk scores. \emph{ITCS}. Angwin, J., Larson, J., Mattu, S. and Kirchner, L. (2016). Machine bias.
+\emph{ProPublica}; Northpointe's response: \url{https://njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf}.\par
+
+\srchead{Data Observability}
+\srcname{All monitors} Soda documentation, \emph{Metric monitoring dashboard}: dataset monitors, column monitors, the metric monitor page and
+scan-time strategy, \url{https://docs.soda.io/data-observability/metric-monitoring-dashboard}.\par

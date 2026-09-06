@@ -268,10 +268,12 @@ Use CG when only total retrieved relevance matters and ordering is decided downs
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/CG_vs_DCG.png}
+    \includegraphics[width=\textwidth]{figures/CG_order_blind.png}
 \end{figure*}
 
-\textbf{Figure. CG.} CG (red) and DCG (blue) score the same ranked list. Both start at the same point — rank $1$ takes no discount, so the first item contributes its full relevance to both. As $K$ grows, DCG falls behind because every subsequent position takes a logarithmic discount. The shaded gap is exactly the relevance CG counts but DCG discounts away — the price of ignoring position.
+\textbf{Figure. CG.} The same ten items in two orders, best first and best last. CG adds the relevance grades and reaches $12$ either
+way: it cannot tell the two lists apart. DCG discounts each grade by $1/\log_2(i+1)$ and scores them $7.28$ and $4.38$. CG is a check on
+how much relevance a list retrieved, not on where it put it.
 
 \orangebox{Did you know that...}
 {The order-invariance of CG is its entire design flaw: swap any two items and the score is unchanged, which makes CG useless for ranking. The metric still gets used in retrieval-then-rerank pipelines, where the retrieval stage scores raw recall and a downstream model handles the ordering. Outside that pattern, CG on its own in a results table is a red flag.}
