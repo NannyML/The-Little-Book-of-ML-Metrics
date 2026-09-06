@@ -115,7 +115,16 @@ def compile_book():
     threading.Thread(target=run, daemon=True).start()
 
 
+PDF_STAMP = {"mtime": None}
+
+
 def render_page(p):
+    """Rendered page PNG, cached until main.pdf changes on disk (a recompile from anywhere invalidates the cache)."""
+    mtime = PDF.stat().st_mtime
+    if PDF_STAMP["mtime"] != mtime:
+        for f in CACHE.glob("p-*.png"):
+            f.unlink()
+        PDF_STAMP["mtime"] = mtime
     out = CACHE / f"p-{p:03d}.png"
     if not out.exists():
         subprocess.run(["pdftoppm", "-png", "-r", str(DPI), "-f", str(p), "-l", str(p), "-singlefile", str(PDF), str(CACHE / f"p-{p:03d}")], check=True)
