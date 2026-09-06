@@ -460,7 +460,8 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \vspace{5pt}
     {\color{black!60}\small #4\par}
     \vspace{6pt}
-    \begingroup\small\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}\setlength{\leftskip}{0pt}\nohyph
+    % text-only lines may be ragged; lines ending in a metric are still pulled to the margin by the leader's fill glue
+    \begingroup\small\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}\setlength{\leftskip}{0pt}\setlength{\rightskip}{0pt plus 1fil}\setlength{\emergencystretch}{2em}\nohyph
 }{%
     \endgroup\clearpage
 }
