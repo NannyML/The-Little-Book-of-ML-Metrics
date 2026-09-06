@@ -330,7 +330,7 @@ init();
 """
 
 
-TUNER_PATHS = ("/tuner", "/api/blocks", "/api/reparse", "/api/render", "/api/save")
+TUNER_PATHS = ("/tuner", "/api/blocks", "/api/base", "/api/reparse", "/api/render", "/api/save")
 
 
 class Handler(formula_tuner.Handler):
@@ -360,7 +360,7 @@ class Handler(formula_tuner.Handler):
             self._send(blocks_for_page(int(m.group(1))))
         elif self.path == "/api/compile":
             self._send(COMPILE)
-        elif self.path.split("?")[0] in TUNER_PATHS:
+        elif self.path.split("?")[0] in TUNER_PATHS or self.path.startswith("/fonts/"):
             super().do_GET()
         else:
             self._send(b"not found", "text/plain", 404)
@@ -406,5 +406,6 @@ if __name__ == "__main__":
         sys.exit(0)
     if not PDF.exists():
         sys.exit("book/main.pdf not found: compile the book first (cd book && latexmk -xelatex main.tex)")
-    print(f"Review recorder: http://localhost:{PORT}   notes -> {NOTES_MD}")
+    print(f"Review recorder: http://localhost:{PORT}   notes -> {NOTES_MD}", flush=True)
+    threading.Thread(target=formula_tuner.ensure_format, daemon=True).start()   # precompile the preamble while the page loads
     http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
