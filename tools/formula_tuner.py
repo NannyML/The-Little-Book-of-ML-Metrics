@@ -17,6 +17,7 @@ Requirements: xelatex and pdftoppm on PATH (the book's own toolchain).
 """
 import http.server
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -28,11 +29,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BOOK = ROOT / "book"
 PORT = 8765
+if os.path.isdir("/Library/TeX/texbin") and "/Library/TeX/texbin" not in os.environ.get("PATH", ""):
+    os.environ["PATH"] += ":/Library/TeX/texbin"   # MacTeX, when the tool is started from an app that lacks the shell PATH
 
 CHAPTER_FILES = sorted(BOOK.glob("[0-9]*-*.tex"), key=lambda p: int(p.name.split("-")[0]))
 
 BLOCK_RE = re.compile(r"\\begin\{center\}\s*\n\s*\\tikz\{.*?\n\s*\}\s*\n\\end\{center\}", re.S)
-SECTION_RE = re.compile(r"\\section\{(.+?)\}")
+SECTION_RE = re.compile(r"\\section\{((?:[^{}]|\{[^{}]*\})+)\}")
 ARROW_RE = re.compile(
     r"\\draw\[(?P<opts>[^\]]*)\]\s*\(\$\((?P<anchor>[ab]\.[a-z ]+)\)\s*\+\s*\((?P<sx>-?[\d.]+)\s*,\s*(?P<sy>-?[\d.]+)\)\$\)\s*"
     r"to(?:\[bend (?P<bdir>left|right)\s*=\s*(?P<bend>-?\d+)\])?\s*node\[pos=1,\s*(?P<side>left|right|above|below)\]\s*\{(?P<label>.*?)\}\s*"
@@ -145,6 +148,8 @@ def crop_png(png):
 HTML = r"""<!doctype html><html><head><meta charset="utf-8"><title>Formula tuner</title>
 <style>
  body{font-family:-apple-system,Helvetica,Arial,sans-serif;margin:0;display:grid;grid-template-columns:260px 1fr 380px;height:100vh;color:#222}
+ body.embed{grid-template-columns:1fr 380px}
+ body.embed #list{display:none}
  #list{overflow:auto;border-right:1px solid #ddd;padding:8px;font-size:13px}
  #list h4{margin:10px 0 4px;color:#666;font-weight:600;font-size:12px;text-transform:uppercase}
  #list div.item{padding:4px 6px;border-radius:4px;cursor:pointer}
@@ -171,9 +176,11 @@ HTML = r"""<!doctype html><html><head><meta charset="utf-8"><title>Formula tuner
 <script>
 const COLORS={nmlred:'#DD4040',nmlcyan:'#00C8E5',nmlpurple:'#3B0280',nmlgreen:'#4EB046',nmlyellow:'#E1BC29'};
 let blocks=[],cur=null,arrows=[],timer=null;
+const Q=new URLSearchParams(location.search),EMBED=Q.get('embed')==='1';if(EMBED)document.body.classList.add('embed');
 async function load(){blocks=await (await fetch('/api/blocks')).json();const L=document.getElementById('list');let f='';
  for(const b of blocks){if(b.file!==f){f=b.file;const h=document.createElement('h4');h.textContent=f;L.appendChild(h);}
-  const d=document.createElement('div');d.className='item';d.textContent=b.section;d.onclick=()=>select(b,d);d.dataset.id=b.id;L.appendChild(d);}}
+  const d=document.createElement('div');d.className='item';d.textContent=b.section;d.onclick=()=>select(b,d);d.dataset.id=b.id;L.appendChild(d);}
+ const want=Q.get('block');if(want){const b=blocks.find(x=>x.id===want);if(b)select(b,document.querySelector(`[data-id="${b.id}"]`));}}
 function select(b,el){document.querySelectorAll('#list .item').forEach(x=>x.classList.remove('sel'));if(el)el.classList.add('sel');
  cur=JSON.parse(JSON.stringify(b));arrows=cur.arrows;buildControls();render();}
 function color(opts){for(const k in COLORS){if(opts.includes(k))return COLORS[k];}return '#888';}
@@ -183,7 +190,8 @@ function slider(card,a,key,min,max,step,name){const r=document.createElement('di
  txt.onchange=()=>{a[key]=parseFloat(txt.value);rng.value=txt.value;schedule();};card.appendChild(r);}
 function buildControls(){const C=document.getElementById('ctrl');C.innerHTML='';
  const top=document.createElement('div');top.innerHTML=`<div style="margin-bottom:8px"><b>${cur.section}</b> <span style="color:#777">${cur.file}</span></div>
- <button class="primary" id="save">Save to .tex</button><button id="rerender">Re-render</button><button id="reset">Reset</button><div id="saved" style="color:#2a7;font-size:12px;margin-top:4px"></div>`;C.appendChild(top);
+ <button class="primary" id="save">Save to .tex</button><button id="rerender">Re-render</button><button id="reset">Reset</button>${EMBED?'<button id="close" style="float:right">Close</button>':''}<div id="saved" style="color:#2a7;font-size:12px;margin-top:4px"></div>`;C.appendChild(top);
+ if(EMBED)top.querySelector('#close').onclick=()=>parent.postMessage('tuner-close','*');
  top.querySelector('#save').onclick=save;top.querySelector('#rerender').onclick=render;
  top.querySelector('#reset').onclick=()=>{const b=blocks.find(x=>x.id===cur.id);select(b,document.querySelector(`[data-id="${b.id}"]`));};
  arrows.forEach((a,i)=>{const card=document.createElement('div');card.className='card';
@@ -207,6 +215,7 @@ async function render(){if(!cur)return;document.getElementById('status').textCon
  else{document.getElementById('status').textContent='compile error';document.getElementById('err').textContent=j.error;}}
 async function save(){const r=await fetch('/api/save',{method:'POST',body:JSON.stringify({id:cur.id,tex:cur.tex,arrows:arrows})});const j=await r.json();
  document.getElementById('saved').textContent=j.ok?`saved to ${j.file} (${new Date().toLocaleTimeString()})`:('save failed: '+j.error);
+ if(j.ok&&EMBED)parent.postMessage('tuner-saved','*');
  if(j.ok){blocks=await (await fetch('/api/blocks')).json();const b=blocks.find(x=>x.section===cur.section&&x.file===cur.file);if(b){cur.id=b.id;cur.start=b.start;cur.end=b.end;cur.tex=b.tex;arrows=b.arrows;cur.arrows=b.arrows;document.querySelector('#list .item.sel').dataset.id=b.id;buildControls();}}}
 load();
 </script></body></html>"""
@@ -222,7 +231,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers(); self.wfile.write(data)
 
     def do_GET(self):
-        if self.path == "/":
+        if self.path.split("?")[0] in ("/", "/tuner"):
             data = HTML.encode()
             self.send_response(200); self.send_header("Content-Type", "text/html; charset=utf-8"); self.send_header("Content-Length", str(len(data)))
             self.end_headers(); self.wfile.write(data)

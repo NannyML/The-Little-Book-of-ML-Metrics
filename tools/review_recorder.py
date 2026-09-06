@@ -1,4 +1,4 @@
-"""Review recorder: read the book page by page and leave spoken notes on each page.
+"""Review recorder: read the book page by page, leave spoken notes, and tune the formulas in place.
 
     uv run python tools/review_recorder.py            # open http://localhost:8766
     uv run --with mlx-whisper python tools/review_recorder.py --transcribe   # re-transcribe saved audio locally (optional)
@@ -13,17 +13,26 @@ tagged with the page, chapter and metric it was recorded on and written to
     review/NOTES.md         all notes grouped by chapter and metric, regenerated on every save
 
 Hand NOTES.md to a Claude session ("apply review/NOTES.md") to have the notes worked through metric by metric.
+
+Pages with an annotated formula show a "Tune arrows" button: it opens the formula tuner
+(tools/formula_tuner.py) for that formula; "Save to .tex" writes the block back and
+"Recompile book" rebuilds main.pdf so the page image catches up.
 """
 import base64
 import datetime as dt
 import http.server
 import json
+import os
 import re
 import subprocess
 import sys
 import tempfile
+import threading
 import uuid
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import formula_tuner  # noqa: E402  (shares its render/save endpoints and the embedded tuner page)
 
 ROOT = Path(__file__).resolve().parent.parent
 BOOK = ROOT / "book"
@@ -36,6 +45,13 @@ NOTES_MD = REVIEW / "NOTES.md"
 PORT = 8766
 DPI = 100
 CACHE = Path(tempfile.mkdtemp(prefix="review_pages_"))
+COMPILE = {"running": False, "log": "", "ok": None}
+
+
+def clean_title(t):
+    t = re.sub(r"\\tocmark \{\w+\}|\\numberline \{[\d.]+\}|\\texorpdfstring.*?\{\}", "", t)
+    t = re.sub(r"\{\\o\s*\}|\\o\s", "ø", t)
+    return t.replace("\\&", "&").replace("--", "–").strip()
 
 
 # ---------------------------------------------------------------------------
@@ -51,9 +67,7 @@ def toc():
     entries = []
     for m in re.finditer(r"\\contentsline \{(chapter|section)\}\{(.*?)\}\{(\d+)\}", TOC.read_text()):
         kind, title, page = m.groups()
-        title = re.sub(r"\\tocmark \{\w+\}|\\numberline \{[\d.]+\}|\\texorpdfstring.*?\{\}", "", title)
-        title = title.replace("{\\o }", "ø").replace("\\o ", "ø").replace("\\&", "&").replace("--", "–").strip()
-        entries.append((kind, title, int(page)))
+        entries.append((kind, clean_title(title), int(page)))
     return entries
 
 
@@ -71,9 +85,34 @@ def page_index():
                 chapter, section, spage = title, "", p
             else:
                 section, spage = title, p
-        label = section or ("opener / decision map" if chapter not in ("Front matter", "Sources") else "")
+        label = section or ("opener" if chapter == "Introduction" else "opener / decision map" if chapter not in ("Front matter", "Sources") else "")
         idx[p] = {"chapter": chapter, "section": label, "section_page": spage}
     return idx
+
+
+def blocks_for_page(p):
+    """Formula blocks (tuner ids) that belong to the metric on page p."""
+    meta = page_index().get(p)
+    if not meta or not meta["section"]:
+        return []
+    return [{"id": b["id"], "section": clean_title(b["section"]), "file": b["file"]}
+            for b in formula_tuner.find_blocks() if clean_title(b["section"]) == meta["section"]]
+
+
+def compile_book():
+    if COMPILE["running"]:
+        return
+    COMPILE.update(running=True, log="", ok=None)
+
+    def run():
+        r = subprocess.run(["latexmk", "-xelatex", "-interaction=nonstopmode", "main.tex"], cwd=BOOK, capture_output=True, text=True)
+        log = (BOOK / "main.log").read_text(errors="replace") if (BOOK / "main.log").exists() else r.stdout
+        errs = [l for l in log.splitlines() if l.startswith("! ")]
+        for f in CACHE.glob("p-*.png"):
+            f.unlink()
+        COMPILE.update(running=False, ok=(r.returncode == 0 and not errs), log="\n".join(errs[:10]) or "ok")
+
+    threading.Thread(target=run, daemon=True).start()
 
 
 def render_page(p):
@@ -167,6 +206,9 @@ HTML = r"""<!doctype html>
   select{font:inherit;padding:5px;max-width:280px}
   #status{color:#888;font-size:12px}
   a{color:#0077aa}
+  #formulas button{margin:4px 6px 0 0;border-color:#3b0280;color:#3b0280}
+  #overlay{position:fixed;inset:0;background:#fff;z-index:10}
+  #overlay iframe{width:100%;height:100%;border:none}
 </style>
 <div id="left">
   <div id="nav">
@@ -182,12 +224,15 @@ HTML = r"""<!doctype html>
   <button id="rec" onclick="toggle()">&#9679; Record (space)</button>
   <div id="status">Chrome or Safari; allow the microphone when asked.</div>
   <div id="live" class="interim">Live transcript appears here while you talk.</div>
+  <div id="formulas"></div>
   <h3>Or type</h3>
   <textarea id="typed" placeholder="Type a note and press Cmd+Enter"></textarea>
   <h3>Notes on this page</h3>
   <div id="notes"></div>
   <div id="status2" style="color:#888;font-size:12px"><span id="count"></span> notes in total &middot; <a href="/notes.md" target="_blank">NOTES.md</a></div>
+  <div style="margin-top:auto;padding-top:12px;border-top:1px solid #eee;font-size:12px;color:#888"><button id="compile" onclick="compileBook()">Recompile book</button> <span id="cstatus">after saving a formula, so the page image catches up (about a minute)</span></div>
 </div>
+<div id="overlay" hidden><iframe id="tuner"></iframe></div>
 <script>
 let page = +localStorage.getItem('review_page') || 1, total = 1, index = {}, notes = [];
 let recording = false, rec = null, chunks = [], recog = null, finalText = '', interimText = '', stream = null;
@@ -208,7 +253,7 @@ function go(p){
   const m = index[p]; document.getElementById('where').innerHTML = '<b>' + m.chapter + '</b>' + (m.section ? ' &rsaquo; <b>' + m.section + '</b>' : '') + ' &middot; page ' + p;
   const sel = document.getElementById('jump'); let best = null;
   for (const o of sel.options) if (+o.value <= p) best = o; if (best) sel.value = best.value;
-  renderNotes();
+  renderNotes(); renderFormulas();
 }
 function renderNotes(){
   const box = document.getElementById('notes'); box.innerHTML = '';
@@ -220,6 +265,23 @@ function renderNotes(){
     div.querySelector('.del').onclick = () => { if (confirm('Delete this note?')) fetch('/api/delete', {method:'POST', body: JSON.stringify({id:n.id})}).then(loadNotes).then(renderNotes); };
     box.appendChild(div);
   }
+}
+async function renderFormulas(){
+  const box = document.getElementById('formulas'); box.innerHTML = '';
+  const bl = await (await fetch('/api/blocks_for?page=' + page)).json();
+  if (!bl.length) return;
+  box.innerHTML = '<h3>Formula on this page</h3>';
+  bl.forEach((b, i) => { const btn = document.createElement('button'); btn.textContent = 'Tune arrows' + (bl.length > 1 ? ' (' + (i+1) + ')' : ''); btn.onclick = () => openTuner(b.id); box.appendChild(btn); });
+}
+function openTuner(id){ document.getElementById('tuner').src = '/tuner?embed=1&block=' + encodeURIComponent(id); document.getElementById('overlay').hidden = false; }
+window.addEventListener('message', e => {
+  if (e.data === 'tuner-close'){ document.getElementById('overlay').hidden = true; document.getElementById('tuner').src = 'about:blank'; }
+  if (e.data === 'tuner-saved') document.getElementById('cstatus').textContent = 'formula saved to .tex; recompile to see it on the page';
+});
+async function compileBook(){
+  await fetch('/api/compile', {method:'POST', body:'{}'}); document.getElementById('cstatus').textContent = 'compiling…'; document.getElementById('compile').disabled = true;
+  const poll = setInterval(async () => { const st = await (await fetch('/api/compile')).json();
+    if (!st.running){ clearInterval(poll); document.getElementById('compile').disabled = false; document.getElementById('cstatus').textContent = st.ok ? 'compiled; page images refreshed' : ('compile failed: ' + st.log); document.getElementById('page').src = '/page/' + page + '.png?t=' + Date.now(); } }, 3000);
 }
 async function toggle(){ recording ? await stop() : await start(); }
 async function start(){
@@ -257,6 +319,7 @@ async function saveTyped(){
 }
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'TEXTAREA'){ if (e.key === 'Enter' && e.metaKey && e.target.id === 'typed') saveTyped(); return; }
+  if (!document.getElementById('overlay').hidden) return;
   if (e.code === 'Space'){ e.preventDefault(); toggle(); }
   else if (e.key === 'ArrowRight') go(page+1); else if (e.key === 'ArrowLeft') go(page-1);
 });
@@ -265,10 +328,10 @@ init();
 """
 
 
-class Handler(http.server.BaseHTTPRequestHandler):
-    def log_message(self, *a):
-        pass
+TUNER_PATHS = ("/tuner", "/api/blocks", "/api/reparse", "/api/render", "/api/save")
 
+
+class Handler(formula_tuner.Handler):
     def _send(self, data, ctype="application/json", code=200):
         if not isinstance(data, bytes):
             data = json.dumps(data, ensure_ascii=False).encode()
@@ -289,12 +352,24 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif self.path == "/notes.md":
             write_markdown(load_notes())
             self._send(NOTES_MD.read_bytes(), "text/plain; charset=utf-8")
-        elif m := re.fullmatch(r"/page/(\d+)\.png", self.path):
+        elif m := re.fullmatch(r"/page/(\d+)\.png(\?.*)?", self.path):
             self._send(render_page(int(m.group(1))), "image/png")
+        elif m := re.fullmatch(r"/api/blocks_for\?page=(\d+)", self.path):
+            self._send(blocks_for_page(int(m.group(1))))
+        elif self.path == "/api/compile":
+            self._send(COMPILE)
+        elif self.path.split("?")[0] in TUNER_PATHS:
+            super().do_GET()
         else:
             self._send(b"not found", "text/plain", 404)
 
     def do_POST(self):
+        if self.path in TUNER_PATHS:
+            return super().do_POST()
+        if self.path == "/api/compile":
+            self.rfile.read(int(self.headers.get("Content-Length", 0)))
+            compile_book()
+            return self._send({"ok": True})
         req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))).decode() or "{}")
         notes = load_notes()
         if self.path == "/api/note":
@@ -316,6 +391,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send({"ok": True})
         elif self.path == "/api/delete":
             notes = [n for n in notes if n["id"] != req["id"]]
+            (AUDIO / f"{req['id']}.webm").unlink(missing_ok=True)
             save_notes(notes)
             self._send({"ok": True})
         else:
