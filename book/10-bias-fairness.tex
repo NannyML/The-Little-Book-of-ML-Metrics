@@ -47,7 +47,7 @@ rates per group (use Equality of Opportunity), or when a positive prediction mus
 \item Maps onto legal standards: the four-fifths rule used in employment law is a demographic-parity test.
 }
 {
-\item Ignores correctness. If one group is $56\%$ qualified and another $24\%$, forcing both to a $40\%$ rate means selecting unqualified members of the second to fill the quota.
+\item Ignores correctness. If one group is $60\%$ qualified and another $30\%$, forcing both to the same rate means selecting unqualified members of the second to fill the quota (figure).
 \item When base rates differ, enforcing parity pulls predictions away from the labels and lowers accuracy.
 }
 
@@ -60,10 +60,11 @@ rates per group (use Equality of Opportunity), or when a positive prediction mus
     \includegraphics[width=\textwidth]{figures/Demographic_Parity.png}
 \end{figure*}
 
-\textbf{Figure. Demographic Parity.} \underline{Left:} both groups are selected at the same $40\%$ rate, so demographic parity is satisfied.
-\underline{Right:} the same selections, split by whether the person was truly qualified. Group A’s picks are $93\%$ qualified, Group B’s only
-$56\%$ --- because Group B’s qualified pool ($24\%$, marked) is smaller than the $40\%$ being selected, the model has to reach into the
-unqualified to meet the rate. Equal rates, unequal merit --- and parity sees only the left panel.
+\textbf{Figure. Demographic Parity.} Two groups of $100$ people, one square each, judged by the same model: it catches five of every
+six qualified people and wrongly flags one in ten of the rest, in both groups. Parity looks only at the outlined block, who was flagged.
+With one threshold, Group A ($60$ qualified) has $54$ flagged and Group B ($30$ qualified) has $32$, so parity fails. Lowering B's
+threshold until it too flags $54$ satisfies parity, but $25$ of those $54$ are unqualified: equal rates are bought with a precision of
+$54\%$ against A's $93\%$.
 
 \orangebox{Did you know that...}
 {Because demographic parity constrains only the rate of positive predictions, a model can satisfy it without looking at the data at all:
@@ -131,13 +132,13 @@ within Groups).
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Equality_of_Opportunity.png}
+    \includegraphics[width=0.76\textwidth]{figures/Equality_of_Opportunity.png}
 \end{figure*}
 
-\textbf{Figure. Equality of Opportunity.} Both panels show only the truly qualified ($Y=1$); the filled bar is the share the model identifies (TPR).
-\underline{Left:} the two groups are caught at nearly the same rate ($86\%$ and $87\%$), so equality of opportunity holds.
-\underline{Right:} Group A reaches $91\%$ while Group B sits at $63\%$, a $28$-point gap --- qualified people in Group B are routinely overlooked,
-even when the groups’ overall approval rates happen to match.
+\textbf{Figure. Equality of Opportunity.} The same two groups and model. Equality of opportunity looks only at the outlined block,
+the truly qualified, and asks what share of them was caught: $50$ of $60$ in Group A and $25$ of $30$ in Group B, a TPR of $83\%$ in
+both. Everything below the outline is invisible to the metric, so the four wrongly flagged people in A and the seven in B do not enter
+it.
 
 \orangebox{Did you know that...}
 {Equality of opportunity is deliberately one-sided. It constrains the true positive rate and nothing else, so a model can pass it while
@@ -209,12 +210,13 @@ differ and predictions must be equally trustworthy per group (use Predictive Par
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Equality_of_Odds.png}
+    \includegraphics[width=0.76\textwidth]{figures/Equality_of_Odds.png}
 \end{figure*}
 
-\textbf{Figure. Equality of Odds.} Each group is one point in ROC space --- its (false positive rate, true positive rate) pair. \underline{Left:}
-the groups share a curve and land on essentially the same operating point near $(0.16, 0.84)$, so the odds are equalized. \underline{Right:}
-Group A sits at $(0.09, 0.90)$ and Group B at $(0.34, 0.66)$ --- the model catches more of Group A’s positives and raises fewer false alarms on them.
+\textbf{Figure. Equality of Odds.} The same two groups and model, with both blocks outlined. Within the qualified block the model catches
+$83\%$ in each group; within the unqualified block it wrongly flags $10\%$ in each ($4$ of $40$, $7$ of $70$). Both groups therefore sit
+at the same point in ROC space, $(0.10, 0.83)$, and equalized odds holds; the flagged sets still differ in size and precision
+(previous and next figures).
 
 \orangebox{Did you know that...}
 {A classifier’s behavior on a group collapses to a single point in ROC space: its false-positive rate and its true-positive rate. Equality
@@ -288,13 +290,13 @@ of Odds --- you cannot have both).
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{figures/Predictive_Parity.png}
+    \includegraphics[width=0.7\textwidth]{figures/Predictive_Parity.png}
 \end{figure*}
 
-\textbf{Figure. Predictive Parity.} Both panels show only the flagged ($\hat{Y}=1$); the filled bar is the share that is truly positive (PPV).
-\underline{Left:} a positive prediction is correct about $80\%$ of the time for both groups, so predictive parity holds. \underline{Right:}
-a “yes” is right $86\%$ of the time for Group A but only $54\%$ for Group B --- the same prediction carries very different weight, here because
-Group B’s lower base rate leaves fewer true positives to find.
+\textbf{Figure. Predictive Parity.} The same two groups and model, restricted to the outlined block of flagged people. Of Group A's $54$,
+$50$ are truly qualified (PPV $93\%$); of Group B's $32$, only $25$ are (PPV $78\%$). The error rates are identical, yet a ``yes'' is right
+$14$ points less often in B: the same $10\%$ false-positive rate makes seven mistakes in B's larger unqualified pool, against fewer
+true hits. Predictive parity fails for the very model that satisfies equalized odds.
 
 \orangebox{Did you know that...}
 {The COMPAS recidivism tool set off the most famous dispute in fairness research. ProPublica (2016) showed that black defendants faced higher
@@ -361,12 +363,13 @@ balancing error rates matters more (use Equality of Odds), or when the goal is e
 
 \begin{figure*}[ht!]
     \centering
-    \includegraphics[width=0.55\textwidth]{figures/Calibration_within_Groups.png}
+    \includegraphics[width=0.95\textwidth]{figures/Calibration_within_Groups.png}
 \end{figure*}
 
-\textbf{Figure. Calibration within Groups.} A reliability diagram: predicted score against the observed frequency of $Y=1$, binned from the
-data. Group A tracks the diagonal, so its scores mean what they say; Group B bows away --- a score of $0.25$ corresponds to a $35\%$ true
-rate, not $25\%$ --- so the same number means a different risk depending on the group.
+\textbf{Figure. Calibration within Groups.} The same score model, simulated for many people. For each band of scores, ten squares per
+group show how many of ten people with that score turn out to be qualified; the black line is where a calibrated score would put the
+fill. Group A runs above it and Group B below: a score of $0.5$--$0.6$ means qualified $77\%$ of the time in A and $48\%$ in B.
+Identical error rates in both groups imply miscalibration across them whenever base rates differ.
 
 \orangebox{Did you know that...}
 {Calibration looks like the most innocent fairness criterion --- who could object to scores that mean what they say? --- yet it collides with
