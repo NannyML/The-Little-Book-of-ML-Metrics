@@ -60,6 +60,25 @@ FIGSIZE_COMPARISON = (14, 6)                 # side-by-side subplots
 FIGSIZE_LARGE = (12, 10)                     # classification 3D / 2D multi-line
 FIGSIZE_SMALL = (7, 3)                       # compact inline plots (e.g. Pinball)
 
+# ---------------------------------------------------------------------------
+# Print-size rule (2026-09-06).  The book's text width is 3.7 in.  A figure
+# included at \textwidth is scaled by 3.7 / figure_width, so its text shrinks by
+# the same factor.  Rule: text on the printed page must be at least 6.5 pt, the
+# size of a footnote.  With FIG_W = 8 in that means every font size >= 14 pt;
+# use BOOK_FONT for labels and never go below BOOK_FONT_MIN.  Figures narrower
+# than \textwidth (0.6\textwidth etc.) need proportionally larger fonts:
+# printed_pt(fontsize, fig_width, frac) tells you what a size will print at.
+# ---------------------------------------------------------------------------
+PRINT_WIDTH_IN = 3.7
+FIG_W = 8.0
+BOOK_FONT = 15
+BOOK_FONT_MIN = 14
+
+
+def printed_pt(fontsize, fig_width_in=FIG_W, width_frac=1.0):
+    """Point size a figure font prints at when the figure is included at width_frac * textwidth."""
+    return fontsize * PRINT_WIDTH_IN * width_frac / fig_width_in
+
 # Default line style
 LINE_KW = dict(linewidth=6, solid_capstyle="round")
 

@@ -7,19 +7,17 @@ metrics that compare meaning and distributions rather than tokens.}{In this chap
 
 % ---------- Decision map ----------
 \begin{decisionmap}{cyanhard}{cyanaccent}{Which metric?}{Start with the task. All six compare a candidate with reference text by surface overlap.}
-\begin{forest} dmap, large
-[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
-  [{translation, or free-form generation against references}
-    [{corpus-level $n$-gram precision with a brevity penalty} [{\mref{BLEU}{sec:bleu}}]]
-    [{sentence-level; credits stems and synonyms; favors recall} [{\mref{METEOR}{sec:meteor}}]]
-    [{how many edits would fix it} [{\mref{TER}{sec:ter}}]]]
-  [{summarization}
-    [{did the reference content make it in?} [{\mref{ROUGE}{sec:rouge}}]]]
-  [{extractive question answering}
-    [{is the short answer exactly right?} [{\mref{EM}{sec:em}}]]]
-  [{speech transcription}
-    [{how many words were substituted, dropped or added?} [{\mref{WER}{sec:wer}}]]]]
-\end{forest}
+\mapq{What is the task?}
+\mapa{Translation, or free-form generation scored against references}{}
+\begin{mapsub}
+\mapq{What do you want to count?}
+\mapa{$n$-gram precision over the corpus, with a brevity penalty}{\mref{BLEU}{sec:bleu}}
+\mapa{Sentence-level matches that credit stems and synonyms, favoring recall}{\mref{METEOR}{sec:meteor}}
+\mapa{The edits needed to turn the output into the reference}{\mref{TER}{sec:ter}}
+\end{mapsub}
+\mapa{Summarization: did the reference content make it in?}{\mref{ROUGE}{sec:rouge}}
+\mapa{Extractive question answering: is the short answer exactly right?}{\mref{EM}{sec:em}}
+\mapa{Speech transcription: how many words were substituted, dropped or added?}{\mref{WER}{sec:wer}}
 \mapnotes{A correct paraphrase scores low on every metric here. When meaning matters more than wording, BERTScore (p.~\pageref{sec:bertscore}) is the reference-based option, and human judgment the final one.}
 \end{decisionmap}
 

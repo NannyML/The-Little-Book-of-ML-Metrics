@@ -117,7 +117,14 @@
 % Chapter openers and the table of contents
 % ---------------------------------------------------------------------------
 % A small colored square that marks each chapter in the table of contents
-\newcommand{\tocmark}[1]{\tikz[baseline=-0.55ex]\fill[#1] (0,0) rectangle (0.8em,0.8em);\hspace{0.6em}}
+% the square before a chapter title: the chapter's sidebar color, sitting on the baseline at cap height
+\newcommand{\tocsquare}[1]{{\color{#1}\rule{0.7em}{0.7em}}\hspace{0.55em}}
+\newcommand{\tocmark}[1]{%
+    \ifstrequal{#1}{cyanaccent}{\tocsquare{cyanhard}}{%
+    \ifstrequal{#1}{purpleaccent}{\tocsquare{purplehard}}{%
+    \ifstrequal{#1}{orangeaccent}{\tocsquare{orangehard}}{%
+    \ifstrequal{#1}{coralaccent}{\tocsquare{coralhard}}{%
+    \ifstrequal{#1}{mintaccent}{\tocsquare{minthard}}{\tocsquare{#1}}}}}}}
 
 % Table of contents styling (tocloft)
 \renewcommand{\cfttoctitlefont}{\huge\bfseries}
@@ -423,7 +430,9 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 \colorlet{mintaccent}{minthard!45!black}
 
 % ---------- Decision maps: one page per chapter, right after the opener ----------
-\usepackage[edges]{forest}
+% A printed key, like the identification keys in a field guide: a question in
+% bold, its possible answers indented beneath it, and the metric that answer
+% leads to on the right with its page number.  Nested questions indent further.
 \colorlet{mapband}{cyanlight}
 \colorlet{mapaccent}{cyanaccent}
 \newcommand{\maptitle}{Which metric?}
@@ -437,35 +446,10 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
         \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) {\chaptertitle\ -- \maptitle};
     }
 }
-% a leaf entry: metric name followed by its page number
-\newcommand{\mref}[2]{#1~{\color{black!65}\mdseries\scriptsize\pageref{#2}}}
+% a metric with its page number
+\newcommand{\mref}[2]{#1~{\color{black!55}\mdseries\scriptsize\pageref{#2}}}
 \newcommand{\nohyph}{\hyphenpenalty=10000 \exhyphenpenalty=10000 }
-\forestset{
-    dmap/.style={
-        for tree={
-            grow'=0, child anchor=west, parent anchor=east, anchor=west,
-            font=\footnotesize\nohyph, text=black!70, node options={align=left},
-            l sep=4.5mm, s sep=1.7mm, inner xsep=2pt, inner ysep=1.3pt,
-            edge={draw, line width=0.6pt, mapaccent!45},
-            forked edges, fork sep=2.5mm,
-        },
-        where n children=0{
-            font=\footnotesize\bfseries, text=black!85, fill=mapband, rounded corners=2pt, inner xsep=4pt, inner ysep=2.2pt,
-        }{},
-        where level=1{text width=2.2cm, text=black!85, font=\footnotesize\bfseries\nohyph}{},
-        where level=2{if n children=0{}{text width=2.5cm}}{},
-        where level=3{if n children=0{}{text width=3cm}}{},
-    },
-    % for trees whose conditions stop at level 2: give that level more room
-    wide2/.style={for tree={s sep=2.6mm}, where level=1{text width=2.6cm}{}, where level=2{if n children=0{}{text width=4cm}}{}},
-    % for small trees (two levels, few leaves): a larger size that fills the page better
-    large/.style={
-        for tree={font=\small\nohyph, s sep=3.4mm, l sep=6mm},
-        where n children=0{font=\small\bfseries, inner ysep=2.8pt, inner xsep=5pt}{},
-        where level=1{font=\small\bfseries\nohyph, text width=2.7cm}{},
-        where level=2{if n children=0{}{text width=4cm}}{},
-    },
-}
+\newlength{\mapindent}\setlength{\mapindent}{1.25em}
 % \begin{decisionmap}{band}{accent}{title}{subtitle} ... \end{decisionmap}
 \newenvironment{decisionmap}[4]{%
     \clearpage
@@ -475,12 +459,19 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \noindent{\color{#2}\fontsize{22}{26}\selectfont\bfseries #3}\par
     \vspace{5pt}
     {\color{black!60}\small #4\par}
-    \vspace{14pt}
-    \noindent
+    \vspace{6pt}
+    \begingroup\small\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}\setlength{\leftskip}{0pt}\nohyph
 }{%
-    \clearpage
+    \endgroup\clearpage
 }
-\newcommand{\mapnotes}[1]{\par\vspace{2.6em}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
+% a question (bold); the first one starts the key, nested ones follow an answer
+\newcommand{\mapq}[1]{\par\vspace{8pt}{\bfseries\color{black!85}#1}\par\vspace{3pt}}
+% an answer, with the metric(s) it leads to on the right; leave #2 empty when a nested question follows
+% the empty \hbox keeps the dotted leader alive when the metric wraps to its own line, so it still ends at the right margin
+\newcommand{\mapa}[2]{\par{\color{black!70}#1}\ifblank{#2}{}{\hspace{0.4em}\hbox{}\nobreak{\color{black!25}\leaders\hbox to 0.55em{\hss.\hss}\hfill}\nobreak\hspace{0.3em}\mbox{\bfseries\color{black!85}#2}}\par\vspace{3pt}}
+% nesting: everything inside is indented one level
+\newenvironment{mapsub}{\par\addtolength{\leftskip}{\mapindent}}{\par\addtolength{\leftskip}{-\mapindent}}
+\newcommand{\mapnotes}[1]{\par\vspace{14pt}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
 
 \begin{document}
 \pagestyle{customstyle}

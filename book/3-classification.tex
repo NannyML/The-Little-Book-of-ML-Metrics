@@ -8,27 +8,37 @@ every other page is a function of its four cells.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Start with what you are judging: the probabilities, the ranking they induce, or the labels a threshold turns them into.}
-\begin{forest} dmap
-[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
-  [{the probabilities themselves}
-    [{to train on; punishes confident mistakes hardest} [{\mref{Log Loss}{sec:log-loss}}]]
-    [{bounded; splits into calibration and resolution} [{\mref{Brier Score Loss}{sec:brier-score-loss}}]]
-    [{as skill over predicting the base rate} [{\mref{D-squared Log\\Loss Score}{sec:d-squared-log-loss-score}}]]]
-  [{the ranking of scores, before any threshold}
-    [{positives rare and the class that matters} [{\mref{PR AUC}{sec:pr-auc}}]]
-    [{both classes matter, or prevalence varies} [{\mref{ROC AUC}{sec:roc-auc}}]]]
-  [{the labels at a chosen threshold}
-    [{costs of a false alarm and a miss are known} [{\mref{EC}{sec:ec}}]]
-    [{classes balanced, errors equally costly} [{\mref{Accuracy}{sec:accuracy}}]]
-    [{imbalanced; one error type is the costly one}
-      [{missing a positive} [{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}\\\mref{FNR}{sec:fnr}}]]
-      [{a false alarm, among what you flagged} [{\mref{Precision}{sec:precision}}]]
-      [{a false alarm, among all negatives} [{\mref{FPR}{sec:fpr}\\\mref{TNR (Specificity)}{sec:tnr-specificity}}]]
-      [{both, traded off explicitly} [{\mref{F1-score}{sec:f1-score}\\\mref{F-beta}{sec:f-beta}}]]]
-    [{imbalanced; one number for the whole matrix} [{\mref{MCC}{sec:mcc}\\\mref{Balanced Accuracy}{sec:balanced-accuracy}\\\mref{P4-metric}{sec:p4-metric}}]]
-    [{overlap of predicted and true positive sets} [{\mref{Jaccard Index}{sec:jaccard-index}}]]]
-  [{agreement between two labelers, beyond chance} [{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}]]]
-\end{forest}
+\mapq{What are you judging?}
+\mapa{The predicted probabilities themselves}{}
+\begin{mapsub}
+\mapq{What do you need from the score?}
+\mapa{A training loss that punishes confident mistakes hardest}{\mref{Log Loss}{sec:log-loss}}
+\mapa{A bounded score that splits into calibration and resolution}{\mref{Brier Score Loss}{sec:brier-score-loss}}
+\mapa{Skill relative to always predicting the base rate}{\mref{D-squared Log Loss Score}{sec:d-squared-log-loss-score}}
+\end{mapsub}
+\mapa{The ranking of the scores, before any threshold}{}
+\begin{mapsub}
+\mapq{Are positives rare, and are they what matters?}
+\mapa{Yes}{\mref{PR AUC}{sec:pr-auc}}
+\mapa{No: both classes matter, or prevalence differs between datasets}{\mref{ROC AUC}{sec:roc-auc}}
+\end{mapsub}
+\mapa{The labels at a chosen threshold}{}
+\begin{mapsub}
+\mapq{Do you know what a false alarm and a miss cost?}
+\mapa{Yes}{\mref{EC}{sec:ec}}
+\mapa{No, and the classes are balanced}{\mref{Accuracy}{sec:accuracy}}
+\mapa{No, and the classes are imbalanced}{}
+\begin{mapsub}
+\mapq{Which mistake is the expensive one?}
+\mapa{Missing a positive}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}
+\mapa{A false alarm, counted among what you flagged}{\mref{Precision}{sec:precision}}
+\mapa{A false alarm, counted among all the negatives}{\mref{FPR}{sec:fpr}, \mref{TNR (Specificity)}{sec:tnr-specificity}}
+\mapa{Both, traded off explicitly}{\mref{F1-score}{sec:f1-score}, \mref{F-beta}{sec:f-beta}}
+\mapa{Both, as one number for the whole matrix}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}
+\mapa{Neither: how much do the predicted and true positive sets overlap?}{\mref{Jaccard Index}{sec:jaccard-index}}
+\end{mapsub}
+\end{mapsub}
+\mapa{The agreement between two labelers or two models, beyond chance}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}
 \mapnotes{Every label metric is a ratio of confusion-matrix cells (p.~\pageref{sec:confusion-matrix}); look at the matrix before summarizing it. A threshold metric describes one operating point, so report the threshold with it. ROC AUC high and PR AUC low means the minority class is being missed.}
 \end{decisionmap}
 
@@ -71,63 +81,19 @@ Use the confusion matrix when you want the full per-class breakdown of correct v
 \clearpage
 \thispagestyle{customstyle}
 
-A simple 2x2 example for binary classification with the four categories: True Positive (TP), True Negative (TN), False Positive (FP), False Negative (FN).
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/Confusion_Matrix_cells.png}
+\end{center}
 
-\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
-\vspace{0.3em}
-\begin{minipage}{0.46\linewidth}
-\centering
-\begin{tabular}{|C{1.4cm}|C{1.4cm}|}
-\hline
-Actual & Predicted \\ \hline
-1 & 1 \\
-1 & 0 \\
-0 & 1 \\
-0 & 0 \\
-1 & 1 \\
-0 & 0 \\
-\hline
-\end{tabular}
-\end{minipage}%
-\begin{minipage}{0.54\linewidth}
-\renewcommand{\arraystretch}{1.3}
-\centering
-\begin{tabular}{|C{1.8cm}|C{1.8cm}|C{1.8cm}|}
-\hline
-& Predicted 1 & Predicted 0 \\ \hline
-Actual 1 & \cellcolor{nmlgreen!20}TP = 2 & \cellcolor{nmlred!20}FN = 1 \\ \hline
-Actual 0 & \cellcolor{nmlred!20}FP = 1 & \cellcolor{nmlgreen!20}TN = 2 \\ \hline
-\end{tabular}
-\end{minipage}
+\textbf{Figure. Confusion Matrix.} \underline{Left:} ten predictions, each one a pair of actual and predicted label, sorted into
+its cell: a true positive (TP) or true negative (TN) when the two agree, a false negative (FN) or false positive (FP) when they don't.
+\underline{Right:} the four counts as the $2 \times 2$ matrix, and the metrics as reads of it. Along the top row, recall
+$= 3/4$; along the bottom row, the false positive rate $= 1/6$; down the first column, precision $= 3/4$; the diagonal over
+everything, accuracy $= 0.80$. Every metric in this chapter is one of these reads, or a combination of them.
 
-\vspace{1em}
-
-That's the standard case. But in some real-world settings, you can't actually fill in all four cells. Predictive maintenance is the canonical example: if the model predicts a breakdown and maintenance is performed, the machine may never fail --- so you can't observe the true positive at all. The feedback is delayed indefinitely, and the resulting matrix is ``censored.''
-
-\begin{table}[h]
-\centering
-\renewcommand{\arraystretch}{1.5}
-\begin{tabular}{|C{2cm}|C{2cm}|C{2cm}|C{2cm}|}
-\hline
-& \multicolumn{3}{c|}{\textbf{Model predicts machine failure}} \\
-\cline{2-4}
-X & Total Population (P+N)& 
-Positive & 
-Negative \\
-\hline
-\multirow{2}{2cm}{\textbf{Does Machine fail in Reality?}} & 
-Positive & 
-Not available  & 
-Delayed \\
-\cline{2-4}
-& 
-Negative & 
-Not available & 
-Delayed \\
-\hline
-\end{tabular}
-\end{table}
-
+Sometimes a cell cannot be filled at all. In predictive maintenance, a predicted failure triggers a repair, so the machine never
+fails and the true positive is never observed; the label for a predicted negative only arrives once the machine has run long enough.
+Such a matrix is censored, and the metrics read from it are biased in ways that no formula on these pages corrects.
 
 \orangebox{%
 Did you know that...}

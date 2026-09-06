@@ -8,17 +8,20 @@ choosing which of those failures to accept.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{coralhard}{coralaccent}{Which criterion?}{Start with what should be equal across groups. Each criterion is a different conditional independence, and with different base rates they cannot all hold at once.}
-\begin{forest} dmap, large
-[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
-  [{the share of positive decisions, whatever the outcomes}
-    [{no ground truth needed} [{\mref{Demographic Parity}{sec:demographic-parity}}]]]
-  [{the error rates people experience}
-    [{qualified people accepted at the same rate (equal TPR)} [{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}]]
-    [{both error rates equal (TPR and FPR)} [{\mref{Equality of Odds}{sec:equality-of-odds}}]]]
-  [{what the output means to the decision maker}
-    [{a positive label is right equally often (equal precision)} [{\mref{Predictive Parity}{sec:predictive-parity}}]]
-    [{a score means the same outcome rate in every group} [{\mref{Calibration\\within Groups}{sec:calibration-within-groups}}]]]]
-\end{forest}
+\mapq{What should be equal across groups?}
+\mapa{The share of positive decisions, whatever the outcomes (needs no ground truth)}{\mref{Demographic Parity}{sec:demographic-parity}}
+\mapa{The error rates people experience}{}
+\begin{mapsub}
+\mapq{Which error rates?}
+\mapa{Qualified people are accepted at the same rate (equal TPR)}{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}
+\mapa{Both error rates, TPR and FPR}{\mref{Equality of Odds}{sec:equality-of-odds}}
+\end{mapsub}
+\mapa{What the model's output means to the decision maker}{}
+\begin{mapsub}
+\mapq{For labels or for scores?}
+\mapa{A positive label is right equally often (equal precision)}{\mref{Predictive Parity}{sec:predictive-parity}}
+\mapa{A score of $s$ means the same outcome rate in every group}{\mref{Calibration within Groups}{sec:calibration-within-groups}}
+\end{mapsub}
 \mapnotes{When base rates differ between groups, calibration (or predictive parity) and equal error rates cannot hold together (Chouldechova 2017; Kleinberg et al.\ 2017). Choose the criterion whose violation would do the most harm and report the others alongside it.}
 \end{decisionmap}
 

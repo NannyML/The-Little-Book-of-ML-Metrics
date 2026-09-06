@@ -6,26 +6,27 @@ have to be corrected for chance because random partitions already agree somewhat
 anything, and a good external score is only as good as its reference; read both with the contingency matrix at hand.}{In this chapter}
 
 % ---------- Decision map ----------
-\begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Start with whether you have ground-truth classes to compare against. With them, decide what agreement means; without them, decide what a good cluster looks like.}
-\begin{forest} dmap
-[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
-  [{ground-truth classes available (external)}
-    [{look at the raw table first}
-      [{classes against clusters} [{\mref{Contingency Matrix}{sec:contingency-matrix}}]]
-      [{pairs together or apart, as a $2 \times 2$} [{\mref{Pair Confusion Matrix}{sec:pair-confusion-matrix}}]]]
-    [{score agreement pair by pair}
-      [{share of pairs both agree on; ARI corrects for chance} [{\mref{Rand Index}{sec:rand-index}}]]
-      [{geometric mean of pairwise precision and recall} [{\mref{FMI}{sec:fmi}}]]]
-    [{information shared by clusters and classes; NMI, AMI normalize it} [{\mref{Mutual Info Score}{sec:mutual-info-score}}]]
-    [{ask two questions, then combine}
-      [{is each cluster pure?} [{\mref{Homogeneity Score}{sec:homogeneity-score}}]]
-      [{is each class kept together?} [{\mref{Completeness Score}{sec:completeness-score}}]]
-      [{both, as one number} [{\mref{V-Measure}{sec:v-measure}}]]]]
-  [{no labels (internal)}
-    [{per-point cohesion vs.\ separation; slow on large data} [{\mref{Silhouette Score}{sec:silhouette-score}}]]
-    [{between- over within-cluster variance; fast, favors convex clusters} [{\mref{CH Index}{sec:ch-index}}]]
-    [{each cluster vs.\ its most similar neighbor; lower is better} [{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}]]]]
-\end{forest}
+\begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Start with whether you have ground-truth classes. With them, decide what agreement means; without them, decide what a good cluster looks like.}
+\mapq{Do you have ground-truth classes to compare against?}
+\mapa{Yes}{}
+\begin{mapsub}
+\mapq{How do you want to compare the two labelings?}
+\mapa{Just look at the table of classes against clusters}{\mref{Contingency Matrix}{sec:contingency-matrix}}
+\mapa{Just look at pairs of points, together or apart, as a $2 \times 2$ table}{\mref{Pair Confusion Matrix}{sec:pair-confusion-matrix}}
+\mapa{Score the share of pairs both labelings agree on (ARI corrects it for chance)}{\mref{Rand Index}{sec:rand-index}}
+\mapa{Score the geometric mean of pairwise precision and recall}{\mref{FMI}{sec:fmi}}
+\mapa{Score how much information the clusters carry about the classes (NMI and AMI normalize it)}{\mref{Mutual Info Score}{sec:mutual-info-score}}
+\mapa{Ask whether each cluster holds a single class}{\mref{Homogeneity Score}{sec:homogeneity-score}}
+\mapa{Ask whether each class sits in a single cluster}{\mref{Completeness Score}{sec:completeness-score}}
+\mapa{Ask both, as one number}{\mref{V-Measure}{sec:v-measure}}
+\end{mapsub}
+\mapa{No}{}
+\begin{mapsub}
+\mapq{What should a good cluster look like?}
+\mapa{Each point is closer to its own cluster than to the next one (slow on large data)}{\mref{Silhouette Score}{sec:silhouette-score}}
+\mapa{Clusters are far apart relative to their spread (fast, favors convex clusters)}{\mref{CH Index}{sec:ch-index}}
+\mapa{Each cluster is far from its most similar neighbor (lower is better)}{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}
+\end{mapsub}
 \mapnotes{Correct for chance when the clusterings compared have different $k$: ARI rather than the Rand index, AMI rather than raw mutual information. An internal index can say the clusters are compact and apart, never that they mean anything.}
 \end{decisionmap}
 
