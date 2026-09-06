@@ -5,6 +5,11 @@
 \usepackage[paperwidth=5.7in, paperheight=8.55in, margin=1.25cm]{geometry}
 \setlength{\footskip}{\dimexpr\footskip-.3cm\relax}
 \usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage{tocloft}
+\usepackage{titletoc}
+\usepackage{etoolbox}
+\usepackage{multicol}
 \usepackage{fontspec}
 \usepackage{dsfont}
 \usepackage{microtype}
@@ -107,11 +112,64 @@
 \newcommand{\chaptertitle}{}
 \newcommand{\sectiontitle}{}
 
-% New command for chapters
+% ---------------------------------------------------------------------------
+% Chapter openers and the table of contents
+% ---------------------------------------------------------------------------
+% A small colored square that marks each chapter in the table of contents
+\newcommand{\tocmark}[1]{\tikz[baseline=-0.55ex]\fill[#1] (0,0) rectangle (0.8em,0.8em);\hspace{0.6em}}
+
+% Table of contents styling (tocloft)
+\renewcommand{\cfttoctitlefont}{\huge\bfseries}
+\renewcommand{\cftaftertoctitle}{\par\vspace{1.5ex}}
+\setlength{\cftbeforechapskip}{1.1em}
+\renewcommand{\cftchapfont}{\large\bfseries}
+\renewcommand{\cftchappagefont}{\large\bfseries}
+\renewcommand{\cftchapleader}{\hfill}
+\setlength{\cftchapnumwidth}{0pt}
+\setlength{\cftsecindent}{1.4em}
+\setlength{\cftsecnumwidth}{0pt}
+\setlength{\cftbeforesecskip}{1.5pt}
+\renewcommand{\cftsecfont}{\normalsize}
+\renewcommand{\cftsecpagefont}{\normalsize}
+\renewcommand{\cftsecdotsep}{2.5}
+
+% Partial table of contents printed on each chapter opener (titletoc)
+\titlecontents{lsection}[0em]{\normalsize}{}{}{\titlerule*[0.7pc]{.}\contentspage}[\vspace{1.5pt}]
+
+% \chapteropener{Title}{band color}{accent color}{intro paragraphs}{list heading or empty}
+\newcommand{\chapteropener}[5]{%
+    \clearpage
+    \refstepcounter{chapter}%
+    \thispagestyle{empty}%
+    \addcontentsline{toc}{chapter}{\texorpdfstring{\protect\tocmark{#3}}{}#1}%
+    \renewcommand{\chaptertitle}{#1}%
+    \startcontents[chapters]%
+    \noindent\begin{tikzpicture}[remember picture, overlay]
+        \fill[#2] (current page.north west) rectangle ([yshift=-5.6cm]current page.north east);
+        \node[anchor=north west, inner sep=0pt] at ([xshift=1.25cm, yshift=-1.1cm]current page.north west)
+            {\color{#3}\fontsize{58}{58}\selectfont\bfseries\thechapter};
+        \node[anchor=south west, inner sep=0pt, text width=\textwidth] at ([xshift=1.25cm, yshift=-4.9cm]current page.north west)
+            {\Huge\bfseries #1};
+    \end{tikzpicture}\par\nointerlineskip
+    \vspace*{\dimexpr 5.0cm - \baselineskip\relax}
+    \noindent #4\par
+    \ifblank{#5}{}{%
+        \vspace{1.2em}
+        {\large\bfseries #5}\par\vspace{4pt}
+        {\setlength{\parskip}{0pt}\setlength{\columnsep}{1.6em}%
+         \begin{multicols}{2}\raggedcolumns
+         \printcontents[chapters]{l}{1}{\setcounter{tocdepth}{1}}%
+         \end{multicols}}%
+    }%
+    \clearpage
+}
+
+% Legacy chapter command (title page only); chapters now use \chapteropener
 \renewcommand{\chapter}[1]{%
     \refstepcounter{chapter}% Increment the chapter counter
     \clearpage
     \thispagestyle{empty}
+    \addcontentsline{toc}{chapter}{#1}%
     \vspace*{\fill}
     {\centering\huge\bfseries #1\par}
     \vspace*{\fill}
@@ -355,10 +413,37 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weakness}}, anchor=north west] (b) at 
 \usepackage{colortbl}
 \usepackage[table]{xcolor}
 
+% accent colors used on chapter openers (a darker tone of each chapter's sidebar color)
+\colorlet{cyanaccent}{cyanhard!45!black}
+\colorlet{purpleaccent}{purplehard!60!black}
+\colorlet{orangeaccent}{orangehard!55!black}
+\colorlet{coralaccent}{coralhard!55!black}
+\colorlet{mintaccent}{minthard!45!black}
+
 \begin{document}
-\setcounter{tocdepth}{1}  % 1 includes chapters and sections 
+\pagestyle{customstyle}
+
+% ---------- title page ----------
+\begin{titlepage}
+    \thispagestyle{empty}
+    \begin{tikzpicture}[remember picture, overlay]
+        \fill[cyanlight] (current page.north west) rectangle ([yshift=-0.58\paperheight]current page.north east);
+        \node[anchor=south west, inner sep=0pt, text width=\textwidth] at ([xshift=1.25cm, yshift=-0.58\paperheight+1.4cm]current page.north west)
+            {\fontsize{34}{40}\selectfont\bfseries The Little Book of\\[2pt] ML Metrics};
+        \node[anchor=north west, inner sep=0pt, text width=\textwidth] at ([xshift=1.25cm, yshift=-0.58\paperheight-1.2cm]current page.north west)
+            {\Large What every metric measures, when to use it, and where it fails.\\[1.6em]
+             \normalsize\color{black!60}Regression, classification, clustering, ranking, computer vision, NLP, generative AI,
+             performance estimation, fairness and data observability.};
+        \node[anchor=south west, inner sep=0pt] at ([xshift=1.25cm, yshift=1.4cm]current page.south west)
+            {\large\bfseries NannyML};
+    \end{tikzpicture}
+\end{titlepage}
+
+\setcounter{tocdepth}{1}  % 1 includes chapters and sections
+\pagestyle{plain}
 \tableofcontents
-\newpage 
+\clearpage
+\pagestyle{customstyle}
 \include{1-introduction}
 \include{2-regression}
 \include{3-classification}

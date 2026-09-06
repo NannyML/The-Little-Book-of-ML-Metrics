@@ -1,1 +1,83 @@
-\chapter{Introduction}
+\chapteropener{Introduction}{cyanlight}{cyanaccent}{%
+A metric is a decision about what counts as good. Choose mean squared error and a forecast that is badly wrong once a month will look
+worse than one that is slightly wrong every day; choose accuracy on a rare disease and a model that never diagnoses anyone will score
+$99\%$. This book exists because those decisions are usually made by default, and the default is rarely examined. It covers some
+hundred metrics across ten domains, one or two pages each, and every page tries to answer the same three questions: what the number
+measures, when it is the right number to watch, and where it will mislead you.}{}
+
+\clearpage
+\thispagestyle{customstyle}
+\section{Who this book is for}
+
+The reader we had in mind builds or monitors machine learning systems and already knows what a confusion matrix or a residual is.
+The pages are not tutorials; they are the notes a senior colleague might give you before a model review, with the trade-off spelled
+out and a worked number where a number helps. If a metric is unfamiliar, its page is meant to make it usable in an afternoon; if it
+is familiar, the strengths, weaknesses and ``did you know'' box are where the less obvious facts live.
+
+The book is also a reference. Metrics are grouped by the kind of model they score and each chapter opens with a short guide to the
+family and a list of its pages, so it can be read from a chapter's first page or opened at the metric you were sent to look up.
+
+\section{How to read a metric}
+
+Every metric follows the same two-page layout, so that the same question is always in the same place.
+
+\textbf{Page one} states what the metric tells you, in plain language and with a concrete example; gives the formula with each
+symbol annotated; explains how to interpret the value, with the range and the anchors that make a number good or bad; says when to
+use the metric and, just as important, when to avoid it and what to use instead; and ends with two boxes, strengths on the left,
+weaknesses on the right, each with a concrete case rather than an adjective.
+
+\textbf{Page two} shows the metric at work. The figure is never a decoration: it is built to expose the mechanism, how the metric
+turns inputs into a score and what kind of error it rewards or forgives, and every number printed on it is computed from the data it
+draws. The caption teaches how to read the figure. A ``did you know'' box holds one fact that changes how you think about the
+metric, and ``other related metrics'' explains what it means when this metric and a neighbouring one disagree.
+
+The Data Observability chapter is the exception: its monitors are simple statistics whose value lies in their history, and each
+takes one page.
+
+\section{The colors in the formulas}
+
+Symbols in every formula are colored by role, and the arrows name them:
+
+\begin{itemize}[left=0pt]
+    \item {\color{nmlcyan}\textbf{Cyan}} marks what is actually true: targets, labels, ground-truth values, correct predictions.
+    \item {\color{nmlpurple}\textbf{Purple}} marks what the model produced: predictions, scores, estimated values, errors.
+    \item {\color{nmlred}\textbf{Red}} marks sizes and counts: the number of samples, classes, bins or items that normalize the rest.
+    \item {\color{nmlgreen}\textbf{Green}} marks special functions such as the indicator $\mathds{1}[\cdot]$.
+    \item {\color{nmlyellow}\textbf{Yellow}} marks parameters you choose: thresholds, weights, exponents, quantile levels.
+\end{itemize}
+
+The same convention holds across chapters, so a purple $\hat{Y}$ in a regression formula and a purple $\hat{y}$ in a fairness
+criterion are the same kind of object.
+
+\section{Choosing a metric}
+
+Three questions settle most choices, and each page's ``when to use'' section is organized around them.
+
+\textbf{What is the cost of each kind of error?} A regression metric decides whether a few large misses outweigh many small ones
+(MSE against MAE); a classification metric decides whether a false alarm or a miss is the expensive mistake (precision against recall,
+or the expected cost directly). If you cannot name the cost, the metric is choosing it for you.
+
+\textbf{What is the base rate?} Rare positives make accuracy and ROC AUC optimistic and make precision-recall curves, MCC and balanced
+accuracy informative; small targets make percentage errors explode; different base rates between groups make most fairness criteria
+mutually exclusive. Look at the class balance before the metric.
+
+\textbf{What will the number be compared with?} A metric in the target's own units (MAE, RMSE) is for stakeholders; a scale-free one
+($R^2$, MAPE, nDCG) is for comparing models across datasets; a proper scoring rule (log loss, Brier) is for training and calibration.
+The same model can deserve all three, reported to different people.
+
+When two metrics that should agree do not, the disagreement is information. Each page's closing section names the most common
+disagreements and what they reveal: RMSE far above MAE means a few large errors; ROC AUC high with PR AUC low means the minority
+class is being missed; CBPE steady while realized accuracy falls means the input--label relationship changed.
+
+\section{How the book is organized}
+
+Chapters follow the kind of model being scored. \textbf{Regression} and \textbf{Classification} cover the metrics almost every
+practitioner meets; \textbf{Clustering} and \textbf{Ranking} cover unsupervised partitions and ordered lists; \textbf{Computer Vision}
+and \textbf{NLP} cover pixels, masks, keypoints and token overlap; \textbf{GenAI} covers generated text, images and audio, where
+references are scarce and learned judges take over. \textbf{Probabilistic} turns the question around and estimates a metric when
+labels are missing; \textbf{Bias \& Fairness} asks whether the score is the same for every group; \textbf{Data Observability} steps
+back to the tables that feed everything else.
+
+Every figure in the book is generated by code in the accompanying repository, from the data it shows, with the NannyML palette and
+as little ink as the point allows. Where a figure's numbers matter they are repeated in the caption, so the page can be read without
+squinting.

@@ -1,4 +1,10 @@
-\chapter{Probabilistic}
+\chapteropener{Probabilistic}{orangehard}{orangeaccent}{%
+These pages describe estimates of a metric rather than metrics of a prediction. Once a model is in production its labels arrive late or
+never, and the question is what its accuracy, F1 or MAE is right now. If the model's probabilities are calibrated, which ECE measures,
+CBPE turns them into an expected confusion matrix; PAPE re-weights the calibration to the inputs production actually sends; DLE does
+the same job for regression with a second model that predicts the error. All three see covariate shift and are blind to concept drift,
+the case where the same inputs now deserve different labels, which RCD isolates once labels exist. Together they let a model be
+monitored without waiting for the truth.}{In this chapter}
 
 
 % ---------- Expected Calibration Error ----------

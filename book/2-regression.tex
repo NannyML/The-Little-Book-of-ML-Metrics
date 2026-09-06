@@ -1,4 +1,10 @@
-\chapter{Regression}
+\chapteropener{Regression}{cyanlight}{cyanaccent}{%
+Regression models predict a quantity: tomorrow's demand, a house price, a delivery time. Every metric in this chapter summarizes the
+residuals $Y - \hat{Y}$ into one number, and they differ in what they do to a residual before averaging. MAE takes its magnitude, MSE its
+square, MAPE its ratio to the target, the deviances its likelihood under an assumed noise model. That choice decides which errors dominate
+the score: squared errors let a few large misses set the number, absolute errors weigh every unit the same, percentage errors punish
+misses on small targets. $R^2$, $D^2$ and explained variance compare the residuals with a baseline instead of reporting them raw. Read
+MAE first; the rest are variations on which residuals matter most.}{In this chapter}
 
 % ---------- MAE ----------
 \clearpage

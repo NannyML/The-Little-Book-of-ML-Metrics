@@ -1,4 +1,10 @@
-\chapter{Bias \& Fairness}
+\chapteropener{Bias \& Fairness}{coralhard}{coralaccent}{%
+A model can be accurate and still treat two groups differently. The five criteria here are conditional independence statements between
+the prediction, the true label and a protected attribute, and they disagree by design. Demographic parity looks at who is selected;
+equality of opportunity and equalized odds at the error rates within each true class; predictive parity and calibration at what a
+positive prediction, or a score, means once it is given. When base rates differ between groups no classifier can satisfy all of them,
+and the chapter's one shared example shows the same model passing two criteria and failing three. Choosing a fairness metric is
+choosing which of those failures to accept.}{In this chapter}
 
 
 % ---------- Demographic Parity ----------

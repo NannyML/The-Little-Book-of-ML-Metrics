@@ -1,4 +1,10 @@
-\chapter{GenAI}
+\chapteropener{GenAI}{purplehard}{purpleaccent}{%
+Generated text, images and audio rarely have a single reference, so their metrics take three routes. Fit: perplexity scores how well a
+model predicts held-out text. Learned similarity: BERTScore, LPIPS and CLIP Score compare outputs with references or prompts in the
+embedding space of a pretrained model, and inherit that model's habits. Distributions: MAUVE, Inception Score and FID compare a pile of
+outputs with a pile of real samples instead of one pair at a time. For text-to-image, DSG and VQAScore ask a vision--language model
+whether the prompt is depicted; for speech, PESQ and STOI predict what a listening panel (MOS) would say. The chapter closes with the
+benchmarks that leaderboards report.}{In this chapter}
 
 
 % ---------- Perplexity ----------

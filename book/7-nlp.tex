@@ -1,4 +1,9 @@
-\chapter{NLP}
+\chapteropener{NLP}{cyanhard}{cyanaccent}{%
+Text has many correct answers, so most NLP metrics compare a candidate with one or more references by overlap. BLEU counts matching
+n-grams with a precision bias and ROUGE with a recall bias; METEOR adds stems and synonyms and rewards contiguous matches; TER counts
+the edits needed to reach the reference, and WER does the same for transcribed speech. Exact match is the strictest, for tasks with
+one right span. All of them reward surface agreement and can punish a good paraphrase; the GenAI chapter picks up where they stop, with
+metrics that compare meaning and distributions rather than tokens.}{In this chapter}
 
 
 % ---------- Bilingual Evaluation Understudy ----------

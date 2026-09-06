@@ -1,4 +1,10 @@
-\chapter{Classification}
+\chapteropener{Classification}{purplelight}{purpleaccent}{%
+A classifier turns a score into a decision, and every metric here is a view of the confusion matrix that decision produces: four
+counts, and the rates, ratios and means built from them. Accuracy, precision, recall and their F-combinations describe one threshold;
+ROC AUC and PR AUC sweep all thresholds; log loss and the Brier score judge the scores themselves, before any threshold; MCC, Cohen's
+kappa and balanced accuracy correct for class imbalance and chance agreement. Which one to report depends on two things: the cost of
+each error type and how rare the positive class is. Start with the confusion matrix, since every other page is a function of its four
+cells.}{In this chapter}
 
 % ---------- Confusion Matrix ----------
 \thispagestyle{classificationstyle}

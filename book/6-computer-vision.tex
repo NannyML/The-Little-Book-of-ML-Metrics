@@ -1,4 +1,9 @@
-\chapter{Computer Vision}
+\chapteropener{Computer Vision}{mintlight}{mintaccent}{%
+Images are scored at three levels. Pixels: PSNR and SSIM compare a reconstructed image with its original, one by intensity and one by
+local structure. Regions: pixel accuracy, Dice and panoptic quality compare predicted masks with ground truth, and differ in how they
+treat class imbalance and object identity. Points: PCK and OKS score keypoints by their distance to the truth, with a tolerance that
+scales with the object. The recurring lesson is that per-pixel agreement is not perception: a blurry image can win on PSNR, and a mask
+shifted by a few pixels can lose on Dice while looking right.}{In this chapter}
 
 % ---------- Pixel Accuracy ----------
 \clearpage
