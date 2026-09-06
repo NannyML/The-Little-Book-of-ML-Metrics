@@ -6,9 +6,35 @@ kappa and balanced accuracy correct for class imbalance and chance agreement; ex
 report depends on two things: the cost of each error type and how rare the positive class is. Start with the confusion matrix, since
 every other page is a function of its four cells.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Start with what you are judging: the probabilities, the ranking they induce, or the labels a threshold turns them into.}
+\begin{forest} dmap
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{the probabilities themselves}
+    [{to train on; punishes confident mistakes hardest} [{\mref{Log Loss}{sec:log-loss}}]]
+    [{bounded; splits into calibration and resolution} [{\mref{Brier Score Loss}{sec:brier-score-loss}}]]
+    [{as skill over predicting the base rate} [{\mref{D-squared Log\\Loss Score}{sec:d-squared-log-loss-score}}]]]
+  [{the ranking of scores, before any threshold}
+    [{positives rare and the class that matters} [{\mref{PR AUC}{sec:pr-auc}}]]
+    [{both classes matter, or prevalence varies} [{\mref{ROC AUC}{sec:roc-auc}}]]]
+  [{the labels at a chosen threshold}
+    [{costs of a false alarm and a miss are known} [{\mref{EC}{sec:ec}}]]
+    [{classes balanced, errors equally costly} [{\mref{Accuracy}{sec:accuracy}}]]
+    [{imbalanced; one error type is the costly one}
+      [{missing a positive} [{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}\\\mref{FNR}{sec:fnr}}]]
+      [{a false alarm, among what you flagged} [{\mref{Precision}{sec:precision}}]]
+      [{a false alarm, among all negatives} [{\mref{FPR}{sec:fpr}\\\mref{TNR (Specificity)}{sec:tnr-specificity}}]]
+      [{both, traded off explicitly} [{\mref{F1-score}{sec:f1-score}\\\mref{F-beta}{sec:f-beta}}]]]
+    [{imbalanced; one number for the whole matrix} [{\mref{MCC}{sec:mcc}\\\mref{Balanced Accuracy}{sec:balanced-accuracy}\\\mref{P4-metric}{sec:p4-metric}}]]
+    [{overlap of predicted and true positive sets} [{\mref{Jaccard Index}{sec:jaccard-index}}]]]
+  [{agreement between two labelers, beyond chance} [{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}]]]
+\end{forest}
+\mapnotes{Every label metric is a ratio of confusion-matrix cells (p.~\pageref{sec:confusion-matrix}); look at the matrix before summarizing it. A threshold metric describes one operating point, so report the threshold with it. ROC AUC high and PR AUC low means the minority class is being missed.}
+\end{decisionmap}
+
 % ---------- Confusion Matrix ----------
 \thispagestyle{classificationstyle}
-\section{Confusion Matrix}
+\section{Confusion Matrix}\label{sec:confusion-matrix}
 \subsection{Confusion Matrix}
 Almost every classification metric in this chapter is derived from the same four numbers: TP, TN, FP, FN. The confusion matrix lays them out as a table --- and reading it directly often reveals failure modes that a single summary score hides, like a $95\%$-accurate tumor classifier that misses half the malignant cases.
 
@@ -117,7 +143,7 @@ When derived metrics disagree (accuracy is high but MCC is low), look at the mat
 
 % ---------- FPR ----------
 \clearpage
-\section{FPR}
+\section{FPR}\label{sec:fpr}
 \subsection{False Positive Rate}
 \thispagestyle{classificationstyle}
 
@@ -196,7 +222,7 @@ Other metrics used alongside or instead of FPR include True Positive Rate (TPR),
 
 % ---------- FNR ----------
 \clearpage
-\section{FNR}
+\section{FNR}\label{sec:fnr}
 \subsection{False Negative Rate}
 \thispagestyle{classificationstyle}
 
@@ -276,7 +302,7 @@ are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
 
 % ---------- TPR ----------
 \clearpage
-\section{TPR (Recall/Sensitivity)}
+\section{TPR (Recall/Sensitivity)}\label{sec:tpr-recall-sensitivity}
 \subsection{True Positive Rate (Recall/Sensitivity)}
 \thispagestyle{classificationstyle}
 
@@ -357,7 +383,7 @@ Other metrics used alongside or instead of Recall are Precision, F1-Score, F-bet
 % ---------- TNR ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{TNR (Specificity)}
+\section{TNR (Specificity)}\label{sec:tnr-specificity}
 \subsection{True Negative Rate (Specificity)}
 
 Specificity answers: ``Of all actual negatives, what fraction did we correctly identify as negative?'' It's the mirror of Recall —
@@ -421,7 +447,7 @@ Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall),
 \clearpage
 
 \thispagestyle{classificationstyle}
-\section{Accuracy}
+\section{Accuracy}\label{sec:accuracy}
 \subsection{Accuracy}
 
 Accuracy answers the simplest possible question: ``What fraction of predictions were correct?'' If accuracy is $0.92$, the model
@@ -485,7 +511,7 @@ These metrics provide a more nuanced view of classifier performance across all c
 % ---------- Balanced Accuracy ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Balanced Accuracy}
+\section{Balanced Accuracy}\label{sec:balanced-accuracy}
 \subsection{Balanced Accuracy}
 
 Balanced accuracy is the metric you reach for first whenever class balance might be inflating your accuracy score. Take a $95\%$ negative class: a model that predicts ``negative'' for everything scores $95\%$ accuracy --- but it's useless. Balanced accuracy fixes this by averaging how well the model does on each class, so the trivial all-negative model scores $50\%$.
@@ -542,7 +568,7 @@ When balanced accuracy and accuracy diverge by more than a few points, your data
 % ---------- Precision ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Precision}
+\section{Precision}\label{sec:precision}
 \subsection{Precision}
 
 Precision answers: ``When my model says positive, how often is it right?'' If Precision is $0.80$, then $80\%$ of the items flagged
@@ -607,7 +633,7 @@ For a threshold-independent evaluation, consider the PR AUC.
 % ---------- F1-score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{F1-score}
+\section{F1-score}\label{sec:f1-score}
 \subsection{F1-score}
 
 F1 combines Precision and Recall into a single number using the harmonic mean. Why harmonic, not arithmetic? Because it
@@ -680,7 +706,7 @@ When precision and recall are not equally important, use the F-beta score. For a
 % ---------- F-beta ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{F-beta}
+\section{F-beta}\label{sec:f-beta}
 \subsection{F-beta}
 
 F-beta generalizes F1 by letting you explicitly weight Precision vs Recall. Set $\beta = 2$ when missing a positive is twice as bad as
@@ -742,7 +768,7 @@ The F-beta score generalizes the F1-score. If you need a metric that also accoun
 % ---------- ROC AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{ROC AUC}
+\section{ROC AUC}\label{sec:roc-auc}
 \subsection{Area Under the Receiver Operating Characteristic Curve}
 
 ROC AUC is the most popular threshold-independent classification metric, and it has a probabilistic reading: pick one random positive
@@ -807,7 +833,7 @@ For imbalanced datasets where the positive class is rare, PR AUC is often prefer
 % ---------- PR AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{PR AUC}
+\section{PR AUC}\label{sec:pr-auc}
 \subsection{Area Under the Precision-Recall Curve}
 
 PR AUC is the metric of choice for imbalanced datasets where ROC AUC can be misleadingly optimistic. On a dataset with 1\% positives,
@@ -869,7 +895,7 @@ For probability calibration assessment, consider the Brier Score or Log Loss.
 % ---------- Brier Score Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Brier Score Loss}
+\section{Brier Score Loss}\label{sec:brier-score-loss}
 \subsection{Brier Score Loss}
 
 The Brier Score is MSE applied to probabilities: it measures the mean squared difference between predicted probabilities and actual
@@ -932,7 +958,7 @@ confident wrong predictions. For classification-based (non-probabilistic) evalua
 % ---------- Log Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Log Loss}
+\section{Log Loss}\label{sec:log-loss}
 \subsection{Log Loss}
 
 Log Loss brutally punishes confident wrong predictions. If your model says ``99\% chance this is spam'' and it's not spam,
@@ -1000,7 +1026,7 @@ When probabilities are not available, use threshold-based metrics like accuracy 
 % ---------- Jaccard Index ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Jaccard Index}
+\section{Jaccard Index}\label{sec:jaccard-index}
 \subsection{Jaccard Index}
 
 The Jaccard Index measures the overlap between two sets: the size of their intersection divided by the size of their union. In binary classification this works out to $TP / (TP + FP + FN)$ --- a stricter version of accuracy that leaves out the true-negative contribution. In computer vision it goes by another name: Intersection over Union (IoU).
@@ -1057,7 +1083,7 @@ For evaluations that include true negatives, use accuracy or balanced accuracy. 
 % ---------- D-squared Log Loss Score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{D-squared Log Loss Score}
+\section{D-squared Log Loss Score}\label{sec:d-squared-log-loss-score}
 \subsection{D-squared Log Loss Score}
 
 D-squared Log Loss does for log loss what R² does for MSE: normalizes it against a baseline that always predicts the mean class probability. The result is on the same scale as R² and reads the same way --- $D^2 = 0.85$ means your model reduces log loss by 85\% versus the baseline.
@@ -1114,7 +1140,7 @@ For calibration quality specifically, the Brier Score is more diagnostic. For th
 % ---------- P4-metric ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{P4-metric}
+\section{P4-metric}\label{sec:p4-metric}
 \subsection{P4-metric}
 
 P4 combines all four conditional probabilities of binary classification --- precision, recall, specificity, and negative predictive value (NPV) --- into a single harmonic-mean-style score. Unlike F1, which is the harmonic mean of just precision and recall, P4 also accounts for how well the model handles negatives. So a model that predicts ``positive'' for everything gets F1 = 0.95 on a 95\% positive class but P4 = 0, because specificity and NPV both collapse to zero.
@@ -1171,7 +1197,7 @@ P4 and MCC both fix F1's TN-blindness, but differently: MCC computes a correlati
 % ---------- Cohen's Kappa ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Cohen's Kappa}
+\section{Cohen's Kappa}\label{sec:cohen-s-kappa}
 \subsection{Cohen's Kappa}
 
 Cohen's Kappa measures the agreement between two annotators (or between a model and a single annotator) after subtracting the agreement expected by chance. Without this correction, raw agreement is misleading on imbalanced data: two annotators that label items randomly with the majority-class rate already match 68\% of the time on an $80/20$ dataset, with no actual skill. Kappa strips that chance baseline out.
@@ -1228,7 +1254,7 @@ For more than two annotators, use Fleiss' Kappa. For ordinal labels with graded 
 % ---------- MCC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{MCC}
+\section{MCC}\label{sec:mcc}
 \subsection{Matthews Correlation Coefficient}
 
 MCC is arguably the single best metric for binary classification. It's the only metric that uses all four confusion matrix values
@@ -1295,7 +1321,7 @@ Cohen's Kappa is mathematically related but designed for inter-annotator agreeme
 % ---------- EC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{EC}
+\section{EC}\label{sec:ec}
 \subsection{Expected Cost}
 
 Expected Cost bridges classification metrics and business economics. Instead of treating all errors equally (accuracy) or weighting

@@ -6,11 +6,27 @@ the same job for regression with a second model that predicts the error. All thr
 the case where the same inputs now deserve different labels, which RCD isolates once labels exist. Together they let a model be
 monitored without waiting for the truth.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{orangehard}{orangeaccent}{Which metric?}{Start with whether the labels for the monitored period exist yet. Without them, the estimate you can trust depends on the model type and on how far the inputs have shifted.}
+\begin{forest} dmap, large
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{labels have arrived}
+    [{how much of the drop is concept drift, not covariate shift?} [{\mref{RCD}{sec:rcd}}]]]
+  [{no labels yet, and the model is a classifier}
+    [{first, are the reference probabilities calibrated?} [{\mref{ECE}{sec:ece}}]]
+    [{calibrated, and the inputs shifted mildly} [{\mref{CBPE}{sec:cbpe}}]]
+    [{the inputs shifted far from what the calibrator saw} [{\mref{PAPE}{sec:pape}}]]]
+  [{no labels yet, and the model is a regressor}
+    [{the loss is predicted directly from the inputs} [{\mref{DLE}{sec:dle}}]]]]
+\end{forest}
+\mapnotes{All three estimators assume the relationship between inputs and labels is unchanged; RCD is the check once labels exist. Validate an estimator against realized performance on the reference period before trusting it in production.}
+\end{decisionmap}
+
 
 % ---------- Expected Calibration Error ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{ECE}
+\section{ECE}\label{sec:ece}
 \subsection{Expected Calibration Error}
 
 % reference:
@@ -90,7 +106,7 @@ trustworthy, and Calibration within Groups (Bias \& Fairness chapter) asks the s
 % ---------- CBPE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{CBPE}
+\section{CBPE}\label{sec:cbpe}
 \subsection{Confidence-Based Performance Estimation}
 
 % reference:
@@ -179,7 +195,7 @@ RCD quantifies.
 % ---------- PAPE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{PAPE}
+\section{PAPE}\label{sec:pape}
 \subsection{Probabilistic Adaptive Performance Estimation}
 
 % reference:
@@ -259,7 +275,7 @@ only; RCD, once labels arrive, measures the part of a performance change that co
 % ---------- DLE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{DLE}
+\section{DLE}\label{sec:dle}
 \subsection{Direct Loss Estimation}
 
 % reference:
@@ -341,7 +357,7 @@ saw; input-drift monitoring on the features tells which.
 % ---------- RCD ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{RCD}
+\section{RCD}\label{sec:rcd}
 \subsection{Reverse Concept Drift}
 
 % reference:

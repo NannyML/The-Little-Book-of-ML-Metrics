@@ -6,11 +6,37 @@ outputs with a pile of real samples instead of one pair at a time. For text-to-i
 whether the prompt is depicted; for speech, PESQ and STOI predict what a listening panel (MOS) would say. The chapter closes with the
 benchmarks that leaderboards report.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{purplehard}{purpleaccent}{Which metric?}{Start with the modality, then with what you can compare against: a reference, a reference set, a prompt, or nothing but a judge.}
+\begin{forest} dmap
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{text}
+    [{the language model itself, on held-out text} [{\mref{Perplexity}{sec:perplexity}}]]
+    [{one output vs.\ a reference, by meaning not $n$-grams} [{\mref{BERTScore}{sec:bertscore}}]]
+    [{a set of outputs vs.\ human text, as distributions} [{\mref{MAUVE}{sec:mauve}}]]
+    [{capabilities across tasks, vs.\ other models} [{\mref{Benchmarks}{sec:benchmarks}}]]]
+  [{images}
+    [{a set of images, no prompt}
+      [{quality and diversity, no reference set} [{\mref{IS}{sec:is}}]]
+      [{distance to a reference set} [{\mref{FID}{sec:fid}}]]]
+    [{two images: perceptual distance} [{\mref{LPIPS}{sec:lpips}}]]
+    [{does the image match the prompt?}
+      [{global semantic similarity, fast} [{\mref{CLIP Score}{sec:clip-score}}]]
+      [{each object, attribute and relation checked by a question} [{\mref{DSG}{sec:dsg}}]]
+      [{one yes/no probability; compositional prompts} [{\mref{VQAScore}{sec:vqascore}}]]]]
+  [{speech and audio}
+    [{human listeners} [{\mref{MOS}{sec:mos}}]]
+    [{quality vs.\ a clean reference} [{\mref{PESQ}{sec:pesq}}]]
+    [{intelligibility after noise or enhancement} [{\mref{STOI}{sec:stoi}}]]]]
+\end{forest}
+\mapnotes{Reference-free scores are as good as the judge behind them (CLIP, BLIP, a VQA model) and share its failures. Human evaluation, as MOS or side-by-side preference, is what every automatic score is validated against.}
+\end{decisionmap}
+
 
 % ---------- Perplexity ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{Perplexity}
+\section{Perplexity}\label{sec:perplexity}
 \subsection{Perplexity}
 
 % reference:
@@ -90,7 +116,7 @@ Perplexity falling while MAUVE stays flat means the model predicts better but de
 % ---------- BERTScore ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{BERTScore}
+\section{BERTScore}\label{sec:bertscore}
 \subsection{BERTScore}
 
 % reference:
@@ -170,7 +196,7 @@ whole distributions and needs no reference per sample.
 % ---------- MAUVE ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{MAUVE}
+\section{MAUVE}\label{sec:mauve}
 \subsection{MAUVE}
 
 % reference:
@@ -256,7 +282,7 @@ fits in feature space rather than histograms.
 % ---------- Inception Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{IS}
+\section{IS}\label{sec:is}
 \subsection{Inception Score}
 
 % reference:
@@ -334,7 +360,7 @@ target, use LPIPS.
 % ---------- Fréchet Inception Distance ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{FID}
+\section{FID}\label{sec:fid}
 \subsection{Fréchet Inception Distance}
 
 % reference:
@@ -419,7 +445,7 @@ the two feature sets, is safer.
 % ---------- Learned Perceptual Image Patch Similarity ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{LPIPS}
+\section{LPIPS}\label{sec:lpips}
 \subsection{Learned Perceptual Image Patch Similarity}
 
 % references: https://arxiv.org/pdf/1801.03924
@@ -496,7 +522,7 @@ the output has sharp but displaced detail. FID compares distributions of images 
 % ---------- CLIPScore ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{CLIP Score}
+\section{CLIP Score}\label{sec:clip-score}
 \subsection{CLIP Score}
 
 % reference:
@@ -577,7 +603,7 @@ but do not look like photographs; when FID is good and CLIP Score is low, the mo
 % ---------- Davidsonian Scene Graph ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{DSG}
+\section{DSG}\label{sec:dsg}
 \subsection{Davidsonian Scene Graph}
 
 % reference:
@@ -658,7 +684,7 @@ the prompt is usually long enough that the single-question model lost a detail, 
 % ---------- Visual Question Answering Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{VQAScore}
+\section{VQAScore}\label{sec:vqascore}
 \subsection{Visual Question Answering Score}
 
 % reference:
@@ -738,7 +764,7 @@ VQAScore was designed for.
 % ---------- Mean Opinion Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{MOS}
+\section{MOS}\label{sec:mos}
 \subsection{Mean Opinion Score}
 
 % reference:
@@ -817,7 +843,7 @@ MUSHRA (rating against a hidden reference) are the higher-powered variants for c
 % ---------- Perceptual Evaluation of Speech Quality ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{PESQ}
+\section{PESQ}\label{sec:pesq}
 \subsection{Perceptual Evaluation of Speech Quality}
 
 % reference:
@@ -897,7 +923,7 @@ learned predictors such as DNSMOS and NISQA estimate the MOS from the degraded s
 % ---------- Short-Time Objective Intelligibility ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{STOI}
+\section{STOI}\label{sec:stoi}
 \subsection{Short-Time Objective Intelligibility}
 
 % reference:
@@ -980,7 +1006,7 @@ processed audio is the downstream check.
 % ---------- Benchmarks ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{Benchmarks}
+\section{Benchmarks}\label{sec:benchmarks}
 \subsection{Benchmarks}
 
 The metrics in this chapter score one output at a time or one distribution of outputs. Benchmarks score a model: a fixed set of tasks

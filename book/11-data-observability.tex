@@ -7,6 +7,33 @@ history: each is computed at every scan, compared with an expected range learned
 orders feed monitored daily for six weeks, so the incidents one monitor catches and another misses can be read side by side. Unlike
 the rest of the book, each monitor takes one page.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{minthard}{mintaccent}{Which monitor?}{Start with what could have gone wrong upstream. Almost every monitor is judged against an expected range learned from its own history.}
+\begin{forest} dmap, wide2
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{how every monitor decides}
+    [{the band around normal, learned from history} [{\mref{Expected Range}{sec:expected-range}}]]]
+  [{the data did not arrive, or not all of it}
+    [{when did it last land?} [{\mref{Freshness}{sec:freshness}}]]
+    [{how many rows came?} [{\mref{Row Count}{sec:row-count}}]]]
+  [{the structure changed}
+    [{columns added, dropped or retyped} [{\mref{Schema Changes}{sec:schema-changes}}]]]
+  [{values are incomplete or repeated}
+    [{empty cells} [{\mref{Missing Values}{sec:missing-values}}]]
+    [{rows that should be unique and are not} [{\mref{Duplicates}{sec:duplicates}}]]
+    [{how many distinct values, e.g.\ categories} [{\mref{Unique Count}{sec:unique-count}}]]]
+  [{numeric values drifted or spiked}
+    [{the center} [{\mref{Average}{sec:average}}]]
+    [{the total, which also moves with volume} [{\mref{Sum}{sec:sum}}]]
+    [{the spread} [{\mref{Standard Deviation}{sec:standard-deviation}}]]
+    [{the extremes, and out-of-range values} [{\mref{Min and Max}{sec:min-and-max}}]]
+    [{the shape of the distribution} [{\mref{Quartiles}{sec:quartiles}}]]]
+  [{text columns changed shape}
+    [{strings shorter or longer than usual} [{\mref{Text Length}{sec:text-length}}]]]]
+\end{forest}
+\mapnotes{Check freshness and row count first: every other monitor is meaningless on a partial load. Schema changes are the one monitor that needs no history.}
+\end{decisionmap}
+
 % All figures in this chapter come from one simulated `orders` table, monitored daily for 42 days
 % (notebooks/observability_plots.py). Metric definitions follow the Soda documentation:
 % https://docs.soda.io/data-observability/metric-monitoring-dashboard
@@ -14,7 +41,7 @@ the rest of the book, each monitor takes one page.}{In this chapter}
 % ---------- Expected Range ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Expected Range}
+\section{Expected Range}\label{sec:expected-range}
 \subsection{How every monitor decides}
 
 A row count of $2{,}600$ is not an anomaly in itself; it is one on a Wednesday that usually brings $5{,}000$. Every metric in this
@@ -60,7 +87,7 @@ arrival time, since a row stamped two days ago that lands today is never evaluat
 % ---------- Row Count ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Row Count}
+\section{Row Count}\label{sec:row-count}
 \subsection{Volume}
 
 A nightly job that loads half of yesterday's orders raises no error: the table exists, the columns are right, the rows that arrived
@@ -104,7 +131,7 @@ the newest partition) and for tables loaded in bulk at irregular intervals, wher
 % ---------- Freshness ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Freshness}
+\section{Freshness}\label{sec:freshness}
 \subsection{Most Recent Timestamp}
 
 A dashboard can be up, fast and wrong because the table behind it stopped receiving data two days ago. Freshness is the interval between
@@ -145,7 +172,7 @@ order placed last week and loaded today looks a week stale), and pair it with Ro
 % ---------- Schema Changes ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Schema Changes}
+\section{Schema Changes}\label{sec:schema-changes}
 \subsection{Columns and Types}
 
 An upstream team renames a column, adds a discount field and switches a price from decimal to float. Nothing fails; downstream
@@ -187,7 +214,7 @@ definition intact (a currency switch inside a numeric column, an enum gaining a 
 % ---------- Missing Values ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Missing Values}
+\section{Missing Values}\label{sec:missing-values}
 \subsection{Completeness}
 
 A field that is usually empty for $2\%$ of rows and is suddenly empty for $40\%$ has not failed any type check. Missing values
@@ -230,7 +257,7 @@ the metric is blind to placeholders: a column that switches from null to \texttt
 % ---------- Duplicates ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Duplicates}
+\section{Duplicates}\label{sec:duplicates}
 \subsection{Uniqueness}
 
 A retrying job inserts the same batch twice and every total downstream is inflated by a few percent, too little for the row count to
@@ -272,7 +299,7 @@ near $100\%$; a change in the number of categories is a job for Unique Count.
 % ---------- Unique Count ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Unique Count}
+\section{Unique Count}\label{sec:unique-count}
 \subsection{Cardinality}
 
 A customer id truncated to three digits by a type change still passes every null and duplicate check on an orders table: ids repeat
@@ -314,7 +341,7 @@ numeric columns, where nearly every value is distinct and the count just mirrors
 % ---------- Average ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Average}
+\section{Average}\label{sec:average}
 \subsection{Mean}
 
 When $5\%$ of one day's amounts arrive in cents instead of currency units, the daily mean order value goes from $44$ to $252$.
@@ -357,7 +384,7 @@ moves it enough to alert; the median is the steadier choice there.
 % ---------- Sum ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Sum}
+\section{Sum}\label{sec:sum}
 \subsection{Total}
 
 Revenue reports read a total, not a mean. The sum per partition is the figure the business will see, and it moves for two unrelated
@@ -400,7 +427,7 @@ needs one of them to explain it.
 % ---------- Standard Deviation ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Standard Deviation}
+\section{Standard Deviation}\label{sec:standard-deviation}
 \subsection{Spread}
 
 Two days can share a mean order value and look nothing alike: one with every order near $44$, one with half at $20$ and half at $70$.
@@ -443,7 +470,7 @@ there, watch Quartiles for the bulk and Max for the tail.
 % ---------- Min / Max ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Min and Max}
+\section{Min and Max}\label{sec:min-and-max}
 \subsection{Range}
 
 A negative order amount, a delivery date in $1970$, a quantity of $9{,}999$: the values that break a downstream calculation are usually
@@ -485,7 +512,7 @@ columns, and use Quartiles when the question is about the bulk of the data rathe
 % ---------- Quartiles ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Quartiles}
+\section{Quartiles}\label{sec:quartiles}
 \subsection{Q1, Median, Q3}
 
 Where the mean answers ``how much on average'', the quartiles answer ``how much for the typical row, the cheap quarter and the expensive
@@ -527,7 +554,7 @@ that Min and Max exist to catch.
 % ---------- Text Length ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Text Length}
+\section{Text Length}\label{sec:text-length}
 \subsection{Format}
 
 Phone numbers that lose their country prefix, postcodes that gain a space, product codes that switch from twelve to fourteen characters:

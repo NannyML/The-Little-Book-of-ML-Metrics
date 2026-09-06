@@ -5,10 +5,28 @@ treat class imbalance and object identity. Points: PCK and OKS score keypoints b
 scales with the object. The recurring lesson is that per-pixel agreement is not perception: a blurry image can win on PSNR, and a mask
 shifted by a few pixels can lose on Dice while looking right.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{mintlight}{mintaccent}{Which metric?}{Start with what the model outputs: an image, a mask, or keypoints.}
+\begin{forest} dmap, large
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{a reconstructed or compressed image vs.\ its original}
+    [{pixel-wise fidelity, in decibels} [{\mref{PSNR}{sec:psnr}}]]
+    [{perceived structure: luminance, contrast, correlation} [{\mref{SSIM}{sec:ssim}}]]]
+  [{a segmentation mask}
+    [{a quick share of correct pixels; large classes dominate} [{\mref{Pixel Accuracy}{sec:pixel-accuracy}}]]
+    [{overlap per class, robust to class size} [{\mref{S{\o}rensen--Dice\\Coefficient}{sec:sorensen-dice-coefficient}}]]
+    [{instances and background, matched segment by segment} [{\mref{PQ}{sec:pq}}]]]
+  [{keypoints}
+    [{correct if within a fraction of a reference length} [{\mref{PCK}{sec:pck}}]]
+    [{COCO-style: tolerance scaled by object size} [{\mref{OKS}{sec:oks}}]]]]
+\end{forest}
+\mapnotes{Dice and IoU (the Jaccard Index, p.~\pageref{sec:jaccard-index}) rank masks identically; Dice is the segmentation default and IoU the detection one. PSNR and SSIM disagree when the error is structured: blur costs more SSIM than noise of the same PSNR.}
+\end{decisionmap}
+
 % ---------- Pixel Accuracy ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{Pixel Accuracy}
+\section{Pixel Accuracy}\label{sec:pixel-accuracy}
 \subsection{Pixel Accuracy}
 
 
@@ -115,7 +133,7 @@ Other metrics in this family are Mean Pixel Accuracy (mPA), Intersection over Un
 % ---------- PCK ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{PCK}
+\section{PCK}\label{sec:pck}
 \subsection{Percentage of Correct Keypoints}
 
 A keypoint is a labeled landmark on an object --- an elbow, a knee, the corner of an eye. PCK reports the percentage of predicted keypoints that land within a distance threshold of the truth, where the threshold scales with object size: a $10$-pixel miss is serious on a close-up face but negligible on a distant body.
@@ -179,7 +197,7 @@ PCK variants include PCKh (head-normalized) and PCK@$0.2$ (fixed threshold at $2
 % ---------- OKS ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{OKS}
+\section{OKS}\label{sec:oks}
 \subsection{Object Keypoint Similarity}
 
 Object Keypoint Similarity is the scoring rule behind the COCO keypoint leaderboard, and it fixes what PCK discards. Where PCK calls a prediction simply right or wrong, OKS scores each keypoint on a smooth Gaussian of the distance error, normalized by object size so the same miss costs more on a small person than a large one.
@@ -235,7 +253,7 @@ OKS is the continuous counterpart of PCK. For segmentation rather than keypoint 
 % ---------- PSNR ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{PSNR}
+\section{PSNR}\label{sec:psnr}
 \subsection{Peak Signal-to-Noise Ratio}
 
 PSNR scores how faithfully a reconstructed image matches the original, in decibels, higher is better; it is the standard number for
@@ -334,7 +352,7 @@ Modern vision work often values images that look realistic to humans over an exa
 % https://distancia.readthedocs.io/en/latest/SorensenDice.html
 \clearpage
 \thispagestyle{cvstyle}
-\section{S{\o}rensen–Dice Coefficient}
+\section{S{\o}rensen–Dice Coefficient}\label{sec:sorensen-dice-coefficient}
 \subsection{S{\o}rensen–Dice Coefficient}
 
 
@@ -396,7 +414,7 @@ $Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Pan
 % https://www.nature.com/articles/s41598-023-35605-7
 \clearpage
 \thispagestyle{cvstyle}
-\section{PQ}
+\section{PQ}\label{sec:pq}
 \subsection{Panoptic Quality}
 
 In panoptic segmentation, every pixel gets a class and, for countable objects, an instance ID --- a street scene becomes ``road,'' ``sky,'' and ``car \#1, car \#2, car \#3'' at once. Panoptic Quality grades this in one number, scoring amorphous ``stuff'' (sky, road) and countable ``things'' (cars, people) on the same scale where older pipelines needed a separate metric for each.
@@ -461,7 +479,7 @@ For semantic-only segmentation, use mean IoU. For instance-only, use Average Pre
 
 \clearpage
 \thispagestyle{cvstyle}
-\section{SSIM}
+\section{SSIM}\label{sec:ssim}
 \subsection{Structural Similarity Index}
 
 SSIM scores how similar two images look to a person rather than how far apart their pixel values are. It compares them on three fronts --- luminance, contrast, and structure --- within small local windows, which is why it separates distortions that MSE and PSNR rate as identical: two images with the same MSE, one faintly brightened and one structurally blurred, earn the different scores a human would give them.

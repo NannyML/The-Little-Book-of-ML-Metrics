@@ -5,11 +5,35 @@ information, homogeneity, completeness, V-Measure, Fowlkes-Mallows) compare a pa
 have to be corrected for chance because random partitions already agree somewhat. A good internal score does not mean the clusters mean
 anything, and a good external score is only as good as its reference; read both with the contingency matrix at hand.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Start with whether you have ground-truth classes to compare against. With them, decide what agreement means; without them, decide what a good cluster looks like.}
+\begin{forest} dmap
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{ground-truth classes available (external)}
+    [{look at the raw table first}
+      [{classes against clusters} [{\mref{Contingency Matrix}{sec:contingency-matrix}}]]
+      [{pairs together or apart, as a $2 \times 2$} [{\mref{Pair Confusion Matrix}{sec:pair-confusion-matrix}}]]]
+    [{score agreement pair by pair}
+      [{share of pairs both agree on; ARI corrects for chance} [{\mref{Rand Index}{sec:rand-index}}]]
+      [{geometric mean of pairwise precision and recall} [{\mref{FMI}{sec:fmi}}]]]
+    [{information shared by clusters and classes; NMI, AMI normalize it} [{\mref{Mutual Info Score}{sec:mutual-info-score}}]]
+    [{ask two questions, then combine}
+      [{is each cluster pure?} [{\mref{Homogeneity Score}{sec:homogeneity-score}}]]
+      [{is each class kept together?} [{\mref{Completeness Score}{sec:completeness-score}}]]
+      [{both, as one number} [{\mref{V-Measure}{sec:v-measure}}]]]]
+  [{no labels (internal)}
+    [{per-point cohesion vs.\ separation; slow on large data} [{\mref{Silhouette Score}{sec:silhouette-score}}]]
+    [{between- over within-cluster variance; fast, favors convex clusters} [{\mref{CH Index}{sec:ch-index}}]]
+    [{each cluster vs.\ its most similar neighbor; lower is better} [{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}]]]]
+\end{forest}
+\mapnotes{Correct for chance when the clusterings compared have different $k$: ARI rather than the Rand index, AMI rather than raw mutual information. An internal index can say the clusters are compact and apart, never that they mean anything.}
+\end{decisionmap}
+
 
 % ---------- Mutual Info Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Mutual Info Score}
+\section{Mutual Info Score}\label{sec:mutual-info-score}
 \subsection{Mutual Info Score}
 
 Mutual Information (MI) measures how much knowing one variable reduces uncertainty about another. In clustering, that's how much knowing the predicted cluster label tells you about the true class. A cluster that contains only one class gives high MI; a cluster that mixes classes evenly gives MI near $0$.
@@ -69,7 +93,7 @@ For cross-dataset comparison on a bounded $[0, 1]$ scale, use NMI. For chance-ad
 % ---------- rand index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Rand Index}
+\section{Rand Index}\label{sec:rand-index}
 \subsection{Rand Index}
 
 The Rand Index (RI) is the fraction of point pairs on which two clusterings agree --- whether they both place the pair together, or both separate them. On three balanced classes with random labels, $RI \approx 0.56$ already: most pairs are correctly apart by chance, so RI inflates regardless of clustering quality. The Adjusted Rand Index (ARI) subtracts that chance baseline, so a score of $0$ means random and $1$ means identical clusterings.
@@ -123,7 +147,7 @@ If RI is high but AMI is low, the clustering matches pair-by-pair but loses info
 % ---------- calinski harabasz index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{CH Index}
+\section{CH Index}\label{sec:ch-index}
 \subsection{Calinski-Harabasz Index}
 
 The Calinski-Harabasz (CH) Index scores a clustering without ground-truth labels by comparing how tight clusters are internally against how far apart they sit from each other. Higher CH means tighter clusters and wider gaps between centers --- the two properties that define a ``good'' partition when there is nothing to compare to.
@@ -179,7 +203,7 @@ The Silhouette Score also picks $k$ without labels and handles non-convex cluste
 % ---------- contingency matrix ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Contingency Matrix}
+\section{Contingency Matrix}\label{sec:contingency-matrix}
 \subsection{Contingency Matrix}
 
 The Contingency Matrix is the clustering analog of a confusion matrix: rows are true classes, columns are predicted clusters, and cell $(i, j)$ counts the points that belong to class $i$ and ended up in cluster $j$. Unlike a confusion matrix, the row and column index sets do not have to match --- $5$ true classes and $7$ predicted clusters give a $5 \times 7$ matrix, not a square one.
@@ -233,7 +257,7 @@ The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ tab
 % ---------- pair confusion matrix ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Pair Confusion Matrix}
+\section{Pair Confusion Matrix}\label{sec:pair-confusion-matrix}
 \subsection{Pair Confusion Matrix}
 
 The Pair Confusion Matrix is a $2 \times 2$ table that summarizes, for every pair of points, whether two clusterings agree on keeping the pair together or separating it. It collapses arbitrary clusterings (any $k$, any $C$) into the same four-entry summary, which is the structure that powers RI, ARI, and the Fowlkes-Mallows Index.
@@ -285,7 +309,7 @@ The Fowlkes-Mallows Index surfaces the precision-recall asymmetry between $C_{01
 % ---------- Completeness Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Completeness Score}
+\section{Completeness Score}\label{sec:completeness-score}
 \subsection{Completeness Score}
 
 The Completeness Score measures whether all members of a true class end up in the same cluster. It is asymmetric: lumping every point into one giant cluster gives Completeness $= 1$ trivially, because every class is contained somewhere. That's why Completeness is always reported alongside Homogeneity.
@@ -341,7 +365,7 @@ Completeness and Homogeneity always need to be read together; one without the ot
 % ---------- Homogeneity Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Homogeneity Score}
+\section{Homogeneity Score}\label{sec:homogeneity-score}
 \subsection{Homogeneity Score}
 
 The Homogeneity Score is the mirror of Completeness: it measures whether each cluster contains points from only one true class. It is asymmetric the other way --- splitting every point into its own cluster gives Homogeneity $= 1$ trivially, because a one-point cluster is pure by definition. Always paired with Completeness.
@@ -401,7 +425,7 @@ Homogeneity and Completeness mirror each other: if Homogeneity is high but Compl
 % ---------- V Measure ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{V-Measure}
+\section{V-Measure}\label{sec:v-measure}
 \subsection{V-Measure}
 
 V-Measure is the harmonic mean of Homogeneity and Completeness --- the F-score of clustering. It collapses the two-metric tradeoff into a single bounded number, penalizing extremes the way an F-score penalizes precision-recall imbalance. A clustering with Homogeneity $= 1$ and Completeness $= 0.5$ scores $V = 0.67$, not the arithmetic mean $0.75$.
@@ -461,7 +485,7 @@ For chance correction, use AMI --- the information-theoretic analog of V-Measure
 % ---------- Davis Bouldin Index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Davies-Bouldin Index}
+\section{Davies-Bouldin Index}\label{sec:davies-bouldin-index}
 \subsection{Davies-Bouldin Index}
 
 The Davies-Bouldin (DB) Index scores a clustering without labels by asking, for each cluster, how much it overlaps with its worst neighbor. It takes the maximum of $(s_i + s_j)/d_{ij}$ over neighboring clusters --- sum of cluster widths divided by centroid distance --- then averages those worst-case ratios across $k$. Lower is better; the minimum identifies the optimal $k$.
@@ -517,7 +541,7 @@ The Silhouette Score is the other label-free option, costing $O(n^2)$ but handli
 % ---------- Fowlkes-Mallows Index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{FMI}
+\section{FMI}\label{sec:fmi}
 \subsection{Fowlkes-Mallows Index}
 
 The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and recall on the ``same cluster'' decision. The geometric mean rewards balance: if either pair-wise precision or recall is low, FMI drops --- one-sided clusterings cannot hide behind a strong score in just one direction.
@@ -578,7 +602,7 @@ FMI is the pair-counting cousin of RI and ARI. When FMI is high but ARI is low, 
 % ---------- Silhouette Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Silhouette Score}
+\section{Silhouette Score}\label{sec:silhouette-score}
 \subsection{Silhouette Score}
 
 The Silhouette Score compares each point's distance to other points in its own cluster against its distance to the nearest other cluster. Averaging across all points gives a score in $[-1, 1]$: near $+1$ means tight, well-separated clusters; near $0$ means points sit on boundaries; below $0$ means points have been placed in the wrong cluster.

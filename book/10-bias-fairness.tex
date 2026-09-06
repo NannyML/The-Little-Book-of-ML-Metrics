@@ -6,11 +6,27 @@ positive prediction, or a score, means once it is given. When base rates differ 
 and the chapter's one shared example shows the same model passing two criteria and failing three. Choosing a fairness metric is
 choosing which of those failures to accept.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{coralhard}{coralaccent}{Which criterion?}{Start with what should be equal across groups. Each criterion is a different conditional independence, and with different base rates they cannot all hold at once.}
+\begin{forest} dmap, large
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{the share of positive decisions, whatever the outcomes}
+    [{no ground truth needed} [{\mref{Demographic Parity}{sec:demographic-parity}}]]]
+  [{the error rates people experience}
+    [{qualified people accepted at the same rate (equal TPR)} [{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}]]
+    [{both error rates equal (TPR and FPR)} [{\mref{Equality of Odds}{sec:equality-of-odds}}]]]
+  [{what the output means to the decision maker}
+    [{a positive label is right equally often (equal precision)} [{\mref{Predictive Parity}{sec:predictive-parity}}]]
+    [{a score means the same outcome rate in every group} [{\mref{Calibration\\within Groups}{sec:calibration-within-groups}}]]]]
+\end{forest}
+\mapnotes{When base rates differ between groups, calibration (or predictive parity) and equal error rates cannot hold together (Chouldechova 2017; Kleinberg et al.\ 2017). Choose the criterion whose violation would do the most harm and report the others alongside it.}
+\end{decisionmap}
+
 
 % ---------- Demographic Parity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Demographic Parity}
+\section{Demographic Parity}\label{sec:demographic-parity}
 \subsection{Demographic Parity}
 
 % reference:
@@ -87,7 +103,7 @@ means something different for each group. Calibration within Groups checks the s
 % ---------- Equality of Opportunity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Equality of Opportunity}
+\section{Equality of Opportunity}\label{sec:equality-of-opportunity}
 \subsection{Equality of Opportunity}
 
 Among loan applicants who would in fact repay, equality of opportunity asks that the model approve them at the same rate whether they are
@@ -162,7 +178,7 @@ satisfy parity while badly failing equal opportunity, and the reverse.
 % ---------- Equality of Odds ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Equality of Odds}
+\section{Equality of Odds}\label{sec:equality-of-odds}
 \subsection{Equality of Odds}
 
 % resources:
@@ -240,7 +256,7 @@ labels entirely.
 % ---------- Predictive Parity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Predictive Parity}
+\section{Predictive Parity}\label{sec:predictive-parity}
 \subsection{Predictive Parity}
 
 % references:
@@ -320,7 +336,7 @@ informative --- the choice of which to enforce is yours. Calibration within Grou
 % ---------- Calibration within Groups ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Calibration within Groups}
+\section{Calibration within Groups}\label{sec:calibration-within-groups}
 \subsection{Calibration within Groups}
 
 A health system uses a risk model to enroll patients in a care program and acts on the scores directly: everyone above $0.3$ gets contacted.

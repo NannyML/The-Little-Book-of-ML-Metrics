@@ -6,10 +6,34 @@ position; hit rate asks only whether anything relevant made the cut, and FCP sco
 diversity, novelty, serendipity) scores the catalog rather than the query, because a recommender that is accurate and shows everyone
 the same ten items is failing at something these metrics name.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{corallight}{coralaccent}{Which metric?}{Start with what you know about each item's relevance: a yes or no, a grade, or a preference. The last branch scores qualities of the list other than relevance.}
+\begin{forest} dmap, wide2
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{relevance is binary}
+    [{one right answer per query: where does it land?} [{\mref{MRR}{sec:mrr}}]]
+    [{did anything relevant reach the top $K$?} [{\mref{Hit Rate}{sec:hit-rate}}]]
+    [{share of the top $K$ that is relevant, or of the relevant that made the top $K$} [{\mref{@K Metrics}{sec:k-metrics}}]]
+    [{the whole ordering of relevant items, over all queries} [{\mref{MAP}{sec:map}}]]]
+  [{relevance is graded}
+    [{total relevance retrieved, order ignored} [{\mref{CG}{sec:cg}}]]
+    [{top positions count more} [{\mref{DCG}{sec:dcg}}]]
+    [{comparable across queries with different ideal lists} [{\mref{nDCG}{sec:ndcg}}]]]
+  [{you predict ratings or pairwise preferences}
+    [{is the predicted order right?} [{\mref{FCP}{sec:fcp}}]]]
+  [{relevance is not the question}
+    [{are the items unlike each other?} [{\mref{Diversity}{sec:diversity}}]]
+    [{are they new to the user?} [{\mref{Novelty}{sec:novelty}}]]
+    [{relevant and unexpected at once?} [{\mref{Serendipity}{sec:serendipity}}]]
+    [{how much of the catalog is ever shown?} [{\mref{Coverage}{sec:coverage}}]]]]
+\end{forest}
+\mapnotes{Fix $K$ to the length of the list users actually see and keep it fixed across models. Relevance metrics and the beyond-relevance ones pull in opposite directions; report one of each.}
+\end{decisionmap}
+
 % ---------- @K Metrics ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{@K Metrics}
+\section{@K Metrics}\label{sec:k-metrics}
 \subsection{@K Metrics}
 
 Most ranking metrics score the full ordering, but users rarely scroll past the first screen. The @K family restricts evaluation to the top-$K$ items, matching the slice of the ranking that actually drives engagement. Any base metric — Precision, Recall, MRR, MAP, nDCG — has an @K variant that ignores everything below rank $K$.
@@ -54,7 +78,7 @@ Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$, and nDCG@$K$. For
 % ---------- Mean Reciprocal Rank ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{MRR}
+\section{MRR}\label{sec:mrr}
 \subsection{Mean Reciprocal Rank}
 
 MRR scores a system on a narrow question: how high in the list is the first relevant result? Average that reciprocal across all queries and the result is MRR. The metric heavily weights the rank-$1$ result and gives little credit when the first relevant item appears at rank $5$ or $10$ — useful for tasks where users abandon the list after the first miss.
@@ -111,7 +135,7 @@ For multi-relevant evaluation use MAP. For graded relevance (some items more rel
 % ---------- Mean Average Precision ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{MAP}
+\section{MAP}\label{sec:map}
 \subsection{Mean Average Precision}
 
 MAP rewards rankers for placing relevant items high in the list. For each query, walk down the ranking and average the precision at every position where a relevant item appears — that is the Average Precision (AP). MAP is the mean of AP across queries. A relevant item at rank $1$ contributes precision $1.0$; at rank $10$ it contributes $0.1$, so MAP collapses when relevant items are buried.
@@ -171,7 +195,7 @@ For graded relevance use nDCG. For top-only evaluation use MRR or Precision@$K$.
 % ---------- Hit Rate ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Hit Rate}
+\section{Hit Rate}\label{sec:hit-rate}
 \subsection{Hit Rate}
 
 Hit Rate answers a yes-no question per user: did the top-$K$ list contain at least one relevant item? Average that indicator across users and you have the Hit Rate of the system. It ignores how many relevant items appeared and where they were — only whether the user got something or nothing.
@@ -228,7 +252,7 @@ For position-aware evaluation use MRR or nDCG. For counting how many relevant it
 % ---------- Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{CG}
+\section{CG}\label{sec:cg}
 \subsection{Cumulative Gain}
 
 Cumulative Gain (CG) sums the relevance scores of the items in a recommendation list. With graded relevance — $3$ for ``perfect'', $1$ for ``marginal'', $0$ for ``irrelevant'' — $CG_K$ is the total relevance packed into the top-$K$. The catch is that CG ignores rank: a relevant item at position $1$ adds the same as one at position $K$.
@@ -285,7 +309,7 @@ DCG extends CG by discounting later positions. nDCG normalizes DCG against the i
 % ---------- Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{DCG}
+\section{DCG}\label{sec:dcg}
 \subsection{Discounted Cumulative Gain}
 
 DCG fixes the order-blindness of CG by discounting items further down the list. The position discount $1/\log_2(i + 1)$ is heaviest at rank $1$ (no discount) and decays slowly: rank $2$ gets a factor of $0.63$, rank $10$ gets $0.29$, rank $100$ gets $0.15$. DCG rewards relevance but heavily favors relevance that appears early.
@@ -339,7 +363,7 @@ For cross-query comparison use nDCG, which divides DCG by the ideal ranking's DC
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{nDCG}
+\section{nDCG}\label{sec:ndcg}
 \subsection{Normalized Discounted Cumulative Gain}
 
 nDCG divides DCG by the best possible DCG for the same items (the Ideal DCG, or IDCG). The ratio is bounded in $[0, 1]$: $1$ means the model produced the ideal ordering, $0$ means every relevant item was sorted to the bottom. Because each query is scored against its own ideal, nDCG values from queries with very different relevance budgets are directly comparable.
@@ -396,7 +420,7 @@ nDCG is DCG normalized against the ideal ranking. For binary relevance use MAP �
 % ---------- Fraction of Concordant Pairs ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{FCP}
+\section{FCP}\label{sec:fcp}
 \subsection{Fraction of Concordant Pairs}
 
 FCP turns ranking into a pairwise question: for every pair of items where the user prefers one over the other, did the model rank them in the right order? The metric is the fraction of such pairs that came out concordant. A coin-flip ranker scores $0.5$; a perfect ranker scores $1$.
@@ -453,7 +477,7 @@ FCP is structurally Kendall's tau without the rescaling. For position-weighted e
 % ---------- Diversity ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Diversity}
+\section{Diversity}\label{sec:diversity}
 \subsection{Diversity}
 
 Diversity scores a recommendation list by how dissimilar its items are from each other on average. Sum the pairwise dissimilarities $d(i, j)$ across all unordered pairs and divide by the number of pairs. A list of ten action movies scores low; a list mixing action, comedy, and documentary scores high.
@@ -507,7 +531,7 @@ Diversity captures how different items are from each other; Novelty captures how
 % ---------- Novelty ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Novelty}
+\section{Novelty}\label{sec:novelty}
 \subsection{Novelty}
 
 Novelty scores how unfamiliar the recommended items are. The simplest formulation inverts item popularity: items few users have seen score high, mainstream items score low. The information-theoretic version $-\log_2 P(i)$ measures the same thing in bits — a popular item with $P = 0.5$ has $1$ bit of novelty; a rare item with $P = 0.01$ has $6.6$ bits.
@@ -554,7 +578,7 @@ Novelty is per-item popularity-based; Diversity is per-list pairwise dissimilari
 % ---------- Serendipity ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Serendipity}
+\section{Serendipity}\label{sec:serendipity}
 \subsection{Serendipity}
 
 Serendipity scores recommendations on two axes: relevance and unexpectedness. An item is serendipitous only if the user would have valued it AND would not have found it alone. A purely accurate recommender hits relevance but scores low on unexpectedness; a purely novel one hits the second axis but tanks the first.
@@ -609,7 +633,7 @@ Serendipity combines relevance (like Precision) with unexpectedness (a function 
 % ---------- Coverage ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Coverage}
+\section{Coverage}\label{sec:coverage}
 \subsection{Coverage}
 
 Coverage is the fraction of the item catalog the recommender ever surfaces to anyone. A catalog of $10{,}000$ items where the system only ever recommends $1{,}200$ has $Coverage = 0.12$ — most of the catalog is invisible. Unlike per-list metrics, Coverage is a system-level diagnostic: it tells you whether the model is collapsing onto a small set of safe items.

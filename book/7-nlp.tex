@@ -5,11 +5,29 @@ the edits needed to reach the reference, and WER does the same for transcribed s
 one right span. All of them reward surface agreement and can punish a good paraphrase; the GenAI chapter picks up where they stop, with
 metrics that compare meaning and distributions rather than tokens.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{cyanhard}{cyanaccent}{Which metric?}{Start with the task. All six compare a candidate with reference text by surface overlap.}
+\begin{forest} dmap, large
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{translation, or free-form generation against references}
+    [{corpus-level $n$-gram precision with a brevity penalty} [{\mref{BLEU}{sec:bleu}}]]
+    [{sentence-level; credits stems and synonyms; favors recall} [{\mref{METEOR}{sec:meteor}}]]
+    [{how many edits would fix it} [{\mref{TER}{sec:ter}}]]]
+  [{summarization}
+    [{did the reference content make it in?} [{\mref{ROUGE}{sec:rouge}}]]]
+  [{extractive question answering}
+    [{is the short answer exactly right?} [{\mref{EM}{sec:em}}]]]
+  [{speech transcription}
+    [{how many words were substituted, dropped or added?} [{\mref{WER}{sec:wer}}]]]]
+\end{forest}
+\mapnotes{A correct paraphrase scores low on every metric here. When meaning matters more than wording, BERTScore (p.~\pageref{sec:bertscore}) is the reference-based option, and human judgment the final one.}
+\end{decisionmap}
+
 
 % ---------- Bilingual Evaluation Understudy ----------
 \clearpage
 \thispagestyle{nlpstyle}
-\section{BLEU}
+\section{BLEU}\label{sec:bleu}
 \subsection{Bilingual Evaluation Understudy}
 % references:
 % https://aclanthology.org/P02-1040.pdf
@@ -94,7 +112,7 @@ penalizes more gently.
 
 \clearpage
 \thispagestyle{nlpstyle}
-\section{METEOR}
+\section{METEOR}\label{sec:meteor}
 \subsection{Metric for Evaluation of Translation with Explicit ORdering}
 
 METEOR scores a translation the way a lenient grader would: it aligns the candidate to the reference
@@ -178,7 +196,7 @@ embedding-based similarity that needs no synonym table, see BERTScore in the Gen
 
 \clearpage
 \thispagestyle{nlpstyle}
-\section{ROUGE}
+\section{ROUGE}\label{sec:rouge}
 \subsection{Recall-Oriented Understudy for Gisting Evaluation}
 
 ROUGE evaluates a summary by how much of the reference it recovers: it counts overlapping unigrams
@@ -255,7 +273,7 @@ credit beyond exact tokens, see BERTScore in the GenAI chapter.
 % reference: https://aclanthology.org/2006.amta-papers.25.pdf
 \clearpage
 \thispagestyle{nlpstyle}
-\section{TER}
+\section{TER}\label{sec:ter}
 \subsection{Translation Error Rate}
 
 TER reports translation quality as post-editing effort: the fraction of edits a human would need to turn
@@ -334,7 +352,7 @@ BLEU's n-grams punish. Lower TER is better --- the opposite direction to BLEU an
 % reference: https://nlp.stanford.edu/pubs/rajpurkar2016squad.pdf
 \clearpage
 \thispagestyle{nlpstyle}
-\section{EM}
+\section{EM}\label{sec:em}
 \subsection{Exact Match}
 
 Exact Match is the fraction of predictions identical to the reference: each scores $1$ if it matches the
@@ -409,7 +427,7 @@ BLEU or ROUGE; for semantic equivalence, BERTScore.
 % ---------- Word Error Rate ----------
 \clearpage
 \thispagestyle{nlpstyle}
-\section{WER}
+\section{WER}\label{sec:wer}
 \subsection{Word Error Rate}
 
 WER scores a speech recognizer by how many word-level edits separate its transcript from the reference:

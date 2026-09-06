@@ -422,6 +422,66 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 \colorlet{coralaccent}{coralhard!55!black}
 \colorlet{mintaccent}{minthard!45!black}
 
+% ---------- Decision maps: one page per chapter, right after the opener ----------
+\usepackage[edges]{forest}
+\colorlet{mapband}{cyanlight}
+\colorlet{mapaccent}{cyanaccent}
+\newcommand{\maptitle}{Which metric?}
+\fancypagestyle{mapstyle}{
+    \fancyhf{}
+    \fancyfoot[R]{\chaptertitle: \maptitle}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0pt}
+    \tikz[overlay,remember picture]{
+        \node[inner sep=0pt,outer sep=0pt,minimum width=.7cm, minimum height=\paperheight, anchor=north west, fill=mapband] (a) at (current page.north west) {};
+        \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) {\chaptertitle\ -- \maptitle};
+    }
+}
+% a leaf entry: metric name followed by its page number
+\newcommand{\mref}[2]{#1~{\color{black!65}\mdseries\scriptsize\pageref{#2}}}
+\newcommand{\nohyph}{\hyphenpenalty=10000 \exhyphenpenalty=10000 }
+\forestset{
+    dmap/.style={
+        for tree={
+            grow'=0, child anchor=west, parent anchor=east, anchor=west,
+            font=\footnotesize\nohyph, text=black!70, node options={align=left},
+            l sep=4.5mm, s sep=1.7mm, inner xsep=2pt, inner ysep=1.3pt,
+            edge={draw, line width=0.6pt, mapaccent!45},
+            forked edges, fork sep=2.5mm,
+        },
+        where n children=0{
+            font=\footnotesize\bfseries, text=black!85, fill=mapband, rounded corners=2pt, inner xsep=4pt, inner ysep=2.2pt,
+        }{},
+        where level=1{text width=2.2cm, text=black!85, font=\footnotesize\bfseries\nohyph}{},
+        where level=2{if n children=0{}{text width=2.5cm}}{},
+        where level=3{if n children=0{}{text width=3cm}}{},
+    },
+    % for trees whose conditions stop at level 2: give that level more room
+    wide2/.style={for tree={s sep=2.6mm}, where level=1{text width=2.6cm}{}, where level=2{if n children=0{}{text width=4cm}}{}},
+    % for small trees (two levels, few leaves): a larger size that fills the page better
+    large/.style={
+        for tree={font=\small\nohyph, s sep=3.4mm, l sep=6mm},
+        where n children=0{font=\small\bfseries, inner ysep=2.8pt, inner xsep=5pt}{},
+        where level=1{font=\small\bfseries\nohyph, text width=2.7cm}{},
+        where level=2{if n children=0{}{text width=4cm}}{},
+    },
+}
+% \begin{decisionmap}{band}{accent}{title}{subtitle} ... \end{decisionmap}
+\newenvironment{decisionmap}[4]{%
+    \clearpage
+    \colorlet{mapband}{#1}\colorlet{mapaccent}{#2}%
+    \renewcommand{\maptitle}{#3}%
+    \thispagestyle{mapstyle}%
+    \noindent{\color{#2}\fontsize{22}{26}\selectfont\bfseries #3}\par
+    \vspace{5pt}
+    {\color{black!60}\small #4\par}
+    \vspace{14pt}
+    \noindent
+}{%
+    \clearpage
+}
+\newcommand{\mapnotes}[1]{\par\vspace{2.6em}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
+
 \begin{document}
 \pagestyle{customstyle}
 

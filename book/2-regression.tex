@@ -6,10 +6,37 @@ the score: squared errors let a few large misses set the number, absolute errors
 misses on small targets. $R^2$, $D^2$ and explained variance compare the residuals with a baseline instead of reporting them raw, and
 MDA ignores their size to score only the direction of change. Read MAE first; the rest are variations on which residuals matter most.}{In this chapter}
 
+% ---------- Decision map ----------
+\begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Start with what the model predicts, then with how you want to read its error. Each chip is a page in this chapter.}
+\begin{forest} dmap
+[, phantom, l sep=0pt, inner sep=0pt, for children={no edge}
+  [{a quantile or an interval bound} [{\mref{Pinball Loss}{sec:pinball-loss}}]]
+  [{only the direction of change} [{\mref{MDA}{sec:mda}}]]
+  [{a point value, whose error is read\ldots}
+    [{scale-dependent, in the target's units}
+      [{large misses should dominate} [{\mref{MSE}{sec:mse}\\\mref{RMSE}{sec:rmse}}]]
+      [{every unit of error counts alike} [{\mref{MAE}{sec:mae}}]]]
+    [{as a percentage of the actual}
+      [{no zeros or near-zeros in the target} [{\mref{MAPE}{sec:mape}}]]
+      [{zeros or low-volume items: weight by volume} [{\mref{wMAPE}{sec:wmape}}]]
+      [{a bounded 0--200\% score is required} [{\mref{sMAPE}{sec:smape}}]]]
+    [{against a naive forecast (time series)} [{\mref{MASE}{sec:mase}}]]
+    [{in log space: targets span orders of magnitude} [{\mref{MSLE}{sec:msle}\\\mref{RMSLE}{sec:rmsle}}]]
+    [{as a deviance under the target's noise}
+      [{counts: variance grows with the mean} [{\mref{MPD}{sec:mpd}}]]
+      [{positive, skewed: variance grows with the mean squared} [{\mref{MGD}{sec:mgd}}]]]
+    [{as the share of variance explained}
+      [{with squared error, bias included} [{\mref{R-squared}{sec:r-squared}}]]
+      [{with any deviance, e.g.\ Poisson or pinball} [{\mref{D2}{sec:d2}}]]
+      [{ignoring a constant bias} [{\mref{Explained\\Variance Score}{sec:explained-variance-score}}]]]]]
+\end{forest}
+\mapnotes{Most models deserve two numbers: one in the target's units for the people who own the target, one scale-free for comparing models. RMSE far above MAE means a few large errors; MAPE and wMAPE disagreeing means the low-volume items are where the errors are.}
+\end{decisionmap}
+
 % ---------- MAE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MAE}
+\section{MAE}\label{sec:mae}
 \subsection{Mean Absolute Error}
 
 MAE is one of the most intuitive regression metrics: it tells you, on average, how far off your predictions are in the same units as your target.
@@ -86,7 +113,7 @@ For percentage-based comparison across different-scale targets, use MAPE or sMAP
 % ---------- MSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MSE}
+\section{MSE}\label{sec:mse}
 \subsection{Mean Squared Error}
 
 MSE is both a metric and the most widely used loss function in machine learning. By squaring each error before averaging, it
@@ -163,7 +190,7 @@ your model has a few very large errors dominating the score. MSE is primarily va
 % ---------- MSLE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MSLE}
+\section{MSLE}\label{sec:msle}
 \subsection{Mean Squared Log Error}
 
 MSLE measures relative errors rather than absolute ones. Predicting 110 when the target is 100 ($10\%$ off) gets the same
@@ -240,7 +267,7 @@ Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Sq
 % ---------- RMSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{RMSE}
+\section{RMSE}\label{sec:rmse}
 \subsection{Root Mean Squared Error}
 
 RMSE is simply $\sqrt{MSE}$, but that square root makes all the difference: it returns the error in the same units as your target.
@@ -318,7 +345,7 @@ Metrics like Mean Absolute Error (MAE), Average Absolute Deviation (AAD), and No
 % ---------- RMSLE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{RMSLE}
+\section{RMSLE}\label{sec:rmsle}
 \subsection{Root Mean Squared Log Error}
 
 RMSLE is to MSLE what RMSE is to MSE — it takes the square root, restoring interpretability in log-space.
@@ -390,7 +417,7 @@ fashion are Mean Squared Logarithmic Error (MSLE), Mean Absolute Percentage Erro
 % ---------- MAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MAPE}
+\section{MAPE}\label{sec:mape}
 \subsection{Mean Absolute Percentage Error}
 
 MAPE expresses errors as percentages: a MAPE of $5\%$ means your predictions are off by $5\%$ on average. This scale-free
@@ -470,7 +497,7 @@ If your targets are intermittent (many zeros), skip percentage metrics entirely 
 % ---------- sMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{sMAPE}
+\section{sMAPE}\label{sec:smape}
 \subsection{Symmetric Mean Absolute Percentage Error}
 
 sMAPE was designed to fix MAPE's two biggest problems: unbounded values near zero and asymmetric penalties. By averaging the actual and
@@ -555,7 +582,7 @@ sMAPE is closely related to MAPE and wMAPE; if its asymmetry is a concern, use w
 % ---------- wMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{wMAPE}
+\section{wMAPE}\label{sec:wmape}
 \subsection{Weighted Mean Absolute Percentage Error}
 
 wMAPE solves MAPE's most dangerous flaw: the zero-denominator explosion. Instead of dividing each error by its individual actual value,
@@ -625,7 +652,7 @@ series, and the one to use when the question is ``better than a naive forecast?'
 
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MASE}
+\section{MASE}\label{sec:mase}
 \subsection{Mean Absolute Scaled Error}
 
 MASE answers the question: ``Is my model better than simply predicting tomorrow's value as today's value?'' It divides your model's
@@ -692,7 +719,7 @@ For directional accuracy, consider MDA.
 % ---------- MDA ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MDA}
+\section{MDA}\label{sec:mda}
 \subsection{Mean Directional Accuracy}
 
 In many applications, predicting the \textit{direction} of change matters more than the exact magnitude. A stock trader doesn't need to know
@@ -765,7 +792,7 @@ MDA focuses solely on directional accuracy. For magnitude-based evaluation, use 
 % ---------- MPD ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MPD}
+\section{MPD}\label{sec:mpd}
 \subsection{Mean Poisson Deviance}
 
 MPD is a metric used to evaluate the performance of regression models when the target variable follows a Poisson distribution. This distribution is common for count data, such as the number
@@ -823,7 +850,7 @@ MPD, MGD, and Tweedie deviance all live in the same exponential family --- pick 
 % ---------- MGD ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MGD}
+\section{MGD}\label{sec:mgd}
 \subsection{Mean Gamma Deviance}
 
 MGD is a metric for evaluating regression models when the target variable follows a Gamma distribution. This distribution is often used for modeling continuous positive data with a
@@ -882,7 +909,7 @@ MGD and MPD are both Tweedie-family losses --- the choice is set by your target'
 % ---------- R-squared ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{R-squared}
+\section{R-squared}\label{sec:r-squared}
 \subsection{R-squared}
 
 R-squared answers the most fundamental question in regression: ``How much better is my model than simply predicting the mean?''
@@ -951,7 +978,7 @@ alternatives, consider the D2 Absolute Score.
 % ---------- D2 ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{D2}
+\section{D2}\label{sec:d2}
 \subsection{D2 Absolute Score}
 
 The D-squared Absolute Score is a regression evaluation metric that measures the proportion of variance explained by a model, using the absolute deviations between predictions and true values. 
@@ -1011,7 +1038,7 @@ D2 and R-squared should agree closely on well-behaved data. A large gap (e.g., R
 % ---------- Pinball Loss ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{Pinball Loss}
+\section{Pinball Loss}\label{sec:pinball-loss}
 \subsection{Pinball Loss}
 
 Most metrics evaluate point predictions (``the price will be \$50''). Pinball Loss evaluates quantile predictions (``there's a $90\%$
@@ -1083,7 +1110,7 @@ For interval forecasts, consider combining Pinball Loss at multiple quantiles.
 % ---------- Explained Variance Score ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{Explained Variance Score}
+\section{Explained Variance Score}\label{sec:explained-variance-score}
 \subsection{Explained Variance Score}
 
 EVS measures whether your model captures the \textit{pattern} in the data, even if predictions are systematically shifted.
