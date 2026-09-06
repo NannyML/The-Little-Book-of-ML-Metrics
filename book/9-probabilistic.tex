@@ -1,6 +1,6 @@
 \chapteropener{Probabilistic}{orangehard}{orangeaccent}{%
-These pages describe estimates of a metric rather than metrics of a prediction. Once a model is in production its labels arrive late or
-never, and the question is what its accuracy, F1 or MAE is right now. If the model's probabilities are calibrated, which ECE measures,
+Apart from ECE, these pages describe estimates of a metric rather than metrics of a prediction. Once a model is in production its labels
+arrive late or never, and the question is what its accuracy, F1 or MAE is right now. If the model's probabilities are calibrated, which ECE measures,
 CBPE turns them into an expected confusion matrix; PAPE re-weights the calibration to the inputs production actually sends; DLE does
 the same job for regression with a second model that predicts the error. All three see covariate shift and are blind to concept drift,
 the case where the same inputs now deserve different labels, which RCD isolates once labels exist. Together they let a model be
@@ -19,8 +19,8 @@ monitored without waiting for the truth.}{In this chapter}
 % Murphy (1973) — decomposition of the Brier score
 
 A model that says ``$80\%$'' should be right $80\%$ of the time it says so. ECE measures how far it is from that: predictions are
-binned by confidence, each bin's mean confidence is compared with its observed accuracy, and the gaps are averaged with the bins'
-sizes as weights. Every label-free estimate in this chapter rests on it.
+binned by confidence, the probability of the predicted class, each bin's mean confidence is compared with its observed accuracy, and
+the gaps are averaged with the bins' sizes as weights. The classification estimates in this chapter rest on it.
 
 % equation
 \begin{center}
@@ -70,13 +70,13 @@ skewed scores.
 
 \textbf{Figure. ECE.} Reliability diagrams for one classifier before and after temperature scaling. Each bar is a confidence bin: its
 height the observed accuracy, its shade the share of predictions, the red segment the gap to the diagonal. \underline{Left:} an
-over-confident model puts $56\%$ of its predictions in the top bin at a mean confidence of $0.99$ and is right $90\%$ of the time
-there; the weighted gaps sum to $\text{ECE} = 0.109$. \underline{Right:} dividing every logit by $T = 2.4$ brings each bin to the
-diagonal, $\text{ECE} = 0.007$, while ROC AUC stays at $0.870$ because no ranking changed.
+over-confident model puts $55\%$ of its predictions in the top bin at a mean confidence of $0.99$ and is right $90\%$ of the time
+there; the weighted gaps sum to $\text{ECE} = 0.110$. \underline{Right:} dividing every logit by $T = 2.5$ brings each bin to the
+diagonal, $\text{ECE} = 0.007$, while ROC AUC stays at $0.867$ because no ranking changed.
 
 \orangebox{Did you know that...}
-{Calibration and discrimination are separate axes, and ECE measures only one. The Brier score splits exactly into a calibration term
-and a refinement term (Murphy, 1973); ECE is essentially the first, in probability units. A model can move along one axis without
+{Calibration and discrimination are separate axes, and ECE measures only one. DeGroot and Fienberg (1983) showed that the Brier score
+splits exactly into a calibration term and a refinement term; ECE is the absolute-value cousin of the first. A model can move along one axis without
 touching the other: temperature scaling divides every logit by the same constant, which changes no ranking, so ROC AUC is untouched
 while ECE drops, and averaging an ensemble improves discrimination while typically making the model under-confident. Two models with
 the same log loss can be a calibrated weak ranker and an over-confident strong one.}
@@ -107,18 +107,18 @@ expected confusion matrix follows from the probabilities alone.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \widehat{\text{TP}} = \sum_{j} {\color{nmlcyan}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1], \qquad
-                \widehat{\text{FP}} = \sum_{j} (1 - {\color{nmlcyan}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1]
+                \widehat{\text{TP}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1], \qquad
+                \widehat{\text{FP}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1]
                 $
             }
         };
         \node[below=0.12cm of a, inner sep=2pt, font=\large] (b) {
             $\displaystyle
-            \widehat{\text{FN}} = \sum_{j} {\color{nmlcyan}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0], \qquad
-            \widehat{\text{TN}} = \sum_{j} (1 - {\color{nmlcyan}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0]
+            \widehat{\text{FN}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0], \qquad
+            \widehat{\text{TN}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0]
             $
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.05,-0.2)$) to[bend right=15] node[pos=1, left] {calibrated probability} +(-0.5,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-1.05,-0.2)$) to[bend right=15] node[pos=1, left] {calibrated probability} +(-0.5,.5);
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.75,-0.2)$) to[bend left=15] node[pos=1, right] {predicted label} +(0.3,.5);
     }
 \end{center}
@@ -149,29 +149,32 @@ cannot fall below $0.5$, whatever the truth.
 \clearpage
 
 \thispagestyle{customstyle}
+\enlargethispage{\baselineskip}
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/CBPE_estimation.png}
 \end{center}
 
 \textbf{Figure. CBPE.} \underline{Left:} twelve production predictions with calibrated probabilities and no labels. Each bar is the
-probability the prediction is right, $c$ for $\hat{y}=1$ and $1-c$ for $\hat{y}=0$; their mean, $0.80$, is the expected accuracy. The
-labels that arrive later make $9$ of $12$ right: the estimate is an expectation, not a count. \underline{Right:} twelve chunks of
-$2{,}000$. While only the inputs drift (chunks $1$--$7$) the estimate follows realized accuracy within a point or two. From chunk $8$
-the input--label relationship changes too; the probabilities do not notice, and the estimate stays near $0.86$ as accuracy falls to $0.61$.
+probability the prediction is right, $c$ for $\hat{y}=1$ and $1-c$ for $\hat{y}=0$; their mean, $0.77$, is the expected accuracy. The
+labels that arrive later make nine of twelve right, $0.75$: the estimate is an expectation, not a count. \underline{Right:} twelve
+chunks of $2{,}000$; the band is $\pm 3$ standard deviations of the reference chunks' accuracy. While only the inputs drift (chunks
+$1$--$7$) realized accuracy stays inside it. From chunk $8$ the input--label relationship changes too; the probabilities do not notice,
+and the estimate stays near $0.86$ as accuracy falls to $0.60$.
 
 \orangebox{Did you know that...}
 {CBPE's number is not a guess about the labels; it is the expectation of the metric over the labels the probabilities imply, the same
 reasoning that makes log loss and the Brier score proper scoring rules. Even with perfect calibration, the realized accuracy on a
-chunk of $2{,}000$ predictions differs from its expectation by sampling noise alone, a standard error of about
-$\sqrt{p(1-p)/2000} \approx 0.01$. A gap smaller than that means nothing, which is why the estimate is drawn with a band derived
-from the reference period's own chunk-to-chunk variation and an alert fires only when it leaves the band.}
+chunk of $2{,}000$ predictions differs from its expectation by sampling noise alone, a standard error near
+$\sqrt{p(1-p)/2{,}000} \approx 0.01$. A gap that small means nothing, which is why the estimate carries the band in the figure, three
+standard deviations of the reference chunks' accuracy, and alerts only when it leaves it.}
 
 \textbf{Other related metrics}
 
-ECE decides whether CBPE can be trusted: a reference ECE of a few hundredths is inherited by the estimate. PAPE is CBPE with the
-calibrator re-weighted to the production inputs, the safer choice under covariate shift. When labels arrive, the gap between realized
-and estimated performance is what the probabilities could not see: concept drift, which RCD quantifies.
+ECE decides whether CBPE can be trusted: the estimation error is bounded by the calibration error, so a reference ECE of a few
+hundredths caps the estimate's error at about that size. PAPE is CBPE with the calibrator re-weighted to the production inputs, the
+safer choice under covariate shift. When labels arrive, the gap between realized and estimated performance is concept drift, which
+RCD quantifies.
 
 % ---------- PAPE ----------
 \clearpage
@@ -215,7 +218,7 @@ reaches inputs the reference never had, and when either sample is small.
 \enlargethispage{\baselineskip}
 \coloredboxes{
 \item Learns the shift instead of assuming it. Across $959$ dataset--model pairs and $36{,}557$ production chunks of US census data,
-its error was the lowest of seven methods for accuracy, F1 and AUROC.
+its error was the lowest of seven methods for accuracy, F1 and ROC AUC.
 \item Adaptive: weights are recomputed per chunk, so a calibrator that is right on average becomes right for the inputs at hand (figure).
 }
 {
@@ -233,11 +236,11 @@ CBPE it cannot see concept drift.
     \includegraphics[width=\textwidth]{figures/PAPE_reweighting.png}
 \end{center}
 
-\textbf{Figure. PAPE.} A model whose probabilities are calibrated on the reference population but whose calibration depends on an
-input, $x_2$, that production drifts along. \underline{Left:} the density-ratio classifier turns the mismatch between reference (grey)
-and production (purple) into a weight for every reference point: those near the production region count up to $17$ times more, the
-rest almost nothing. \underline{Right:} CBPE keeps reading the reference-wide calibration and stays at $0.75$ while realized accuracy
-climbs to $0.90$; PAPE follows it with a mean error of $0.008$ against CBPE's $0.094$.
+\textbf{Figure. PAPE.} A model calibrated on the reference population as a whole, whose calibration depends on an input, $x_2$, that
+production drifts along. \underline{Left:} the density-ratio classifier turns the mismatch between reference (gray) and production
+(purple) into a weight per reference point; the curve is the mean weight at each $x_2$, about $18$ near the production region and zero
+elsewhere. \underline{Right:} CBPE keeps reading the reference-wide calibration and stays at $0.75$ while realized accuracy climbs to
+$0.89$; PAPE follows it with a mean error of $0.009$ against CBPE's $0.089$.
 
 \orangebox{Did you know that...}
 {PAPE is importance weighting applied to the calibrator rather than to the labels. Classic importance weighting re-weights the
@@ -263,8 +266,8 @@ only; RCD, once labels arrive, measures the part of a performance change that co
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#direct-loss-estimation-dle
 
 A demand-forecasting model's error is not the same everywhere: small for staples, large for promotions. Direct Loss Estimation trains a
-second, ``nanny'' model on the reference period to predict the monitored model's error for each input, its size rather than its sign,
-and averages those predicted errors over production inputs whose true values are still unknown.
+second, ``nanny'' model on the reference period to predict the monitored ``child'' model's error for each input, its size rather than
+its sign, and averages those predicted errors over production inputs whose true values are still unknown.
 
 % equation
 \begin{center}
@@ -272,19 +275,20 @@ and averages those predicted errors over production inputs whose true values are
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \widehat{\text{MAE}} = \frac{1}{{\color{nmlred}n}} \sum_{j=1}^{n} {\color{nmlpurple}h}\big({\color{nmlcyan}x_j},\, {\color{nmlcyan}f(x_j)}\big)
+                \widehat{\text{MAE}} = \frac{1}{{\color{nmlred}n}} \sum_{j=1}^{n} {\color{nmlpurple}h}\big({\color{nmlcyan}x_j},\, {\color{nmlpurple}f(x_j)}\big)
                 $
             }
         };
         \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.0,0.2)$) to[bend left=15] node[pos=1, left] {production size} +(-0.8,-.5);
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.6,-0.2)$) to[bend right=15] node[pos=1, left] {nanny model} +(-0.6,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.9,0.25)$) to[bend right=15] node[pos=1, right] {input and prediction} +(0.4,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.25)$) to[bend right=15] node[pos=1, right] {input} +(0.2,-.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.4,-0.25)$) to[bend left=15] node[pos=1, right] {child's prediction} +(0.4,.5);
     }
 \end{center}
 
-The nanny $h$ is trained on reference data to predict the monitored model's loss --- $|y - f(x)|$ for MAE, the squared error for MSE
-and RMSE --- from the inputs plus the model's own prediction, which makes the task far easier than predicting the target. Because the
-loss has no sign, the nanny can be the same class of model as the child, or simpler.
+The nanny $h$ is trained on reference data to predict the child's loss --- $|y - f(x)|$ for MAE, the squared error for MSE and RMSE ---
+from the inputs plus the child's own prediction. Predicting how large an error will be is an easier problem than predicting the target,
+so the nanny can be the same class of model as the child, or simpler.
 
 \textbf{When to use DLE?}
 
@@ -316,16 +320,17 @@ do arrive.
 
 \textbf{Figure. DLE.} \underline{Left:} reference data whose noise grows with the input, a linear model $f$ fitted to it, and the
 nanny $h$, a second linear model trained on the same inputs plus $f(x)$ to predict $|y - f(x)|$. The band $f \pm h$ widens where the
-data scatter: the nanny has learned where the child model is unreliable. Two of its training targets are marked in red.
-\underline{Right:} eight production chunks drifting from the easy region to the hard one. The realized MAE rises from $0.13$ to $0.69$
-and the DLE estimate, computed from inputs alone, tracks it to within $0.02$.
+data scatter: the nanny has learned where the child is unreliable. Two of its training targets are marked in red.
+\underline{Right:} eight production chunks drifting from the easy region to the hard one. The realized MAE rises from $0.13$ to $0.67$
+and the DLE estimate, computed from inputs alone, tracks it to within $0.01$.
 
 \orangebox{Did you know that...}
-{Why predict the size of the error and not the error itself? A model that predicts the signed residual $y - f(x)$ is a second regressor
-trying to correct the first, which is what gradient boosting does, and if it could do that well the child model should have been
-better. The absolute error is a different quantity: it says how wrong the child is, not in which direction, and it is often easy to
-predict when the target is not, because it follows the noise level and the child's weak regions. NannyML's team tried Bayesian error
-models and conformal quantile estimates before settling on estimating the loss directly, which needs no assumption about the noise.}
+{The nanny predicts the size of the error and not the error itself, and the difference matters. A model that predicts the signed
+residual $y - f(x)$ is a second regressor trying to correct the first, which is what gradient boosting does, and if it could do that
+well the child should have been better. The absolute error is a different quantity: it says how wrong the child is, not in which
+direction, and it is often easy to predict when the target is not, because it follows the noise level and the child's weak regions.
+NannyML's documentation records the two alternatives it rejected, Bayesian error models and conformal quantile estimates, both of
+which needed assumptions about the noise that estimating the loss directly does not.}
 
 \textbf{Other related metrics}
 
@@ -352,7 +357,7 @@ second part by learning the new concept from the monitored labels and asking how
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \Delta = \underset{x \in {\color{nmlred}\text{ref}}}{\text{mean}}\; \mathbb{E}_{\,y \sim {\color{nmlpurple}g}(x)}\Big[\, m(\hat{y}(x),\, y) \Big] - {\color{nmlcyan}m_{\text{ref}}}
+                \Delta = \underset{x \in \text{ref}}{\text{mean}}\; \mathbb{E}_{\,y \sim {\color{nmlpurple}g}(x)}\Big[\, m(\hat{y}(x),\, y) \Big] - {\color{nmlcyan}m_{\text{ref}}}
                 $
             }
         };
@@ -361,14 +366,13 @@ second part by learning the new concept from the monitored labels and asking how
         };
         \draw[overlay,-latex,nmlpurple, semithick] ($(b.south)+(-0.55,0.1)$) to[bend left=15] node[pos=1, left] {new concept} +(-0.5,-.45);
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.9,-0.3)$) to[bend left=15] node[pos=1, right] {reference performance} +(0.2,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.9,-0.3)$) to[bend right=15] node[pos=1, left] {reference inputs} +(-0.6,.5);
     }
 \end{center}
 
 $g$ is a flexible model (gradient-boosted trees by default) trained on the monitored period's inputs and labels; its probabilities on
 the \emph{reference} inputs play the part labels play in CBPE, so the mean is the model's performance on its own data under the new
-concept, with covariate shift held fixed. A companion magnitude, $\frac{1}{n}\sum_j |g(x_j) - g_{\text{ref}}(x_j)|$, says how much
-$P(y \mid x)$ moved.
+concept, with covariate shift held fixed. A companion magnitude, $\frac{1}{n}\sum_j |g(x_j) - g_{\text{ref}}(x_j)|$, with
+$g_{\text{ref}}$ fitted on the reference period, says how much $P(y \mid x)$ moved.
 
 \textbf{When to use RCD?}
 
@@ -399,16 +403,16 @@ is invisible to it.
 \end{center}
 
 \textbf{Figure. RCD.} \underline{Left:} the reference inputs, the monitored model's boundary (black) and the new concept $g$ learned
-from the monitored period's labels (red). Where the two disagree, the same input now deserves a different label. \underline{Right:} the
-accuracy drop from $0.848$ to $0.743$ split in two. Scoring the monitored inputs under the old concept isolates covariate shift
-($-0.012$); applying $g$'s probabilities to the reference inputs, as CBPE would apply labels, isolates concept drift ($-0.083$). The
-residual, $-0.010$, is their interaction plus sampling noise. Retraining fixes the red bar; re-weighting fixes the purple one.
+from the monitored labels (red); where they disagree, the same input now deserves a different label. \underline{Right:} the accuracy
+change from $0.832$ to $0.746$ split in two. Scoring the monitored inputs under the old concept (known here, estimated by PAPE in
+practice) isolates covariate shift, $+0.010$; applying $g$'s probabilities to the reference inputs, as CBPE would apply labels, isolates
+concept drift, $-0.065$. The residual, $-0.031$, is interaction plus sampling noise. Retraining addresses the red bar.
 
 \orangebox{Did you know that...}
-{The name describes the trick: instead of applying the model to new data, RCD applies the new data's concept to the model's old data,
-in reverse. The reference side stays label-free through the same expectation CBPE uses, with $g$'s probabilities standing in for labels,
+{The name is literal: instead of applying the model to new data, RCD applies the new data's concept to the model's old data, in
+reverse. The reference side stays label-free through the same expectation CBPE uses, with $g$'s probabilities standing in for labels,
 so the impact is an expected metric rather than a guess. Any change in performance then has two parts that can be measured
-separately: $P(X)$ moved, which PAPE estimates without labels, and $P(y \mid X)$ moved, which RCD estimates once labels exist. When
+separately: $P(x)$ moved, which PAPE estimates without labels, and $P(y \mid x)$ moved, which RCD estimates once labels exist. When
 the two together fall well short of the realized change, the monitored period contains inputs the reference never covered, and
 neither method can speak for them.}
 

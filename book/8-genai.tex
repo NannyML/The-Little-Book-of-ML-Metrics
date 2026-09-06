@@ -234,7 +234,7 @@ embedding model and cluster count change the value.
     \includegraphics[width=\textwidth]{figures/MAUVE_frontier.png}
 \end{center}
 
-\textbf{Figure. MAUVE.} \underline{Left:} human text $P$ (grey) and three model distributions $Q$ over eight embedding clusters.
+\textbf{Figure. MAUVE.} \underline{Left:} human text $P$ (gray) and three model distributions $Q$ over eight embedding clusters.
 \underline{Right:} the curve each pair traces as $\lambda$ sweeps the mixture from $Q$ to $P$; MAUVE is the shaded area, computed exactly
 with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
 human text falls in loses area along the horizontal axis; one that writes only the three commonest kinds of text loses it along the
@@ -395,7 +395,7 @@ resize and JPEG settings shift the score by points.
 \end{center}
 
 \textbf{Figure. FID.} A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
-samples (grey) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
+samples (gray) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
 term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third generator
 produces two separate clouds that happen to share the real set's mean and covariance, and FID reports $0.02$: the Gaussian fit cannot
 tell the shapes apart.
@@ -716,7 +716,7 @@ wording moves the probability.
     \includegraphics[width=\textwidth]{figures/VQAScore_vs_CLIP.png}
 \end{center}
 
-\textbf{Figure. VQAScore.} One image, four captions, two metrics: CLIP-S (grey) and VQAScore computed as $P(\text{``Yes''})$ from a
+\textbf{Figure. VQAScore.} One image, four captions, two metrics: CLIP-S (gray) and VQAScore computed as $P(\text{``Yes''})$ from a
 small generative VQA model (BLIP-base) asked whether the figure shows the caption. Both rank the wrong object last, VQAScore at $0.46$
 and CLIP-S at $0.14$, and neither handles the negated caption well ($0.66$ and $0.69$). But CLIP scores the word-swapped caption
 \emph{above} the correct one, $0.82$ against $0.79$, while VQAScore reads the sentence in order and ranks them the right way round,
@@ -1010,7 +1010,7 @@ succeeds.
 % reference:
 % https://arxiv.org/pdf/2311.07911
 
-Instruction-Following Eval (IFEval, 2023) measures whether a language model does what it is told. Human ratings are slow and
+Instruction-Following Eval (IFEval), released in 2023, measures whether a language model does what it is told. Human ratings are slow and
 subjective, and letting one model judge another imports its biases, so IFEval restricts itself to verifiable instructions: rules that a
 program can check.
 
@@ -1026,7 +1026,7 @@ what they say but whether they followed the rules they were given.
 % https://arxiv.org/pdf/2210.09261
 % https://arxiv.org/pdf/2502.19187
 
-BIG-Bench Hard (BBH, 2022) is a filtered subset of BIG-Bench, a collection of over $200$ tasks written by more than $400$ researchers to
+BIG-Bench Hard (BBH), released in 2022, is a filtered subset of BIG-Bench, a collection of over $200$ tasks written by more than $400$ researchers to
 probe the limits of large language models. Many of those tasks became easy for newer models within months and stopped separating them.
 
 BBH keeps the $23$ tasks on which models still fell short of the average human rater, even at billions of parameters: logical
@@ -1065,7 +1065,7 @@ $198$-question ``Diamond'' subset with several seeds.
 % reference:
 % https://arxiv.org/pdf/2310.16049
 
-Multistep Soft Reasoning (MuSR, 2023) tests whether a model can reason through a long narrative --- a murder mystery, an object-placement
+Multistep Soft Reasoning (MuSR), released in 2023, tests whether a model can reason through a long narrative --- a murder mystery, an object-placement
 puzzle, a team-assignment problem --- generated so that the answer follows from facts scattered across roughly a thousand words. The
 reasoning is ``soft'' because it mixes deduction with commonsense inference rather than following a single formal chain.
 
@@ -1105,7 +1105,7 @@ comprehension and the origin of the EM and F1 scoring used across question-answe
 % https://arxiv.org/pdf/1911.01547
 % https://arcprize.org/arc-agi
 
-The Abstraction and Reasoning Corpus (ARC, 2019) is a set of small grid puzzles: a few input--output examples show a transformation ---
+The Abstraction and Reasoning Corpus (ARC), released in 2019, is a set of small grid puzzles: a few input--output examples show a transformation ---
 a reflection, a counting rule, an object being moved --- and the task is to infer it and apply it to a new grid. Each puzzle uses a
 different rule, so nothing can be memorized, and the examples are too few for statistical learning; success requires generalizing from
 two or three cases, which people do easily and models did not for years.

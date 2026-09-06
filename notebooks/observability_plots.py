@@ -191,18 +191,27 @@ def expected_range(values, weekdays, z=Z, train=TRAIN, rel_floor=0.01):
 # ---------------------------------------------------------------------------
 # 4. Drawing
 # ---------------------------------------------------------------------------
-def panel(ax, m, col, ylabel, fmt='{:.0f}', annotate=None, yscale=None, title=None):
+def panel(ax, m, col, ylabel, fmt='{:.0f}', annotate=None, yscale=None, title=None, clip=None, ymin=None, xmin=0.5):
     x = m['day'].values + 1
-    v = m[col].values.astype(float)
-    lo, hi, flag = expected_range(v, m['weekday'].values)
-    ax.fill_between(x, lo, hi, color=BAND, zorder=1, linewidth=0, step=None)
-    ax.plot(x, v, color=start_color, lw=2.2, zorder=3, solid_capstyle='round')
-    ax.scatter(x[~flag], v[~flag], s=26, color=start_color, zorder=4, linewidths=0)
+    v_true = m[col].values.astype(float)
+    lo, hi, flag = expected_range(v_true, m['weekday'].values)
+    v = v_true.copy()
+    if clip is not None:                       # values above `clip` are drawn at the top edge with their value
+        over = v_true > clip
+        v[over] = clip
+    keep = x >= xmin
+    ax.fill_between(x[keep], lo[keep], hi[keep], color=BAND, zorder=1, linewidth=0, step=None)
+    ax.plot(x[keep], v[keep], color=start_color, lw=2.2, zorder=3, solid_capstyle='round')
+    ax.scatter(x[~flag & keep], v[~flag & keep], s=26, color=start_color, zorder=4, linewidths=0)
     ax.scatter(x[flag], v[flag], s=70, color=end_color, zorder=5, linewidths=0)
+    if clip is not None:
+        for xi, vt in zip(x[over], v_true[over]):
+            ax.plot(xi, clip, marker='^', ms=11, color=end_color, zorder=6, linestyle='none')
+            ax.text(xi + 0.5, clip, f'off the scale: {vt:,.0f}', color=end_color, fontsize=11, va='center', ha='left')
     miss = np.isnan(v)
     if miss.any():
-        ymin = np.nanmin(np.r_[v, lo]) if yscale != 'log' else np.nanmin(v[~miss])
-        ax.scatter(x[miss], [ymin] * miss.sum(), s=60, facecolor='white', edgecolor=GREY_LINE, linewidth=1.4, zorder=5)
+        ybase = ymin if ymin is not None else (np.nanmin(np.r_[v, lo]) if yscale != 'log' else np.nanmin(v[~miss]))
+        ax.scatter(x[miss], [ybase] * miss.sum(), s=60, facecolor='white', edgecolor=GREY_LINE, linewidth=1.4, zorder=5)
     ax.axvspan(0.5, TRAIN + 0.5, color='#f4f4f4', zorder=0, linewidth=0)
     ax.text(1.0, 1.0, 'training', transform=ax.get_xaxis_transform(), ha='left', va='bottom', fontsize=10, color=MID)
     if annotate:
@@ -215,10 +224,14 @@ def panel(ax, m, col, ylabel, fmt='{:.0f}', annotate=None, yscale=None, title=No
                         ha='center' if dx == 0 else ('left' if dx > 0 else 'right'),
                         va=('bottom' if dy > 0 else 'top') if dx == 0 else 'center', fontsize=11, color=end_color,
                         arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
-    ax.set_xlim(0.5, DAYS + 0.5)
-    ax.set_xticks([1, 8, 15, 22, 29, 36, 42])
+    ax.set_xlim(xmin, DAYS + 0.5)
+    ax.set_xticks([t for t in [1, 8, 15, 22, 29, 36, 42] if t >= xmin])
     ax.set_xlabel('daily partition', fontsize=12)
     ax.set_ylabel(ylabel, fontsize=12)
+    if clip is not None:
+        ax.set_ylim(ymin if ymin is not None else ax.get_ylim()[0], clip * 1.02)
+    elif ymin is not None:
+        ax.set_ylim(ymin, ax.get_ylim()[1])
     if yscale:
         ax.set_yscale(yscale)
         from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
@@ -232,9 +245,9 @@ def panel(ax, m, col, ylabel, fmt='{:.0f}', annotate=None, yscale=None, title=No
     return lo, hi, flag
 
 
-def one_panel_figure(m, col, ylabel, name, annotate=None, yscale=None, height=3.6, extra=None):
+def one_panel_figure(m, col, ylabel, name, annotate=None, yscale=None, height=3.6, extra=None, clip=None, ymin=None):
     fig, ax = plt.subplots(figsize=(13, height))
-    lo, hi, flag = panel(ax, m, col, ylabel, annotate=annotate, yscale=yscale)
+    lo, hi, flag = panel(ax, m, col, ylabel, annotate=annotate, yscale=yscale, clip=clip, ymin=ymin)
     if extra:
         extra(ax, lo, hi, flag)
     fig.subplots_adjust(left=0.08, right=0.99, top=0.9 if height < 4 else 0.84, bottom=0.2)
@@ -249,22 +262,53 @@ def main():
     m.to_json(OUT / 'metrics.json', orient='records', date_format='iso', indent=1)
     flags = {}
 
-    # --- the mechanism: row count with every glyph explained ---------------
-    def legend_extra(ax, lo, hi, flag):
-        t = TRAIN + 4
-        ax.annotate('expected range: same-weekday mean ± 3σ,\nlearned from the scans before', xy=(t, hi[t]),
-                    xytext=(t - 9, hi[t] * 1.22), fontsize=11, color=MID, ha='center',
-                    arrowprops=dict(arrowstyle='-', color=GREY_LINE, lw=0.9))
-        ax.text(1.0, 6300, 'measurement, one per scan', color=start_color, fontsize=11, ha='left', va='bottom')
-        ax.set_ylim(-300, 7400)
-    ann = [(INCIDENT['no_load'], 'no load: 0 rows,\nflagged', 30, -55), (INCIDENT['partial_load'], 'partial load,\nflagged', 22, 30)]
-    flags['mechanism'] = one_panel_figure(m, 'row_count', 'rows in the partition', 'Observability_expected_range',
-                                          annotate=ann, height=4.4, extra=legend_extra)
+    # --- the mechanism: how the band is built (left) and applied (right) --------
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 4.4), gridspec_kw={'width_ratios': [0.75, 1.25], 'wspace': 0.22})
+    v = m['row_count'].values.astype(float)
+    wd = m['weekday'].values
+    names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    train_idx = np.arange(TRAIN)
+    means = np.array([v[train_idx][wd[train_idx] == d].mean() for d in range(7)])
+    resid = np.array([v[i] - means[wd[i]] for i in train_idx])
+    sigma = resid.std(ddof=1)
+    for d in range(7):
+        pts = v[train_idx][wd[train_idx] == d]
+        axL.scatter([d] * len(pts), pts, s=34, color=start_color, zorder=4, linewidths=0)
+        axL.plot([d - 0.3, d + 0.3], [means[d], means[d]], color=DARK, lw=1.6, zorder=5)
+        axL.fill_between([d - 0.3, d + 0.3], means[d] - Z * sigma, means[d] + Z * sigma, color=BAND, zorder=1, linewidth=0)
+    axL.set_xticks(range(7))
+    axL.set_xticklabels(names, fontsize=11)
+    axL.set_ylabel('rows in the partition', fontsize=12)
+    axL.set_xlabel('three training weeks, grouped by weekday', fontsize=12)
+    axL.tick_params(axis='y', labelsize=11)
+    axL.set_ylim(0, 7400)
+    despine(axL)
+    axL.text(0.5, means[0] + Z * sigma + 250, f'mean ± 3σ  (σ = {sigma:.0f} rows, pooled)', fontsize=11, color=MID, ha='left', va='bottom')
+    axL.text(6.35, means[6], 'weekday\nmean', fontsize=10.5, color=DARK, ha='left', va='center')
+    ann = [(INCIDENT['no_load'], 'no load: 0 rows, flagged', 30, 40), (INCIDENT['partial_load'], 'partial load,\nflagged', 22, 30)]
+    lo, hi, flag = panel(axR, m, 'row_count', '', annotate=ann, xmin=TRAIN + 0.5, ymin=0)
+    axR.set_ylim(0, 7400)
+    axR.set_xlabel('weeks four to six: each new scan against its weekday\'s range', fontsize=12)
+    t = TRAIN + 4
+    axR.annotate('expected range', xy=(t, hi[t]), xytext=(t + 0.5, 6800), fontsize=11, color=MID, ha='left',
+                 arrowprops=dict(arrowstyle='-', color=GREY_LINE, lw=0.9))
+    axR.texts[0].remove() if axR.texts and axR.texts[0].get_text() == 'training' else None
+    for patch in list(axR.patches):
+        pass
+    fig.subplots_adjust(left=0.07, right=0.99, top=0.95, bottom=0.2)
+    save_figure(fig, 'Observability_expected_range')
+    plt.close()
+    flags['mechanism'] = flag
+    print(f'mechanism: sigma {sigma:.1f}; weekday means {np.round(means).astype(int).tolist()}; band half-width {Z * sigma:.0f}')
 
     # --- row count ---------------------------------------------------------
     ann = [(INCIDENT['no_load'], 'no load: 0 rows', 30, -55), (INCIDENT['partial_load'], 'partial load', 22, 30),
            (INCIDENT['retry_storm'], 'retry storm: +6%,\ninside the band', 16)]
-    flags['row_count'] = one_panel_figure(m, 'row_count', 'rows in the partition', 'Observability_row_count', annotate=ann)
+    flags['row_count'] = one_panel_figure(m, 'row_count', 'rows in the partition', 'Observability_row_count', annotate=ann, ymin=0)
+    lo_rc, hi_rc, _ = expected_range(m['row_count'].values, m['weekday'].values)
+    d = INCIDENT['retry_storm']
+    print(f'row count at retry storm: {m["row_count"][d]} band [{lo_rc[d]:.0f}, {hi_rc[d]:.0f}] '
+          f'= ±{100 * (hi_rc[d] - lo_rc[d]) / 2 / ((hi_rc[d] + lo_rc[d]) / 2):.0f}% around {((hi_rc[d] + lo_rc[d]) / 2):.0f}')
 
     # --- freshness ---------------------------------------------------------
     ann = [(INCIDENT['no_load'], 'no load: yesterday\'s data is the newest', -6, 14),
@@ -316,32 +360,35 @@ def main():
     flags['dup'] = one_panel_figure(m, 'dup_order_pct', 'duplicate order_id (%)', 'Observability_duplicates', annotate=ann)
 
     # --- unique count ------------------------------------------------------
-    ann = [(INCIDENT['id_truncation'], 'ids truncated to\nthree digits', -10, 0),
+    ann = [(INCIDENT['id_truncation'], 'ids truncated to\nthree digits', 10, 10),
            (INCIDENT['partial_load'], 'partial load:\nhalf the rows', 10, 0)]
-    flags['unique'] = one_panel_figure(m, 'unique_customer', 'distinct customer_id', 'Observability_unique_count', annotate=ann)
+    flags['unique'] = one_panel_figure(m, 'unique_customer', 'distinct customer_id', 'Observability_unique_count', annotate=ann, ymin=0)
+    wk = m[(m['day'] < TRAIN) & (m['weekday'] < 5)]['unique_customer'].mean()
+    we = m[(m['day'] < TRAIN) & (m['weekday'] >= 5)]['unique_customer'].mean()
+    print(f'unique: weekday mean {wk:.0f}, weekend mean {we:.0f}')
 
     # --- average -----------------------------------------------------------
-    ann = [(INCIDENT['currency_slip'], '5% of amounts in cents', 8, 0), (INCIDENT['refunds'], 'refunds: 3% negative', 0, 42),
-           (INCIDENT['promotion'], 'half price under 30', -8, 42)]
-    flags['avg'] = one_panel_figure(m, 'avg_amount', 'mean amount', 'Observability_average', annotate=ann, yscale='log')
+    ann = [(INCIDENT['refunds'], 'refunds: 3% negative', 8, 22), (INCIDENT['promotion'], 'half price under 30', -8, 22)]
+    base = m['avg_amount'][:TRAIN].mean()
+    flags['avg'] = one_panel_figure(m, 'avg_amount', 'mean amount', 'Observability_average', annotate=ann, clip=base * 1.3, ymin=base * 0.85)
 
     # --- sum ---------------------------------------------------------------
-    ann = [(INCIDENT['currency_slip'], '5% of amounts in cents', 8, 0), (INCIDENT['no_load'], 'no load: missing scan', 6, 14),
-           (INCIDENT['partial_load'], 'partial load:\nhalf the rows', 10, 0)]
-    flags['sum'] = one_panel_figure(m, 'sum_amount', 'sum of amount', 'Observability_sum', annotate=ann, yscale='log')
+    ann = [(INCIDENT['no_load'], 'no load:\nmissing scan', -10, 0), (INCIDENT['partial_load'], 'partial load:\nhalf the rows', 10, -10)]
+    base = m['sum_amount'][:TRAIN].mean()
+    flags['sum'] = one_panel_figure(m, 'sum_amount', 'sum of amount', 'Observability_sum', annotate=ann, clip=base * 1.5, ymin=50_000)
 
     # --- standard deviation ------------------------------------------------
-    ann = [(INCIDENT['currency_slip'], '5% of amounts in cents', 8, 0), (INCIDENT['refunds'], 'refunds', 0, 30),
-           (INCIDENT['promotion'], 'half price under 30', 0, 30)]
-    flags['std'] = one_panel_figure(m, 'std_amount', 'std of amount', 'Observability_stddev', annotate=ann, yscale='log')
+    ann = [(INCIDENT['refunds'], 'refunds: 3% negative', -8, -22), (INCIDENT['promotion'], 'half price under 30', -8, -22)]
+    base = m['std_amount'][:TRAIN].mean()
+    flags['std'] = one_panel_figure(m, 'std_amount', 'std of amount', 'Observability_stddev', annotate=ann, clip=base * 1.4, ymin=base * 0.75)
 
     # --- min / max ---------------------------------------------------------
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 3.8), gridspec_kw={'wspace': 0.25})
-    _, _, fmin = panel(axL, m, 'min_amount', 'min amount', annotate=[(INCIDENT['refunds'], 'refunds:\nnegative amounts', -10, 0),
+    _, _, fmin = panel(axL, m, 'min_amount', 'min amount', annotate=[(INCIDENT['refunds'], 'refunds:\nnegative amounts', 10, 0),
                                                                       (INCIDENT['promotion'], 'half price', 8, 0)])
-    _, _, fmax = panel(axR, m, 'max_amount', 'max amount', annotate=[(INCIDENT['currency_slip'], '5% of amounts\nin cents', 8, 0),
-                                                                      (INCIDENT['country_rename'], 'one large order:\na false alarm', 8, 0)],
-                       yscale='log')
+    base = m['max_amount'][:TRAIN].mean()
+    _, _, fmax = panel(axR, m, 'max_amount', 'max amount', annotate=[(INCIDENT['country_rename'], 'one large order:\na false alarm', 8, 0)],
+                       clip=base * 2.2, ymin=0)
     fig.subplots_adjust(left=0.07, right=0.99, top=0.9, bottom=0.2)
     save_figure(fig, 'Observability_min_max')
     plt.close()
@@ -357,11 +404,11 @@ def main():
         ax.scatter(x[flag], m[col].values[flag], s=70, color=end_color, zorder=5, linewidths=0)
         ax.text(DAYS + 0.8, m[col].values[-1], lab, color=color, fontsize=11.5, va='center')
         flags[col] = flag
-    ax.plot(x, m['avg_amount'], color=end_color, lw=1.4, ls=(0, (4, 3)), zorder=2)
-    ax.text(DAYS + 0.8, m['avg_amount'].values[-1] + 3, 'mean', color=end_color, fontsize=11.5, va='center')
+    ax.plot(x, m['avg_amount'], color=DARK, lw=1.4, ls=(0, (4, 3)), zorder=2)
+    ax.text(DAYS + 0.8, m['avg_amount'].values[-1] + 3, 'mean', color=DARK, fontsize=11.5, va='center')
     d = INCIDENT['currency_slip']
     ax.annotate('5% of amounts in cents: the mean leaves the frame,\nthe quartiles barely move', xy=(d + 1, m['q3_amount'][d]),
-                xytext=(d - 6, 92), fontsize=11, color=end_color, ha='center',
+                xytext=(d - 6, 92), fontsize=11, color=DARK, ha='center',
                 arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
     d = INCIDENT['promotion']
     ax.annotate('half price under 30: Q1 drops,\nthe median and Q3 do not', xy=(d + 1, m['q1_amount'][d]), xytext=(d - 4, 8),

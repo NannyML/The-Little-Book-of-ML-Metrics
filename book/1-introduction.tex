@@ -1,8 +1,8 @@
 \chapteropener{Introduction}{cyanlight}{cyanaccent}{%
 A metric is a decision about what counts as good. Choose mean squared error and a forecast that is badly wrong once a month will look
 worse than one that is slightly wrong every day; choose accuracy on a rare disease and a model that never diagnoses anyone will score
-$99\%$. This book exists because those decisions are usually made by default, and the default is rarely examined. It covers some
-hundred metrics across ten domains, one or two pages each, and every page tries to answer the same three questions: what the number
+$99\%$. This book exists because those decisions are usually made by default, and the default is rarely examined. It covers over a hundred metrics across ten domains, one or two pages each, and every page tries to answer the same three
+questions: what the number
 measures, when it is the right number to watch, and where it will mislead you.}{}
 
 \clearpage
@@ -19,7 +19,7 @@ family and a list of its pages, so it can be read from a chapter's first page or
 
 \section{How to read a metric}
 
-Every metric follows the same two-page layout, so that the same question is always in the same place.
+Almost every metric follows the same two-page layout, so that the same question is always in the same place.
 
 \textbf{Page one} states what the metric tells you, in plain language and with a concrete example; gives the formula with each
 symbol annotated; explains how to interpret the value, with the range and the anchors that make a number good or bad; says when to
@@ -29,10 +29,10 @@ weaknesses on the right, each with a concrete case rather than an adjective.
 \textbf{Page two} shows the metric at work. The figure is never a decoration: it is built to expose the mechanism, how the metric
 turns inputs into a score and what kind of error it rewards or forgives, and every number printed on it is computed from the data it
 draws. The caption teaches how to read the figure. A ``did you know'' box holds one fact that changes how you think about the
-metric, and ``other related metrics'' explains what it means when this metric and a neighbouring one disagree.
+metric, and ``other related metrics'' points to the neighboring metrics and, where two can disagree, to what the disagreement means.
 
-The Data Observability chapter is the exception: its monitors are simple statistics whose value lies in their history, and each
-takes one page.
+The Data Observability chapter is the exception: its monitors are simple statistics whose value lies in their history, so each takes
+one page, with a figure in place of the strengths, weaknesses and ``did you know'' blocks.
 
 \section{The colors in the formulas}
 
@@ -51,7 +51,7 @@ criterion are the same kind of object.
 
 \section{Choosing a metric}
 
-Three questions settle most choices, and each page's ``when to use'' section is organized around them.
+Three questions settle most choices, and each page's ``when to use'' section answers them for its metric.
 
 \textbf{What is the cost of each kind of error?} A regression metric decides whether a few large misses outweigh many small ones
 (MSE against MAE); a classification metric decides whether a false alarm or a miss is the expensive mistake (precision against recall,
@@ -71,7 +71,7 @@ class is being missed; CBPE steady while realized accuracy falls means the input
 
 \section{How the book is organized}
 
-Chapters follow the kind of model being scored. \textbf{Regression} and \textbf{Classification} cover the metrics almost every
+Chapters follow the kind of output being scored. \textbf{Regression} and \textbf{Classification} cover the metrics almost every
 practitioner meets; \textbf{Clustering} and \textbf{Ranking} cover unsupervised partitions and ordered lists; \textbf{Computer Vision}
 and \textbf{NLP} cover pixels, masks, keypoints and token overlap; \textbf{GenAI} covers generated text, images and audio, where
 references are scarce and learned judges take over. \textbf{Probabilistic} turns the question around and estimates a metric when

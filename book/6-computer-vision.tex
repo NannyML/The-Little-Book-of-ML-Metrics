@@ -23,8 +23,8 @@ Pixel Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {Correct pixels} +(1,.5);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.5,0.1)$) to[bend left=15] node[pos=1, left] {Total pixels} +(-1,-.5);
+\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {correct pixels} +(1,.5);
+\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.5,0.1)$) to[bend left=15] node[pos=1, left] {total pixels} +(-1,-.5);
 }
 \end{center}
 
@@ -102,7 +102,7 @@ metric in class-imbalanced datasets.
     \includegraphics[width=\textwidth]{figures/Pixel_Accuracy_imbalance.png}
 \end{figure*}
 
-\textbf{Figure.} Each bar is a class: its width is the class's share of pixels and its height is that class's accuracy, so the bar's \emph{area} is the class's contribution to Pixel Accuracy. The wide, well-segmented background pulls PA up to $89\%$; Mean Pixel Accuracy ($54\%$) weights every class equally and so exposes the collapse on the small classes.
+\textbf{Figure. Pixel Accuracy.} Each bar is a class: its width is the class's share of pixels and its height is that class's accuracy, so the bar's \emph{area} is the class's contribution to Pixel Accuracy. The wide, well-segmented background pulls PA up to $89\%$; Mean Pixel Accuracy ($54\%$) weights every class equally and so exposes the collapse on the small classes.
 
 \orangebox{Did you know that...}
 {Pixel Accuracy is the \textbf{micro-average} of per-class accuracy --- every pixel votes once, so common classes dominate. Mean Pixel Accuracy is the \textbf{macro-average} --- every class votes once, regardless of size. It is the same micro-versus-macro split you meet in classification F1, and a wide gap between the two is always a symptom of class imbalance.}
@@ -115,8 +115,8 @@ Other metrics in this family are Mean Pixel Accuracy (mPA), Intersection over Un
 % ---------- PCK ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{Percentage of Correct Keypoints}
-\subsection{PCK}
+\section{PCK}
+\subsection{Percentage of Correct Keypoints}
 
 A keypoint is a labeled landmark on an object --- an elbow, a knee, the corner of an eye. PCK reports the percentage of predicted keypoints that land within a distance threshold of the truth, where the threshold scales with object size: a $10$-pixel miss is serious on a close-up face but negligible on a distant body.
 
@@ -128,11 +128,11 @@ A keypoint is a labeled landmark on an object --- an elbow, a knee, the corner o
         $
     };
     \draw[overlay,-latex,nmlyellow, semithick] ($(a.north)+(0.5,0.05)$) to[bend left=15] 
-        node[pos=1, right] {Threshold Radius} +(1,.5); 
+        node[pos=1, right] {threshold Radius} +(1,.5); 
     \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-1.15,0.1)$) to[bend left=15]
         node[pos=1, left] {Num. keypoints} +(-1,-.5);
     \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.2,0.05)$) to[bend right=15] 
-        node[pos=1, right] {Euclidean Distance} +(1,-.5); 
+        node[pos=1, right] {Euclidean distance} +(1,-.5); 
 }
 \end{center}
 
@@ -156,13 +156,10 @@ Use PCK for human pose estimation, facial landmark detection, and animal pose tr
 
 \begin{figure}[htbp]
     \centering
-    \hspace*{-0.5cm}
-    \includegraphics[width=1.1\textwidth]{figures/PCK_threshold_visual.png} % Full width
-    %\caption{Only the predictions within the threshold radius is considered correct.}
-    \label{fig:PCK_threshold}
+    \includegraphics[width=\textwidth]{figures/PCK_threshold_visual.png}
 \end{figure}
 
-To find correct keypoint(green), we determine whether the predicted keypoint (blue) falls within a threshold distance from the ground truth (black).  
+\textbf{Figure. PCK.} To find a correct keypoint (green), we determine whether the predicted keypoint (blue) falls within a threshold distance from the ground truth (black).  
 The threshold is defined as a fraction $\alpha$ of a reference length $L$, typically the torso length.  
 
 The radius of the circle around each ground-truth joint is $r = \alpha \cdot L$.  
@@ -177,13 +174,13 @@ We use a larger $\alpha$ when approximate locations suffice, for example in full
 \textbf{Other related metrics}
 
 For a continuous similarity score instead of a hard threshold, see Object Keypoint Similarity (OKS).
-PCK variants include PCKh (head-normalized) and PCK@0.2 (fixed threshold at 20\% of torso length).
+PCK variants include PCKh (head-normalized) and PCK@$0.2$ (fixed threshold at $20\%$ of torso length).
 
 % ---------- OKS ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{Object Keypoint Similarity}
-\subsection{OKS}
+\section{OKS}
+\subsection{Object Keypoint Similarity}
 
 Object Keypoint Similarity is the scoring rule behind the COCO keypoint leaderboard, and it fixes what PCK discards. Where PCK calls a prediction simply right or wrong, OKS scores each keypoint on a smooth Gaussian of the distance error, normalized by object size so the same miss costs more on a small person than a large one.
 
@@ -226,7 +223,7 @@ Use OKS to rank pose-estimation models, or whenever you need one comparable scor
     \includegraphics[width=0.6\textwidth]{figures/OKS_gaussian_falloff.png}
 \end{figure*}
 
-\textbf{Figure.} OKS scores a keypoint with a smooth Gaussian falloff of its distance error: strict keypoints (eyes, $k = 0.05$) demand precise predictions, while lenient ones (hips, $k = 0.20$) tolerate larger errors. The grey step is PCK's hard pass/fail, shown for contrast --- OKS is its continuous generalization.
+\textbf{Figure. OKS.} OKS scores a keypoint with a smooth Gaussian falloff of its distance error: strict keypoints (eyes, $k = 0.05$) demand precise predictions, while lenient ones (hips, $k = 0.20$) tolerate larger errors. The gray step is PCK's hard pass/fail, shown for contrast --- OKS is its continuous generalization.
 
 \orangebox{Did you know that...}
 {OKS is to keypoints what IoU is to bounding boxes: the COCO benchmark thresholds it (at $0.50, 0.55, \dots, 0.95$) to compute a keypoint Average Precision --- the leaderboard score that drove pose models like OpenPose and HRNet.}
@@ -241,30 +238,26 @@ OKS is the continuous counterpart of PCK. For segmentation rather than keypoint 
 \section{PSNR}
 \subsection{Peak Signal-to-Noise Ratio}
 
-PSNR scores how faithfully a reconstructed image matches the original on a decibel scale where higher is better --- the standard number reported for JPEG compression, denoising, and super-resolution. It rescales the mean squared error against the largest possible pixel value, so a score means the same thing whether pixels run $0$--$255$ or $0$--$1$.
+PSNR scores how faithfully a reconstructed image matches the original, in decibels, higher is better; it is the standard number for
+JPEG compression, denoising and super-resolution. It rescales the mean squared error by the largest possible pixel value, so a score
+means the same whether pixels run $0$--$255$ or $0$--$1$.
 
 % equation
 \begin{center}
     \tikz{
-        \node[inner sep=2pt, font=\Large] (a) {
+        \node[inner sep=2pt, font=\large] (a) {
             {
                 $\displaystyle
                     PSNR = 10 \cdot \log_{10}\left(\frac{\color{nmlred}MAX^2}{\color{nmlpurple}MSE}\right)
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.1,-0)$) to[bend right=15] node[pos=1, left] {maximum possible pixel}
-        +(-1,.5); 
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2,-0.1)$) to[bend left=15] node[pos=1, left] {mean squared error}
-        +(-1,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.1,-0)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-0.8,.4);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2,-0.1)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-0.8,-.4);
     }
 \end{center}
 
-\vspace{-10pt} 
-
-where given an original image $O$ of size $h \times w$ and a reconstructed image $R$, the $MSE$ is defined as:
-
-\vspace{-10pt}
+with $O$ the original and $R$ the reconstruction, both $h \times w$:
 
 % equation
 \begin{center}
@@ -279,23 +272,23 @@ where given an original image $O$ of size $h \times w$ and a reconstructed image
         };
         \draw[overlay,-latex,teal!70!green, semithick] ($(a.west)+(1.7,-0.3)$) to[bend left=15] node[pos=1, left] {height} +(-1,-.5);
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.west)+(2.4,-0.3)$) to[bend right=15] node[pos=1, right] {width} +(0.5,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1,0.5)$) to[bend right=15] node[pos=1, right] {original pixel value}
-        +(1,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.4)$) to[bend right=15] node[pos=1, left] {reconstructed pixel
-        value} +(-1,.5);    
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1,0.5)$) to[bend right=15] node[pos=1, right] {original pixel value} +(0.8,-.4);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.4)$) to[bend right=15] node[pos=1, left] {reconstructed pixel value} +(-0.8,.4);
     }
 \end{center}
 
-\vspace{-10pt}
-
-Because the scale is logarithmic, every $+10$ dB means the mean squared error fell tenfold, and a perfect match (MSE $= 0$) sends PSNR to infinity. As a rough guide, above $30$ dB usually reads as a clean reconstruction while below $20$ dB the artifacts are obvious.
+Every $+10$ dB means the mean squared error fell tenfold, and a perfect match sends PSNR to $\infty$. Above $30$ dB usually reads as a
+clean reconstruction; below $20$ dB the artifacts are obvious.
 
 
 
 \textbf{When to use PSNR?}
 
-Use PSNR for image compression, denoising, and super-resolution --- tasks with a clean reference where pixel-level fidelity is what you care about. Avoid it as a proxy for perceived quality: a small brightness shift or a one-pixel spatial offset can crater PSNR while the image still looks fine, so use SSIM or LPIPS when human perception is what matters.
+Use PSNR for compression, denoising and super-resolution, where a clean reference exists and pixel fidelity is the goal. Avoid it as a
+proxy for perceived quality: a small brightness shift or a one-pixel offset craters PSNR while the image looks fine; use SSIM or LPIPS
+instead.
 
+\enlargethispage{3\baselineskip}
 \coloredboxes{
 \item A stable, universal baseline. Decades of compression and restoration papers report it, so a PSNR value is directly comparable across methods and datasets.
 \item Cheap and deterministic. It is a closed-form function of MSE --- no training, no parameters, no randomness, so two implementations always agree.
@@ -313,12 +306,12 @@ Use PSNR for image compression, denoising, and super-resolution --- tasks with a
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=\textwidth]{figures/PSNR_plot.png}
-    % \caption{Caption}
+    
     \label{PSNR plot}
 \end{figure*}
 
 
-\textbf{Figure.} The same image at four noise levels, each labelled with its PSNR. As the noise grows the error rises and PSNR falls; because PSNR $= 10\log_{10}(\mathrm{MAX}^2/\mathrm{MSE})$ it is linear in $\log(\mathrm{MSE})$, so every $10$ dB lost means ten times the error. Roughly, above $30$ dB looks clean and below $20$ dB the artifacts are obvious. Image from the popular \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K} dataset.
+\textbf{Figure. PSNR.} The same image at four noise levels, each labeled with its PSNR. As the noise grows the error rises and PSNR falls; because PSNR $= 10\log_{10}(\mathrm{MAX}^2/\mathrm{MSE})$ it is linear in $\log(\mathrm{MSE})$, so every $10$ dB lost means ten times the error. Roughly, above $30$ dB looks clean and below $20$ dB the artifacts are obvious. Image from the popular \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K} dataset.
 \vspace{-12pt} 
 
 \orangebox{Did you know that...}
@@ -385,7 +378,7 @@ Use Dice for segmentation with class imbalance --- small foreground objects agai
     \includegraphics[width=\textwidth]{figures/Dice_overlap_examples.png}
 \end{figure*}
 
-\textbf{Figure.} Dice for three levels of overlap between a predicted mask and the ground truth. Only the intersection (cyan) counts toward the score, so as the masks drift apart Dice falls from $0.85$ to $0.25$. IoU is shown alongside --- always the stricter of the two.
+\textbf{Figure. S{\o}rensen–Dice Coefficient.} Dice for three levels of overlap between a predicted mask and the ground truth. Only the intersection (cyan) counts toward the score, so as the masks drift apart Dice falls from $0.85$ to $0.25$. IoU is shown alongside --- always the stricter of the two.
 
 \orangebox{Did you know that...}
 {Because Dice is differentiable once you swap the hard $0/1$ masks for predicted probabilities, it doubles as a loss function: ``soft Dice loss'' trains many segmentation networks directly on the metric they are scored by, sidestepping the imbalance that trips up cross-entropy. (Dice and S{\o}rensen introduced the coefficient independently in $1940$s ecology.)}
@@ -424,7 +417,7 @@ In panoptic segmentation, every pixel gets a class and, for countable objects, a
 
 It also splits into $PQ = SQ \times RQ$, both terms in $[0, 1]$: Segmentation Quality (SQ) is the average IoU of correctly matched segments, and Recognition Quality (RQ) is an F1-score on detection. So a low PQ tells you which half failed --- loose masks (low SQ) or missed and hallucinated objects (low RQ).
 
-\textbf{When to use Panoptic Quality?}
+\textbf{When to use PQ?}
 
 Use PQ for panoptic segmentation --- scene parsing for autonomous driving or robotics, where every pixel needs a label and individual objects (each car, each pedestrian) must be told apart. Avoid it when your task is only half of that: for semantic segmentation with no instances use mean IoU; for instance detection without dense ``stuff,'' use Average Precision (AP).
 
@@ -448,7 +441,7 @@ Use PQ for panoptic segmentation --- scene parsing for autonomous driving or rob
     \includegraphics[width=0.6\textwidth]{figures/PQ_decomposition.png}
 \end{figure*}
 
-\textbf{Figure.} Since $PQ = SQ \times RQ$, each model is a point on the SQ--RQ plane and equal-PQ scores trace hyperbolas. Models B (segments well, misses objects) and C (finds objects, sloppy masks) give up opposite halves yet land on the same low contour --- a strong PQ needs both.
+\textbf{Figure. PQ.} Since $PQ = SQ \times RQ$, each model is a point on the SQ--RQ plane and equal-PQ scores trace hyperbolas. Models B (segments well, misses objects) and C (finds objects, sloppy masks) give up opposite halves yet land on the same low contour --- a strong PQ needs both.
 
 \orangebox{Did you know that...}
 {The IoU $> 0.5$ matching rule hides a neat property: two segments cannot both overlap the same region by more than half, so each prediction matches \emph{at most one} ground-truth segment. The pairing is therefore unique --- no greedy or Hungarian assignment needed, unlike the matching step in object-detection metrics.}
@@ -489,7 +482,7 @@ SSIM scores how similar two images look to a person rather than how far apart th
 
 SSIM ranges from $-1$ to $1$, though on natural images it rarely falls below $0$; a score of $1$ means the two images are structurally identical. As practical anchors, SSIM above $0.95$ usually looks near-perfect to a viewer, while values near $0.7$ show clearly visible degradation.
 
-\textbf{When to use Structural Similarity Index?}
+\textbf{When to use SSIM?}
 
 Use SSIM for image compression, denoising, and super-resolution where a human views the result --- it is the standard companion to PSNR. Avoid it when images aren't spatially aligned, since it assumes pixel correspondence and a small shift or crop tanks the score at unchanged quality; for learned perceptual similarity across differing content, use LPIPS.
 
@@ -512,7 +505,7 @@ Use SSIM for image compression, denoising, and super-resolution where a human vi
     \includegraphics[width=\textwidth]{figures/SSIM_vs_PSNR.png}
 \end{figure*}
 
-\textbf{Figure.} Three distortions tuned to the \emph{same} PSNR ($24$ dB). PSNR cannot separate them, but SSIM tracks how they look: a brightness shift leaves structure intact (SSIM $0.99$), blur softens it (SSIM $0.76$), and noise destroys it (SSIM $0.55$).
+\textbf{Figure. SSIM.} Three distortions tuned to the \emph{same} PSNR ($24$ dB). PSNR cannot separate them, but SSIM tracks how they look: a brightness shift leaves structure intact (SSIM $0.99$), blur softens it (SSIM $0.76$), and noise destroys it (SSIM $0.55$).
 
 \orangebox{Did you know that...}
 {Introduced by Wang et al. in $2004$, SSIM has had rare reach for an image metric: in $2015$ its creators received a Primetime Engineering Emmy Award for how widely it is used to monitor and tune video quality across the television and streaming industry.}

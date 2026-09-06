@@ -1,10 +1,10 @@
 \chapteropener{Regression}{cyanlight}{cyanaccent}{%
-Regression models predict a quantity: tomorrow's demand, a house price, a delivery time. Every metric in this chapter summarizes the
-residuals $Y - \hat{Y}$ into one number, and they differ in what they do to a residual before averaging. MAE takes its magnitude, MSE its
+Regression models predict a quantity: tomorrow's demand, a house price, a delivery time. Nearly every metric in this chapter summarizes
+the residuals $Y - \hat{Y}$ into one number, and they differ in what they do to a residual before averaging. MAE takes its magnitude, MSE its
 square, MAPE its ratio to the target, the deviances its likelihood under an assumed noise model. That choice decides which errors dominate
 the score: squared errors let a few large misses set the number, absolute errors weigh every unit the same, percentage errors punish
-misses on small targets. $R^2$, $D^2$ and explained variance compare the residuals with a baseline instead of reporting them raw. Read
-MAE first; the rest are variations on which residuals matter most.}{In this chapter}
+misses on small targets. $R^2$, $D^2$ and explained variance compare the residuals with a baseline instead of reporting them raw, and
+MDA ignores their size to score only the direction of change. Read MAE first; the rest are variations on which residuals matter most.}{In this chapter}
 
 % ---------- MAE ----------
 \clearpage
@@ -32,7 +32,7 @@ when you need to communicate model performance to non-technical stakeholders.
     }
 \end{center}
 
-MAE ranges from 0 (perfect) to +infinity. To interpret it in context, compare MAE to the standard deviation of your target:
+MAE ranges from 0 (perfect) to $+\infty$. To interpret it in context, compare MAE to the standard deviation of your target:
 MAE $\ll$ std($Y$) suggests a useful model, while MAE $\approx$ std($Y$) means your model is barely better than predicting the mean.
 
 \textbf{When to use MAE?}
@@ -43,8 +43,8 @@ or when you need a differentiable loss function for training (use MSE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Robust to outliers. Unlike MSE, a single bad prediction doesn't dominate the score. If 99 predictions are off by 1 and one is off by 100, MAE = 1.99 while RMSE = 10.0.
-    \item Directly interpretable. MAE = 5.2 means ``on average, predictions miss by 5.2 units.'' No square roots or percentage conversions needed.
+    \item Robust to outliers. Unlike MSE, a single bad prediction doesn't dominate the score. If 99 predictions are off by 1 and one is off by 100, MAE = $1.99$ while RMSE = $10.0$.
+    \item Directly interpretable. MAE = $5.2$ means ``on average, predictions miss by $5.2$ units.'' No square roots or percentage conversions needed.
 }
 {
     \item All errors are weighted equally. A model with many small errors gets the same MAE as one with fewer but larger errors. If large errors are costly, use RMSE.
@@ -80,7 +80,7 @@ is skewed (e.g., income, claim amounts), this distinction matters: MAE and MSE w
 \textbf{Other related metrics}
 
 If your MAE and RMSE differ significantly, it signals that some predictions have large errors (RMSE amplifies them). A rule of thumb:
-RMSE/MAE close to 1.0 means errors are uniform; RMSE/MAE $\gg$ 1.0 means a few predictions are far off.
+RMSE/MAE close to $1.0$ means errors are uniform; RMSE/MAE $\gg$ $1.0$ means a few predictions are far off.
 For percentage-based comparison across different-scale targets, use MAPE or sMAPE.
 
 % ---------- MSE ----------
@@ -109,7 +109,7 @@ This makes MSE the right choice when large errors are catastrophic (e.g., struct
     }
 \end{center}
 
-MSE ranges from 0 (perfect) to +infinity. The main interpretation challenge is that MSE is in squared units — if you're predicting
+MSE ranges from 0 (perfect) to $+\infty$. The main interpretation challenge is that MSE is in squared units — if you're predicting
 revenue in dollars, MSE is in dollars-squared. Take the square root to get RMSE, which returns to interpretable units.
 
 \textbf{When to use MSE?}
@@ -135,13 +135,13 @@ when large errors are disproportionately costly — a 10-unit error should count
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/MSE_3d_surface.png}
-    % \caption{Caption}
+    
 \end{figure*}
 
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/MSE_cross_section.png} % Your figure goes here
+    \includegraphics[width=0.45\textwidth]{figures/MSE_cross_section.png} 
     \vspace{-10pt} % Adjust vertical alignment if needed
 \end{wrapfigure}
 
@@ -152,7 +152,7 @@ when large errors are disproportionately costly — a 10-unit error should count
 
 \orangebox{Did you know that...}
 {MSE decomposes into variance + bias$^2$: $MSE(\hat{\theta}) = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2$. This is the mathematical foundation
-of the bias-variance tradeoff. A model with zero bias but high variance (overfitting) and a model with high bias but low variance (underfitting)
+of the bias-variance trade-off. A model with zero bias but high variance (overfitting) and a model with high bias but low variance (underfitting)
 can have identical MSE — but for very different reasons. Monitoring both components separately is key to diagnosis.}
 
 \textbf{Other related metrics}
@@ -166,9 +166,9 @@ your model has a few very large errors dominating the score. MSE is primarily va
 \section{MSLE}
 \subsection{Mean Squared Log Error}
 
-MSLE measures relative errors rather than absolute ones. Predicting 110 when the target is 100 (10\% off) gets the same
-penalty as predicting 1100 when the target is 1000 (also 10\% off). This makes it ideal when you care about proportional
-accuracy — getting within 10\% matters the same whether the target is \$100 or \$1M.
+MSLE measures relative errors rather than absolute ones. Predicting 110 when the target is 100 ($10\%$ off) gets the same
+penalty as predicting 1100 when the target is 1000 (also $10\%$ off). This makes it ideal when you care about proportional
+accuracy — getting within $10\%$ matters the same whether the target is \$100 or \$1M.
 
 % formula
 \begin{center}
@@ -186,7 +186,7 @@ accuracy — getting within 10\% matters the same whether the target is \$100 or
         }
 \end{center}
 
-MSLE ranges from 0 (perfect) to +infinity. Because of the log transform, MSLE penalizes under-predictions more than over-predictions
+MSLE ranges from 0 (perfect) to $+\infty$. Because of the log transform, MSLE penalizes under-predictions more than over-predictions
 of the same magnitude — predicting 50 when the target is 100 is penalized more than predicting 150.
 
 \textbf{When to use MSLE?}
@@ -197,7 +197,7 @@ over-prediction are equally bad (use MSE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Scale-invariant. A 10\% error on a \$100 prediction and a 10\% error on a \$1M prediction contribute equally. This is critical for data spanning multiple orders of magnitude.
+    \item Scale-invariant. A $10\%$ error on a \$100 prediction and a $10\%$ error on a \$1M prediction contribute equally. This is critical for data spanning multiple orders of magnitude.
     \item Naturally penalizes under-predictions more heavily, which is desirable in supply chain (stockouts are worse than overstock) and capacity planning.
 }
 {
@@ -218,7 +218,7 @@ over-prediction are equally bad (use MSE).
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \vspace{-10pt} 
-    \includegraphics[width=0.45\textwidth]{figures/MSLE_cross_section.png} % Your figure goes here
+    \includegraphics[width=0.45\textwidth]{figures/MSLE_cross_section.png} 
     \vspace{-10pt} % Adjust vertical alignment if needed
 \end{wrapfigure}
 
@@ -244,7 +244,7 @@ Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Sq
 \subsection{Root Mean Squared Error}
 
 RMSE is simply $\sqrt{MSE}$, but that square root makes all the difference: it returns the error in the same units as your target.
-If you're predicting temperature in °C and RMSE is 2.3, your predictions are typically off by about 2.3°C. RMSE is the most commonly
+If you're predicting temperature in °C and RMSE is $2.3$, your predictions are typically off by about $2.3$°C. RMSE is the most commonly
 reported regression metric in practice because it's both interpretable and sensitive to large errors.
 
 % formula
@@ -263,7 +263,7 @@ reported regression metric in practice because it's both interpretable and sensi
     }
 \end{center}
 
-RMSE ranges from 0 to +infinity. A key mathematical property: RMSE $\geq$ MAE always, with equality only when all errors
+RMSE ranges from 0 to $+\infty$. A key mathematical property: RMSE $\geq$ MAE always, with equality only when all errors
 are identical. The ratio RMSE/MAE $\in [1, \sqrt{n}]$ tells you about error distribution: close to 1 means uniform errors,
 much greater than 1 means a few predictions are far off.
 
@@ -275,12 +275,12 @@ different-scale targets (use MAPE or R-squared).
 
 % strength and weakness box
 \coloredboxes{
-    \item Interpretable units. RMSE = 2.3°C means ``predictions are typically off by about 2.3 degrees.'' This directness makes RMSE the go-to metric for reporting.
+    \item Interpretable units. RMSE = $2.3$°C means ``predictions are typically off by about $2.3$ degrees.'' This directness makes RMSE the go-to metric for reporting.
     \item Balances sensitivity and interpretability. It penalizes large errors (like MSE) but in understandable units (unlike MSE).
 }
 {
     \item Scale-dependent. RMSE = 5 means nothing without knowing the target scale. Normalizing by the target range or mean (NRMSE) helps, but MAPE or R-squared are better for cross-dataset comparison.
-    \item Inherits MSE's outlier sensitivity. One prediction off by 100 among 99 predictions off by 1 gives RMSE = 10.0 vs MAE = 1.99.
+    \item Inherits MSE's outlier sensitivity. One prediction off by 100 among 99 predictions off by 1 gives RMSE = $10.0$ vs MAE = $1.99$.
 }
 
 \clearpage
@@ -307,8 +307,8 @@ data with one changed point — RMSE is a sensitive alarm for individual bad pre
 
 \vspace{10pt} 
 \orangebox{Did you know that...}
-{RMSE has a useful statistical interpretation: if your errors are normally distributed, about 68\% of predictions will fall
-within $\pm$1 RMSE of the true value, and 95\% within $\pm$2 RMSE. This makes RMSE a natural building block for prediction intervals.}
+{RMSE has a useful statistical interpretation: if your errors are normally distributed, about $68\%$ of predictions will fall
+within $\pm$1 RMSE of the true value, and $95\%$ within $\pm$2 RMSE. This makes RMSE a natural building block for prediction intervals.}
 
 \vspace{10pt} % Added spacing for better layout
 
@@ -346,7 +346,7 @@ competition metric for price prediction and count data on platforms like Kaggle.
     }
 \end{center}
 
-RMSLE ranges from 0 to +infinity. An RMSLE of 0.1 roughly means predictions are off by about 10\% on average (since $e^{0.1} \approx 1.10$).
+RMSLE ranges from 0 to $+\infty$. An RMSLE of $0.1$ roughly means predictions are off by about $10\%$ on average (since $e^{0.1} \approx 1.10$).
 This percentage interpretation makes RMSLE useful when stakeholders think in relative terms.
 
 \textbf{When to use RMSLE?}
@@ -357,7 +357,7 @@ than relative accuracy (use RMSE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Naturally handles targets spanning orders of magnitude. Predicting 110 vs 100 (10\% off) and 1100 vs 1000 (10\% off) contribute equally, unlike RMSE where the latter dominates.
+    \item Naturally handles targets spanning orders of magnitude. Predicting 110 vs 100 ($10\%$ off) and 1100 vs 1000 ($10\%$ off) contribute equally, unlike RMSE where the latter dominates.
     \item Penalizes under-predictions more than over-predictions, aligning with domains where shortfalls are costlier than surpluses (inventory, capacity planning).
 }
 {
@@ -372,11 +372,11 @@ than relative accuracy (use RMSE).
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/RMSLE_comparison_MSLE.png}
-    % \caption{Caption}
+    
 \end{figure*}
 
 % Left text with the image on the right
-\textbf{Figure 3.5 RMSLE.} \underline{Top:} The MSLE curve grows quadratically, penalizing large relative errors more aggressively, 
+\textbf{Figure. RMSLE.} \underline{Top:} The MSLE curve grows quadratically, penalizing large relative errors more aggressively, 
 while the RMSLE curve increases more slowly, smoothing out extreme values. Both metrics remain non-negative and centered around zero, 
 with RMSLE being less sensitive to large errors. 
 
@@ -385,7 +385,7 @@ with RMSLE being less sensitive to large errors.
 An earlier appearance can be noted in the 2017 Mercari Price Suggestion Challenge on Kaggle as well.}
 
 \textbf{Other related metrics}
-RMSLE is suited to data that has exponential growth and in usecases like demand forecasting, metrics that are similar in 
+RMSLE is suited to data that has exponential growth and in use cases like demand forecasting, metrics that are similar in 
 fashion are Mean Squared Logarithmic Error (MSLE), Mean Absolute Percentage Error (MAPE) , Huber Loss and Quantile Loss. 
 % ---------- MAPE ----------
 \clearpage
@@ -393,7 +393,7 @@ fashion are Mean Squared Logarithmic Error (MSLE), Mean Absolute Percentage Erro
 \section{MAPE}
 \subsection{Mean Absolute Percentage Error}
 
-MAPE expresses errors as percentages: a MAPE of 5\% means your predictions are off by 5\% on average. This scale-free
+MAPE expresses errors as percentages: a MAPE of $5\%$ means your predictions are off by $5\%$ on average. This scale-free
 interpretation lets you compare model accuracy across products, regions, or time series with wildly different magnitudes.
 It's the lingua franca of business forecasting — when a stakeholder asks ``how accurate is the model?'' they usually want MAPE.
 
@@ -413,19 +413,19 @@ It's the lingua franca of business forecasting — when a stakeholder asks ``how
     }
 \end{center}
 
-MAPE ranges from 0\% (perfect) to +infinity. A common interpretation scale: MAPE $<$ 10\% is excellent, 10-20\% is good,
-20-50\% is reasonable, and $>$ 50\% suggests the model needs significant improvement. However, what counts as ``good'' depends heavily on the domain and forecast horizon.
+MAPE ranges from $0\%$ (perfect) to $+\infty$. A common interpretation scale: MAPE $<$ $10\%$ is excellent, $10$--$20\%$ is good,
+$20$--$50\%$ is reasonable, and $>$ $50\%$ suggests the model needs significant improvement. However, what counts as ``good'' depends heavily on the domain and forecast horizon.
 
 \textbf{When to use MAPE?}
 
-Use MAPE for business reporting, demand forecasting, and any scenario where ``5\% off'' is meaningful regardless of the target magnitude.
-Avoid when targets can be zero or near-zero (MAPE explodes to infinity), when errors should be symmetric (MAPE penalizes over-predictions
+Use MAPE for business reporting, demand forecasting, and any scenario where ``$5\%$ off'' is meaningful regardless of the target magnitude.
+Avoid when targets can be zero or near-zero (MAPE explodes to $\infty$), when errors should be symmetric (MAPE penalizes over-predictions
 more), or for intermittent demand with many zeros (use MASE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Scale-free. You can directly compare a 5\% MAPE on \$10 products with a 5\% MAPE on \$10,000 products. No normalization needed.
-    \item Universally understood by business stakeholders. ``The model is 7\% off on average'' needs no further explanation.
+    \item Scale-free. You can directly compare a $5\%$ MAPE on \$10 products with a $5\%$ MAPE on \$10,000 products. No normalization needed.
+    \item Universally understood by business stakeholders. ``The model is $7\%$ off on average'' needs no further explanation.
 }
 {
     \item Explodes when actuals are near zero. A single $Y_t \approx 0$ can make MAPE infinite, rendering the entire score meaningless.
@@ -439,21 +439,21 @@ more), or for intermittent demand with many zeros (use MASE).
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/MAPE_3d_surface.png}
-    % \caption{Caption}
+    
 \end{figure*}
 
 
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/MAPE_cross_section.png} % Your figure goes here
+    \includegraphics[width=0.45\textwidth]{figures/MAPE_cross_section.png} 
     \vspace{-10pt} % Adjust vertical alignment if needed
 \end{wrapfigure}
 
 
 % Left text with the image on the right
 \textbf{Figure. MAPE.} \underline{Top:} The red explosion near $Y=0$ shows MAPE's fatal flaw — as actual values approach zero,
-percentage errors blow up to infinity. \underline{Right:} The asymmetric cross-section reveals that under-predictions (left)
+percentage errors blow up to $\infty$. \underline{Right:} The asymmetric cross-section reveals that under-predictions (left)
 produce lower percentage errors than equal-magnitude over-predictions (right). This bias causes MAPE-optimized models to systematically under-forecast.
 
 \orangebox{Did you know that...}
@@ -474,7 +474,7 @@ If your targets are intermittent (many zeros), skip percentage metrics entirely 
 \subsection{Symmetric Mean Absolute Percentage Error}
 
 sMAPE was designed to fix MAPE's two biggest problems: unbounded values near zero and asymmetric penalties. By averaging the actual and
-predicted values in the denominator, sMAPE stays bounded between 0\% and 200\% and is less likely to explode when actuals are small.
+predicted values in the denominator, sMAPE stays bounded between $0\%$ and $200\%$ and is less likely to explode when actuals are small.
 
 % formula
 \vspace{0.5em}
@@ -493,7 +493,7 @@ predicted values in the denominator, sMAPE stays bounded between 0\% and 200\% a
 	}
 \end{center}
 
-sMAPE ranges from 0\% to 200\% (or 0-100\% in the variant without the 0.5 factor). Unlike MAPE, sMAPE won't produce a 10,000\% error
+sMAPE ranges from $0\%$ to $200\%$ (or $0$--$100\%$ in the variant without the $0.5$ factor). Unlike MAPE, sMAPE won't produce a 10,$000\%$ error
 when the actual is near zero — the shared denominator keeps it bounded. But beware: despite the name ``symmetric,'' sMAPE still has
 a subtle asymmetry (see weaknesses).
 
@@ -505,43 +505,44 @@ over- and under-predictions (use wMAPE), or when targets include exact zeros (us
 
 % strength and weakness box
 \coloredboxes{
-    \item Bounded range [0\%, 200\%] prevents the extreme values that plague MAPE. A forecast can never produce an ``infinity\%'' error.
+    \item Bounded range [$0\%$, $200\%$] prevents the extreme values that plague MAPE. A forecast can never produce an ``infinity\%'' error.
     \item Handles near-zero actuals gracefully. When $Y_t = 0$, the denominator becomes $|\hat{Y}_t|/2$ instead of MAPE's division-by-zero.
 }
 {
-    \item Despite its name, sMAPE is NOT truly symmetric. Example: $Y=100, \hat{Y}=90$ gives 5.3\%, but $Y=100, \hat{Y}=110$ gives 4.8\%. Over-predictions get a slightly lower penalty.
+    \item Despite its name, sMAPE is not truly symmetric. Example: $Y=100, \hat{Y}=90$ gives $5.3\%$, but $Y=100, \hat{Y}=110$ gives $4.8\%$. Over-predictions get a slightly lower penalty.
     \item Still undefined when both $Y_t = 0$ and $\hat{Y}_t = 0$ simultaneously. For intermittent demand with many zeros, use MASE instead.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
+\enlargethispage{3\baselineskip}
 
 \begin{figure*}[ht!]
     \centering
     \includegraphics[width=0.6\textwidth]{figures/sMAPE_3d_surface.png}
-    % \caption{Caption}
+    
 \end{figure*}
 
 \begin{wrapfigure}{r}{0.5\textwidth}
     \centering
     \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/sMAPE_cross_section.png} % Your figure goes here
+    \includegraphics[width=0.45\textwidth]{figures/sMAPE_cross_section.png} 
     \vspace{-10pt} % Adjust vertical alignment if needed
 \end{wrapfigure}
 
-\textbf{Figure. sMAPE.} \underline{Top:} Compare with MAPE’s surface — sMAPE’s red area is contained within [0, 200\%],
-never exploding to infinity. \underline{Right:} The cross-section appears nearly symmetric but look closely — the slight
+\textbf{Figure. sMAPE.} \underline{Top:} Compare with MAPE’s surface — sMAPE’s red area is contained within [0, $200\%$],
+never exploding to $\infty$. \underline{Right:} The cross-section appears nearly symmetric but look closely — the slight
 asymmetry means sMAPE is not a perfectly unbiased estimator despite its name.
 % Source : https://scholarworks.utep.edu/cgi/viewcontent.cgi?article=1865&context=cs_techrep
 \sloppy
 \orangebox{Did you know that...}
-{SMAPE explains why the geometric mean often produces the best forecast combination. 
-When you have two forecasts, \( x \) and \( y \), you need to find a single estimate, \( z \), that minimizes the total SMAPE error:
+{sMAPE explains why the geometric mean often produces the best forecast combination. 
+When you have two forecasts, $ x $ and $ y $, you need to find a single estimate, $ z $, that minimizes the total sMAPE error:
 \[
 s(x,z)+s(y,z) = \frac{|x - z|}{x + z} + \frac{|y - z|}{y + z}
 \]
-The best choice for \( z \) is the geometric mean:
+The best choice for $ z $ is the geometric mean:
 \[
 z = \sqrt{x \cdot y}
 \]
@@ -549,8 +550,7 @@ This result matters in real-world forecasting. Many competitions and industry ap
 
 \textbf{Other related metrics}
 
-sMAPE is closely related to MAPE and wMAPE. If the asymmetry of sMAPE is a concern, consider wMAPE instead.
-For a scale-independent baseline comparison, use MASE.
+sMAPE is closely related to MAPE and wMAPE; if its asymmetry is a concern, use wMAPE. For a scale-free baseline comparison, use MASE.
 
 % ---------- wMAPE ----------
 \clearpage
@@ -578,9 +578,8 @@ that's robust to individual zeros while reflecting each item's economic importan
 \end{center}
 
 
-wMAPE ranges from 0\% to +infinity. It only fails if ALL actuals are zero (the entire series is zeros), which is a degenerate case.
-Critically, wMAPE naturally weights errors by their economic importance: a 10\% error on a \$1M product contributes more than a
-10\% error on a \$100 product, because the absolute error is larger.
+wMAPE ranges from $0\%$ to $+\infty$ and fails only if all actuals are zero. It weights errors by economic importance: a $10\%$
+error on a \$1M product contributes far more than a $10\%$ error on a \$100 product, because the absolute error is larger.
 
 \textbf{When to use wMAPE?}
 
@@ -589,50 +588,50 @@ It's the go-to metric when you want each item's error weighted by its revenue co
 weighted equally regardless of magnitude (use MAPE), or when you need a baseline comparison (use MASE).
 
 % strength and weakness box
+\enlargethispage{2\baselineskip}
 \coloredboxes{
-    \item Immune to MAPE's zero-denominator problem. Individual zeros in the actuals don't cause infinity — they simply contribute their absolute error to the numerator.
-    \item Naturally revenue-weighted. High-value items dominate the score, which aligns with business priority: a 5\% miss on your top product matters more than a 50\% miss on a niche item.
+    \item Immune to MAPE's zero-denominator problem. Individual zeros in the actuals don't cause $\infty$ — they simply contribute their absolute error to the numerator.
+    \item Naturally revenue-weighted. High-value items dominate the score, which aligns with business priority: a $5\%$ miss on your top product matters more than a $50\%$ miss on a niche item.
 }
 {
-    \item Not a true per-item percentage. wMAPE = 8\% doesn't mean ``each prediction is 8\% off'' — it means ``total error is 8\% of total actuals.'' Individual items can be much worse.
+    \item Not a true per-item percentage. wMAPE = $8\%$ doesn't mean ``each prediction is $8\%$ off'' — it means ``total error is $8\%$ of total actuals.'' Individual items can be much worse.
     \item Dominated by high-volume items. If your top product has good predictions but small products are terrible, wMAPE can mask the problem.
 }
 
 \clearpage 
 \thispagestyle{customstyle}
 %inspiration for this : https://www.baeldung.com/cs/mape-vs-wape-vs-wmape
-To illustrate the real-world use of WMAPE compared to MAPE, let's look at a business scenario. 
-Table 3.8 shows the sales growth for each channel, the forecast errors made by the predicting machine learning model,
-and the weight of each channel based on the revenue it generates. 
+To illustrate the real-world use of wMAPE compared to MAPE, consider four sales channels. The table shows each channel's actual and
+forecast sales, the forecast error made by the model, and the weight of each channel based on the revenue it generates.
 
 {
-\small
+\footnotesize
 \noindent
 \begin{tabular}{l r r c c c }
 \hline
-\textbf{Channel} & \textbf{Actual} & \textbf{Forecast} & \textbf{MAPE (\%)} & \textbf{Revenue Wt(\%)} & \textbf{wMAPE (\%)} \\
+\textbf{Channel} & \textbf{Actual} & \textbf{Forecast} & \textbf{MAPE (\%)} & \textbf{Weight (\%)} & \textbf{wMAPE (\%)} \\
 \hline
-B2B          & 1,10,000    & 99,010     & 9.1   & 8.3   & 0.76 \\
-Online       & 90,000      & 79,990     & 11.1  & 6.8   & 0.75 \\
-Marketplace  & 1,20,000    & 1,10,040   & 8.3   & 9.1   & 0.76 \\
-Retail       & 10,00,000   & 9,00,000   & 10.0  & 75.8  & 7.58 \\
+B2B          & 110,000     & 99,010     & $9.1$   & $8.3$   & $0.76$ \\
+Online       & 90,000      & 79,990     & $11.1$  & $6.8$   & $0.75$ \\
+Marketplace  & 120,000     & 110,040    & $8.3$   & $9.1$   & $0.76$ \\
+Retail       & 1,000,000   & 900,000    & $10.0$  & $75.8$  & $7.58$ \\
 \hline
 \end{tabular}
 }
-\setcounter{figure}{7}
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=1.0\textwidth]{figures/wMAPE_compare_MAPE.png}
-    \caption{Channel-wise Sales Forecast Errors: WMAPE (red)}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/wMAPE_compare_MAPE.png}
+\end{center}
 
-At first glance, if you only look at the MAPE (blue), it might seem like the model struggles equally with each channel, 
-showing an error margin of about 10 percent. 
+\textbf{Figure. wMAPE.} Channel-wise forecast errors: MAPE (blue) and each channel's contribution to wMAPE (red). Looking only at MAPE,
+the model seems to struggle equally with every channel, with an error of about $10\%$ each. The wMAPE contributions show where the
+risk sits: the retail channel accounts for $76\%$ of revenue, so its $10\%$ error is worth ten times the others combined. MAPE shows
+all the errors; wMAPE shows which one to fix first.
 
-However, when you consider WMAPE (red), you can clearly see the risk these errors pose for each channel. 
+\textbf{Other related metrics}
 
-The retail channel accounts for 75 percent of the revenue, so even the smallest error can have a significant impact on business strategy. While MAPE shows all the errors, 
-WMAPE helps highlight which errors should be addressed first. This is illustrated in Fig. 3.8.
+wMAPE is MAE divided by the mean of the actuals, so wMAPE and MAE always rank models the same way on one dataset; they differ only
+in units. When MAPE and wMAPE disagree, the low-volume items are where the model fails: MAPE weights every item equally and wMAPE
+weights by size, so a high MAPE with a low wMAPE means large percentage errors on small actuals.
 
 
 
@@ -663,7 +662,7 @@ with no model at all. This makes MASE the gold standard for comparing forecasts 
     }
 \end{center}
 \vspace{0.5em}
-MASE = 0.6 means your model's errors are 40\% smaller than the naive baseline. MASE = 1.2 means your model is 20\% worse.
+MASE = $0.6$ means your model's errors are $40\%$ smaller than the naive baseline. MASE = $1.2$ means your model is $20\%$ worse.
 Unlike MAPE, MASE never divides by individual actuals, so it handles zeros and intermittent demand gracefully.
 
 \textbf{When to use MASE?}
@@ -679,7 +678,7 @@ a naive lag-1 baseline is meaningless.
 }
 {
     \item Requires time-ordered data. The naive forecast ($Y_{t-1}$) only makes sense for time series. For cross-sectional data (e.g., predicting house prices), MASE is not applicable.
-    \item Harder to explain to stakeholders than MAPE. ``Our model is 0.7 MASE'' doesn't have the immediate clarity of ``our model is 5\% off.''
+    \item Harder to explain to stakeholders than MAPE. ``Our model is $0.7$ MASE'' doesn't have the immediate clarity of ``our model is $5\%$ off.''
 }
 
 \clearpage
@@ -727,8 +726,8 @@ correctly predict whether the target will increase or decrease?
 \end{center}
 \vspace{0.5em}
 
-MDA ranges from 0 to 1. MDA = 0.5 means your model is no better than a coin flip at predicting direction. MDA = 0.6
-means it gets the direction right 60\% of the time. In financial markets, even MDA = 0.55 can be profitable if
+MDA ranges from 0 to 1. MDA = $0.5$ means your model is no better than a coin flip at predicting direction. MDA = $0.6$
+means it gets the direction right $60\%$ of the time. In financial markets, even MDA = $0.55$ can be profitable if
 combined with proper position sizing.
 
 \textbf{When to use MDA?}
@@ -740,7 +739,7 @@ or when the time series is mostly flat (MDA becomes unstable on small changes).
 % strength and weakness box
 \coloredboxes{
     \item Scale-independent and magnitude-independent. A model predicting ``up by \$1'' and one predicting ``up by \$100'' get the same MDA credit if both correctly predict the direction.
-    \item Binary interpretation. ``The model gets the direction right 65\% of the time'' requires no domain knowledge to understand.
+    \item Binary interpretation. ``The model gets the direction right $65\%$ of the time'' requires no domain knowledge to understand.
 }
 {
     \item Ignores magnitude entirely. A model that correctly predicts ``up'' but estimates +\$1 when the actual move is +\$1000 gets full credit. Always pair MDA with a magnitude metric like MAE.
@@ -757,10 +756,10 @@ or when the time series is mostly flat (MDA becomes unstable on small changes).
 
 \textbf{Figure. MDA in a trading context.} Blue/red shading shows correct/incorrect direction predictions. The forecast
 (blue line) doesn't need to match the price exactly — it just needs to predict whether the next move is up or down. This model achieves
-MDA = 0.68, meaning it gets the direction right about 2/3 of the time.
+MDA = $0.68$, meaning it gets the direction right about 2/3 of the time.
 
 \orangebox{Did you know that...}
-{A model with MDA = 0.50 is equivalent to random guessing. But in financial markets, even a small edge matters: a model with MDA = 0.55
+{A model with MDA = $0.50$ is equivalent to random guessing. But in financial markets, even a small edge matters: a model with MDA = $0.55$
 that correctly sizes its positions can be highly profitable. This is why hedge funds track directional accuracy alongside
 traditional error metrics — and why MDA alone is never sufficient without a magnitude metric like MAE.}
 
@@ -801,7 +800,7 @@ Use MPD for insurance claim frequency, ad click counts, support-ticket arrivals,
 
 % strength and weakness box
 \coloredboxes{
-    \item Scales with the count. $\text{MPD}(y{=}100, \hat{y}{=}150) \approx 20.3$ while $\text{MPD}(y{=}1, \hat{y}{=}1.5) \approx 0.2$ --- the same 50\% miss is penalized in proportion to the count, matching Poisson variance.
+    \item Scales with the count. $\text{MPD}(y{=}100, \hat{y}{=}150) \approx 20.3$ while $\text{MPD}(y{=}1, \hat{y}{=}1.5) \approx 0.2$ --- the same $50\%$ miss is penalized in proportion to the count, matching Poisson variance.
     \item Native loss for Poisson GLMs. \texttt{PoissonRegressor} and XGBoost with \texttt{objective="count:poisson"} already optimize MPD --- no train/eval mismatch.
 }
 {
@@ -817,7 +816,7 @@ Use MPD for insurance claim frequency, ad click counts, support-ticket arrivals,
     \includegraphics[width=0.6\textwidth]{figures/MPD_cross_section.png}
 \end{figure*}
 
-\textbf{Figure. MPD} as a function of predicted value when $Y=10$. The asymmetric V is the practical takeaway: predicting 5 when the truth is 10 costs more deviance than predicting 15. This matches the business reality of most count problems --- undercounting alerts, tickets, or claims is usually more costly than overcounting them.
+\textbf{Figure. MPD.} as a function of predicted value when $Y=10$. The asymmetric V is the practical takeaway: predicting 5 when the truth is 10 costs more deviance than predicting 15. This matches the business reality of most count problems --- undercounting alerts, tickets, or claims is usually more costly than overcounting them.
 
 \orangebox{Did you know that...}
 {MPD is twice the gap between the model's log-likelihood and that of a saturated model that fits every point exactly. Minimizing MPD is therefore maximum-likelihood estimation under Poisson assumptions --- which is why \texttt{PoissonRegressor} optimizes MPD directly. Train and eval use the same metric, eliminating loss/score mismatch.}
@@ -852,7 +851,7 @@ positive right-skewed distribution, such as insurance claims, response times, or
 }
 \end{center}
 
-MGD ranges from 0 to +infinity, with 0 indicating a perfect model fit for continuous positive data.
+MGD ranges from 0 to $+\infty$, with 0 indicating a perfect model fit for continuous positive data.
 
 \textbf{When to use MGD?}
 
@@ -861,7 +860,7 @@ Use MGD for claim severity, customer lifetime value, repair costs, latency/durat
 % strength and weakness box
 \coloredboxes{
     \item MGD is tailored for right-skewed data. It handles continuous positive data with increasing variance efficiently.
-    \item MGD penalizes predictions proportionally to the magnitude of the target variable, e.g., \( MGD(y=100, \hat{y}=150) = MGD(y=1.0, \hat{y}=1.5) \).
+    \item MGD penalizes predictions proportionally to the magnitude of the target variable, e.g., $ MGD(y=100, \hat{y}=150) = MGD(y=1.0, \hat{y}=1.5) $.
 }
 {
     \item Targets as well as predictions must be strictly positive, limiting the metric’s compatibility with some models.
@@ -876,7 +875,7 @@ Use MGD for claim severity, customer lifetime value, repair costs, latency/durat
     \includegraphics[width=0.6\textwidth]{figures/MGD_cross_section.png}
 \end{figure*}
 
-\textbf{Figure. MGD} as a function of predicted value when $Y=10$. The minimum sits at $\hat{Y}=10$ and the penalty rises steeply for under-prediction but gently for over-prediction --- predicting half the truth ($\hat{Y}=5$) costs $\approx 1.6\times$ more than predicting double ($\hat{Y}=20$). MGD depends only on the ratio $\hat{Y}/Y$, so the curve's shape is set by relative error, not absolute. For insurance pricing this is the right behavior, since reserving too little is worse than reserving too much.
+\textbf{Figure. MGD.} as a function of predicted value when $Y=10$. The minimum sits at $\hat{Y}=10$ and the penalty rises steeply for under-prediction but gently for over-prediction --- predicting half the truth ($\hat{Y}=5$) costs $\approx 1.6\times$ more than predicting double ($\hat{Y}=20$). MGD depends only on the ratio $\hat{Y}/Y$, so the curve's shape is set by relative error, not absolute. For insurance pricing this is the right behavior, since reserving too little is worse than reserving too much.
 
 \orangebox{Did you know that...}
 {MGD is scale-invariant: multiplying all targets and predictions by any positive constant leaves the score unchanged. Practically, a model trained on dollars scores identically when retrained on cents. This is unique to Gamma deviance --- MAE, MSE, MPD, and RMSE all change under rescaling. It's also why MGD is the standard loss in actuarial pricing, where the same model needs to work across several orders of magnitude.}
@@ -892,7 +891,7 @@ MGD and MPD are both Tweedie-family losses --- the choice is set by your target'
 \subsection{R-squared}
 
 R-squared answers the most fundamental question in regression: ``How much better is my model than simply predicting the mean?''
-An R² of 0.85 means your model explains 85\% of the variance in the target — the remaining 15\% is unexplained noise or missing features.
+An R² of $0.85$ means your model explains $85\%$ of the variance in the target — the remaining $15\%$ is unexplained noise or missing features.
 This normalized 0-to-1 scale (usually) makes it the only regression metric you can interpret without knowing the target's units.
 
 \begin{center}
@@ -905,9 +904,9 @@ This normalized 0-to-1 scale (usually) makes it the only regression metric you c
             }
         };
         
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.1,0)$) to[bend left=15] node[pos=1, right] {Predicted value} +(1,.5); 
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1,0.1)$) to[bend left=15] node[pos=1, left] {Target value} +(-1,-.5); 
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.1,0)$) to[bend left=15] node[pos=1, right] {predicted value} +(1,.5); 
+        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1,0.1)$) to[bend left=15] node[pos=1, left] {target value} +(-1,-.5); 
     }
 \end{center}
 
@@ -916,13 +915,13 @@ That last point trips people up: in production, a negative R² is a red flag —
 
 \textbf{When to use R-squared?}
 
-Use R² when you need a normalized metric to compare models across different targets or datasets — ``Model A explains 85\% of variance
-on dataset X'' is meaningful without knowing X's scale. Avoid relying on R² alone for model selection: a model with R²=0.95 and
-terrible tail predictions can be worse than one with R²=0.90 but uniform errors. Always pair R² with RMSE or MAE.
+Use R² when you need a normalized metric to compare models across different targets or datasets — ``Model A explains $85\%$ of variance
+on dataset X'' is meaningful without knowing X's scale. Avoid relying on R² alone for model selection: a model with R²=$0.95$ and
+terrible tail predictions can be worse than one with R²=$0.90$ but uniform errors. Always pair R² with RMSE or MAE.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-    \item Scale-free. R² = 0.85 means the same thing whether you're predicting nanometers or light-years. This makes it the standard metric for cross-dataset comparison.
+    \item Scale-free. R² = $0.85$ means the same thing whether you're predicting nanometers or light-years. This makes it the standard metric for cross-dataset comparison.
     \item Built-in baseline. R² = 0 is the ``predict the mean'' baseline. Unlike RMSE, you don't need to compute a separate naive model to know if yours adds value.
 }
 {
@@ -938,13 +937,13 @@ terrible tail predictions can be worse than one with R²=0.90 but uniform errors
     \includegraphics[width=\textwidth]{figures/R2_explained.png}
 \end{center}
 
-\textbf{Figure. R² as a ratio of squared-error areas.} Left: the model's residuals drawn as purple squares (side $=|y_i - \hat{y}_i|$, so area $=$ squared error). Their total area is $SS_\text{res}$. Right: the same points but residuals are measured against the mean baseline — red squares with total area $SS_\text{tot}$. R² is one minus the ratio of the two areas. When the purple squares would be \textit{larger} than the red ones — i.e., the model is worse than predicting the mean — R² goes negative.
+\textbf{Figure. R² as a ratio of squared-error areas.} \underline{Left:} the model's residuals drawn as purple squares (side $=|y_i - \hat{y}_i|$, so area $=$ squared error). Their total area is $SS_\text{res}$. Right: the same points but residuals are measured against the mean baseline — red squares with total area $SS_\text{tot}$. R² is one minus the ratio of the two areas. When the purple squares would be \textit{larger} than the red ones — i.e., the model is worse than predicting the mean — R² goes negative.
 
 
 \orangebox{Did you know that...}
 {R² is mathematically equivalent to $1 - MSE_{model}/MSE_{baseline}$, where the baseline always predicts the mean.
-This means R² and MSE contain the exact same information — R² just rescales MSE to a 0-1 range. The practical implication:
-if R² improves by 0.01, you can calculate exactly how many units of MSE that saved.}
+This means R² and MSE contain the exact same information — R² just rescales MSE to a $0$--$1$ range. The practical implication:
+if R² improves by $0.01$, you can calculate exactly how many units of MSE that saved.}
 
 \textbf{Other related metrics}
 
@@ -974,25 +973,25 @@ It serves as an alternative to traditional R-squared but focuses on the absolute
             }
         };
         
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,0)$) to[bend left=15] node[pos=1, right] {Predicted value} +(1,.5); 
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.3,0.1)$) to[bend right=15] node[pos=1, right] {Mean of targets} +(1,-.5); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.1)$) to[bend left=15] node[pos=1, left] {Target value} +(-1,-.5); 
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,0)$) to[bend left=15] node[pos=1, right] {predicted value} +(1,.5); 
+        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.3,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.1)$) to[bend left=15] node[pos=1, left] {target value} +(-1,-.5); 
     }
 \end{center}
 
-The D-squared Absolute Score lies in the range of -infinity and 1, where 1 represents a perfect model, 0 indicates no improvement over a naive model,
+The D-squared Absolute Score ranges from $-\infty$ to $1$, where 1 represents a perfect model, 0 indicates no improvement over a naive model,
 and negative values imply the model performs worse than the naive baseline.
 
-\textbf{When to use D-squared}
+\textbf{When to use D2?}
 
 Use D2 Absolute Score for heavy-tailed targets where R-squared is unstable --- house prices, claim severity, click-through revenue. Avoid D2 when large errors are disproportionately costly (use R-squared or RMSE).
 
 \coloredboxes{
-    \item Outlier-robust. Adding one extreme test point can swing R-squared by 0.1+; D2 barely moves. This makes D2 the more reliable score for small or heavy-tailed test sets.
+    \item Outlier-robust. Adding one extreme test point can swing R-squared by $0.1$+; D2 barely moves. This makes D2 the more reliable score for small or heavy-tailed test sets.
     \item Built-in baseline like R-squared. $D^2=0$ means ``no better than predicting the median'' --- no separate naive model needed to judge whether your model adds value.
 }
 {
-    \item Linear penalty hides catastrophic errors. A model off by 10 on one prediction and 0 on 99 others scores the same as one off by 0.1 on all 100. If a single large miss hurts disproportionately, use R-squared or RMSE.
+    \item Linear penalty hides catastrophic errors. A model off by 10 on one prediction and 0 on 99 others scores the same as one off by $0.1$ on all 100. If a single large miss hurts disproportionately, use R-squared or RMSE.
     \item Be cautious about which value of $\bar{Y}$ to use. Most implementations default to $\bar{Y}_{\text {test }}$ which can lead to information leakage. It is advisable to use $\bar{Y}_{\text {train }}$ instead.
 }
 
@@ -1004,7 +1003,7 @@ Use D2 Absolute Score for heavy-tailed targets where R-squared is unstable --- h
     \includegraphics[width=\textwidth]{figures/D2_abs_comparison.png}
 \end{figure*}
 
-\textbf{Figure. D2 as a ratio of absolute-error bar heights.} Same structure as the R-squared plot — but with bars (heights $= |y_i - \hat{y}_i|$) instead of squares, and the median as baseline instead of the mean. Left: residuals from the linear fit sum to $SAD_{res} = 10.5$. Right: residuals from the median baseline sum to $SAD_{tot} = 19.5$. $D^2 = 1 - 10.5/19.5 = 0.46$. Without the outlier (red point), the same five points give $R^2 = 0.92$ and $D^2 = 0.72$ — both metrics agree the model fits well. Adding the outlier collapses $R^2$ to $0.30$ but only drops $D^2$ to $0.46$ — the outlier contributes $\sim \text{residual}^2$ to $SS_{res}$ but only $\sim |\text{residual}|$ to $SAD_{res}$.
+\textbf{Figure. D2 as a ratio of absolute-error bar heights.} Same structure as the R-squared plot — but with bars (heights $= |y_i - \hat{y}_i|$) instead of squares, and the median as baseline instead of the mean. \underline{Left:} residuals from the linear fit sum to $SAD_{res} = 10.5$. Right: residuals from the median baseline sum to $SAD_{tot} = 19.5$. $D^2 = 1 - 10.5/19.5 = 0.46$. Without the outlier (red point), the same five points give $R^2 = 0.92$ and $D^2 = 0.72$ — both metrics agree the model fits well. Adding the outlier collapses $R^2$ to $0.30$ but only drops $D^2$ to $0.46$ — the outlier contributes $\sim \text{residual}^2$ to $SS_{res}$ but only $\sim |\text{residual}|$ to $SAD_{res}$.
 
 \orangebox{Did you know that...}
 {The D-squared framework generalizes R-squared to arbitrary deviance functions. Using absolute deviations instead of squared differences makes D2 Absolute Score equivalent
@@ -1012,15 +1011,15 @@ to the proportion of absolute variance explained. In scikit-learn, this is avail
 
 \textbf{Other related metrics}
 
-D2 and R-squared should agree closely on well-behaved data. A large gap (e.g., R$^2$=0.60 but D2=0.85) signals a few outliers are dragging R-squared down --- investigate the largest residuals before trusting either score. For squared-error evaluation, use R-squared. For probabilistic classification, see D-squared Log Loss in Chapter 3.
+D2 and R-squared should agree closely on well-behaved data. A large gap (e.g., R$^2$=$0.60$ but D2=$0.85$) signals a few outliers are dragging R-squared down --- investigate the largest residuals before trusting either score. For squared-error evaluation, use R-squared. For probabilistic classification, see D-squared Log Loss in Chapter 3.
 
 % ---------- Pinball Loss ----------
 \clearpage
 \thispagestyle{regressionstyle}
 \section{Pinball Loss}
-\subsection{Pinball Loss }
+\subsection{Pinball Loss}
 
-Most metrics evaluate point predictions (``the price will be \$50''). Pinball Loss evaluates quantile predictions (``there's a 90\%
+Most metrics evaluate point predictions (``the price will be \$50''). Pinball Loss evaluates quantile predictions (``there's a $90\%$
 chance the price will be below \$60''). It asymmetrically penalizes errors based on the quantile: at $q=0.9$, under-predicting
 is penalized 9x more than over-predicting, because missing the upper bound of a prediction interval is more costly.
 
@@ -1045,7 +1044,7 @@ is penalized 9x more than over-predicting, because missing the upper bound of a 
 	}
 \end{center}
 
-Pinball Loss ranges from 0 (perfect) to +infinity. The key insight: at $q=0.5$, Pinball Loss reduces to MAE/2 (symmetric).
+Pinball Loss ranges from 0 (perfect) to $+\infty$. The key insight: at $q=0.5$, Pinball Loss reduces to MAE/2 (symmetric).
 At $q=0.9$, it penalizes under-predictions 9x more than over-predictions. This is exactly what you want for upper prediction bounds.
 
 \textbf{When to use Pinball Loss?}
@@ -1056,7 +1055,7 @@ stockouts are worse than overstock), risk management (VaR at $q=0.99$). Avoid fo
 
 \coloredboxes{
     \item Customizable asymmetry. By setting $q$, you encode your business's cost structure directly into the metric. $q=0.9$ means ``it's 9x worse to under-predict.''
-    \item Evaluates the full prediction distribution. By computing Pinball Loss at multiple quantiles (0.1, 0.5, 0.9), you assess the entire predictive distribution, not just the point estimate.
+    \item Evaluates the full prediction distribution. By computing Pinball Loss at multiple quantiles ($0.1$, $0.5$, $0.9$), you assess the entire predictive distribution, not just the point estimate.
 }
 {
     \item Requires the model to output quantile predictions, not just point estimates. Standard regression models need to be adapted (e.g., quantile regression, conformal prediction).
@@ -1075,7 +1074,7 @@ stockouts are worse than overstock), risk management (VaR at $q=0.99$). Avoid fo
 \end{wrapfigure}
 
 
-\textbf{Figure 3.15 Pinball Loss.} Demonstrates the behavior of the Pinball Loss function for three different quantile values $(q = 0.25, 0.5, 0.75)$.
+\textbf{Figure. Pinball Loss.} Demonstrates the behavior of the Pinball Loss function for three different quantile values $(q = 0.25, 0.5, 0.75)$.
 The plot shows how the loss increases linearly with the difference between the predicted value $\hat{Y}$ and the actual value $Y$ for various quantiles, with the loss function being asymmetric around the prediction.
 
 \orangebox{Did you know that...}
@@ -1083,7 +1082,7 @@ The plot shows how the loss increases linearly with the difference between the p
 
 \textbf{Other related metrics}
 
-At $q=0.5$, Pinball Loss reduces to MAE (scaled by 0.5). For evaluating mean predictions rather than quantile predictions, use MAE or MSE.
+At $q=0.5$, Pinball Loss reduces to MAE (scaled by $0.5$). For evaluating mean predictions rather than quantile predictions, use MAE or MSE.
 For interval forecasts, consider combining Pinball Loss at multiple quantiles.
 
 % ---------- Explained Variance Score ----------
@@ -1093,7 +1092,7 @@ For interval forecasts, consider combining Pinball Loss at multiple quantiles.
 \subsection{Explained Variance Score}
 
 EVS measures whether your model captures the \textit{pattern} in the data, even if predictions are systematically shifted.
-A model that predicts $[8, 9, 10, 11]$ when the actual is $[1, 2, 3, 4]$ gets EVS = 1.0 (perfect pattern) but R² $\ll$ 0 (terrible
+A model that predicts $[8, 9, 10, 11]$ when the actual is $[1, 2, 3, 4]$ gets EVS = $1.0$ (perfect pattern) but R² $\ll$ 0 (terrible
 absolute accuracy). This makes EVS useful when you care about relative dynamics more than absolute calibration.
 
 % formula
@@ -1126,7 +1125,7 @@ where systematic bias is expected and correctable. Avoid as a standalone metric 
     \item Identical to R² for unbiased models. When mean(residuals) = 0, EVS = R² exactly. So EVS only matters when you suspect systematic bias.
 }
 {
-    \item Ignores systematic offset. A model predicting $\hat{Y} = Y + 1000$ gets EVS = 1.0, which is dangerously misleading if taken at face value.
+    \item Ignores systematic offset. A model predicting $\hat{Y} = Y + 1000$ gets EVS = $1.0$, which is dangerously misleading if taken at face value.
     \item Rarely used as a primary metric. In practice, if your model has systematic bias, fix the bias rather than reporting a metric that ignores it.
 }
 
@@ -1139,7 +1138,7 @@ where systematic bias is expected and correctable. Avoid as a standalone metric 
 \end{figure*}
 
 \textbf{Figure. EVS vs R² across three models.} The good model (left) has EVS $\approx$ R² — no bias. The biased model (center) has
-EVS = 1.00 but R² = -1.77 — perfect pattern but constant offset. The noisy model (right) has both metrics low — the pattern itself
+EVS = $1.00$ but R² = -1.77 — perfect pattern but constant offset. The noisy model (right) has both metrics low — the pattern itself
 is wrong. The diagnostic: if EVS $\gg$ R², recalibrate your model; if both are low, retrain.
 
 \orangebox{Did you know that...}

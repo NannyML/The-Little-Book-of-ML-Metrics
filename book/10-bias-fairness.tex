@@ -1,7 +1,7 @@
 \chapteropener{Bias \& Fairness}{coralhard}{coralaccent}{%
 A model can be accurate and still treat two groups differently. The five criteria here are conditional independence statements between
 the prediction, the true label and a protected attribute, and they disagree by design. Demographic parity looks at who is selected;
-equality of opportunity and equalized odds at the error rates within each true class; predictive parity and calibration at what a
+equality of opportunity and equality of odds at the error rates within each true class; predictive parity and calibration at what a
 positive prediction, or a score, means once it is given. When base rates differ between groups no classifier can satisfy all of them,
 and the chapter's one shared example shows the same model passing two criteria and failing three. Choosing a fairness metric is
 choosing which of those failures to accept.}{In this chapter}
@@ -250,7 +250,7 @@ labels entirely.
 
 When a credit model approves an applicant, predictive parity asks that the approval be equally trustworthy across groups: of everyone the
 model flags as positive, the fraction who truly are should match for men and women alike. That fraction is the positive predictive value
-(PPV), the same quantity as precision --- the share of positive predictions that turn out correct. Predictive parity holds when a “yes” from
+(PPV), the same quantity as precision --- the share of positive predictions that turn out correct. Predictive parity holds when a ``yes'' from
 the model carries the same meaning no matter the group.
 
 % Formula
@@ -381,7 +381,7 @@ Identical error rates in both groups imply miscalibration across them whenever b
 {Calibration looks like the most innocent fairness criterion --- who could object to scores that mean what they say? --- yet it collides with
 the others just as hard. Calibration is a form of the sufficiency criterion, while equalized odds is the separation criterion, and the same
 impossibility result that settled the COMPAS debate shows the two cannot both hold whenever group base rates differ. A model can be flawlessly
-calibrated within every group and still send one group far more false positives than another. “The scores are fair” and “the errors are fair”
+calibrated within every group and still send one group far more false positives than another. ``The scores are fair'' and ``the errors are fair''
 are, in general, different and incompatible promises --- and choosing calibration is choosing which one to keep.}
 
 \textbf{Other related metrics}

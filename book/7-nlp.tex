@@ -69,7 +69,7 @@ sacreBLEU (a standardized tokenization) for numbers comparable across papers.
     \includegraphics[width=0.62\textwidth]{figures/BLEU_ngram_precision.png}
 \end{center}
 
-\textbf{Figure.} The candidate swaps two words, breaking every 4-gram, so the 4-gram precision $p_4$ is
+\textbf{Figure. BLEU.} The candidate swaps two words, breaking every 4-gram, so the 4-gram precision $p_4$ is
 $0$. Because BLEU is the geometric mean of the four precisions, that single zero drags the whole score
 to $0$ --- even though $78\%$ of unigrams still match. An arithmetic mean would have reported $0.39$.
 This is why sentence-level BLEU needs smoothing and is meant to be aggregated over a corpus.
@@ -152,7 +152,7 @@ language; quality drops where they don't.
     \includegraphics[width=\textwidth]{figures/METEOR_vs_BLEU.png}
 \end{center}
 
-\textbf{Figure.} One reference scored against three candidates. Replacing words with synonyms
+\textbf{Figure. METEOR.} One reference scored against three candidates. Replacing words with synonyms
 (\textit{fast}, \textit{leaps}, \textit{idle}) breaks every n-gram, so BLEU falls to $0$, but METEOR
 matches them through its synonym and stem tables and stays at $1.0$. Reordering the paraphrase keeps the
 matched words but scatters them, so METEOR's fragmentation penalty docks it to $0.79$ while BLEU again
@@ -233,7 +233,7 @@ can score poorly under ROUGE.
     \includegraphics[width=0.6\textwidth]{figures/ROUGE_variants.png}
 \end{center}
 
-\textbf{Figure.} A concise summary already covers the reference, so its ROUGE-1 recall is $0.78$.
+\textbf{Figure. ROUGE.} A concise summary already covers the reference, so its ROUGE-1 recall is $0.78$.
 Appending filler words that aren't in the reference cannot lower recall --- it stays flat at $0.78$ ---
 while precision falls from $1.0$ to $0.29$. Recall, the number ROUGE reports, is blind to padding; only
 precision, which it omits, sees it.
@@ -274,7 +274,7 @@ one edit per five reference words; lower is better.
             }
         };
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.1)$) to[bend right=15] node[pos=1, left] {word-level edits} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.0,-0.1)$) to[bend left=15] node[pos=1, right] {sequence shifts} +(1,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.7,-0.1)$) to[bend left=15] node[pos=1, right] {sequence shifts} +(0.0,.5);
         \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1,-.5);
     }
 \end{center}
@@ -312,7 +312,7 @@ report more edits than a human would actually make.
     \includegraphics[width=\textwidth]{figures/TER_edit_breakdown.png}
 \end{center}
 
-\textbf{Figure.} The hypothesis is the reference with the phrase \textit{on monday morning} moved to the
+\textbf{Figure. TER.} The hypothesis is the reference with the phrase \textit{on monday morning} moved to the
 front. Scored as plain word edits, relocating the three-word phrase costs three deletions plus three
 insertions ($\text{TER}=6/7=0.86$). TER's shift operation moves the whole phrase as a single edit
 ($\text{TER}=1/7=0.14$), matching the one drag a human editor would actually perform.
@@ -388,7 +388,7 @@ can swing EM by several points, so the scheme must be reported.
     \includegraphics[width=0.95\textwidth]{figures/EM_vs_F1.png}
 \end{center}
 
-\textbf{Figure.} Four predictions against the gold answer \textit{Martin Luther King}. Only the exact
+\textbf{Figure. EM.} Four predictions against the gold answer \textit{Martin Luther King}. Only the exact
 match scores EM $=1$; adding \textit{Jr.}, abbreviating to \textit{Dr.\ King}, or answering
 \textit{Malcolm X} all score EM $=0$. Token-level F1 instead grades the overlap --- $0.86$, $0.40$,
 $0.00$ --- giving the partial credit EM withholds.
@@ -463,7 +463,7 @@ standardized first, or formatting differences inflate WER with no real recogniti
     \includegraphics[width=\textwidth]{figures/WER_vs_errors.png}
 \end{center}
 
-\textbf{Figure.} The best alignment between reference and hypothesis splits the errors into one
+\textbf{Figure. WER.} The best alignment between reference and hypothesis splits the errors into one
 substitution (\textit{fox}\,$\rightarrow$\,\textit{box}), one deletion (\textit{dog}), and one insertion
 (\textit{very}). WER sums them over the reference length: $(1+1+1)/9 = 0.33$. That same alignment is what
 lets WER report \textit{which} kind of error dominates, not merely how many.

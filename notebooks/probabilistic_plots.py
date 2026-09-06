@@ -28,6 +28,12 @@ MID = '#6f6f6f'
 RNG = np.random.default_rng(2024)
 
 
+def fresh(seed):
+    """Each figure gets its own generator so results do not depend on run order."""
+    global RNG
+    RNG = np.random.default_rng(seed)
+
+
 def despine(ax, keep=('left', 'bottom')):
     for side in ('top', 'right', 'left', 'bottom'):
         ax.spines[side].set_visible(side in keep)
@@ -87,6 +93,7 @@ def density_ratio_weights(X_ref, X_prod):
 #    temperature scaling
 # ===========================================================================
 def fig_ece():
+    fresh(1)
     n = 40_000
     x = RNG.normal(0, 1, (n, 3))
     logit_true = 1.6 * x[:, 0] - 1.1 * x[:, 1] + 0.7 * x[:, 2]
@@ -143,7 +150,9 @@ def fig_ece():
     fig.subplots_adjust(left=0.07, right=0.98, top=0.85, bottom=0.13)
     save_figure(fig, 'ECE_reliability')
     plt.close()
-    print(f'1. ECE: over-confident {panels[0][1]:.3f} -> temperature {T:.2f} gives {panels[1][1]:.3f}; AUC {auc:.3f}')
+    top = panels[0][2][-1]
+    print(f'1. ECE: over-confident {panels[0][1]:.3f} -> temperature {T:.2f} gives {panels[1][1]:.3f}; AUC {auc:.3f}; '
+          f'top bin share {top[2]:.3f} acc {top[3]:.3f} conf {top[4]:.3f}')
 
 
 # ===========================================================================
@@ -165,12 +174,16 @@ def sample_world(n, centre, spread, concept=0.0):
 
 
 def fig_cbpe():
-    # reference period
-    x_ref, y_ref = sample_world(6000, 0.0, 1.0)
+    fresh(2)
+    # reference period: 20,000 labeled rows = ten chunks of 2,000
+    x_ref, y_ref = sample_world(20000, 0.0, 1.0)
     model = LogisticRegression().fit(x_ref[:, None], y_ref)
     s_ref = model.predict_proba(x_ref[:, None])[:, 1]
     cal = fit_calibrator(s_ref, y_ref)
     thr = 0.5
+    # NannyML-style band: ±3 std of the realized accuracy across reference chunks
+    ref_chunk_acc = [((s_ref[i:i + 2000] >= thr).astype(int) == y_ref[i:i + 2000]).mean() for i in range(0, 20000, 2000)]
+    band = 3 * np.std(ref_chunk_acc, ddof=1)
     # production: 12 chunks; chunks 1-7 drift toward the boundary (harder inputs),
     # chunks 8-12 add concept drift on top
     chunks = []
@@ -222,11 +235,12 @@ def fig_cbpe():
 
     k = np.arange(1, len(chunks) + 1)
     axR.axvspan(7.5, 12.5, color=end_color, alpha=0.07, zorder=0)
+    axR.fill_between(k, est - band, est + band, color=start_color, alpha=0.15, linewidth=0, zorder=2)
     axR.plot(k, realized, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
     axR.plot(k, est, color=start_color, lw=3.2, marker='o', ms=6, solid_capstyle='round', zorder=4)
     axR.axhline(ref_acc, color=GREY_LINE, lw=1, ls=(0, (4, 3)), zorder=1)
     axR.text(12.4, ref_acc + 0.006, f'reference accuracy {ref_acc:.2f}', fontsize=10.5, color=MID, va='bottom', ha='right')
-    axR.text(7.0, est[6] + 0.02, 'CBPE estimate', color=start_color, fontsize=12.5, ha='right', va='bottom')
+    axR.text(7.0, est[6] + 0.02, 'CBPE estimate ± 3σ of reference chunks', color=start_color, fontsize=12.5, ha='right', va='bottom')
     axR.text(2.0, realized[1] - 0.03, 'realized accuracy', color=MID, fontsize=12.5, ha='left', va='top')
     axR.text(4.0, min(realized[:7].min(), est.min()) - 0.045, 'covariate shift only:\nestimate tracks reality', ha='center',
              va='top', fontsize=11, color=DARK, linespacing=1.3)
@@ -243,7 +257,8 @@ def fig_cbpe():
     fig.subplots_adjust(left=0.13, right=0.98, top=0.93, bottom=0.12)
     save_figure(fig, 'CBPE_estimation')
     plt.close()
-    print('2. CBPE: ref acc %.3f | chunks realized %s | est %s' % (ref_acc, np.round(realized, 3), np.round(est, 3)))
+    print('2. CBPE: ref acc %.3f | band ±%.3f | chunks realized %s | est %s | left panel expected %.3f realized %.3f' %
+          (ref_acc, band, np.round(realized, 3), np.round(est, 3), p_correct.mean(), (yhat == y).mean()))
     return dict(model=model, cal=cal, x_ref=x_ref, y_ref=y_ref, s_ref=s_ref, thr=thr)
 
 
@@ -251,6 +266,7 @@ def fig_cbpe():
 # 3. PAPE — density-ratio weights and the re-weighted calibrator
 # ===========================================================================
 def fig_pape(world=None):
+    fresh(3)
     """Two inputs; the true concept has an interaction the logistic model cannot
     represent, so the calibration of a given score depends on x2.  Production
     drifts along x2, and only a calibrator re-weighted to that region is right."""
@@ -334,14 +350,15 @@ def fig_pape(world=None):
     plt.close()
     mae_c = np.mean(np.abs(ec - r))
     mae_p = np.mean(np.abs(ep - r))
-    print('3. PAPE: realized %s\n   CBPE %s\n   PAPE %s\n   mean abs error CBPE %.3f PAPE %.3f | last chunk gap CBPE %.3f PAPE %.3f' %
-          (np.round(r, 3), np.round(ec, 3), np.round(ep, 3), mae_c, mae_p, ec[-1] - r[-1], ep[-1] - r[-1]))
+    print('3. PAPE: realized %s\n   CBPE %s\n   PAPE %s\n   mean abs error CBPE %.3f PAPE %.3f | last chunk gap CBPE %.3f PAPE %.3f | weight curve peak %.1f, raw max %.1f' %
+          (np.round(r, 3), np.round(ec, 3), np.round(ep, 3), mae_c, mae_p, ec[-1] - r[-1], ep[-1] - r[-1], np.nanmax(wbin), w_last.max()))
 
 
 # ===========================================================================
 # 4. DLE — nanny model on heteroscedastic regression
 # ===========================================================================
 def fig_dle():
+    fresh(4)
     n = 6000
     x_ref = RNG.uniform(0, 1, n)
     y_ref = 2 * x_ref + RNG.normal(0, 1, n) * x_ref          # noise grows with x
@@ -405,7 +422,7 @@ def fig_dle():
     fig.subplots_adjust(left=0.06, right=0.98, top=0.95, bottom=0.13)
     save_figure(fig, 'DLE_nanny')
     plt.close()
-    print('4. DLE: realized %s\n   estimate %s' % (np.round(r, 3), np.round(e, 3)))
+    print('4. DLE: realized %s\n   estimate %s\n   max gap %.3f' % (np.round(r, 3), np.round(e, 3), np.max(np.abs(r - e))))
 
 
 # ===========================================================================
@@ -413,6 +430,7 @@ def fig_dle():
 #    decomposition into covariate shift and concept drift
 # ===========================================================================
 def fig_rcd():
+    fresh(5)
     n = 5000
 
     def concept(X, rot):

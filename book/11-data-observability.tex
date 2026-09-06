@@ -1,8 +1,9 @@
 \chapteropener{Data Observability}{minthard}{mintaccent}{%
 Before a model, a dashboard or a metric can be trusted, the table behind it has to arrive on time, complete, and in the shape everyone
-expects. The monitors in this chapter are deliberately simple statistics: how many rows, how old, how many nulls, how many distinct
-values, what the mean and the extremes are. What makes them useful is not the statistic but its history: each is computed at every
-scan, compared with an expected range learned from earlier scans, and flagged when it leaves it. Every page shows the same table, an
+expects. The monitors in this chapter are deliberately simple statistics: how many rows, how old, which columns, how many nulls, how
+many distinct values, what the mean, the extremes and the string lengths are. What makes them useful is not the statistic but its
+history: each is computed at every scan, compared with an expected range learned from earlier scans, and flagged when it leaves it
+(schema changes are flagged outright). Every page shows the same table, an
 orders feed monitored daily for six weeks, so the incidents one monitor catches and another misses can be read side by side. Unlike
 the rest of the book, each monitor takes one page.}{In this chapter}
 
@@ -26,35 +27,35 @@ history of those statistics is turned into an expected range and today's value i
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{anomaly at } t \iff \big|\, {\color{nmlcyan}x_t} - {\color{nmlpurple}\mu_t} \,\big| > {\color{nmlyellow}z}\, {\color{nmlred}\sigma_t}
+                \text{anomaly at } t \iff \big|\, {\color{nmlcyan}x_t} - {\color{nmlpurple}\mu_t} \,\big| > {\color{nmlyellow}z}\, {\color{nmlpurple}\sigma_t}
                 $
             }
         };
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.2,-0.2)$) to[bend right=15] node[pos=1, left] {today's measurement} +(-1,.5);
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.4,-0.2)$) to[bend left=15] node[pos=1, right] {baseline from history} +(0.8,.5);
         \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.0,0.25)$) to[bend right=15] node[pos=1, left] {sensitivity} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.75,0.25)$) to[bend left=15] node[pos=1, right] {spread of history} +(0.4,-.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.75,0.25)$) to[bend left=15] node[pos=1, right] {spread of history} +(0.4,-.5);
     }
 \end{center}
 
-The baseline $\mu_t$ follows the metric's seasonality (the same weekday in earlier weeks, the same hour in earlier days), $\sigma_t$ is
-the spread of past values around it, and $z$ sets how far outside a value must fall: $3$ by default, adjustable between $0.3$ and $6$.
-Feedback closes the loop: a point marked as expected widens the range, a point marked as anomaly narrows it.
+The baseline $\mu_t$ follows the metric's seasonality (in this chapter, the same weekday in earlier weeks), $\sigma_t$ is the spread of
+past values around it, and $z$ sets how far outside a value must fall: $3$ by default, adjustable between $0.3$ and $6$. Feedback closes
+the loop: a point marked as expected widens the range, a point marked as anomaly teaches the detector to alert on values like it.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_expected_range.png}
 \end{center}
 
-\textbf{Figure. Expected range.} Daily row counts of an orders table over six weeks. The first three weeks train the baseline; from then
-on the grey band is the same-weekday mean $\pm 3\sigma$, so weekends sit inside it although they carry $40\%$ fewer rows. A day with no
-load and a day whose load stopped half-way both fall outside and are flagged. Every other page in this chapter shows this table under
-a different monitor.
+\textbf{Figure. Expected Range.} Daily row counts of an orders table. \underline{Left:} three training weeks grouped by weekday give a
+mean per weekday and a pooled spread of $\sigma = 200$ rows; the range is the mean $\pm 3\sigma$. \underline{Right:} the next three weeks
+checked against it. Weekends sit inside their own range although they carry $40\%$ fewer rows; a day with no load and a day whose load
+stopped half-way fall outside and are flagged. Every other page in this chapter shows this table under a different monitor.
 
 \textbf{When to use it?}
 
-Every monitor uses it, so the question is how to set it. Keep $z = 3$ where false alarms are cheap and lower it for metrics whose
-normal variation is tiny (freshness, duplicates); scan at the same time every day so the baseline is stable; and give the detector
-a partition column that reflects arrival time, since a row stamped two days ago that lands today is never evaluated.
+Every monitor uses it, so the question is how to set it. Keep $z = 3$ where false alarms are cheap and lower it where normal variation
+is tiny (freshness, duplicates); scan at the same time every day so the baseline is stable; and partition by a column that reflects
+arrival time, since a row stamped two days ago that lands today is never evaluated.
 
 % ---------- Row Count ----------
 \clearpage
@@ -89,9 +90,10 @@ table rather than the newest slice.
     \includegraphics[width=\textwidth]{figures/Observability_row_count.png}
 \end{center}
 
-\textbf{Figure. Row count.} The load that never ran (zero rows) and the one that stopped half-way ($2{,}600$ against a Wednesday baseline
-near $5{,}000$) are flagged. The retry storm that inserted $6\%$ of one day's rows twice is not: $5{,}358$ rows sit inside a band that
-allows $4\%$ day-to-day noise. Volume catches what is missing far better than what is repeated; the Duplicates page catches that.
+\textbf{Figure. Row Count.} The load that never ran (zero rows) and the one that stopped half-way ($2{,}600$ against a Wednesday baseline
+near $5{,}000$) are flagged. The retry storm that inserted $6\%$ of one day's rows twice is not: $5{,}358$ rows, $7\%$ above the Monday
+baseline, sit inside a band that reaches $11\%$ either way. Volume catches what is missing far better than what is repeated; the
+Duplicates page catches that.
 
 \textbf{When to use it?}
 
@@ -114,7 +116,7 @@ the scan time and the newest timestamp in the table's partition column: how old 
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{freshness}_t = {\color{nmlpurple}t_{\text{scan}}} - \max_{r \in P_t} {\color{nmlcyan}\text{ts}(r)}
+                \text{freshness}_t = {\color{nmlpurple}t_{\text{scan}}} - \max_{r \in T} {\color{nmlcyan}\text{ts}(r)}
                 $
             }
         };
@@ -131,8 +133,8 @@ variant, last modification time, reads the same quantity from the warehouse's ow
 \end{center}
 
 \textbf{Figure. Freshness.} Because the load lands at the same hour every night, the normal spread is minutes and the band is thin. On the
-day nothing arrived the newest row is yesterday's and freshness jumps to $28.5$ hours. The partial load is caught too, in the other
-direction: the job died $25$ minutes in, so the newest row is older than usual by an hour, $5.6$ hours against $4.5$.
+day nothing arrived the newest row is yesterday's and freshness jumps to $28.5$ hours. The partial load is caught too: the job died
+$25$ minutes in, so the newest row is an hour older than usual, $5.6$ hours against $4.5$.
 
 \textbf{When to use it?}
 
@@ -172,14 +174,14 @@ anomaly by definition. A rename appears as one removal plus one addition.
     \includegraphics[width=\textwidth]{figures/Observability_schema.png}
 \end{center}
 
-\textbf{Figure. Schema changes.} \underline{Left:} the column count is flat for $33$ scans and steps from $6$ to $7$ at scan $34$.
+\textbf{Figure. Schema Changes.} \underline{Left:} the column count is flat for $33$ scans and steps from $6$ to $7$ at scan $34$.
 \underline{Right:} the diff behind the step: a column added and a type changed. The count alone would have missed a type change on its
 own, which is why the monitor stores the whole definition and not a summary.
 
 \textbf{When to use it?}
 
-On every table that other people's code reads, and on every table you do not control. It is the one monitor whose alerts are never
-noise: something changed, and a consumer must decide whether it matters. Avoid relying on it for semantic changes that leave the
+On every table that other people's code reads, and on every table you do not control. Its alerts are rarely noise: something changed,
+and every consumer must decide whether it matters. Avoid relying on it for semantic changes that leave the
 definition intact (a currency switch inside a numeric column, an enum gaining a value); those show up in Average, Max or Unique Count.
 
 % ---------- Missing Values ----------
@@ -198,23 +200,24 @@ before anyone notices the blank segments in a report.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{missing}\%_t = 100 \cdot \left( 1 - \frac{{\color{nmlcyan}\text{count}(c)}}{{\color{nmlpurple}\text{count}(*)}} \right)
+                \text{missing}\%_t = 100 \cdot \left( 1 - \frac{{\color{nmlcyan}\text{count}(c)}}{{\color{nmlred}\text{count}(*)}} \right)
                 $
             }
         };
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.2,-0.2)$) to[bend left=15] node[pos=1, right] {non-null values in the column} +(0.6,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.2,0.25)$) to[bend right=15] node[pos=1, right] {rows in the partition} +(0.6,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.2,0.25)$) to[bend right=15] node[pos=1, right] {rows in the partition} +(0.6,-.5);
     }
 \end{center}
 
 SQL's $\text{count}(c)$ skips nulls, so the ratio is the share of filled rows and one minus it the share of empty ones. Empty
-strings, sentinel values such as \texttt{N/A} or $-1$ are not null and are not counted; they belong to Unique Count and Min/Max.
+strings and sentinel values such as \texttt{N/A} or $-1$ are not null, so they count as present; catching them is a job for Unique Count
+and for Min and Max.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_missing.png}
 \end{center}
 
-\textbf{Figure. Missing values.} The country column is empty for about $2\%$ of orders every day, the band around it is a fraction of a
+\textbf{Figure. Missing Values.} The country column is empty for about $2\%$ of orders every day, the band around it is a fraction of a
 point wide, and the day an upstream field was renamed it jumps to $41\%$. The hollow marker is the day with no load: there is no
 partition to measure, so the scan is recorded as missing rather than as a value.
 
@@ -240,16 +243,16 @@ identify a row.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{dup}\%_t = 100 \cdot \frac{1}{{\color{nmlred}|V|}} \sum_{v \in V} \mathds{1}\big[\, {\color{nmlcyan}n(v)} > 1 \,\big]
+                \text{dup}\%_t = 100 \cdot \frac{1}{{\color{nmlred}|R|}} \sum_{r \in R} \mathds{1}\big[\, {\color{nmlred}n(v_r)} > 1 \,\big]
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.4,0.3)$) to[bend left=15] node[pos=1, left] {non-null values in the column} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.6,-0.2)$) to[bend left=15] node[pos=1, right] {how often this value occurs} +(0.6,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.4,0.3)$) to[bend left=15] node[pos=1, left] {records with a non-null value} +(-0.8,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(1.6,-0.2)$) to[bend left=15] node[pos=1, right] {how often record $r$'s value occurs} +(0.6,.5);
     }
 \end{center}
 
-Every copy counts, including the first: the values $[1, 1, 2, \text{null}, \text{null}]$ give $2$ of $3$ non-null records, $66\%$. On
+Every copy counts, including the first: the values $[1, 1, 2, \text{null}, \text{null}]$ give two of three non-null records, $66\%$. On
 a key column the expected level is exactly zero, so the band is as narrow as the floor allows and a single repeated batch is caught.
 
 \begin{center}
@@ -298,9 +301,9 @@ beside it.
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
 \end{center}
 
-\textbf{Figure. Unique count.} About $4{,}000$ distinct customers order on a weekday and $2{,}700$ at the weekend. The day ids were
-truncated to three digits the count drops to $995$, the most three digits can hold. The partial-load day is flagged too: half the rows
-bring fewer distinct customers, an anomaly that Row Count already explains.
+\textbf{Figure. Unique Count.} About $4{,}400$ distinct customers order on a weekday and $2{,}800$ at the weekend. The day ids were
+truncated to three digits the count drops to $995$ of the $1{,}000$ values three digits allow. The partial-load day is flagged too: half
+the rows bring fewer distinct customers, an anomaly that Row Count already explains.
 
 \textbf{When to use it?}
 
@@ -314,7 +317,7 @@ numeric columns, where nearly every value is distinct and the count just mirrors
 \section{Average}
 \subsection{Mean}
 
-Five percent of one day's amounts arrive in cents instead of currency units and the daily mean order value goes from $44$ to $252$.
+When $5\%$ of one day's amounts arrive in cents instead of currency units, the daily mean order value goes from $44$ to $252$.
 The average is the cheapest distribution monitor: one number per partition that moves whenever the values themselves change, even when
 their count, completeness and uniqueness are perfect.
 
@@ -340,9 +343,10 @@ a shift in the bulk and a change in a subset all move it, which makes it sensiti
     \includegraphics[width=\textwidth]{figures/Observability_average.png}
 \end{center}
 
-\textbf{Figure. Average.} Three different incidents, one monitor (log scale). The currency slip multiplies the mean by six. Refunds
-booked as negative amounts pull it down $6\%$, and a half-price promotion on cheap items $9\%$; both are outside a band that normally
-allows about $3\%$. Which of the three happened is not readable from this page; Quartiles and Min/Max tell them apart.
+\textbf{Figure. Average.} The same monitor catches three different incidents. The currency slip multiplies the mean by six and leaves
+the frame. Refunds booked as negative amounts pull it down $6\%$, and a half-price promotion on cheap items $9\%$; both are outside a
+band that normally allows about $3\%$. Which of the three happened is not readable from this page; Quartiles and Min and Max tell them
+apart.
 
 \textbf{When to use it?}
 
@@ -383,9 +387,9 @@ a volume problem. Nulls contribute nothing, so a completeness failure also lower
     \includegraphics[width=\textwidth]{figures/Observability_sum.png}
 \end{center}
 
-\textbf{Figure. Sum.} Daily revenue on a log scale. The currency slip lifts it sixfold with the row count unchanged; the partial load
+\textbf{Figure. Sum.} Daily revenue. The currency slip lifts it sixfold, off the scale, with the row count unchanged; the partial load
 cuts it in half with the mean unchanged. The half-price promotion, which moved the mean by $9\%$, disappears here inside the volume
-noise of a normal Friday: the sum's band is the widest on any page of this chapter.
+noise of a normal Friday: the sum's band inherits the noise of the row count and of the mean at once.
 
 \textbf{When to use it?}
 
@@ -426,9 +430,9 @@ the standard deviation is the amplifier of the outlier, useful as a detector and
     \includegraphics[width=\textwidth]{figures/Observability_stddev.png}
 \end{center}
 
-\textbf{Figure. Standard deviation.} On a log scale. Five percent of amounts in cents multiply the spread by forty, far more than they
-multiply the mean. The refund day and the promotion day are flagged too, by $15\%$ and $11\%$: negative amounts and halved prices both
-widen the distribution without moving its centre much.
+\textbf{Figure. Standard Deviation.} Five percent of amounts in cents multiply the spread by forty, far more than they multiply the
+mean, and send it off the scale. The refund day and the promotion day are flagged too, at $+15\%$ and $+11\%$: negative amounts and
+halved prices both widen the distribution without moving its center much.
 
 \textbf{When to use it?}
 
@@ -442,8 +446,8 @@ there, watch Quartiles for the bulk and Max for the tail.
 \section{Min and Max}
 \subsection{Range}
 
-A negative order amount, a date in 1970, a temperature of $999$: the values that break a downstream calculation are usually the
-extreme ones, and a single row is enough. Minimum and maximum per partition watch the two ends of a column's range, which the mean and
+A negative order amount, a delivery date in $1970$, a quantity of $9{,}999$: the values that break a downstream calculation are usually
+the extreme ones, and a single row is enough. Minimum and maximum per partition watch the two ends of a column's range, which the mean and
 the quartiles smooth away.
 
 % equation
@@ -470,7 +474,7 @@ day looks like; for the maximum of a heavy-tailed column that is a wide band and
 
 \textbf{Figure. Min and Max.} \underline{Left:} the minimum amount sits near $4$ until refunds are booked as negative orders, $-121$, and
 again when a promotion halves the cheapest prices. \underline{Right:} the maximum jumps from about $330$ to $22{,}410$ on the currency-slip
-day, and is also flagged on a day whose largest order, $487$, was merely large: a single value is a noisy statistic.
+day, off the scale, and is also flagged on a day whose largest order, $487$, was merely large: a single value is a noisy statistic.
 
 \textbf{When to use it?}
 
@@ -503,16 +507,16 @@ to a few extreme values.
     }
 \end{center}
 
-A quartile moves only when values cross it: multiplying $5\%$ of the amounts by $100$ pushes those rows past every quartile, but each
-quartile shifts by just a few percent of the values around it, while the mean multiplies by six.
+A quartile moves only when values cross it. Multiplying $5\%$ of the amounts by $100$ pushes those rows above every quartile, so each
+quartile climbs to the value $5\%$ of the way further up the distribution, a shift of a few percent, while the mean multiplies by six.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_quartiles.png}
 \end{center}
 
 \textbf{Figure. Quartiles.} Q1, median and Q3 of the daily amounts, with the mean dashed. On the currency-slip day the mean leaves the
-frame; Q3 rises a few percent and is flagged, the median barely moves. On the promotion day the picture inverts: Q1 drops from $25$ to
-$12$ because the cheap half of the catalogue was halved, while the median and Q3, which sit above the affected items, do not move at all.
+frame; Q3 rises $6\%$ and is flagged, the median barely moves. On the promotion day the picture inverts: Q1 drops from $25$ to $12$
+because every price under $30$ was halved, while the median and Q3, which sit above the affected items, do not move at all.
 
 \textbf{When to use it?}
 
@@ -552,9 +556,9 @@ are arriving in place of nulls, which Missing Values would not have seen.
     \includegraphics[width=\textwidth]{figures/Observability_text_length.png}
 \end{center}
 
-\textbf{Figure. Text length.} Every phone number is eleven characters long, so the band is a line. The day $60\%$ of numbers arrived
-without their four-character country prefix the mean length fell to $8.7$: no value was missing, none was duplicated, and every row
-still passed the column's type.
+\textbf{Figure. Text Length.} Every phone number is eleven characters long, so the band is as narrow as the detector's floor allows. The
+day $60\%$ of numbers arrived as seven-digit strings, without the formatted prefix, the mean length fell to $8.7$: no value was missing,
+none was duplicated, and every row still passed the column's type.
 
 \textbf{When to use it?}
 
