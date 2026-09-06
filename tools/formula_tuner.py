@@ -52,7 +52,7 @@ BLOCK_RE = re.compile(r"\\begin\{center\}\s*\n\s*\\tikz\{.*?\n\s*\}\s*\n\\end\{c
 SECTION_RE = re.compile(r"\\section\{((?:[^{}]|\{[^{}]*\})+)\}")
 ARROW_RE = re.compile(
     r"\\draw\[(?P<opts>[^\]]*)\]\s*\(\$\((?P<anchor>[ab]\.[a-z ]+)\)\s*\+\s*\((?P<sx>-?[\d.]+)\s*,\s*(?P<sy>-?[\d.]+)\)\$\)\s*"
-    r"to(?:\[bend (?P<bdir>left|right)\s*=\s*(?P<bend>-?\d+)\])?\s*node\[pos=1,\s*(?P<side>left|right|above|below)\]\s*\{(?P<label>.*?)\}\s*"
+    r"to(?:\[bend (?P<bdir>left|right)\s*=\s*(?P<bend>-?\d+)\])?\s*node\[pos=1,\s*(?P<side>left|right|above|below)(?P<nodeopts>[^\]]*)\]\s*\{(?P<label>.*?)\}\s*"
     r"\+\((?P<ex>-?[\d.]+)\s*,\s*(?P<ey>-?[\d.]+)\)\s*;",
     re.S,
 )
@@ -94,7 +94,7 @@ def parse_arrows(tex):
             "opts": d["opts"], "anchor": d["anchor"],
             "sx": float(d["sx"]), "sy": float(d["sy"]),
             "bdir": d["bdir"] or "left", "bend": int(d["bend"]) if d["bend"] else 0,
-            "side": d["side"], "label": d["label"],
+            "side": d["side"], "nodeopts": d["nodeopts"] or "", "label": d["label"],
             "ex": float(d["ex"]), "ey": float(d["ey"]),
         })
     return arrows
@@ -103,7 +103,7 @@ def parse_arrows(tex):
 def arrow_tex(a):
     bend = f"to[bend {a['bdir']}={a['bend']}]" if int(a["bend"]) else "to"
     return (f"\\draw[{a['opts']}] ($({a['anchor']})+({a['sx']:.2f},{a['sy']:.2f})$) {bend} "
-            f"node[pos=1, {a['side']}] {{{a['label']}}} +({a['ex']:.2f},{a['ey']:.2f});")
+            f"node[pos=1, {a['side']}{a.get('nodeopts', '')}] {{{a['label']}}} +({a['ex']:.2f},{a['ey']:.2f});")
 
 
 def apply_arrows(tex, arrows):
@@ -358,10 +358,11 @@ function changed(){showLive();clearTimeout(timer);timer=setTimeout(render,450);}
 function showLive(){if(!base)return;const img=document.getElementById('img');const src='data:image/png;base64,'+base.png;if(img.src!==src)img.src=src;
  drawOverlay();document.getElementById('ov').style.display='';const st=document.getElementById('status');st.textContent='preview (exact render follows)';st.className='live';}
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
-function labelSvg(text,x,y,side,col,sep,fs){let anchor='middle',dy='0.35em';
- if(side==='left'){x-=sep;anchor='end';}else if(side==='right'){x+=sep;anchor='start';}else if(side==='above'){y-=sep;dy='0';}else{y+=sep;dy='0.85em';}
- const parts=text.split('$');let inner='';parts.forEach((p,i)=>{if(!p)return;inner+=i%2?`<tspan font-style="italic">${esc(p.replace(/\\[a-zA-Z]+|[{}^_]/g,''))}</tspan>`:esc(p.replace(/\\[a-zA-Z]+\{?|[{}]/g,''));});
- return `<text x="${x}" y="${y}" dy="${dy}" text-anchor="${anchor}" font-family="RubikT,Rubik,sans-serif" font-size="${fs}" fill="${col}">${inner}</text>`;}
+function inlineSvg(text){const parts=text.split('$');let inner='';parts.forEach((p,i)=>{if(!p)return;inner+=i%2?`<tspan font-style="italic">${esc(p.replace(/\\[a-zA-Z]+|[{}^_]/g,''))}</tspan>`:esc(p.replace(/\\[a-zA-Z]+\{?|[{}]/g,''));});return inner;}
+function labelSvg(text,x,y,side,col,sep,fs){const lines=text.split('\\\\'),n=lines.length,lh=1.2*fs;let anchor='middle',top;
+ if(side==='left'){x-=sep;anchor='end';top=y-(n-1)*lh/2;}else if(side==='right'){x+=sep;anchor='start';top=y-(n-1)*lh/2;}
+ else if(side==='above'){y-=sep;top=y-(n-1)*lh-0.3*fs;}else{y+=sep;top=y+0.55*fs;}
+ return lines.map((l,i)=>`<text x="${x}" y="${top+i*lh}" dy="0.35em" text-anchor="${anchor}" font-family="RubikT,Rubik,sans-serif" font-size="${fs}" fill="${col}">${inlineSvg(l)}</text>`).join('');}
 function drawOverlay(){const ov=document.getElementById('ov'),img=document.getElementById('img');if(!base)return;
  const W=img.naturalWidth||1,H=img.naturalHeight||1;ov.setAttribute('viewBox',`0 0 ${W} ${H}`);
  const k=base.px_per_cm,lw=0.6*DPIpt,sep=3.333*DPIpt,fs=10*DPIpt;let s='';
