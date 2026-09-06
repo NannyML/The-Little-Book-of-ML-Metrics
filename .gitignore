@@ -22,3 +22,4 @@ CLAUDE.md
 .venv/
 __pycache__/
 *.pyc*.ptc
+book/main.ptc
