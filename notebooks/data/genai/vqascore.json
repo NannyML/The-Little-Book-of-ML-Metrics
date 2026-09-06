@@ -1,0 +1,70 @@
+{
+ "model": "Salesforce/blip-vqa-base",
+ "images": [
+  "hopper",
+  "temple",
+  "dahlia",
+  "gift"
+ ],
+ "captions": [
+  [
+   "hopper",
+   "a woman in a navy uniform in front of a flag"
+  ],
+  [
+   "temple",
+   "a pagoda on a hill above a lake"
+  ],
+  [
+   "dahlia",
+   "an orange dahlia flower"
+  ],
+  [
+   "gift",
+   "a blue gift box with a ribbon"
+  ],
+  [
+   "hopper_swap",
+   "a flag in a navy uniform in front of a woman"
+  ],
+  [
+   "hopper_neg",
+   "a woman not wearing a uniform"
+  ]
+ ],
+ "p_yes": [
+  [
+   0.9279724359512329,
+   0.6531437039375305,
+   0.46206313371658325,
+   0.4787558913230896,
+   0.8193448185920715,
+   0.6644273996353149
+  ],
+  [
+   0.20583054423332214,
+   0.9703266024589539,
+   0.7247496843338013,
+   0.22806532680988312,
+   0.277804434299469,
+   0.6245281100273132
+  ],
+  [
+   0.09462081640958786,
+   0.6098514199256897,
+   0.9649084806442261,
+   0.24925240874290466,
+   0.1343013197183609,
+   0.7372013330459595
+  ],
+  [
+   0.1814018040895462,
+   0.5415338277816772,
+   0.27482038736343384,
+   0.9238834381103516,
+   0.2761567234992981,
+   0.8515559434890747
+  ]
+ ],
+ "template": "Does this figure show '{}'? Please answer yes or no."
+}

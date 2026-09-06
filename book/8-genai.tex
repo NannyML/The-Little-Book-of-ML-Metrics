@@ -12,10 +12,11 @@
 % https://kilthub.cmu.edu/articles/journal_contribution/Evaluation_Metrics_For_Language_Models/6605324/1?file=12095765
 % https://huggingface.co/docs/transformers/perplexity
 % https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/
+% https://arxiv.org/abs/1904.09751 (Holtzman et al., The Curious Case of Neural Text Degeneration)
 
-Perplexity is a widely used metric for evaluating language models. At its core, perplexity measures how well a probability distribution or model
-predicts a sample. Mathematically, it is defined as the exponential of the average negative log-likelihood of the sequence. Intuitively, you can
-think of it as the “average branching factor” — the number of equally likely choices the model considers at each step.
+A language model that scores held-out text at a perplexity of $20$ is, at each token, as uncertain as if it were choosing among $20$
+equally likely words. Perplexity is the exponential of the average negative log-likelihood of the actual next tokens, and it needs no
+labels: only the text and the model's probabilities.
 
 % equation
 \begin{center}
@@ -33,45 +34,52 @@ think of it as the “average branching factor” — the number of equally like
     }
 \end{center}
 
-A lower perplexity indicates that the model assigns higher probabilities to the observed text, meaning it is less “surprised”.
+It runs from $1$ (certain) to the vocabulary size (uniform guessing) and beyond. The average sits inside the exponential, so it is a
+geometric mean of $1/p$: one token at $p = 10^{-6}$ costs $13.8$ nats, as much as a dozen ordinary tokens at $p \approx 0.3$.
 
 \textbf{When to use Perplexity?}
 
-Perplexity is most commonly used when evaluating language models during training or benchmarking. It helps track how well a model fits text data and
-is especially useful for comparing models trained on the same dataset. However, perplexity is best suited for probabilistic next-token prediction
-tasks and less reliable as a direct measure of end-user text quality.
+Use it to compare checkpoints of one model, to choose tokenizers or data mixes at a fixed architecture, and to flag distribution shift
+when the perplexity of incoming text jumps. Avoid it for judging generation quality (use MAUVE or human ratings), for masked models like
+BERT, and across different vocabularies (compare bits per byte instead).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Simple and interpretable. Lower perplexity values generally mean better predictive performance.
-\item Efficient for training evaluation. It provides a direct signal for model optimization without requiring human evaluation.
+\item Cheap and label-free: one forward pass over held-out text, and lower is strictly a better fit to that text.
+\item Fine-grained. A drop from $20$ to $19$ is a $5\%$ rise in the geometric-mean token probability, enough to settle a tokenizer
+decision a benchmark would miss.
 }
 {
-\item Models with low perplexity may still generate incoherent or unhelpful text.
-\item Sensitive to tokenization and normalization choices.
-\item Not well-defined for masked language models. Architectures like BERT predict missing tokens rather than generating sequences left-to-right,
-making perplexity unsuitable for evaluating them.
+\item Tokenizer-dependent. Byte-level pieces are each easier to predict, so per-token perplexity looks lower on the same text. Compare
+bits per byte instead.
+\item Fit is not quality. Repetitive, generic continuations get lower perplexity than the human text they replace, so samples can get
+duller as perplexity improves.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/Perplexity_training.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/Perplexity_surprisal.png}
+\end{center}
 
-\textbf{Figure.} Perplexity decreases during training as the model learns to predict text better. It starts high (uncertain) and converges to a low value.
+\textbf{Figure. Perplexity.} GPT-2's surprisal $-\log p$ per token; the dashed line is the mean and perplexity is its exponential.
+Expected tokens (``el'', ``Tower'') cost nothing, and ``Eiffel'' is three tokens because the tokenizer has no single piece for it.
+Swapping one word costs $10.1$ nats for ``Ohio'' ($p = 0.00004$), makes ``France'' a surprise too, and nearly triples the perplexity,
+from $8.3$ to $23.1$.
 
 \orangebox{Did you know that...}
-{Perplexity is closely related to entropy in information theory. In fact, $Perplexity = 2^{H(P)}$
-where \(H(P)\) is the entropy. This means that perplexity can be seen as the effective 
-number of equally likely words the model is choosing from at each step!}
+{The lowest-perplexity text is not the most human. Holtzman et al. (2020) gave GPT-2 a prompt and compared its own beam-search
+continuation with the real one: the model rated the human text far less probable than the repetitive text it had generated itself.
+Human writing is full of low-probability choices, so maximizing likelihood at decoding time yields loops and clichés. Perplexity
+measures how well a model fits text, not how good its own text will be, and the two can move in opposite directions.}
 
 \textbf{Other related metrics}
 
-For semantic similarity beyond surface-level prediction, see BERTScore and MAUVE. For evaluating generated text
-quality with human judgments, see MOS.
+BLEU and ROUGE (NLP chapter) measure overlap with a reference; MAUVE measures whether generated text is distributed like human text.
+Perplexity falling while MAUVE stays flat means the model predicts better but decodes badly. For masked models, pseudo-perplexity
+(masking and scoring each token in turn) is the nearest substitute.
 
 % ---------- BERTScore ----------
 \clearpage
@@ -81,11 +89,11 @@ quality with human judgments, see MOS.
 
 % reference:
 % https://arxiv.org/pdf/1904.09675
-% https://wiki.math.uwaterloo.ca/statwiki/index.php?title=BERTScore:_Evaluating_Text_Generation_with_BERT
+% https://github.com/Tiiiger/bert_score (default layers, baseline rescaling, hash codes)
 
-BERTScore is a metric for evaluating text generation that leverages contextual embeddings from pre-trained language models like BERT.
-Instead of relying solely on surface-level n-gram overlap (as in BLEU or ROUGE), BERTScore computes similarity by aligning tokens from the
-candidate and reference sentences in embedding space.
+A summary that says ``the physician postponed the operation'' when the reference says ``the doctor delayed the surgery'' shares no
+content word with it, and BLEU scores it near zero. BERTScore compares the two in a pretrained model's embedding space, matching each
+token to its most similar counterpart, so near-synonyms in context count as near-matches.
 
 % equation
 \begin{center}
@@ -93,53 +101,65 @@ candidate and reference sentences in embedding space.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                F_{\text{BERT}} = 2 \cdot \frac{{\color{nmlcyan}P_{\text{BERT}}} \cdot {\color{nmlpurple}R_{\text{BERT}}}}{{\color{nmlcyan}P_{\text{BERT}}} + {\color{nmlpurple}R_{\text{BERT}}}}
+                R_{\text{BERT}} = \frac{1}{{\color{nmlred}|x|}} \sum_{{\color{nmlcyan}x_i} \in x} \max_{{\color{nmlpurple}\hat{x}_j} \in \hat{x}} {\color{nmlcyan}x_i}^{\top} {\color{nmlpurple}\hat{x}_j}
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.3)$) to[bend right=15] node[pos=1, left] {embedding precision} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,-0.3)$) to[bend left=15] node[pos=1, right] {embedding recall} +(1,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.9,0.2)$) to[bend left=15] node[pos=1, left] {reference length} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.6,-0.1)$) to[bend right=15] node[pos=1, left] {reference token embedding} +(-1,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.9,-0.1)$) to[bend left=15] node[pos=1, right] {candidate token embedding} +(1,.5);
     }
 \end{center}
 
-Mathematically, for each token in a candidate sentence, BERTScore finds its most similar token in the reference sentence (and vice versa)
-using cosine similarity. Precision, recall, and F1 are then aggregated over all pairs, yielding a semantic-oriented score that correlates
-strongly with human judgments.
+$R_{\text{BERT}}$ is recall: each reference token finds its best candidate token (embeddings are unit-normalized, so the dot product is
+a cosine). Precision runs the matching from the candidate side and $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the
+top of the scale, so the reference implementation rescales them against a random-pair baseline.
 
-\textbf{When to use the BERTScore?}
+\textbf{When to use BERTScore?}
 
-Use BERTScore when evaluating tasks where semantic similarity matters more than exact wording, such as machine translation, summarization, or
-dialogue generation. It is especially useful when generated text can be phrased differently from references but still convey the same meaning.
+Use it for summarization, translation and paraphrase evaluation, where a good output can be worded very differently from its
+reference. Avoid it when exact tokens carry the meaning --- numbers, names, code (use exact match or BLEU) --- and when no reference
+exists (use MAUVE or a model judge).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Context-aware. Uses deep contextual embeddings, capturing meaning beyond surface word matches.
-\item Better correlation with humans. Empirical studies show BERTScore aligns more closely with human evaluation than BLEU or ROUGE.
+\item Rewards paraphrase: a candidate that keeps the meaning but changes every content word scores $F_{\text{BERT}} = 0.88$ where
+unigram precision is $0.40$ and BLEU, which needs matching 4-grams, is zero (figure).
+\item Token-level. The matching matrix shows which reference words went unmatched, so a low score points to a specific omission.
 }
 {
-\item Computationally heavy. Requires embedding extraction with large pre-trained models, making it slower than n-gram metrics.
-\item Model dependence. Performance varies depending on which pre-trained model (e.g., BERT, RoBERTa, multilingual-BERT) is used.
-\item Bias inheritance. Any biases in the underlying language model embeddings can influence the scores.
+\item Model- and layer-dependent. Scores from bert-base and roberta-large are not comparable; a number without its configuration is
+meaningless.
+\item Weak on word order and negation: swapping who did what to whom, or inserting ``not'', keeps most token matches and the score
+barely moves (figure).
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/BERTScore_vs_BLEU.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/BERTScore_matching.png}
+\end{center}
 
-\textbf{Figure.} BERTScore vs BLEU across translation scenarios. BERTScore rewards synonyms and paraphrases that BLEU misses, while both detect wrong meanings.
+\textbf{Figure. BERTScore.} \underline{Left:} cosine similarities between reference tokens (rows) and candidate tokens (columns) from
+layer $9$ of bert-base-uncased. Each row's maximum (boxed) is that token's best match and their mean is recall; column maxima (dots)
+give precision. ``Doctor'' finds ``physician'' at $0.82$, so $F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.
+\underline{Right:} the paraphrase scores high and the unrelated sentence low, but swapping who called whom scores $0.90$, above the
+paraphrase, and negation still scores $0.84$.
 
 \orangebox{Did you know that...}
-{The original BERTScore paper included a picture of Bert from Sesame Street paying homage to the model’s namesake and adding a playful touch to an
-otherwise technical paper.}
+{The embeddings BERTScore uses do not come from the model's last layer. The authors tuned the layer choice against human judgments and
+found that the final layers, which specialize in the masked-word prediction task, correlate worse than the layers just below them:
+roberta-large uses layer $17$ of $24$ by default and bert-base-uncased layer $9$ of $12$. Two teams reporting ``BERTScore'' with
+different models or layers are reporting different metrics, which is why the reference implementation prints a hash of the full
+configuration next to every score.}
 
 \textbf{Other related metrics}
 
-BERTScore provides token-level semantic similarity, complementing surface-level metrics like BLEU and ROUGE (see NLP chapter).
-For distributional comparison of generated text, see MAUVE.
+BLEU, METEOR and ROUGE (NLP chapter) count surface overlap; BERTScore counts semantic overlap. Low BLEU with high BERTScore means
+paraphrase; both high and still wrong means the error is a detail both under-weight, such as a number or a negation. MAUVE compares
+whole distributions and needs no reference per sample.
 
 % ---------- MAUVE ----------
 \clearpage
@@ -152,9 +172,9 @@ For distributional comparison of generated text, see MAUVE.
 % https://arxiv.org/pdf/2102.01454
 % https://krishnap25.github.io/mauve/
 
-MAUVE is a metric that measures how close the text written by a model is to the distribution of human text. Instead of checking for word overlap,
-it looks at the shape of the two text distributions. It does this by taking samples from both human and model outputs, turning them into embeddings
-using a large language model, and then comparing them. The comparison is done using a KL divergence in this embedding space. 
+Five thousand articles from a model and five thousand written by people are judged as two piles rather than article by article.
+MAUVE embeds every text, clusters the embeddings into a histogram per pile, and measures how far the model's histogram sits from the
+human one, dropping both when the model writes text people never would and when it never writes text people often do.
 
 % equation
 \begin{center}
@@ -162,54 +182,70 @@ using a large language model, and then comparing them. The comparison is done us
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{MAUVE} = \exp\left(-{\color{nmlcyan}\text{KL}}({\color{nmlpurple}Q} \| {\color{nmlred}R_\lambda})\right)
+                \text{MAUVE} = \text{AUC}\Big\{\big({\color{nmlpurple}x_\lambda},\, {\color{nmlcyan}y_\lambda}\big)\Big\}_{\lambda \in (0,1)}
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.5,-0.1)$) to[bend right=15] node[pos=1, left] {model distribution} +(-1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.5,-0.1)$) to[bend left=15] node[pos=1, right] {human-model mixture} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-0.5,0.3)$) to[bend left=15] node[pos=1, left] {KL divergence} +(-1,-.5);
+        \node[below=0.2cm of a, inner sep=2pt, font=\normalsize] (b) {
+            ${\color{nmlpurple}x_\lambda} = e^{-c\,\text{KL}({\color{nmlpurple}Q}\,\|\,{\color{nmlred}R_\lambda})}, \quad
+              {\color{nmlcyan}y_\lambda} = e^{-c\,\text{KL}({\color{nmlcyan}P}\,\|\,{\color{nmlred}R_\lambda})}, \quad
+              {\color{nmlred}R_\lambda} = \lambda\,{\color{nmlcyan}P} + (1-\lambda)\,{\color{nmlpurple}Q}$
+        };
+        \draw[overlay,-latex,nmlpurple, semithick] ($(b.south)+(-2.4,0.15)$) to[bend left=15] node[pos=1, left] {model text} +(-0.6,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(b.south)+(-0.1,0.15)$) to[bend left=15] node[pos=1, right] {human text} +(0.4,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(b.south)+(2.1,0.15)$) to[bend right=15] node[pos=1, right] {mixture of the two} +(0.6,-.5);
     }
 \end{center}
 
-In simple terms, MAUVE asks: “If I look at a pile of human texts and a pile of model texts, do they look like they came from the same source?”
-A higher MAUVE score means the model text is statistically closer to human text.
+Each $\lambda$ mixes the two distributions; sweeping it traces a curve from $(0,1)$ to $(1,0)$, and MAUVE is the area under it, $1$ when
+the histograms coincide ($c = 5$ sets the scale). The horizontal coordinate falls when $Q$ puts mass where $P$ has none (junk); the vertical one when $Q$ lacks
+mass where $P$ has it (lost diversity).
 
-\textbf{When to use the MAUVE?}
+\textbf{When to use MAUVE?}
 
-Use MAUVE when you want to evaluate open-ended generation tasks like stories, dialogues, or summaries. It’s especially helpful when you care
-about both fluency and diversity.
+Use it to compare decoding strategies (greedy, beam, nucleus) and model sizes on open-ended generation --- stories, dialogue,
+continuations --- where no single right answer exists. Avoid it for short outputs with a reference (use BERTScore or BLEU) and below a
+few thousand samples, where the histograms are too noisy.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Balances quality and diversity. Unlike BLEU or ROUGE, MAUVE doesn’t just check for overlap. It rewards outputs that are fluent and varied.
-\item MAUVE has been shown to correlate strongly with how humans rate generated text.
+\item Sees quality and diversity at once: greedy decoding is fluent and likely yet collapses into a few modes, so MAUVE scores it near
+zero while nucleus sampling from the same model scores above $0.9$.
+\item Needs no references and no per-sample labels: two piles of text and an embedding model.
 }
 {
-\item Works best with thousands of examples (the original paper used 5,000). With fewer, results may be unstable.
-\item MAUVE only measures similarity as seen by the embedding model. If the style, topics, or length of texts differ, good text can still get
-a low score.
-\item Heavy to run. By default, it uses GPT-2 large embeddings. Smaller models can be used, but results may differ.
+\item Sample-hungry. The paper uses $5{,}000$ texts per side; with a few hundred, most $k$-means buckets are empty and the score swings
+from run to run.
+\item Measures the embedding's view. Piles that differ in length, topic or formatting score low even if each text is fine, and the
+embedding model and cluster count change the value.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/MAUVE_frontier.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/MAUVE_frontier.png}
+\end{center}
 
-\textbf{Figure.} MAUVE frontier curves. A good model (blue, MAUVE~0.92) produces text distributions close to human text. A poor model (red, MAUVE~0.65) diverges more. The area under the curve is the MAUVE score.
+\textbf{Figure. MAUVE.} \underline{Left:} human text $P$ (grey) and three model distributions $Q$ over eight embedding clusters.
+\underline{Right:} the curve each pair traces as $\lambda$ sweeps the mixture from $Q$ to $P$; MAUVE is the shaded area, computed exactly
+with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
+human text falls in loses area along the horizontal axis; one that writes only the three commonest kinds of text loses it along the
+vertical axis.
 
 \orangebox{Did you know that...}
-{MAUVE was introduced in 2021 and quickly became popular because it correlated better with human ratings than older metrics like perplexity.
-It even won a Outstanding Paper Award at NeurIPS 2021.}
+{MAUVE is built like ROC AUC. A plain KL divergence between the two histograms is infinite whenever the model puts mass in a bucket
+humans never use, or the reverse, so instead of one divergence the score sweeps a mixture from all-model to all-human and records two
+finite divergences at each step, one per kind of error. The curve is a trade-off frontier, junk on one axis and lost diversity on the
+other, and the area under it summarizes both, as ROC AUC summarizes false positives and negatives across thresholds. The shape of the
+curve says which way a model fails.}
 
 \textbf{Other related metrics}
 
-MAUVE evaluates distributional similarity, complementing BERTScore (token-level) and Perplexity (likelihood-based).
-For image generation rather than text, see FID and IS.
+Perplexity measures how well the model predicts human text; MAUVE how well its samples resemble it, so one can improve while the other
+stagnates. BERTScore compares one output to one reference. For images the same distribution-level idea is FID, which compares Gaussian
+fits in feature space rather than histograms.
 
 % ---------- Inception Score ---------
 \clearpage
@@ -217,8 +253,13 @@ For image generation rather than text, see FID and IS.
 \section{IS}
 \subsection{Inception Score}
 
-The Inception Score (IS) is a popular metric for evaluating generative image models, especially GANs. It measures both the quality and the
-diversity of generated images by using a pre-trained Inception v3 network.
+% reference:
+% https://arxiv.org/abs/1606.03498 (Salimans et al., Improved Techniques for Training GANs)
+% https://arxiv.org/abs/1801.01973 (Barratt & Sharma, A Note on the Inception Score)
+
+A generator trained on ImageNet should produce images a classifier recognizes without hesitation, and all kinds of them. The Inception
+Score checks both with a pretrained Inception-v3: each image should get a confident label ($p(y|x)$ peaked) and the labels across
+images should be spread out ($p(y)$ flat). The score is the exponential of the average KL divergence between the two.
 
 % equation
 \begin{center}
@@ -235,46 +276,54 @@ diversity of generated images by using a pre-trained Inception v3 network.
     }
 \end{center}
 
-The idea is simple, a good generative model should produce images that are easily classifiable into distinct categories (high confidence
-predictions) and cover a wide range of categories overall (diverse outputs). IS combines these two aspects into a single score,
-where higher is better.
+Equivalently $\exp\big(H(y) - \mathbb{E}_x H(y|x)\big)$, the exponential of the mutual information between an image and its label,
+from $1$ (every image gets the same label distribution) to the number of classes, $1{,}000$ for ImageNet. Real CIFAR-10 images score
+about $11$; ImageNet generators reach the hundreds. Compute it on $50{,}000$ samples split into ten groups and report the spread.
 
 \textbf{When to use IS?}
 
-Use IS when you want a reference-free evaluation metric for image generative models.
-It’s often used to compare GAN architectures during research and prototyping.
+Use it to track a generator on natural-image data during training, when one number that penalizes blurry samples and missing
+classes is enough and no real samples are at hand. Avoid it far from ImageNet (medical, satellite, faces --- use FID with a domain
+extractor) and whenever real samples exist (use FID, which also sees collapse within a class).
 
-
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item IS evaluates generated images directly, without requiring access to ground-truth samples.
-\item Encourages models to generate sharp, realistic, and varied images.
+\item Needs only generated images and a classifier. Blur spreads $p(y|x)$ and lowers the score; a model that emits one class makes
+the marginal identical to every row, so its KL is zero (figure).
+\item Interpretable scale: $\text{IS} = 10$ means the labels behave as if the generator covered ten confidently separated classes.
 }
 {
-\item A model can achieve a high score while still producing limited or repetitive variations within each class.
-\item Since it relies on the Inception v3 network trained on ImageNet, it may not be meaningful for domains far from natural
-images (e.g., medical scans, satellite imagery).
+\item Blind to variety within a class: one memorized image per class, repeated, scores near the maximum of $1{,}000$ from $1{,}000$
+distinct pictures. FID would flag the collapsed covariance.
+\item Anchored to ImageNet: realistic but ambiguous images (a landscape, a texture) count as failures, and a few points of difference
+is noise between Inception checkpoints.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/IS_quality_levels.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/IS_mechanism.png}
+\end{center}
 
-\textbf{Figure.} Inception Score across different generation quality levels. Random noise scores near 1, while state-of-the-art models achieve IS values above 80.
+\textbf{Figure. Inception Score.} Each row is one generated image's class distribution $p(y|x)$; the bottom row is their average, the
+marginal $p(y)$. IS is the exponential of the mean KL divergence between rows and marginal, so it is high only when the rows are peaked
+\emph{and} the marginal is flat: sharp, diverse images reach $2.98$ of a possible $4$. Four equally sharp images of one class make the
+marginal identical to every row, giving the minimum $\text{IS} = 1$; blurry images score $1.06$ however many classes they cover.
 
 \orangebox{Did you know that...}
-{The Inception Score was introduced in 2016 by Tim Salimans, Ian Goodfellow and colleagues at OpenAI in their paper Improved Techniques
-for Training GANs. It quickly became the standard benchmark for evaluating GANs, since it offered one of the first automated ways to score
-generated images without human annotators.}
+{The Inception Score is $\exp$ of a mutual information, $I(x;y) = H(y) - H(y|x)$: the label entropy across samples minus the average
+entropy per sample. That reading explains the ceiling (a $1{,}000$-class network carries at most $\log 1{,}000$ nats, so
+$\text{IS} \leq 1{,}000$), the loophole (one memorized image per class saturates it), and the dependence on the classifier. Real
+CIFAR-10 images score about $11$ with the original TensorFlow weights and about a point and a half lower with the torchvision port,
+a gap larger than many claimed improvements between GANs.}
 
 \textbf{Other related metrics}
 
-IS measures quality and diversity of generated images independently. FID compares generated images against real images,
-making it more reliable. For perceptual similarity, see LPIPS.
+IS and FID usually move together during training. When IS rises while FID stalls, the generator is producing sharper images of the
+same few things --- collapse within a class, which FID's covariance term catches and IS cannot. For similarity of one image to one
+target, use LPIPS.
 
 % ---------- Fréchet Inception Distance ---------
 \clearpage
@@ -285,10 +334,12 @@ making it more reliable. For perceptual similarity, see LPIPS.
 % reference:
 % https://papers.nips.cc/paper_files/paper/2017/file/8a1d694707eb0fefe65871369074926d-Paper.pdf
 % https://arxiv.org/pdf/2401.09603
+% https://arxiv.org/abs/2104.11222 (Parmar, Zhang, Zhu — On Aliased Resizing and Surprising Subtleties in GAN Evaluation)
+% https://arxiv.org/abs/1911.07023 (Chong & Forsyth — Effectively Unbiased FID and Inception Score)
 
-The Fréchet Inception Distance (FID) is one of the most widely used metrics to evaluate the quality of images produced by generative models,
-such as GANs. Instead of comparing pixels directly, FID compares the distributions of generated and real images in a feature space extracted
-from a pretrained Inception-v3 network.
+Two generators can both produce sharp, confidently classified faces while one drifts toward a narrow set of expressions. FID compares
+generated and real images in the $2{,}048$-dimensional feature space of Inception-v3, fitting a Gaussian to each set and measuring the
+distance between the two, so a shift in what images look like and a loss of variety both raise the score.
 
 % equation
 \begin{center}
@@ -305,45 +356,58 @@ from a pretrained Inception-v3 network.
     }
 \end{center}
 
-Mathematically, it models these feature distributions as multivariate Gaussians and computes the Fréchet distance Wasserstein-2 distanc between them.
-A smaller FID score indicates that generated images are closer to the real ones in terms of both quality and diversity.
+The first term is the squared distance between feature means (a systematic shift such as a color cast); the trace term compares
+covariances and grows when the generated set covers less of the space. FID is $0$ for identical sets and unbounded; strong models on
+faces or CIFAR-10 reach single digits. The estimate is biased upward at small $N$, so fix $N$ (conventionally $50{,}000$) when comparing.
 
 \textbf{When to use FID?}
 
-Use FID when you want to evaluate image generation quality and diversity in a way that aligns better with human perception than pixel-level metrics.
-It is especially useful in comparing different generative models or monitoring improvements during training.
+Use it as the headline number for image generators --- GANs, diffusion, super-resolution --- whenever real samples from the target
+distribution exist, and to detect mode collapse, which IS misses. Avoid it below about $10{,}000$ images (the bias dominates), for
+non-natural images unless you swap the extractor, and for judging a single image (use LPIPS or SSIM).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item By working in the feature space of a neural network trained on ImageNet, FID captures semantic similarity rather than raw pixel similarity.
-\item Diversity-aware. Unlike Inception Score, FID penalizes mode collapse (when the model generates limited varieties of images).
+\item Sensitive to variety: a generator that matches the real mean but collapses to a few modes keeps the first term at zero and pays
+through the covariance term (figure).
+\item Tracks human judgment of realism: blur, noise, swirls and black rectangles all raised FID monotonically with the level of
+disturbance in the original paper.
 }
 {
-\item FID is statistically biased. Its expected value on finite samples does not equal the true value, which can lead to misleading
-comparisons when datasets are small.
-\item Not suited for all setups. FID measures the Wasserstein distance to a fixed ground-truth distribution, so it is inadequate for
-evaluating models in domain adaptation or zero-shot generation, where the target distribution is unclear.
-\item FID assumes Inception embeddings follow a multivariate normal distribution.
+\item Biased by sample size: FID at $N = 5{,}000$ is systematically higher than at $50{,}000$ for the same model, so results at different
+$N$ are not comparable.
+\item Assumes Gaussian features: sets with the same mean and covariance but different shapes get $\text{FID} \approx 0$ (figure), and
+resize and JPEG settings shift the score by points.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/FID_quality_levels.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/FID_mechanism.png}
+\end{center}
 
-\textbf{Figure.} FID across quality levels (lower is better). State-of-the-art models achieve FID around 5, while random noise exceeds 250.
+\textbf{Figure. FID.} A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
+samples (grey) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
+term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third generator
+produces two separate clouds that happen to share the real set's mean and covariance, and FID reports $0.02$: the Gaussian fit cannot
+tell the shapes apart.
 
 \orangebox{Did you know that...}
-{The Fréchet Inception Distance gets its name from Maurice Fréchet, a French mathematician who introduced the concept of metric spaces in 1906.
-More than a century later, his work is now central to evaluating the realism of AI-generated images!}
+{FID depends on how you shrink the images. Inception expects $299 \times 299$ inputs and the resize step is not part of the metric's
+definition: Parmar, Zhang and Zhu (2022) showed that bilinear resizing without anti-aliasing, the default in several libraries, aliases
+the image and moves FID by amounts comparable to the gaps between competing models, and saving samples as JPEG instead of PNG shifts it
+again. The same generator can rank first or third depending on the evaluation code, which is why they released a fixed pipeline,
+clean-fid. The distance itself is Fréchet's 1957 metric between distributions, in the closed form for Gaussians derived by Dowson and
+Landau in 1982.}
 
-\textbf{FID vs IS}
+\textbf{Other related metrics}
 
-The main difference with the Inception Score (IS) is that while IS only measures the quality and diversity of generated images, FID also
-compares them directly to real images, making it more sensitive to how closely the generated distribution matches reality.
+Against IS: a rising IS with a flat FID means sharper but less varied samples. Against LPIPS: FID says whether a set looks like the real
+set, LPIPS whether one image looks like one target; a super-resolution model can have a fine FID and a poor LPIPS if it invents
+plausible detail in the wrong places. When samples are scarce, the Kernel Inception Distance (KID), an unbiased kernel distance between
+the two feature sets, is safer.
 
 
 % ---------- Learned Perceptual Image Patch Similarity ---------
@@ -354,9 +418,9 @@ compares them directly to real images, making it more sensitive to how closely t
 
 % references: https://arxiv.org/pdf/1801.03924
 
-LPIPS calculates the perceptual similarity between two images, aiming to reflect how similar they appear to human observers.
-Instead of comparing pixel values directly(like PSNR or SSIM), LPIPS uses the internal activations of deep neural networks trained for
-visual recognition. The idea is that these network features capture aspects of visual perception better than raw pixels.
+A photograph shifted four pixels to the right is far from the original in pixel-wise distance, as if it had been corrupted, while a
+person sees the same picture. LPIPS measures image distance the way people judge it: both images pass through a pretrained network,
+and the distance is a learned weighting of the differences between their feature maps rather than their pixels.
 
 % equation
 \begin{center}
@@ -374,44 +438,54 @@ visual recognition. The idea is that these network features capture aspects of v
     }
 \end{center}
 
-LPIPS calculates perceptual similarity between two images using deep network features. Features are extracted from different layers of a
-pretrained neural network, normalized, and then compared. These distances are averaged and weighted so they align with human perceptual judgments.
-A lower LPIPS score means images look more alike and higher scores mean they appear more different.
+Activations at several layers are unit-normalized per channel, differenced, weighted by learned per-channel weights $w_l$ and averaged
+over space. LPIPS is $0$ for identical images, stays below about $0.1$ for changes that are hard to see, and passes $0.5$ for images
+that differ in content; values depend on the backbone (AlexNet by default), so report it.
 
 \textbf{When to use LPIPS?}
 
-Use LPIPS when you want to evaluate how similar generated or reconstructed images feel to humans, rather than how close they are pixel by pixel.
-It is widely used in image generation, style transfer, and super-resolution tasks where perceptual quality is more important than exact fidelity.
+Use it to evaluate super-resolution, image-to-image translation, compression and diffusion reconstructions against a ground-truth
+image, and to measure sample diversity as the mean pairwise LPIPS between outputs. Avoid it when pixel fidelity is the requirement
+(medical or scientific imaging --- use PSNR or SSIM) and for sets of images without pairs (use FID).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item LPIPS correlates well with human judgments of similarity, often outperforming traditional metrics like SSIM and FSIM.
-\item Handles complex distortions and perceptual changes that pixel-based metrics miss.
+\item Matches human two-alternative choices better than SSIM and PSNR: about $69\%$ agreement on the paper's benchmark against the low
+sixties, near the $74\%$ ceiling set by human disagreement.
+\item Tolerant of shifts and small warps that destroy pixel metrics, because deep features are pooled over neighborhoods (figure).
 }
 {
-\item Since LPIPS relies on deep network features, it can be tricked by adversarial perturbations.
-\item More expensive to compute than simpler metrics like PSNR or SSIM.
+\item Not stable under adversarial change: a perturbation crafted against the backbone moves the score without visible effect, and
+backbones disagree on the ordering of distortions.
+\item Trained on $64 \times 64$ patches, so it under-weights errors in global layout, and it costs a full network forward pass per
+pair.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/LPIPS_vs_L2.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/LPIPS_equal_mse.png}
+\end{center}
 
-\textbf{Figure.} LPIPS (perceptual) vs L2 (pixel) distance for different distortion types. LPIPS correctly ranks structure and texture changes as more perceptually different than color shifts, while L2 does not.
+\textbf{Figure. LPIPS.} Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so a pixel metric rates them equally
+bad. LPIPS with the AlexNet backbone does not: shifting the image by four pixels or brightening it scores $0.07$ and $0.03$, changes a
+viewer would not call damage, while noise and blur at the same MSE score $0.69$ and $0.82$. Deep features are pooled over neighborhoods and
+normalized per channel, so they forgive position and intensity and punish the loss of the texture and edges people notice.
 
 \orangebox{Did you know that...}
-{LPIPS was introduced in 2018 by Richard Zhang and colleagues at UC Berkeley, OpenAI and Adobe. They showed that off-the-shelf deep features—even
-from different architectures—already align surprisingly well with human perception. Later, they refined the metric by learning weights from
-large-scale human preference studies.}
+{Zhang et al. found that features from a network with random weights already match SSIM at predicting which of two distorted images
+people find closer to the original, and that any trained network, whatever its task, beats it; the learned weights $w_l$ add only a
+few points. The same idea in loss form is the ``perceptual loss'' used to train super-resolution and style-transfer models, which makes
+evaluating such a model with LPIPS partly circular: it is being graded on the quantity it was optimized for. Pair it with a metric it
+was not trained against.}
 
 \textbf{Other related metrics}
 
-LPIPS measures perceptual similarity between two specific images. For distributional comparison across many images, use FID.
-For pixel-level comparison, see PSNR and SSIM in the Computer Vision chapter.
+PSNR and SSIM (Computer Vision chapter) measure pixel fidelity, LPIPS measures perceptual similarity. When PSNR is high and LPIPS is
+poor the output is blurry --- blur preserves pixel averages but erases the texture features people notice --- and when the reverse holds
+the output has sharp but displaced detail. FID compares distributions of images and needs no pairs.
 
 % ---------- CLIPScore ---------
 \clearpage
@@ -420,13 +494,12 @@ For pixel-level comparison, see PSNR and SSIM in the Computer Vision chapter.
 \subsection{CLIP Score}
 
 % reference:
-% https://arxiv.org/pdf/2104.08718
+% https://arxiv.org/pdf/2104.08718 (Hessel et al., CLIPScore, EMNLP 2021)
 % https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html
 
-The CLIP Score is a reference-free metric used to evaluate how well a generated caption matches the
-actual content of an image. It relies on the CLIP model, which embeds both text and images into the same semantic space. To compute it,
-the image and the candidate caption are passed through CLIP’s feature extractors, and their cosine similarity is measured. The score is then
-rescaled, so higher values indicate stronger alignment between text and image.
+A text-to-image model asked for ``a corgi wearing sunglasses on a beach'' returns a picture, and CLIP Score checks the match without
+a human: it embeds the image and the prompt with the same CLIP model, trained to put matching image--text pairs close together, and
+reports their cosine similarity, rescaled and clipped at zero. No reference caption or image is needed.
 
 % equation
 \begin{center}
@@ -444,45 +517,56 @@ rescaled, so higher values indicate stronger alignment between text and image.
     }
 \end{center}
 
-A higher CLIP Score indicates better alignment between text and image. The score ranges from 0 (no alignment) up to w (the scaling weight,
-commonly set to 2.5), with larger values reflecting stronger semantic similarity.
+CLIP's cosines are compressed: matching pairs land around $0.25$--$0.35$ and unrelated ones around $0.1$--$0.2$, so $w = 2.5$
+stretches typical scores to $0.6$--$0.9$ (some libraries use $w = 100$). Values are comparable only within one CLIP checkpoint;
+compare systems by their mean score on the same prompts.
 
 \textbf{When to use CLIP Score?}
 
-Use CLIP Score when you need to assess the quality of text-to-image or image-to-text generation without requiring human-written reference captions.
-It is particularly useful for evaluating generative models in tasks like image captioning, text-to-image synthesis, or retrieval,
-where semantic alignment matters more than exact word overlap.
+Use it to rank text-to-image systems or samples on prompt adherence, to evaluate captioning without references, and to filter
+training pairs at scale. Avoid it when the meaning lies in the arrangement --- counts, spatial relations, negation, attribute binding ---
+where CLIP behaves like a bag of words (use VQAScore or DSG), and for image quality (use FID).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Does not require ground-truth captions.
-\item Correlates with human judgment. Has been shown to align well with how humans assess caption-image relevance.
+\item Reference-free and cheap: one CLIP forward pass per image and prompt, so it scales to millions of pairs and to prompts no human
+has captioned.
+\item Correlated with human judgments of captions better than BLEU, METEOR, CIDEr and SPICE on Flickr8K in the original paper, without
+a single reference.
 }
 {
-\item Model-dependent. The quality of the score depends heavily on the CLIP model and its training data; biases in CLIP can affect results.
-\item Insensitive to linguistic nuances. Two captions with very different readability or fluency may still achieve similar scores
-if they mention the right objects.
-\item Prompt sensitivity. Small wording changes (e.g., starting captions with “A photo of...”) can influence the score.
+\item Bag of words: ``a woman in a navy uniform in front of a flag'' with ``woman'' and ``flag'' swapped scores \emph{higher} than
+the original caption (figure), and ``not'' barely moves it.
+\item Compressed and checkpoint-bound: matched and mismatched pairs differ by about $0.1$ in raw cosine, and ViT-B/32 and ViT-L/14
+produce different scales, so small gaps are noise.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/CLIP_Score_scatter.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/CLIP_Score_matrix.png}
+\end{center}
 
-\textbf{Figure.} CLIP Score vs FID for different models. Good models (blue) achieve high CLIP scores (strong text-image alignment) and low FID (realistic images). Poor models (red) score low on both.
+\textbf{Figure. CLIP Score.} Four images against six captions, scored with CLIP ViT-B/32; each cell is $2.5$ times the cosine between
+the caption and image embeddings. The caption written for each image (boxed) beats every caption written for another image, so
+ranking across subjects works. But the raw cosines span only $0.06$--$0.35$, and for the first image the two probe captions (dashed)
+show the limit: with ``flag'' and ``woman'' swapped the score rises to $0.82$ against $0.79$ for the correct caption, and the negated
+caption keeps $0.69$. The score sees which words are present, not how they are arranged.
 
 \orangebox{Did you know that...}
-{The CLIP Score was introduced in 2022 by researchers at the Allen Institute for AI and The University of Washington and has quickly become a
-standard way to evaluate multimodal AI, thanks to the popularity of CLIP, which was originally developed by OpenAI.}
+{CLIP cannot fairly score a model trained with CLIP. Many text-to-image systems use CLIP inside their training or guidance, so a high
+CLIP Score partly measures how well the generator learned to satisfy the judge rather than the prompt; images optimized directly against
+CLIP grow text-like scribbles and characteristic textures that raise the score while looking worse. The same reward hacking appears
+whenever the evaluation model is also the training signal, and the fix is the one that applies to LPIPS: evaluate with a model the
+generator never saw.}
 
 \textbf{Other related metrics}
 
-CLIP Score measures text-image alignment. For more fine-grained compositional evaluation, see DSG and VQAScore.
-For image quality without text, use FID or IS.
+CLIP Score answers ``are the right things mentioned?''; VQAScore and DSG answer ``is the prompt actually depicted?'', and the two
+separate on compositional prompts where CLIP is near chance. When CLIP Score is high and FID is poor, the images match their prompts
+but do not look like photographs; when FID is good and CLIP Score is low, the model draws realistic pictures of the wrong thing.
 
 % ---------- Davidsonian Scene Graph ---------
 \clearpage
@@ -490,56 +574,80 @@ For image quality without text, use FID or IS.
 \section{DSG}
 \subsection{Davidsonian Scene Graph}
 
-% reference: 
-% https://arxiv.org/pdf/2310.18235 (has good visual)
+% reference:
+% https://arxiv.org/pdf/2310.18235 (Cho et al., ICLR 2024)
 
-The Davidsonian Scene Graph (DSG) measures how well a text-to-image model captures the meaning of a prompt by checking if the image has the right 
-objects, attributes, and relations—not just if it looks good.
+For the prompt ``a red bicycle leaning against a blue wall'', a picture of a blue bicycle beside a red wall contains every word and
+satisfies a bag-of-words judge. DSG turns the prompt into atomic yes/no questions (is there a bicycle? is it red? is the wall blue?),
+asks a VQA model each, and scores the image by the fraction answered yes.
 
-% no formula for this metric
-It builds on the idea of scene graphs—structured representations of an image in terms of “who does what to whom.” For example, the sentence
-“a cat sitting on a chair” can be represented as cat — sitting on — chair.
+% equation
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                \text{DSG} = \frac{1}{{\color{nmlred}|Q|}} \sum_{q \in Q} {\color{nmlgreen}\mathds{1}}\big[{\color{nmlpurple}a_q} = \text{yes}\big] \prod_{p \in {\color{nmlyellow}\text{pa}(q)}} {\color{nmlgreen}\mathds{1}}\big[{\color{nmlpurple}a_p} = \text{yes}\big]
+                $
+            }
+        };
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.6,0.2)$) to[bend left=15] node[pos=1, left] {number of questions} +(-0.3,-.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.7,-0.2)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1,.5);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.north)+(1.6,-0.3)$) to[bend left=15] node[pos=1, right] {parent questions of $q$} +(1,.5);
+        \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.4,0.2)$) to[bend right=15] node[pos=1, right] {indicator function} +(1,-.5);
+    }
+\end{center}
 
-DSG checks this alignment through two steps. First, a Question Generation module takes the prompt and breaks it into small yes/no questions
-that cover its meaning. It asks things like “Is there a cat?”, “Is it sitting?”, “Is it on a chair?”. These questions are arranged in a graph,
-so if one answer is “no” (say there is no cat), then the follow-up questions about that cat are skipped.
-
-Then, a Visual Question Answering module asks the same questions to the image. If the answers from the image match the answers from the text,
-the scene is captured correctly.
-
-The final DSG score is simply how well the image answered the full set of questions derived from the prompt. A higher score means the picture
-respects the objects, attributes, and relations described in the text.
-
+$a_q$ is the VQA model's answer to question $q$ and $\text{pa}(q)$ the questions it depends on: if ``is there a bicycle?'' comes back
+no, ``is the bicycle red?'' counts as no whatever the model says. The score is the share of the prompt's atomic facts the image gets
+right; a language model generates the questions once per prompt.
 
 \textbf{When to use DSG?}
 
-Use DSG when you want to evaluate whether an image generation model respects the semantic structure of a text prompt, not just
-superficial resemblance. It is especially useful for benchmarking text-to-image systems on prompts that involve multiple entities and
-relationships, such as “a person holding a red umbrella next to a dog.”
+Use it to evaluate text-to-image models on prompts with several objects, attributes and relations, and to find which part of a prompt
+failed. Avoid it when one alignment number suffices at scale (CLIP Score is far cheaper) and for style or aesthetic prompts (``in the
+style of Hokusai''), which do not decompose into checkable facts.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Semantics-aware. Goes beyond pixels and aesthetics by checking whether objects and their relations are correct.
-\item Captures whether multiple parts of a prompt are faithfully represented, not just the most prominent one.
+\item Diagnostic: a score of $3/5$ comes with the two failed questions, so ``the wall is red instead of blue'' is read off directly
+(figure).
+\item Robust to VQA hallucination: asked ``is the bicycle red?'' about an image with no bicycle, VQA models often say yes; the
+dependency edges skip the question.
 }
 {
-\item Some subtle visual details (e.g., style, texture, artistic quality) are not captured.
-\item Building and comparing scene graphs is more complex than simple embedding-based metrics like CLIPScore.
+\item Two models' errors compound: a badly phrased question and a wrong VQA answer both count against the image, and VQA models are
+weakest on the relations and counts DSG targets.
+\item Binary and costly: ``is the bicycle red?'' cannot grade a reddish-orange bicycle, and a prompt with $12$ facts costs $12$ VQA
+calls per image.
 }
-
 
 \clearpage
 
 \thispagestyle{customstyle}
 
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/DSG_question_graph.png}
+\end{center}
+
+\textbf{Figure. DSG.} The question graph a language model produces for one prompt, answered by a VQA model on two images. Edges are
+dependencies: a question only counts if its parents were answered yes. Image A has the right objects in the wrong colors, so the two
+attribute questions fail and it scores $3/5$. Image B has no bicycle, so the questions about the bicycle's color and position are
+skipped even though the VQA model would have said yes to both (a common hallucination), and the wall's two questions carry the score to
+$2/5$.
+
 \orangebox{Did you know that...}
-{The “Davidsonian” in Davidsonian Scene Graph comes from the American philosopher Donald Davidson, who argued that the meaning of a sentence can
-be broken down into atomic events and their relations. DSG borrows this idea, turning a text prompt into small, testable propositions like
-“there is a cat” or “the cat sits on the chair.”}
+{The name comes from Donald Davidson's semantics of events: a sentence like ``the bicycle leans against the wall'' is a small logical form
+with an object, its properties and a relation, each true or false on its own. DSG makes that operational: the prompt becomes a graph of
+propositions whose edges encode presupposition --- ``is the bicycle red?'' has no answer if there is no bicycle. The authors found
+VQA models answer such questions ``yes'' often enough to inflate scores, so an image of an empty street could earn credit for the
+color of a bicycle it does not contain. The dependency edges close that hole.}
 
 \textbf{Other related metrics}
 
-DSG provides fine-grained compositional evaluation. For a simpler text-image alignment score, use CLIP Score.
-For a VQA-based alternative, see VQAScore.
+CLIP Score gives one embedding similarity and is near chance on attribute swaps; VQAScore asks one question about the whole prompt and
+captures composition without decomposing it; DSG asks many small questions and tells you which failed. When VQAScore and DSG disagree,
+the prompt is usually long enough that the single-question model lost a detail, or the question generator misread the prompt.
 
 % ---------- Visual Question Answering Score ---------
 \clearpage
@@ -548,16 +656,16 @@ For a VQA-based alternative, see VQAScore.
 \subsection{Visual Question Answering Score}
 
 % reference:
-% https://arxiv.org/pdf/2404.01291
+% https://arxiv.org/pdf/2404.01291 (Lin et al., ECCV 2024)
 % https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/
 
-VQAScore is a metric for evaluating text-to-image models. It measures how well a generated image matches a given prompt by reframing the prompt
-into a yes-or-no question. For example, with the prompt “a cow jumps over the moon”, the model is asked: “Does this image show a cow jumping over
-the moon? Please answer yes or no.”
+Instead of scoring how similar a prompt and an image are, VQAScore asks a vision--language model a question --- ``Does this figure
+show `a horse riding an astronaut'? Please answer yes or no.'' --- and takes the probability it assigns to ``Yes''. Because the model
+reads the prompt in order, the swapped version, an astronaut riding a horse, gets a different answer, which an embedding similarity
+cannot deliver.
 
 % equation
 \begin{center}
-    % VQAScore=P(“Yes”∣image,Does this image show ‘prompt’?)
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -568,47 +676,58 @@ the moon? Please answer yes or no.”
         };
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.1)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1,.5);
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, left] {generated image} +(-1,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(3.0,-0.2)$) to[bend left=15] node[pos=1, right] {prompt question} +(1,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(3.0,-0.2)$) to[bend left=15] node[pos=1, right] {prompt as a question} +(1,.5);
     }
 \end{center}
 
-Technically, the image and the tokenized question are passed into a VQA system with two parts: an image-question encoder, which fuses visual and
-textual information, and an answer decoder, which produces the probability that the answer is “Yes.” That probability is the VQAScore. A higher score
-indicates stronger alignment between text and image.
+The score is the model's probability that the prompt is depicted, continuous though not calibrated, and a word-order swap that CLIP
+cannot see lowers it (figure). The strongest version uses CLIP-FlanT5, a generative model trained for question answering, but any VQA
+model that exposes answer probabilities works, and the template extends to video by scoring frames.
 
 \textbf{When to use VQAScore?}
 
-Use VQAScore when you need a direct way to check if an image illustrates what was asked. It is particularly helpful for prompts that describe uncommon
-or detailed situations. It can also extend to evaluating video and 3D generation.
+Use it to rank text-to-image and text-to-video outputs on compositional prompts --- counts, spatial relations, attribute binding,
+negation --- and as a reward when generating several candidates per prompt. Avoid it when you need to know which part of a prompt
+failed (use DSG), for realism (use FID), and as a filter over millions of pairs (use CLIP Score).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Works with existing VQA models, no fine-tuning needed.
-\item More precise than “LLM-as-a-judge” approaches, which often give inflated and uninformative scores.
-\item Avoids the pitfalls of prompt decomposition, which can generate irrelevant or misleading sub-questions.
+\item Compositional: on Winoground-style pairs, where two images and two captions differ only in word order, CLIP is near chance while
+VQAScore with CLIP-FlanT5 was the strongest automatic metric in the paper.
+\item The prompt is read verbatim, so nothing is lost to a question generator, and one forward pass gives the score.
 }
 {
-\item Dependent on the quality and biases of the underlying VQA model.
-\item Limited to yes/no framing, which may oversimplify nuanced prompts.
-\item Performance may degrade if the VQA model struggles with unusual concepts or rare objects.
+\item Inherits the VQA model's failures: a model that cannot count to five scores a prompt with five cats by guessing, and the template
+wording moves the probability.
+\item Opaque. A score of $0.4$ says the model is unsure but not why; for diagnosis, DSG's per-question answers are needed.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/VQAScore_alignment.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/VQAScore_vs_CLIP.png}
+\end{center}
 
-\textbf{Figure.} VQAScore drops sharply as the image deviates from the prompt. An exact match scores 0.95, while an unrelated image scores near zero.
+\textbf{Figure. VQAScore.} One image, four captions, two metrics: CLIP-S (grey) and VQAScore computed as $P(\text{``Yes''})$ from a
+small generative VQA model (BLIP-base) asked whether the figure shows the caption. Both rank the wrong object last, VQAScore at $0.46$
+and CLIP-S at $0.14$, and neither handles the negated caption well ($0.66$ and $0.69$). But CLIP scores the word-swapped caption
+\emph{above} the correct one, $0.82$ against $0.79$, while VQAScore reads the sentence in order and ranks them the right way round,
+$0.93$ against $0.82$. The paper's much larger CLIP-FlanT5 model pushes mismatched captions further down; the mechanism is the same.
 
 \orangebox{Did you know that...}
-{VQAScore was introduced in 2024 by researchers at Carnegie Mellon University in collaboration with Meta.}
+{VQAScore is a next-token probability. The vision--language model is a language model conditioned on an image and a question, and the
+score is the probability it gives the token ``Yes'' as the first word of its reply --- the quantity perplexity aggregates over a whole
+sequence, read off for one token. That is why the metric is continuous and rankable where a yes/no answer would not be, and why the
+wording of the template changes it: the estimate depends on every conditioning token. Lin et al. (2024) also asked the same model for
+a $1$--$5$ rating instead and found the ratings clustered near the top of the scale, far less informative than the probability.}
 
 \textbf{Other related metrics}
 
-VQAScore and DSG both evaluate compositional text-image alignment. For a simpler cosine-similarity approach, see CLIP Score.
+CLIP Score is faster and coarser; DSG is slower and diagnostic; VQAScore sits between them. When CLIP Score and VQAScore agree, the
+prompt is simple. When CLIP Score is high and VQAScore is low, the right objects are present in the wrong arrangement, the case
+VQAScore was designed for.
 
 % ---------- Mean Opinion Score ---------
 \clearpage
@@ -618,10 +737,11 @@ VQAScore and DSG both evaluate compositional text-image alignment. For a simpler
 
 % reference:
 % https://arxiv.org/pdf/2204.02249
+% ITU-T P.800 (absolute category rating), P.808 (crowdsourced)
 
-Mean Opinion Score (MOS) is one of the simplest and most widely used ways to evaluate the quality of audio, particularly speech and
-generative audio outputs. It works by asking human listeners to rate audio samples on a simple scale, usually from 1 (bad) to 5 (excellent).
-The final score is the average across all listeners.
+Twenty listeners hear a synthesized sentence and each rates it from $1$ (bad) to $5$ (excellent); the mean of those ratings is the
+Mean Opinion Score. It is the reference every automatic speech-quality metric is validated against, because the quantity of interest
+--- how the audio sounds to people --- has no other ground truth. The cost is that every number needs a listening test.
 
 % equation
 \begin{center}
@@ -629,52 +749,64 @@ The final score is the average across all listeners.
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                MOS = \frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} {\color{nmlcyan}r_i}
+                \text{MOS} = \frac{1}{{\color{nmlred}N}} \sum_{i=1}^{N} {\color{nmlcyan}r_i}
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.3,0.2)$) to[bend left=15] node[pos=1, left] {number of listeners} +(-1,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.3,0.2)$) to[bend left=15] node[pos=1, left] {number of ratings} +(-1,-.5);
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {listener rating (1--5)} +(1,.5);
     }
 \end{center}
 
+Ratings follow ITU-T's absolute category rating scale and are reported with the number of listeners: with $20$ raters and a typical
+spread of $\sigma \approx 0.8$, the $95\%$ confidence interval is about $\pm 0.35$, so systems at $4.1$ and $4.3$ are not
+distinguishable. Natural recorded speech scores around $4.5$, not $5$.
+
 \textbf{When to use MOS?}
 
-Use MOS when you want to measure how natural or pleasant generated audio sounds to people. It is especially useful for comparing different
-generative models, evaluating speech synthesis systems, or benchmarking voice quality in audio applications like
-text-to-speech or music generation.
+Use it as the final judgment of a text-to-speech, voice-conversion, codec or enhancement system, and to validate an automatic metric
+on your own data. Avoid it for tracking training runs or dozens of configurations (use PESQ or STOI) and for separating two good
+systems, where a paired comparison (CMOS) with the same listeners has more power.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Directly reflects human perception of quality.
-\item Easy to understand and communicate, thanks to its simple 1–5 scale.
-\item Works across different types of audio (speech, music, environmental sounds).
+\item It is the quantity everything else approximates: PESQ, its successor POLQA, and learned predictors are fitted to MOS data, so a
+well-run MOS test settles disagreements between them.
+\item Hears everything: a new kind of artifact that no objective metric was ever fitted on still lowers MOS, because listeners do not
+need to have met it before.
 }
 {
-\item Requires human listeners, making it expensive and time-consuming.
-\item Not reproducible in the same way as automated metrics; results can be noisy.
-\item When MOS is compute from categorical ratings, averaging them is mathematically questionable, the median should be used instead.
+\item Noisy and expensive: pinning a MOS to $\pm 0.1$ takes about $250$ ratings, separating two systems $0.1$ apart about $1{,}000$
+each, and listener pool and sample order shift the mean.
+\item The mean hides the distribution: a system everyone rates $3$ and one that half rate $5$ and half rate $1$ have the same MOS
+(figure). Report the interval too.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=\textwidth]{figures/MOS_distributions.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/MOS_same_mean.png}
+\end{center}
 
-\textbf{Figure.} Distribution of listener ratings for high-quality (left, MOS=4.7) vs low-quality (right, MOS=1.9) audio. The dashed line shows the mean rating.
+\textbf{Figure. MOS.} Twenty listeners rate each of three systems and all three land on $\text{MOS} = 3.0$ with a median of $3$. The
+consensus system is one everyone finds mediocre; the polarized one half the panel likes and half cannot stand; the skewed one leans
+toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but the confidence interval does: $\pm 0.00$,
+$\pm 0.90$ and $\pm 0.45$. Report the interval or the distribution with the mean, and compare systems with the same listeners.
 
 \orangebox{Did you know that...}
-{MOS was first widely adopted in the telecommunications industry in the 20th century, where human listeners rated the clarity of phone calls.
-It became the gold standard for assessing voice quality long before automated metrics were available, and it is still referenced in
-ITU standards today.}
+{The MOS scale has a ceiling below $5$. In a well-run test clean natural speech scores about $4.5$: some listeners reserve the top
+category, and the anchor samples that calibrate the panel pull the mean down. A text-to-speech system at $4.4$ is therefore not $0.6$
+points from perfect; it is within the noise of the recordings it imitates, which is why recent systems report ``parity with ground
+truth'' rather than a score. The scale is also ordinal --- the step from $2$ to $3$ need not equal the step from $4$ to $5$ --- so the
+mean is a convention, and the ITU pairs it with confidence intervals and, for close systems, a paired comparison test.}
 
 \textbf{Other related metrics}
 
-MOS is the gold standard for subjective audio quality but is expensive to collect. For automated alternatives,
-see PESQ (speech quality) and STOI (intelligibility).
+PESQ and STOI are fitted to predict MOS and intelligibility from signals; when PESQ and MOS disagree on a new system, trust MOS and
+suspect an artifact PESQ was never fitted on. Comparison MOS (CMOS: the same listeners rate A against B on a $-3$ to $+3$ scale) and
+MUSHRA (rating against a hidden reference) are the higher-powered variants for close systems.
 
 % ---------- Perceptual Evaluation of Speech Quality ---------
 \clearpage
@@ -683,47 +815,78 @@ see PESQ (speech quality) and STOI (intelligibility).
 \subsection{Perceptual Evaluation of Speech Quality}
 
 % reference:
+% ITU-T P.862 (2001), P.862.1 (MOS-LQO mapping), P.862.2 (wideband)
 % https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html
 
-PESQ is a standardized metric used to measure the perceived quality of speech signals. It compares a degraded audio signal
-(such as one generated by a model or transmitted through a noisy channel) against a clean reference signal. The method simulates how human
-listeners perceive distortions by considering factors like sharpness, volume, background noise, clipping, and interference.
-PESQ returns a score between -0.5 and 4.5, with higher scores reflecting better quality
+Running a listening test for every checkpoint of a speech codec is impractical, so PESQ predicts the listening test. It takes the clean
+reference and the degraded signal, aligns them in time, transforms both into an auditory representation of loudness over frequency,
+and measures the audible disturbance, penalizing added distortion more than lost signal, as listeners do.
+
+% equation
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                {\color{nmlcyan}\text{MOS-LQO}} = 0.999 + \frac{4.999 - 0.999}{1 + e^{-1.4945\,{\color{nmlpurple}\text{PESQ}} + 4.6607}}
+                $
+            }
+        };
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-2.2,-0.1)$) to[bend right=15] node[pos=1, left] {predicted MOS} +(-0.8,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.6,0.2)$) to[bend right=15] node[pos=1, right] {raw P.862 score} +(1,-.5);
+    }
+\end{center}
+
+The raw P.862 score runs from $-0.5$ to $4.5$; the mapping above (ITU-T P.862.1, narrowband) squashes it onto $1.02$--$4.55$ so it
+reads like a MOS, and most libraries return the mapped value. Wideband PESQ (P.862.2, $16$ kHz) uses a different mapping and is not
+comparable. Above $4$ is transparent; below $2.5$ listeners call the speech poor.
 
 \textbf{When to use PESQ?}
 
-Use PESQ when you need an objective benchmark that aligns with human perception of speech quality. It is especially valuable in evaluating
-generative audio models, speech codecs, and voice-over-IP systems, where subjective listening tests are costly or impractical.
+Use it to compare speech codecs, telephony pipelines and enhancement models where the clean reference is available, and to track
+training before a final MOS test. Avoid it without a reference (use a non-intrusive predictor or a listening test), for intelligibility
+rather than quality (use STOI), and for music or audio sampled above $16$ kHz, which it was never validated for.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item PESQ is widely recognized as an industry standard. It captures a broad range of perceptual artifacts and provides a single,
-interpretable score that correlates strongly with human judgments.
-\item PESQ is reproducible and automatic, which makes it far cheaper and faster than running large-scale human listening tests.
+\item Aligns before it compares: a $20$ ms delay or a $6$ dB gain change leaves PESQ at its maximum while waveform SNR collapses
+(figure).
+\item Standardized: P.862 fixed the algorithm in 2001, so a PESQ of $3.2$ means the same thing across labs, and its correlation with
+MOS on the ITU validation set was about $0.93$.
 }
 {
-\item PESQ requires a clean reference signal, making it less useful for scenarios where no ground-truth audio exists.
-\item PESQ is sensitive to sampling frequency, making it less suitable for high-fidelity audio.
+\item Intrusive and narrow: needs the clean signal, works only at $8$ or $16$ kHz, and was validated on codec distortions, so it can
+favor a denoiser that removes speech detail.
+\item Not differentiable and licensed: it cannot serve as a training loss without an approximation, and commercial use needs an ITU
+license (as does POLQA, its 2011 successor).
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/PESQ_conditions.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/PESQ_alignment.png}
+\end{center}
 
-\textbf{Figure.} PESQ scores under different noise conditions. Clean speech scores 4.5 (excellent), while heavily degraded speech drops to 1.2 (poor).
+\textbf{Figure. PESQ.} The same eight-second sentence under eight conditions. Waveform SNR (left) compares samples directly: a $20$ ms
+delay or a $6$ dB gain change makes the signals disagree sample by sample and the SNR falls to $-3.4$ and $6.0$ dB, numbers that
+would suggest heavy damage. PESQ (right; narrowband P.862 mapped to MOS-LQO) aligns and level-equalizes first and returns its maximum
+of $4.55$ for both, and $4.33$ for telephone band-limiting. Added white noise, which is audible, moves it from $3.76$ at $40$ dB SNR
+down to $1.45$ at $10$ dB.
 
 \orangebox{Did you know that...}
-{PESQ was standardized by the ITU-T in 2001 and quickly became the go-to tool for testing phone call quality worldwide. 
-In fact, telecom engineers used it to benchmark mobile networks long before smartphones became common, making it one of the
-first AI-adjacent metrics to shape how we all experience everyday communication.}
+{PESQ treats added sound and missing sound differently. After aligning the signals and converting them to loudness on a perceptual
+frequency scale, it computes two disturbance densities: a symmetric one for any difference and an asymmetric one that weights
+components present in the degraded signal but absent from the reference far more heavily. Listeners forgive a codec that softens a
+consonant more than one that adds a whistle, and the metric encodes that. It is also why PESQ can favor a denoiser that suppresses
+speech along with the noise: removed speech counts as a mild loss, while the noise it would have left counts as an addition.}
 
 \textbf{Other related metrics}
 
-PESQ focuses on overall speech quality, while STOI focuses on intelligibility. Both aim to approximate MOS without requiring human listeners.
+STOI predicts whether words can be understood, PESQ how good they sound; a heavily denoised signal can score well on PESQ and poorly
+on STOI when the enhancement smears the speech envelope. Both are checked against MOS. For reference-free monitoring in production,
+learned predictors such as DNSMOS and NISQA estimate the MOS from the degraded signal alone.
 
 % ---------- Short-Time Objective Intelligibility ---------
 \clearpage
@@ -732,49 +895,81 @@ PESQ focuses on overall speech quality, while STOI focuses on intelligibility. B
 \subsection{Short-Time Objective Intelligibility}
 
 % reference:
+% Taal, Hendriks, Heusdens, Jensen (2011), IEEE TASLP — An Algorithm for Intelligibility Prediction of Time-Frequency Weighted Noisy Speech
 % https://lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html
-% https://stackoverflow.com/questions/60267864/pesq-stoi-score-speech-quality-for-different-languagesnon-english
 % https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html
-% https://arxiv.org/pdf/2011.04292
+% Shannon et al. (1995), Science — Speech recognition with primarily temporal cues
 
+A hearing-aid algorithm can make speech sound cleaner and no easier to understand. STOI predicts intelligibility rather than
+quality: it splits clean and processed speech into $15$ frequency bands, tracks each band's slow envelope over $384$ ms windows, and
+averages the correlation between the two.
 
-STOI is an audio metric designed to predict how intelligible speech is in noisy conditions. Instead of measuring overall sound quality,
-STOI focuses on whether words and syllables can be correctly understood. It compares clean and processed speech by looking at short-time
-spectral envelopes and computing their correlation. The score ranges from 0 to 1, with higher values indicating clearer and more
-intelligible speech.
+% equation
+\begin{center}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                \text{STOI} = \frac{1}{{\color{nmlred}J M}} \sum_{j=1}^{J} \sum_{m=1}^{M} \operatorname{corr}\big({\color{nmlcyan}x_{j,m}},\, {\color{nmlpurple}\tilde{y}_{j,m}}\big)
+                $
+            }
+        };
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.8,0.2)$) to[bend left=15] node[pos=1, left] {bands $\times$ segments} +(-0.8,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.2)$) to[bend right=15] node[pos=1, left] {clean envelope} +(-1,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {processed envelope} +(0.4,.5);
+    }
+\end{center}
+
+$x_{j,m}$ is the clean energy envelope in band $j$ over segment $m$ and $\tilde{y}_{j,m}$ the processed one, normalized and clipped
+so noise cannot make it look better than the clean signal. On the original data, $0.5$ is about half the words understood and $0.7$
+over $90\%$.
 
 \textbf{When to use STOI?}
 
-Use STOI when evaluating generative audio models that aim to improve speech intelligibility, especially in scenarios with background noise
-or distortions. It is particularly relevant for applications like speech enhancement, hearing aids, and robust speech recognition.
+Use it for speech enhancement, noise suppression and hearing-aid processing, where the goal is that noisy speech be understood,
+especially at $0$ dB SNR and below. Avoid it for clean speech, where it saturates near $1$ and says nothing about quality (use PESQ),
+and for fluctuating maskers such as a competing talker (use ESTOI).
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
-\item Strong correlation with human intelligibility tests
-\item Works well in noisy environments, where intelligibility is most affected.
+\item Predicts listening tests on noisy speech with correlation above $0.9$, and moves when quality metrics do not: a denoiser that
+smears the envelope drops STOI while PESQ rises.
+\item Transparent: the per-band, per-segment correlations show where intelligibility was lost, which band and which second (figure).
 }
 {
-\item Limited to noisy speech scenarios. Less reliable in clean or high-quality audio.
-\item Free reference code restricted to research use, commercial use requires licensing
+\item Intrusive and unaligned: needs the clean reference sample-aligned (a $20$ ms delay alone drops it from $1.0$ to $0.70$) and
+evaluates only $150$ Hz--$4.3$ kHz.
+\item Calibrated on stationary noise; for modulated maskers its extension ESTOI, which correlates whole spectro-temporal segments,
+tracks listeners better, and a listening test is still needed to claim a percentage of words.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/STOI_vs_SNR.png}
-\end{figure*}
+\begin{center}
+    \includegraphics[width=\textwidth]{figures/STOI_envelopes.png}
+\end{center}
 
-\textbf{Figure.} STOI follows a sigmoid curve against signal-to-noise ratio. Intelligibility drops sharply below 0 dB SNR and saturates near 1.0 above 20 dB.
+\textbf{Figure. STOI.} \underline{Top:} the energy envelope of one band ($952$ Hz) for clean speech and the same speech in white
+noise at $0$ dB SNR over three $384$ ms segments. Noise fills the valleys between syllables; the clean--noisy correlation is $0.98$
+in the segment with a strong syllable onset and $0.73$ in the quieter one. \underline{Bottom:} the correlation for all $15$ bands and
+every segment. STOI is their mean, $0.76$ here ($0.77$ with the reference implementation's sliding segments), $0.91$ at $10$ dB SNR
+and $0.70$ at $-5$ dB.
 
 \orangebox{Did you know that...}
-{STOI was originally developed at Delft University of Technology in the Netherlands, together with Oticon, a hearing aid company in Denmark.}
+{STOI ignores almost everything about a sound except the slow rise and fall of energy in each frequency band, and that is the point.
+Shannon and colleagues showed in 1995 that speech stays intelligible when its fine structure is replaced by noise as long as the
+envelopes of a handful of bands are preserved, which is also why cochlear implants work. STOI measures that carrier of intelligibility,
+so processing that keeps the envelopes but changes timbre, pitch or phase scores high, while a noise suppressor that fills the pauses
+between syllables scores low even if the result sounds cleaner. The clipping step caps the processed envelope relative to the clean
+one, so extra energy never counts as extra speech.}
 
 \textbf{Other related metrics}
 
-STOI focuses on intelligibility, while PESQ evaluates overall quality. Both are automated proxies for MOS.
-For text-based evaluation of generated audio transcriptions, see WER in the NLP chapter.
+PESQ scores quality, STOI intelligibility; both need the clean reference and both are validated against listening tests. When PESQ
+improves and STOI falls, the enhancement traded speech cues for a pleasant sound. WER (NLP chapter) on a recognizer fed the
+processed audio is the downstream check.
 
 % ---------- Benchmarks ---------
 \clearpage
@@ -782,108 +977,95 @@ For text-based evaluation of generated audio transcriptions, see WER in the NLP 
 \section{Benchmarks}
 \subsection{Benchmarks}
 
-\textbf{GLUE — General Language Understanding Evaluation}
+The metrics in this chapter score one output at a time or one distribution of outputs. Benchmarks score a model: a fixed set of tasks
+with a fixed grading rule, usually accuracy or exact match, so that two models can be compared on the same questions. The number on a
+leaderboard is a metric applied to a dataset, and its meaning depends on both --- a benchmark whose questions leak into training data
+measures memorization, and one that every model saturates stops measuring anything. The benchmarks below are the ones most often cited
+for language models.
+
+\textbf{GLUE --- General Language Understanding Evaluation}
 % reference:
-% https://arxiv.org/pdf/1905.00537
 % https://arxiv.org/pdf/1804.07461
+% https://arxiv.org/pdf/1905.00537
 % https://gluebenchmark.com/
 % https://super.gluebenchmark.com/
 
-The General Language Understanding Evaluation (GLUE) benchmark, introduced in 2018 by researchers at NYU, DeepMind, and University of Washington,
-is one of the most influential benchmarks in natural language processing. It was designed to evaluate and compare models on a broad set
-of language understanding tasks.
+The General Language Understanding Evaluation (GLUE) benchmark, introduced in 2018 by researchers at NYU, DeepMind and the University of
+Washington, brings together nine sentence and sentence-pair tasks, from sentiment classification to natural language inference, plus a
+diagnostic set for fine-grained linguistic phenomena. A public leaderboard made it the central scoreboard for transfer learning: BERT
+and its successors were judged largely on their GLUE averages.
 
-GLUE brings together nine diverse sentence and sentence-pair tasks, from sentiment classification to natural language inference, plus a diagnostic
-dataset to test how well models capture fine-grained linguistic phenomena. A public leaderboard and visualization tools made it a central hub for
-tracking progress in NLP.
+Models reached human-level performance on GLUE within a year. SuperGLUE (2019) replaced it with harder tasks, better coverage of
+linguistic phenomena and new evaluation protocols, and has since been saturated in turn --- the usual fate of a benchmark that
+succeeds.
 
-GLUE was particularly useful for transfer learning approaches, like BERT, where knowledge gained on one task can benefit others. Its format
-encouraged the development of models that are not only accurate but also general and robust across tasks.
-
-As models quickly reached human-level performance on GLUE, the community introduced SuperGLUE in 2019. SuperGLUE is a more challenging successor
-with harder tasks, better coverage of linguistic phenomena, and new evaluation protocols, ensuring that benchmarks keep pushing the limits of
-general language understanding.
-
-\textbf{IFEval — Instruction-Following Eval}
+\textbf{IFEval --- Instruction-Following Eval}
 
 % reference:
 % https://arxiv.org/pdf/2311.07911
 
-Instruction-Following Eval (IFEval) was introduced in 2023 as a way to measure how well large language models can follow instructions.
-Human ratings are slow and subjective, and letting one model judge another comes with bias.
-IFEval avoids these problems by focusing only on verifiable instructions—rules that can be checked automatically.
+Instruction-Following Eval (IFEval, 2023) measures whether a language model does what it is told. Human ratings are slow and
+subjective, and letting one model judge another imports its biases, so IFEval restricts itself to verifiable instructions: rules that a
+program can check.
 
-The benchmark includes about 500 prompts, each with one or more constraints like “write more than 400 words” or “mention the word AI at
-least three times.” In total, there are 25 types of instructions, chosen to cover a variety of styles and requirements.
-Evaluation is simple: a response either meets the condition or it does not.
+The benchmark has about $500$ prompts, each with one or more constraints such as ``write more than $400$ words'' or ``mention the word
+AI at least three times'', drawn from $25$ instruction types. A response either satisfies each constraint or it does not, which makes
+the score reproducible, objective and fast, and makes it the standard check for instruction-tuned models, where the question is not
+what they say but whether they followed the rules they were given.
 
-This makes IFEval easy to reproduce, objective, and fast. It is particularly useful for comparing instruction-tuned models, where the question
-is not just what they say, but whether they actually follow the rules they were given.
-
-\textbf{BBH — Big Bench Hard}
+\textbf{BBH --- BIG-Bench Hard}
 
 % reference:
 % https://arxiv.org/pdf/2206.04615
 % https://arxiv.org/pdf/2210.09261
 % https://arxiv.org/pdf/2502.19187
 
-BIG-Bench Hard (BBH) is a benchmark introduced in 2022 as a filtered subset of the larger Beyond the Imitation Game Benchmark (BIG-Bench).
-BIG-Bench itself was a massive collection of over 200 tasks created by more than 400 researchers to test the capabilities and limits of large
-language models. However, many of its tasks quickly became easy for newer models, making it less useful for distinguishing progress.
+BIG-Bench Hard (BBH, 2022) is a filtered subset of BIG-Bench, a collection of over $200$ tasks written by more than $400$ researchers to
+probe the limits of large language models. Many of those tasks became easy for newer models within months and stopped separating them.
 
-BBH solves this by selecting the 23 tasks from BIG-Bench where models still struggled, even those with billions of parameters. These “hard”
-tasks include areas such as logical reasoning, mathematical problem solving, and multi-step commonsense reasoning—capabilities where humans still
-have a clear advantage.
-
-The result is a more challenging and focused benchmark that highlights the limits of current models rather than their strengths. BBH has since
-inspired BIG-Bench Extra Hard (BBEH), released in 2025, which extends the same philosophy with new, even tougher tasks to keep pace with rapidly
-improving models.
+BBH keeps the $23$ tasks on which models still fell short of the average human rater, even at billions of parameters: logical
+deduction, multi-step arithmetic, tracking shuffled objects, and similar multi-step reasoning. It is also where chain-of-thought
+prompting showed its largest gains. BIG-Bench Extra Hard (BBEH, 2025) continues the pattern with a new set of tasks chosen because
+current models fail them.
 
 \textbf{MATH}
 
 % reference:
 % https://arxiv.org/pdf/2103.03874
 
-The MATH benchmark, introduced in 2021, was designed to evaluate how well language models can solve mathematical problems. Unlike simple arithmetic
-or word problems, MATH draws from real competition-level datasets, including problems from middle school to high school contests. This makes it a
-much harder test of reasoning, multi-step calculation, and precise symbolic manipulation.
+The MATH benchmark (2021) contains $12{,}500$ competition problems --- AMC, AIME and similar contests --- across algebra, geometry, number
+theory, counting and probability, and precalculus, each with a step-by-step solution and a final answer that can be checked exactly.
+It tests multi-step symbolic reasoning rather than arithmetic or word-problem pattern matching.
 
-The dataset contains over 12,000 problems across algebra, geometry, number theory, probability, and more. Each problem comes with a step-by-step
-solution, which allows models not only to be graded on their final answer but also analyzed for where their reasoning may have gone wrong.
+Because every problem has a verifiable answer, MATH is the standard test for reasoning-oriented training, from chain-of-thought
+prompting to reinforcement learning on verifiable rewards; scores that were below $10\%$ in 2021 exceeded $90\%$ by 2025 for the
+strongest models, which is why harder contest sets have been added on top of it.
 
-MATH has become an important benchmark for measuring progress in reasoning-oriented models. It is particularly useful for evaluating techniques
-like chain-of-thought prompting or specialized training on symbolic reasoning, where the ability to carry out multi-step derivations is key.
-
-\textbf{GPQA — Graduate-Level Google-Proof Q\&A}
+\textbf{GPQA --- Graduate-Level Google-Proof Q\&A}
 
 % reference:
 % https://arxiv.org/pdf/2311.12022
 
-The Graduate-Level Google-Proof Q\&A (GPQA) benchmark was introduced in 2023 to test large language models on expert-level questions that cannot
-be solved by simple Googling, hence the name “Google-Proof.” Many benchmarks can be “gamed” by memorizing surface patterns or retrieving facts,
-but GPQA is designed to demand genuine reasoning.
+GPQA (2023) consists of $448$ multiple-choice questions in physics, biology and chemistry written and validated by domain PhDs, and
+``Google-proof'' in a measured sense: skilled non-experts with unrestricted web access and over $30$ minutes per question reached only
+about $34\%$ accuracy, while the experts themselves reached about $65\%$.
 
-The dataset consists of 448 carefully crafted multiple-choice questions at the graduate level, spanning fields such as
-physics biology, and chemistry.
+It is the standard test for expert-level scientific reasoning, where success depends on combining specialized knowledge with multi-step
+problem solving rather than on retrieving facts. Its small size makes single-run scores noisy, so results are usually reported on the
+$198$-question ``Diamond'' subset with several seeds.
 
-GPQA is especially relevant for evaluating models aimed at advanced reasoning tasks, where success depends on integrating knowledge with
-logical problem solving. Unlike benchmarks focused on everyday language or commonsense, GPQA tests whether models can engage with specialized
-domains at the depth expected of human experts.
-
-\textbf{MuSR — MultiStep Soft Reasoning}
+\textbf{MuSR --- Multistep Soft Reasoning}
 
 % reference:
 % https://arxiv.org/pdf/2310.16049
 
-The MultiStep Soft Reasoning (MuSR) benchmark was introduced in 2023 to test whether language models can reason across several steps without
-losing track along the way. Many benchmarks only check the final answer, but MuSR is built to see if models can stay consistent throughout the
-reasoning process.
+Multistep Soft Reasoning (MuSR, 2023) tests whether a model can reason through a long narrative --- a murder mystery, an object-placement
+puzzle, a team-assignment problem --- generated so that the answer follows from facts scattered across roughly a thousand words. The
+reasoning is ``soft'' because it mixes deduction with commonsense inference rather than following a single formal chain.
 
-It covers tasks like multi-hop question answering and logical deduction, where information must be combined piece by piece. The idea of soft
-reasoning means there isn’t always a single rigid path—several routes may work—but the model has to connect them carefully to get the right result.
-
-MuSR is especially useful for evaluating models that rely on chain-of-thought or other reasoning techniques, since it shows whether
-they can sustain accuracy over multiple steps instead of just guessing the final answer.
+Because the narratives are generated from a hidden reasoning tree, the benchmark can be regenerated to stay ahead of contamination, and
+it is most useful for models that rely on chain-of-thought, since it separates sustaining a chain of inferences from guessing the final
+answer.
 
 \textbf{MMLU-Pro}
 
@@ -891,13 +1073,11 @@ they can sustain accuracy over multiple steps instead of just guessing the final
 % https://arxiv.org/pdf/2406.01574
 % https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro
 
-MMLU-Pro was introduced in 2024 as a successor to the well-known MMLU benchmark, which measured model performance across 57 academic subjects.
-While MMLU became a standard test of broad knowledge, it soon became too easy for modern models, with many scoring at or above human expert levels.
-
-MMLU-Pro makes three key changes. First, instead of four answer options per question, it now offers ten. This makes the test more realistic and
-harder to game—random guessing. Second, the new dataset includes more reasoning-heavy questions, not just knowledge recall.
-As a result, models that use chain-of-thought prompting can score up to 20\% higher than those relying only on perplexity. 
-Finally, the overall problem difficulty has been raised to better separate strong models from weaker ones.
+MMLU-Pro (2024) succeeds MMLU, the $57$-subject exam that became the default measure of broad knowledge until strong models scored at or
+above expert level on it. MMLU-Pro raises the ceiling in three ways: ten answer options per question instead of four, which cuts the
+payoff from guessing and from eliminating implausible options; a larger share of reasoning-heavy questions, so that chain-of-thought
+prompting helps by up to $20$ points where it barely moved MMLU; and a difficulty filter that removes questions most models already
+get right. The result separates models that MMLU no longer could.
 
 \textbf{SQuAD}
 
@@ -905,13 +1085,13 @@ Finally, the overall problem difficulty has been raised to better separate stron
 % https://arxiv.org/pdf/1806.03822
 % https://rajpurkar.github.io/SQuAD-explorer/
 
-The Stanford Question Answering Dataset (SQuAD) is one of the most widely used benchmarks for reading comprehension. In its first release,
-SQuAD 1.1, the task was straightforward: given a paragraph, answer a question by selecting the exact span of text where the answer appears.
-With over 100,000 examples, it set the standard for extractive question answering and quickly drove rapid improvements in model performance.
+The Stanford Question Answering Dataset (SQuAD 1.1, 2016) contains over $100{,}000$ questions about Wikipedia paragraphs, each answered
+by a span of the paragraph, and is scored with exact match and token F1 (NLP chapter). It set the standard for extractive question
+answering and drove rapid progress --- too rapid, since every question was guaranteed an answer in the passage.
 
-But SQuAD 1.1 had a limitation, every question was guaranteed to have an answer in the passage. To make the benchmark more realistic, SQuAD 2.0
-added over 50,000 unanswerable questions crafted by crowdworkers to look deceptively similar to answerable ones. Now, models had to do more
-than extract spans, they had to decide when no answer exists.
+SQuAD 2.0 (2018) added over $50{,}000$ unanswerable questions written to resemble answerable ones, so a model must also decide when no
+answer exists. Both versions have long been saturated by fine-tuned models, but they remain a common sanity check for reading
+comprehension and the origin of the EM and F1 scoring used across question-answering benchmarks.
 
 \textbf{ARC-AGI}
 
@@ -919,17 +1099,11 @@ than extract spans, they had to decide when no answer exists.
 % https://arxiv.org/pdf/1911.01547
 % https://arcprize.org/arc-agi
 
-The Abstraction and Reasoning Corpus (ARC) was introduced in 2019 as a benchmark to measure progress toward general intelligence. Unlike datasets 
-built on language or vision, ARC is made up of small grid-based puzzles. Each puzzle provides a few input–output examples, and the task is to infer
-the underlying transformation and apply it to new cases. Success requires abstract reasoning and the ability to generalize from very little
-data, skills that humans use naturally, but machines often struggle with.
+The Abstraction and Reasoning Corpus (ARC, 2019) is a set of small grid puzzles: a few input--output examples show a transformation ---
+a reflection, a counting rule, an object being moved --- and the task is to infer it and apply it to a new grid. Each puzzle uses a
+different rule, so nothing can be memorized, and the examples are too few for statistical learning; success requires generalizing from
+two or three cases, which people do easily and models did not for years.
 
-The original release, now called ARC-AGI 1, contained 400 training tasks and 600 evaluation tasks. What makes it challenging is that
-the puzzles are deliberately diverse: they are not drawn from a single domain, but instead cover concepts like symmetry, counting, and object
-manipulation. This forces models away from memorization and toward flexible reasoning.
-
-ARC-AGI 2 builds on this foundation with updated evaluation protocols, new tasks, and a public prize competition to encourage fresh approaches.
-The emphasis remains the same: testing whether models can learn to reason in a way that is general rather than specialized.
-
-ARC-AGI stands out because it is not about beating human performance at a single benchmark, it is about probing whether machines can learn the
-kind of abstract reasoning that humans take for granted.
+ARC-AGI 1 had $400$ public training tasks, $400$ public evaluation tasks and a hidden test set; ARC-AGI 2 (2025) adds harder tasks and
+a public prize with a compute limit, so that scores reflect reasoning rather than search budget. It stands apart from the other benchmarks here because it
+measures whether a model can learn a new rule on the spot, not whether it already knows the answer.
