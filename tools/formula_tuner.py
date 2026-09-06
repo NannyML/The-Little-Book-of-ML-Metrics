@@ -102,6 +102,22 @@ def apply_arrows(tex, arrows):
     return out
 
 
+def changed_arrows(old, new):
+    """Labels of arrows whose parameters differ between two block texts, plus 'block text' if anything else differs."""
+    def strip(t):
+        out = t
+        for a in sorted(parse_arrows(t), key=lambda x: -x["span"][0]):
+            out = out[: a["span"][0]] + out[a["span"][1]:]
+        return re.sub(r"\s+", "", out)
+    def vals(a):
+        return {k: (round(v, 2) if isinstance(v, float) else v) for k, v in a.items() if k != "span"}
+    ao, an = parse_arrows(old), parse_arrows(new)
+    changed = [an[i]["label"] for i in range(min(len(ao), len(an))) if vals(ao[i]) != vals(an[i])]
+    if len(ao) != len(an) or strip(old) != strip(new):
+        changed.append("block text")
+    return changed
+
+
 RENDER_LOCK = threading.Lock()
 WORK = Path(tempfile.mkdtemp(prefix="formula_tuner_"))
 
@@ -169,6 +185,8 @@ HTML = r"""<!doctype html><html><head><meta charset="utf-8"><title>Formula tuner
  button.primary{background:#0AA7D4;color:#fff;border-color:#0AA7D4}
  textarea{width:100%;height:160px;font:12px/1.35 Menlo,monospace}
  .swatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+ #saved .banner{background:#e6f7ea;border:1px solid #4EB046;color:#1f6b2a;border-radius:6px;padding:8px 10px;margin-top:8px;font-size:13px;line-height:1.4}
+ #saved .banner.err{background:#fbecec;border-color:#DD4040;color:#8a1f1f}
 </style></head><body>
 <div id="list"></div>
 <div id="view"><div id="status">Pick a formula on the left.</div><img id="img" alt=""><pre class="err" id="err"></pre></div>
@@ -214,8 +232,12 @@ async function render(){if(!cur)return;document.getElementById('status').textCon
  if(j.png){document.getElementById('img').src='data:image/png;base64,'+j.png;document.getElementById('status').textContent=`rendered in ${j.ms} ms`;document.getElementById('raw').value=j.tex;}
  else{document.getElementById('status').textContent='compile error';document.getElementById('err').textContent=j.error;}}
 async function save(){const r=await fetch('/api/save',{method:'POST',body:JSON.stringify({id:cur.id,tex:cur.tex,arrows:arrows})});const j=await r.json();
- document.getElementById('saved').textContent=j.ok?`saved to ${j.file} (${new Date().toLocaleTimeString()})`:('save failed: '+j.error);
- if(j.ok&&EMBED)parent.postMessage('tuner-saved','*');
+ const S=document.getElementById('saved');
+ if(j.ok){const what=j.changed.length?`${j.changed.length} arrow${j.changed.length>1?'s':''} changed: ${j.changed.map(l=>'“'+l+'”').join(', ')}`:'nothing changed since the last save';
+  S.innerHTML=`<div class="banner">&#10003; Saved to <b>${j.file}</b> (${j.section}) at ${j.time}.<br>${what}.<br>Previous version kept as ${j.backup}. Recompile the book to see it on the page.</div>`;
+  const btn=document.getElementById('save');btn.textContent='Saved ✓';setTimeout(()=>btn.textContent='Save to .tex',2500);}
+ else S.innerHTML=`<div class="banner err">Save failed: ${j.error}</div>`;
+ if(j.ok&&EMBED)parent.postMessage({type:'tuner-saved',file:j.file,section:j.section,changed:j.changed,time:j.time},'*');
  if(j.ok){blocks=await (await fetch('/api/blocks')).json();const b=blocks.find(x=>x.section===cur.section&&x.file===cur.file);if(b){cur.id=b.id;cur.start=b.start;cur.end=b.end;cur.tex=b.tex;arrows=b.arrows;cur.arrows=b.arrows;document.querySelector('#list .item.sel').dataset.id=b.id;buildControls();}}}
 load();
 </script></body></html>"""
@@ -270,9 +292,12 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if target is None:
                 self._json({"ok": False, "error": "block moved; reload the page"}); return
             new = text[: target["start"]] + tex + text[target["end"]:]
+            changed = changed_arrows(target["tex"], tex)
             shutil.copy(path, path.with_suffix(".tex.bak"))
             path.write_text(new)
-            self._json({"ok": True, "file": fname})
+            import datetime
+            self._json({"ok": True, "file": fname, "section": target["section"], "changed": changed,
+                        "backup": fname + ".bak", "time": datetime.datetime.now().strftime("%H:%M:%S")})
         else:
             self.send_response(404); self.end_headers()
 

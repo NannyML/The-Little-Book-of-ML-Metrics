@@ -26,3 +26,6 @@ __pycache__/
 
 # review recordings (audio is large; notes.jsonl and NOTES.md are kept)
 review/audio/
+
+# formula tuner backups
+*.tex.bak

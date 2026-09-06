@@ -235,6 +235,7 @@ HTML = r"""<!doctype html>
 <div id="overlay" hidden><iframe id="tuner"></iframe></div>
 <script>
 let page = +localStorage.getItem('review_page') || 1, total = 1, index = {}, notes = [];
+let saved = {};
 let recording = false, rec = null, chunks = [], recog = null, finalText = '', interimText = '', stream = null;
 
 async function init(){
@@ -271,17 +272,18 @@ async function renderFormulas(){
   const bl = await (await fetch('/api/blocks_for?page=' + page)).json();
   if (!bl.length) return;
   box.innerHTML = '<h3>Formula on this page</h3>';
-  bl.forEach((b, i) => { const btn = document.createElement('button'); btn.textContent = 'Tune arrows' + (bl.length > 1 ? ' (' + (i+1) + ')' : ''); btn.onclick = () => openTuner(b.id); box.appendChild(btn); });
+  bl.forEach((b, i) => { const btn = document.createElement('button'); btn.textContent = 'Tune arrows' + (bl.length > 1 ? ' (' + (i+1) + ')' : ''); btn.onclick = () => openTuner(b.id); box.appendChild(btn);
+    const sv = saved[b.section]; if (sv){ const d = document.createElement('div'); d.style.cssText = 'font-size:12px;color:#1f6b2a;margin-top:4px'; d.textContent = '✓ saved to ' + sv.file + ' at ' + sv.time + (sv.changed.length ? ' (' + sv.changed.join(', ') + ')' : ''); box.appendChild(d); } });
 }
 function openTuner(id){ document.getElementById('tuner').src = '/tuner?embed=1&block=' + encodeURIComponent(id); document.getElementById('overlay').hidden = false; }
 window.addEventListener('message', e => {
   if (e.data === 'tuner-close'){ document.getElementById('overlay').hidden = true; document.getElementById('tuner').src = 'about:blank'; }
-  if (e.data === 'tuner-saved') document.getElementById('cstatus').textContent = 'formula saved to .tex; recompile to see it on the page';
+  if (e.data && e.data.type === 'tuner-saved'){ saved[e.data.section] = e.data; renderFormulas(); document.getElementById('cstatus').textContent = 'formula saved to ' + e.data.file + ' at ' + e.data.time + '; recompile to see it on the page'; document.getElementById('compile').style.borderColor = '#dd4040'; }
 });
 async function compileBook(){
   await fetch('/api/compile', {method:'POST', body:'{}'}); document.getElementById('cstatus').textContent = 'compiling…'; document.getElementById('compile').disabled = true;
   const poll = setInterval(async () => { const st = await (await fetch('/api/compile')).json();
-    if (!st.running){ clearInterval(poll); document.getElementById('compile').disabled = false; document.getElementById('cstatus').textContent = st.ok ? 'compiled; page images refreshed' : ('compile failed: ' + st.log); document.getElementById('page').src = '/page/' + page + '.png?t=' + Date.now(); } }, 3000);
+    if (!st.running){ clearInterval(poll); document.getElementById('compile').disabled = false; document.getElementById('compile').style.borderColor = ''; document.getElementById('cstatus').textContent = st.ok ? 'compiled; page images refreshed' : ('compile failed: ' + st.log); document.getElementById('page').src = '/page/' + page + '.png?t=' + Date.now(); } }, 3000);
 }
 async function toggle(){ recording ? await stop() : await start(); }
 async function start(){
