@@ -21,4 +21,4 @@ CLAUDE.md
 # Python / uv
 .venv/
 __pycache__/
-*.pyc
+*.pyc*.ptc
