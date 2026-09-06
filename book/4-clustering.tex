@@ -1,4 +1,9 @@
-\chapter{Clustering}
+\chapteropener{Clustering}{orangelight}{orangeaccent}{%
+Clustering has no labels to score against, so its metrics come in two families. Internal indices (silhouette, Calinski--Harabasz,
+Davies--Bouldin) judge a partition by its own geometry: how tight the clusters are and how far apart. External indices (Rand, mutual
+information, homogeneity, completeness, V-measure, Fowlkes--Mallows) compare a partition with a reference labeling when one exists, and
+have to be corrected for chance because random partitions already agree somewhat. A good internal score does not mean the clusters mean
+anything, and a good external score is only as good as its reference; read both with the contingency matrix at hand.}{In this chapter}
 
 
 % ---------- Mutual Info Score ----------
@@ -31,6 +36,7 @@ MI ranges from $0$ (no information) to $+\infty$. The upper bound depends on lab
 
 When you have ground-truth labels and want to compare clusterings across runs or algorithms. Use NMI for cross-dataset comparison, AMI when chance agreement could inflate the score (few clusters, balanced classes). Avoid raw MI alone --- the unbounded scale is hard to interpret.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
     \item Permutation-invariant. MI doesn't care which integer label is assigned to a cluster --- $\text{MI}([0,0,1],[0,0,1]) = \text{MI}([0,0,1],[1,0,0])$. This matters because cluster algorithms output arbitrary integer labels.
     \item Detects partial structure that purity-style metrics miss. If a class is split into two clusters that each contain only that class, MI rewards the alignment; purity would treat it as a failure.
@@ -589,7 +595,7 @@ $a(i)$ is the mean distance from point $i$ to other points in its own cluster (c
 
 When you have no labels, need to handle non-convex clusters or non-Euclidean distance, or want per-point diagnostics from the silhouette plot. Avoid Silhouette on very large datasets ($n > 100\text{k}$): the $O(n^2)$ pairwise computation gets expensive, and CH or Davies-Bouldin will usually pick the same $k$ much faster.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
     \item Per-point granularity. The silhouette is defined for every point, so you can plot the silhouette diagram and identify exactly which clusters contain misassigned points (those with $s(i) < 0$).
     \item Works with any pairwise distance --- cosine, edit distance, custom metric. Unlike CH and Davies-Bouldin, no Euclidean assumption is baked in.

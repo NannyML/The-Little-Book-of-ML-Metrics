@@ -1,4 +1,10 @@
-\chapter{Ranking}
+\chapteropener{Ranking}{corallight}{coralaccent}{%
+Search results, recommendations and retrieved documents are lists, and a list is right or wrong by position: the same relevant item at
+rank $1$ and at rank $10$ is a different outcome. The metrics here cut the list at some depth $K$ and weight what they find by where it
+sits. Precision and recall at $K$ count; MRR and MAP reward early hits; DCG and nDCG discount by position with graded relevance; hit
+rate asks only whether anything relevant made the cut. A second group (coverage, diversity, novelty, serendipity) scores the catalogue
+rather than the query, because a recommender that is accurate and shows everyone the same ten items is failing at something these
+metrics name.}{In this chapter}
 
 % ---------- @K Metrics ----------
 \clearpage
@@ -131,6 +137,7 @@ MAP lives in $[0, 1]$. A perfect ranking — every relevant item ahead of every 
 
 Use MAP when relevance is binary, the full ranked list matters, and you want one number for precision plus order. It is the standard for binary-judgment IR benchmarks. Avoid MAP for graded relevance (use nDCG) or top-only evaluation (use MRR or Precision@$K$) — averaging across all positions lets a strong tail mask a weak top.
 
+\enlargethispage{\baselineskip}
 \coloredboxes{
     \item Captures precision and rank order in one number. A model that surfaces relevant items earlier always scores higher.
     \item Averages cleanly across queries with different numbers of relevant items — AP is already per-query normalized.
