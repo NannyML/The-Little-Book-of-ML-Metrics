@@ -7,42 +7,36 @@ misses on small targets. $R^2$, $D^2$ and explained variance compare the residua
 MDA ignores their size to score only the direction of change. Read MAE first; the rest are variations on which residuals matter most.}{In this chapter}
 
 % ---------- Decision map ----------
-\begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Start at the first question and follow the answers that fit your model. The metric each answer leads to is on the right, with its page.}
-\mapq{What does the model predict?}
-\mapa{A quantile, or the bound of a prediction interval}{\mref{Pinball Loss}{sec:pinball-loss}}
-\mapa{Only whether the value goes up or down}{\mref{MDA}{sec:mda}}
-\mapa{A point value}{}
-\begin{mapsub}
-\mapq{How do you want to read the error?}
-\mapa{In the target's own units}{}
-\begin{mapsub}
-\mapq{Should a few large misses dominate the score?}
-\mapa{Yes: square the errors}{\mref{MSE}{sec:mse}, \mref{RMSE}{sec:rmse}}
-\mapa{No: every unit of error counts the same}{\mref{MAE}{sec:mae}}
-\end{mapsub}
-\mapa{As a percentage of the actual value}{}
-\begin{mapsub}
-\mapq{Does the target contain zeros or very small values?}
-\mapa{No}{\mref{MAPE}{sec:mape}}
-\mapa{Yes: weight every item by its volume}{\mref{wMAPE}{sec:wmape}}
-\mapa{Yes, and the score must stay bounded (0--200\%)}{\mref{sMAPE}{sec:smape}}
-\end{mapsub}
-\mapa{Relative to a naive forecast, for a time series}{\mref{MASE}{sec:mase}}
-\mapa{In log space, because the target spans orders of magnitude}{\mref{MSLE}{sec:msle}, \mref{RMSLE}{sec:rmsle}}
-\mapa{As a deviance under the target's noise model}{}
-\begin{mapsub}
-\mapq{What kind of target?}
-\mapa{Counts: the variance grows with the mean}{\mref{MPD}{sec:mpd}}
-\mapa{Positive and skewed: the variance grows with the mean squared}{\mref{MGD}{sec:mgd}}
-\end{mapsub}
-\mapa{As the share of variance the model explains}{}
-\begin{mapsub}
-\mapq{Explained compared with what?}
-\mapa{The mean, using squared error, bias included}{\mref{R-squared}{sec:r-squared}}
-\mapa{The mean, using any deviance (Poisson, pinball, \ldots)}{\mref{D2}{sec:d2}}
-\mapa{The mean, ignoring a constant bias}{\mref{Explained Variance Score}{sec:explained-variance-score}}
-\end{mapsub}
-\end{mapsub}
+\begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Start at the question on the left and follow the answer that fits your model; the metric it leads to is on the right, with its page.}
+\maproot{What does the model predict?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dl{a quantile or an interval bound}{\mref{Pinball Loss}{sec:pinball-loss}}}]
+  [{\dl{only the direction, up or down}{\mref{MDA}{sec:mda}}}]
+  [{\dm{a value}{How should the error be read?}}
+    [{\dm{in the target's units}{Should big misses count extra?}}
+      [{\dl{yes}{\mref{MSE}{sec:mse}, \mref{RMSE}{sec:rmse}}}]
+      [{\dl{no}{\mref{MAE}{sec:mae}}}]
+    ]
+    [{\dm{as a percentage}{Zeros or tiny values in the target?}}
+      [{\dl{no}{\mref{MAPE}{sec:mape}}}]
+      [{\dl{yes: weight by volume}{\mref{wMAPE}{sec:wmape}}}]
+      [{\dl{yes, and keep the score bounded}{\mref{sMAPE}{sec:smape}}}]
+    ]
+    [{\dl{against a naive forecast}{\mref{MASE}{sec:mase}}}]
+    [{\dl{in log space}{\mref{MSLE}{sec:msle}, \mref{RMSLE}{sec:rmsle}}}]
+    [{\dm{as a deviance}{What kind of target?}}
+      [{\dl{counts}{\mref{MPD}{sec:mpd}}}]
+      [{\dl{positive and skewed}{\mref{MGD}{sec:mgd}}}]
+    ]
+    [{\dm{as variance explained}{Compared with what?}}
+      [{\dl{squared error, bias included}{\mref{R-squared}{sec:r-squared}}}]
+      [{\dl{any deviance}{\mref{D2}{sec:d2}}}]
+      [{\dl{ignoring a constant bias}{\mref{Explained Variance Score}{sec:explained-variance-score}}}]
+    ]
+  ]
+]
+\end{forest}
 \mapnotes{Most models deserve two numbers: one in the target's units for the people who own the target, one scale-free for comparing models. RMSE far above MAE means a few large errors; MAPE and wMAPE disagreeing means the low-volume items are where the errors are.}
 \end{decisionmap}
 

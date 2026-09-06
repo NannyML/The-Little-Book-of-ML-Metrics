@@ -8,37 +8,33 @@ every other page is a function of its four cells.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Start with what you are judging: the probabilities, the ranking they induce, or the labels a threshold turns them into.}
-\mapq{What are you judging?}
-\mapa{The predicted probabilities themselves}{}
-\begin{mapsub}
-\mapq{What do you need from the score?}
-\mapa{A training loss that punishes confident mistakes hardest}{\mref{Log Loss}{sec:log-loss}}
-\mapa{A bounded score that splits into calibration and resolution}{\mref{Brier Score Loss}{sec:brier-score-loss}}
-\mapa{Skill relative to always predicting the base rate}{\mref{D-squared Log Loss Score}{sec:d-squared-log-loss-score}}
-\end{mapsub}
-\mapa{The ranking of the scores, before any threshold}{}
-\begin{mapsub}
-\mapq{Are positives rare, and are they what matters?}
-\mapa{Yes}{\mref{PR AUC}{sec:pr-auc}}
-\mapa{No: both classes matter, or prevalence differs between datasets}{\mref{ROC AUC}{sec:roc-auc}}
-\end{mapsub}
-\mapa{The labels at a chosen threshold}{}
-\begin{mapsub}
-\mapq{Do you know what a false alarm and a miss cost?}
-\mapa{Yes}{\mref{EC}{sec:ec}}
-\mapa{No, and the classes are balanced}{\mref{Accuracy}{sec:accuracy}}
-\mapa{No, and the classes are imbalanced}{}
-\begin{mapsub}
-\mapq{Which mistake is the expensive one?}
-\mapa{Missing a positive}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}
-\mapa{A false alarm, counted among what you flagged}{\mref{Precision}{sec:precision}}
-\mapa{A false alarm, counted among all the negatives}{\mref{FPR}{sec:fpr}, \mref{TNR (Specificity)}{sec:tnr-specificity}}
-\mapa{Both, traded off explicitly}{\mref{F1-score}{sec:f1-score}, \mref{F-beta}{sec:f-beta}}
-\mapa{Both, as one number for the whole matrix}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}
-\mapa{Neither: how much do the predicted and true positive sets overlap?}{\mref{Jaccard Index}{sec:jaccard-index}}
-\end{mapsub}
-\end{mapsub}
-\mapa{The agreement between two labelers or two models, beyond chance}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}
+\maproot{What are you judging?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dm{the probabilities}{What do you need from the score?}}
+    [{\dl{a training loss}{\mref{Log Loss}{sec:log-loss}}}]
+    [{\dl{a bounded score}{\mref{Brier Score Loss}{sec:brier-score-loss}}}]
+    [{\dl{skill over the base rate}{\mref{D-squared Log Loss Score}{sec:d-squared-log-loss-score}}}]
+  ]
+  [{\dm{the ranking, before any threshold}{Are positives rare, and what matters?}}
+    [{\dl{yes}{\mref{PR AUC}{sec:pr-auc}}}]
+    [{\dl{no}{\mref{ROC AUC}{sec:roc-auc}}}]
+  ]
+  [{\dm{the labels at a threshold}{Do you know what the errors cost?}}
+    [{\dl{yes}{\mref{EC}{sec:ec}}}]
+    [{\dl{no, and the classes are balanced}{\mref{Accuracy}{sec:accuracy}}}]
+    [{\dm{no, and the classes are imbalanced}{Which mistake is the expensive one?}}
+      [{\dl{a missed positive}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}}]
+      [{\dl{a false alarm, among what you flagged}{\mref{Precision}{sec:precision}}}]
+      [{\dl{a false alarm, among all negatives}{\mref{FPR}{sec:fpr}, \mref{TNR}{sec:tnr-specificity}}}]
+      [{\dl{both, traded off}{\mref{F1-score}{sec:f1-score}, \mref{F-beta}{sec:f-beta}}}]
+      [{\dl{both, as one number}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}}]
+      [{\dl{neither: the overlap of the positive sets}{\mref{Jaccard Index}{sec:jaccard-index}}}]
+    ]
+  ]
+  [{\dl{agreement between two raters}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}}]
+]
+\end{forest}
 \mapnotes{Every label metric is a ratio of confusion-matrix cells (p.~\pageref{sec:confusion-matrix}); look at the matrix before summarizing it. A threshold metric describes one operating point, so report the threshold with it. ROC AUC high and PR AUC low means the minority class is being missed.}
 \end{decisionmap}
 
@@ -1237,9 +1233,9 @@ which ignores true negatives, and unlike accuracy, which can be gamed on imbalan
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.2,-0.1)$) to[bend right=15] node[pos=1, left] {true positives} +(-1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.2,-0.1)$) to[bend left=15] node[pos=1, right] {true negatives} +(0.4,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.75,0.00)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.50);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.30,0.00)$) to[bend left=15] node[pos=1, right] {true negatives} +(0.40,0.50);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.50,0.10)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.50);
     }
 \end{center}
 

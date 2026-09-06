@@ -7,26 +7,24 @@ shifted by a few pixels can lose on Dice while looking right.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{mintlight}{mintaccent}{Which metric?}{Start with what the model outputs: an image, a mask, or keypoints.}
-\mapq{What does the model output?}
-\mapa{A reconstructed or compressed image, compared with its original}{}
-\begin{mapsub}
-\mapq{What kind of fidelity?}
-\mapa{Pixel by pixel, in decibels}{\mref{PSNR}{sec:psnr}}
-\mapa{Perceived structure: luminance, contrast and correlation}{\mref{SSIM}{sec:ssim}}
-\end{mapsub}
-\mapa{A segmentation mask}{}
-\begin{mapsub}
-\mapq{What do you need to know about it?}
-\mapa{A quick share of correct pixels (large classes dominate)}{\mref{Pixel Accuracy}{sec:pixel-accuracy}}
-\mapa{The overlap per class, robust to class size}{\mref{S{\o}rensen--Dice Coefficient}{sec:sorensen-dice-coefficient}}
-\mapa{Instances and background together, matched segment by segment}{\mref{PQ}{sec:pq}}
-\end{mapsub}
-\mapa{Keypoints}{}
-\begin{mapsub}
-\mapq{How strict should ``correct'' be?}
-\mapa{Within a fraction of a reference length}{\mref{PCK}{sec:pck}}
-\mapa{COCO-style: a tolerance scaled by object size and keypoint type}{\mref{OKS}{sec:oks}}
-\end{mapsub}
+\maproot{What does the model output?}
+\begin{forest} dmap, large
+[, coordinate, l sep=0pt
+  [{\dm{a reconstructed image}{Which kind of fidelity?}}
+    [{\dl{pixel by pixel}{\mref{PSNR}{sec:psnr}}}]
+    [{\dl{perceived structure}{\mref{SSIM}{sec:ssim}}}]
+  ]
+  [{\dm{a segmentation mask}{What do you need to know?}}
+    [{\dl{the share of correct pixels}{\mref{Pixel Accuracy}{sec:pixel-accuracy}}}]
+    [{\dl{the overlap, per class}{\mref{S{\o}rensen--Dice Coefficient}{sec:sorensen-dice-coefficient}}}]
+    [{\dl{instances, segment by segment}{\mref{PQ}{sec:pq}}}]
+  ]
+  [{\dm{keypoints}{How strict should ``correct'' be?}}
+    [{\dl{within a fraction of a reference length}{\mref{PCK}{sec:pck}}}]
+    [{\dl{a COCO-style tolerance}{\mref{OKS}{sec:oks}}}]
+  ]
+]
+\end{forest}
 \mapnotes{Dice and IoU (the Jaccard Index, p.~\pageref{sec:jaccard-index}) rank masks identically; Dice is the segmentation default and IoU the detection one. PSNR and SSIM disagree when the error is structured: blur costs more SSIM than noise of the same PSNR.}
 \end{decisionmap}
 

@@ -8,20 +8,20 @@ choosing which of those failures to accept.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{coralhard}{coralaccent}{Which criterion?}{Start with what should be equal across groups. Each criterion is a different conditional independence, and with different base rates they cannot all hold at once.}
-\mapq{What should be equal across groups?}
-\mapa{The share of positive decisions, whatever the outcomes (needs no ground truth)}{\mref{Demographic Parity}{sec:demographic-parity}}
-\mapa{The error rates people experience}{}
-\begin{mapsub}
-\mapq{Which error rates?}
-\mapa{Qualified people are accepted at the same rate (equal TPR)}{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}
-\mapa{Both error rates, TPR and FPR}{\mref{Equality of Odds}{sec:equality-of-odds}}
-\end{mapsub}
-\mapa{What the model's output means to the decision maker}{}
-\begin{mapsub}
-\mapq{For labels or for scores?}
-\mapa{A positive label is right equally often (equal precision)}{\mref{Predictive Parity}{sec:predictive-parity}}
-\mapa{A score of $s$ means the same outcome rate in every group}{\mref{Calibration within Groups}{sec:calibration-within-groups}}
-\end{mapsub}
+\maproot{What should be equal across groups?}
+\begin{forest} dmap, large
+[, coordinate, l sep=0pt
+  [{\dl{the share of positive decisions}{\mref{Demographic Parity}{sec:demographic-parity}}}]
+  [{\dm{the error rates people experience}{Which error rates?}}
+    [{\dl{the true positive rate}{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}}]
+    [{\dl{both TPR and FPR}{\mref{Equality of Odds}{sec:equality-of-odds}}}]
+  ]
+  [{\dm{what a prediction means}{For labels or for scores?}}
+    [{\dl{labels: a positive is right equally often}{\mref{Predictive Parity}{sec:predictive-parity}}}]
+    [{\dl{scores: the same outcome rate per score}{\mref{Calibration within Groups}{sec:calibration-within-groups}}}]
+  ]
+]
+\end{forest}
 \mapnotes{When base rates differ between groups, calibration (or predictive parity) and equal error rates cannot hold together (Chouldechova 2017; Kleinberg et al.\ 2017). Choose the criterion whose violation would do the most harm and report the others alongside it.}
 \end{decisionmap}
 

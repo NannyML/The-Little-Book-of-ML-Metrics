@@ -8,31 +8,29 @@ the same ten items is failing at something these metrics name.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{corallight}{coralaccent}{Which metric?}{Start with what you know about each item's relevance: a yes or no, a grade, or a preference. The last branch scores qualities of the list other than relevance.}
-\mapq{What do you know about each item's relevance?}
-\mapa{Only whether it is relevant or not}{}
-\begin{mapsub}
-\mapq{What matters about the list?}
-\mapa{Where the single right answer lands}{\mref{MRR}{sec:mrr}}
-\mapa{Whether anything relevant reached the top $K$}{\mref{Hit Rate}{sec:hit-rate}}
-\mapa{How much of the top $K$ is relevant, or how much of the relevant made the top $K$}{\mref{@K Metrics}{sec:k-metrics}}
-\mapa{The whole ordering of the relevant items, averaged over queries}{\mref{MAP}{sec:map}}
-\end{mapsub}
-\mapa{A relevance grade}{}
-\begin{mapsub}
-\mapq{How should position count?}
-\mapa{Not at all: total relevance retrieved}{\mref{CG}{sec:cg}}
-\mapa{Top positions count more}{\mref{DCG}{sec:dcg}}
-\mapa{Top positions count more, and queries with different ideal lists must be comparable}{\mref{nDCG}{sec:ndcg}}
-\end{mapsub}
-\mapa{A rating or a pairwise preference: is the predicted order right?}{\mref{FCP}{sec:fcp}}
-\mapa{Relevance is not the question}{}
-\begin{mapsub}
-\mapq{What quality of the list do you want to measure?}
-\mapa{Are the items unlike each other?}{\mref{Diversity}{sec:diversity}}
-\mapa{Are they new to the user?}{\mref{Novelty}{sec:novelty}}
-\mapa{Are they relevant and unexpected at once?}{\mref{Serendipity}{sec:serendipity}}
-\mapa{How much of the catalog is ever shown?}{\mref{Coverage}{sec:coverage}}
-\end{mapsub}
+\maproot{What do you know about relevance?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dm{yes or no}{What matters about the list?}}
+    [{\dl{where the one right answer lands}{\mref{MRR}{sec:mrr}}}]
+    [{\dl{whether anything relevant is in the top $K$}{\mref{Hit Rate}{sec:hit-rate}}}]
+    [{\dl{how much of the top $K$ is relevant}{\mref{@K Metrics}{sec:k-metrics}}}]
+    [{\dl{the whole order, over all queries}{\mref{MAP}{sec:map}}}]
+  ]
+  [{\dm{a grade}{How should position count?}}
+    [{\dl{not at all}{\mref{CG}{sec:cg}}}]
+    [{\dl{top positions count more}{\mref{DCG}{sec:dcg}}}]
+    [{\dl{and comparable across queries}{\mref{nDCG}{sec:ndcg}}}]
+  ]
+  [{\dl{a rating or a preference: is the order right?}{\mref{FCP}{sec:fcp}}}]
+  [{\dm{relevance is not the question}{Which quality of the list?}}
+    [{\dl{items unlike each other}{\mref{Diversity}{sec:diversity}}}]
+    [{\dl{new to the user}{\mref{Novelty}{sec:novelty}}}]
+    [{\dl{relevant and unexpected}{\mref{Serendipity}{sec:serendipity}}}]
+    [{\dl{share of the catalog ever shown}{\mref{Coverage}{sec:coverage}}}]
+  ]
+]
+\end{forest}
 \mapnotes{Fix $K$ to the length of the list users actually see and keep it fixed across models. Relevance metrics and the beyond-relevance ones pull in opposite directions; report one of each.}
 \end{decisionmap}
 

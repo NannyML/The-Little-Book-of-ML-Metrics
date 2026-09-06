@@ -430,9 +430,11 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 \colorlet{mintaccent}{minthard!45!black}
 
 % ---------- Decision maps: one page per chapter, right after the opener ----------
-% A printed key, like the identification keys in a field guide: a question in
-% bold, its possible answers indented beneath it, and the metric that answer
-% leads to on the right with its page number.  Nested questions indent further.
+% A left-to-right tree.  The root question is printed above the tree; every node
+% shows the answer that leads to it (small, gray) and then either the next
+% question or the metric (bold) with its page.  Nodes of one level share a
+% column, leaves share the last column, edges are thin gray forks.
+\usepackage[edges]{forest}
 \colorlet{mapband}{cyanlight}
 \colorlet{mapaccent}{cyanaccent}
 \newcommand{\maptitle}{Which metric?}
@@ -446,10 +448,36 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
         \node[anchor=east, rotate=90, xshift=-.5cm] at (a.north) {\chaptertitle\ -- \maptitle};
     }
 }
-% a metric with its page number
-\newcommand{\mref}[2]{#1~{\color{black!55}\mdseries\scriptsize\pageref{#2}}}
 \newcommand{\nohyph}{\hyphenpenalty=10000 \exhyphenpenalty=10000 }
-\newlength{\mapindent}\setlength{\mapindent}{1.25em}
+% a metric with its page number
+\newcommand{\mref}[2]{\textbf{#1}~{\color{black!55}\mdseries\scriptsize\pageref{#2}}}
+% a node: the answer that leads here, then the next question or the metric(s)
+\newcommand{\dm}[2]{{\color{black!58}#1}\\#2}
+% a leaf: the answer and the metric(s) on one line
+\newcommand{\dl}[2]{{\color{black!58}#1:} #2}
+\forestset{
+    dmap/.style={
+        for tree={
+            grow'=0, child anchor=west, parent anchor=east, anchor=west,
+            font=\footnotesize\nohyph, text=black!80, node options={align=left},
+            l sep=3.5mm, s sep=3mm, inner xsep=0pt, inner ysep=1.4pt, outer xsep=1.5pt,
+            edge={draw, line width=0.5pt, black!30},
+            forked edges, fork sep=2mm,
+            tier/.option=level,
+        },
+        where n children=0{tier=leaf, text width=3.6cm}{},
+        where level=1{fork sep=0pt, if n children=0{}{text width=2.3cm}}{},
+        where level=2{if n children=0{}{text width=2.5cm}}{},
+        where level=3{if n children=0{}{text width=2.5cm}}{},
+    },
+    % for shallow trees: a larger size
+    large/.style={
+        for tree={font=\small\nohyph, s sep=4.5mm, l sep=5mm},
+        where n children=0{text width=3.8cm}{},
+        where level=1{if n children=0{}{text width=2.8cm}}{},
+        where level=2{if n children=0{}{text width=3.0cm}}{},
+    },
+}
 % \begin{decisionmap}{band}{accent}{title}{subtitle} ... \end{decisionmap}
 \newenvironment{decisionmap}[4]{%
     \clearpage
@@ -459,20 +487,14 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \noindent{\color{#2}\fontsize{22}{26}\selectfont\bfseries #3}\par
     \vspace{5pt}
     {\color{black!60}\small #4\par}
-    \vspace{6pt}
-    % text-only lines may be ragged; lines ending in a metric are still pulled to the margin by the leader's fill glue
-    \begingroup\small\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}\setlength{\leftskip}{0pt}\setlength{\rightskip}{0pt plus 1fil}\setlength{\emergencystretch}{2em}\nohyph
+    \vspace{10pt}
+    \noindent
 }{%
-    \endgroup\clearpage
+    \clearpage
 }
-% a question (bold); the first one starts the key, nested ones follow an answer
-\newcommand{\mapq}[1]{\par\vspace{8pt}{\bfseries\color{black!85}#1}\par\vspace{3pt}}
-% an answer, with the metric(s) it leads to on the right; leave #2 empty when a nested question follows
-% the empty \hbox keeps the dotted leader alive when the metric wraps to its own line, so it still ends at the right margin
-\newcommand{\mapa}[2]{\par{\color{black!70}#1}\ifblank{#2}{}{\hspace{0.4em}\hbox{}\nobreak{\color{black!25}\leaders\hbox to 0.55em{\hss.\hss}\hfill}\nobreak\hspace{0.3em}\mbox{\bfseries\color{black!85}#2}}\par\vspace{3pt}}
-% nesting: everything inside is indented one level
-\newenvironment{mapsub}{\par\addtolength{\leftskip}{\mapindent}}{\par\addtolength{\leftskip}{-\mapindent}}
-\newcommand{\mapnotes}[1]{\par\vspace{14pt}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
+% the root question, printed above the tree
+\newcommand{\maproot}[1]{{\small\bfseries\color{black!85}#1}\par\vspace{4pt}\noindent}
+\newcommand{\mapnotes}[1]{\par\vspace{10pt}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
 
 \begin{document}
 \pagestyle{customstyle}

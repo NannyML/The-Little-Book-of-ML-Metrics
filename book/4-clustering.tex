@@ -7,26 +7,26 @@ anything, and a good external score is only as good as its reference; read both 
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Start with whether you have ground-truth classes. With them, decide what agreement means; without them, decide what a good cluster looks like.}
-\mapq{Do you have ground-truth classes to compare against?}
-\mapa{Yes}{}
-\begin{mapsub}
-\mapq{How do you want to compare the two labelings?}
-\mapa{Just look at the table of classes against clusters}{\mref{Contingency Matrix}{sec:contingency-matrix}}
-\mapa{Just look at pairs of points, together or apart, as a $2 \times 2$ table}{\mref{Pair Confusion Matrix}{sec:pair-confusion-matrix}}
-\mapa{Score the share of pairs both labelings agree on (ARI corrects it for chance)}{\mref{Rand Index}{sec:rand-index}}
-\mapa{Score the geometric mean of pairwise precision and recall}{\mref{FMI}{sec:fmi}}
-\mapa{Score how much information the clusters carry about the classes (NMI and AMI normalize it)}{\mref{Mutual Info Score}{sec:mutual-info-score}}
-\mapa{Ask whether each cluster holds a single class}{\mref{Homogeneity Score}{sec:homogeneity-score}}
-\mapa{Ask whether each class sits in a single cluster}{\mref{Completeness Score}{sec:completeness-score}}
-\mapa{Ask both, as one number}{\mref{V-Measure}{sec:v-measure}}
-\end{mapsub}
-\mapa{No}{}
-\begin{mapsub}
-\mapq{What should a good cluster look like?}
-\mapa{Each point is closer to its own cluster than to the next one (slow on large data)}{\mref{Silhouette Score}{sec:silhouette-score}}
-\mapa{Clusters are far apart relative to their spread (fast, favors convex clusters)}{\mref{CH Index}{sec:ch-index}}
-\mapa{Each cluster is far from its most similar neighbor (lower is better)}{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}
-\end{mapsub}
+\maproot{Do you have ground-truth classes?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dm{yes}{How do you compare the two labelings?}}
+    [{\dl{look at the table}{\mref{Contingency Matrix}{sec:contingency-matrix}}}]
+    [{\dl{look at pairs, as a $2 \times 2$}{\mref{Pair Confusion Matrix}{sec:pair-confusion-matrix}}}]
+    [{\dl{pairs agreed on (ARI corrects for chance)}{\mref{Rand Index}{sec:rand-index}}}]
+    [{\dl{pairwise precision and recall}{\mref{FMI}{sec:fmi}}}]
+    [{\dl{shared information (NMI, AMI)}{\mref{Mutual Info Score}{sec:mutual-info-score}}}]
+    [{\dl{is each cluster pure?}{\mref{Homogeneity Score}{sec:homogeneity-score}}}]
+    [{\dl{is each class kept together?}{\mref{Completeness Score}{sec:completeness-score}}}]
+    [{\dl{both at once}{\mref{V-Measure}{sec:v-measure}}}]
+  ]
+  [{\dm{no}{What makes a cluster good?}}
+    [{\dl{points close to their own cluster}{\mref{Silhouette Score}{sec:silhouette-score}}}]
+    [{\dl{clusters far apart relative to their spread}{\mref{CH Index}{sec:ch-index}}}]
+    [{\dl{far from the most similar cluster}{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}}]
+  ]
+]
+\end{forest}
 \mapnotes{Correct for chance when the clusterings compared have different $k$: ARI rather than the Rand index, AMI rather than raw mutual information. An internal index can say the clusters are compact and apart, never that they mean anything.}
 \end{decisionmap}
 
@@ -440,9 +440,9 @@ V-Measure is the harmonic mean of Homogeneity and Completeness --- the F-score o
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {completeness} +(1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.0,0.3)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.20,0.00)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1.00,0.50);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.95,0.00)$) to[bend left=15] node[pos=1, right] {completeness} +(1.00,0.50);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.30,0.00)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1.00,-0.50);
     }
 \end{center}
 

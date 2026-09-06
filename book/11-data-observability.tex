@@ -9,30 +9,30 @@ the rest of the book, each monitor takes one page.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{minthard}{mintaccent}{Which monitor?}{Start with what could have gone wrong upstream. Almost every monitor is judged against an expected range learned from its own history.}
-\mapq{What could have gone wrong upstream?}
-\mapa{Nothing yet; you want to know how any monitor decides: a band around normal, learned from history}{\mref{Expected Range}{sec:expected-range}}
-\mapa{The data did not arrive, or not all of it}{}
-\begin{mapsub}
-\mapa{When did it last land?}{\mref{Freshness}{sec:freshness}}
-\mapa{How many rows came?}{\mref{Row Count}{sec:row-count}}
-\end{mapsub}
-\mapa{The structure changed: columns added, dropped or retyped}{\mref{Schema Changes}{sec:schema-changes}}
-\mapa{Values are incomplete or repeated}{}
-\begin{mapsub}
-\mapa{Empty cells}{\mref{Missing Values}{sec:missing-values}}
-\mapa{Rows that should be unique and are not}{\mref{Duplicates}{sec:duplicates}}
-\mapa{How many distinct values, e.g.\ categories}{\mref{Unique Count}{sec:unique-count}}
-\end{mapsub}
-\mapa{Numeric values drifted or spiked}{}
-\begin{mapsub}
-\mapq{Which part of the distribution?}
-\mapa{The center}{\mref{Average}{sec:average}}
-\mapa{The total, which also moves with volume}{\mref{Sum}{sec:sum}}
-\mapa{The spread}{\mref{Standard Deviation}{sec:standard-deviation}}
-\mapa{The extremes, and out-of-range values}{\mref{Min and Max}{sec:min-and-max}}
-\mapa{The shape}{\mref{Quartiles}{sec:quartiles}}
-\end{mapsub}
-\mapa{Text columns changed shape: strings shorter or longer than usual}{\mref{Text Length}{sec:text-length}}
+\maproot{What could have gone wrong upstream?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dl{you first want to know how any monitor decides}{\mref{Expected Range}{sec:expected-range}}}]
+  [{\dm{the data is late or partial}{What do you check?}}
+    [{\dl{when it last landed}{\mref{Freshness}{sec:freshness}}}]
+    [{\dl{how many rows came}{\mref{Row Count}{sec:row-count}}}]
+  ]
+  [{\dl{the structure changed}{\mref{Schema Changes}{sec:schema-changes}}}]
+  [{\dm{values are missing or repeated}{Which?}}
+    [{\dl{empty cells}{\mref{Missing Values}{sec:missing-values}}}]
+    [{\dl{rows that should be unique}{\mref{Duplicates}{sec:duplicates}}}]
+    [{\dl{the number of distinct values}{\mref{Unique Count}{sec:unique-count}}}]
+  ]
+  [{\dm{numbers drifted or spiked}{Which part of the distribution?}}
+    [{\dl{the center}{\mref{Average}{sec:average}}}]
+    [{\dl{the total}{\mref{Sum}{sec:sum}}}]
+    [{\dl{the spread}{\mref{Standard Deviation}{sec:standard-deviation}}}]
+    [{\dl{the extremes}{\mref{Min and Max}{sec:min-and-max}}}]
+    [{\dl{the shape}{\mref{Quartiles}{sec:quartiles}}}]
+  ]
+  [{\dl{text changed shape}{\mref{Text Length}{sec:text-length}}}]
+]
+\end{forest}
 \mapnotes{Check freshness and row count first: every other monitor is meaningless on a partial load. Schema changes are the one monitor that needs no history.}
 \end{decisionmap}
 

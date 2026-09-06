@@ -8,16 +8,18 @@ monitored without waiting for the truth.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangehard}{orangeaccent}{Which metric?}{Start with whether the labels for the monitored period exist yet. Without them, the estimate you can trust depends on the model type and on how far the inputs have shifted.}
-\mapq{Have the labels for the monitored period arrived?}
-\mapa{Yes: how much of the drop is concept drift rather than covariate shift?}{\mref{RCD}{sec:rcd}}
-\mapa{No, and the model is a classifier}{}
-\begin{mapsub}
-\mapq{Are the reference probabilities calibrated?}
-\mapa{Check that first}{\mref{ECE}{sec:ece}}
-\mapa{Yes, and the inputs shifted mildly}{\mref{CBPE}{sec:cbpe}}
-\mapa{The inputs shifted far from what the calibrator saw}{\mref{PAPE}{sec:pape}}
-\end{mapsub}
-\mapa{No, and the model is a regressor: predict the loss directly from the inputs}{\mref{DLE}{sec:dle}}
+\maproot{Have the labels arrived?}
+\begin{forest} dmap, large
+[, coordinate, l sep=0pt
+  [{\dl{yes: how much is concept drift?}{\mref{RCD}{sec:rcd}}}]
+  [{\dm{no, and it is a classifier}{Are the reference probabilities calibrated?}}
+    [{\dl{check that first}{\mref{ECE}{sec:ece}}}]
+    [{\dl{yes, and the inputs shifted mildly}{\mref{CBPE}{sec:cbpe}}}]
+    [{\dl{the inputs shifted far}{\mref{PAPE}{sec:pape}}}]
+  ]
+  [{\dl{no, and it is a regressor}{\mref{DLE}{sec:dle}}}]
+]
+\end{forest}
 \mapnotes{All three estimators assume the relationship between inputs and labels is unchanged; RCD is the check once labels exist. Validate an estimator against realized performance on the reference period before trusting it in production.}
 \end{decisionmap}
 

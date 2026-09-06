@@ -8,36 +8,32 @@ benchmarks that leaderboards report.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplehard}{purpleaccent}{Which metric?}{Start with the modality, then with what you can compare against: a reference, a reference set, a prompt, or nothing but a judge.}
-\mapq{What is being generated?}
-\mapa{Text}{}
-\begin{mapsub}
-\mapq{What can you compare against?}
-\mapa{Held-out text: score the language model itself}{\mref{Perplexity}{sec:perplexity}}
-\mapa{One reference per output, by meaning rather than $n$-grams}{\mref{BERTScore}{sec:bertscore}}
-\mapa{A corpus of human text, as a distribution}{\mref{MAUVE}{sec:mauve}}
-\mapa{Other models, on standard tasks}{\mref{Benchmarks}{sec:benchmarks}}
-\end{mapsub}
-\mapa{Images}{}
-\begin{mapsub}
-\mapq{What can you compare against?}
-\mapa{Nothing: the quality and diversity of a set of images}{\mref{IS}{sec:is}}
-\mapa{A reference set of images}{\mref{FID}{sec:fid}}
-\mapa{One reference image, perceptually}{\mref{LPIPS}{sec:lpips}}
-\mapa{The prompt}{}
-\begin{mapsub}
-\mapq{How thoroughly?}
-\mapa{Global semantic similarity, fast}{\mref{CLIP Score}{sec:clip-score}}
-\mapa{Every object, attribute and relation, each checked by a question}{\mref{DSG}{sec:dsg}}
-\mapa{One yes/no probability; good on compositional prompts}{\mref{VQAScore}{sec:vqascore}}
-\end{mapsub}
-\end{mapsub}
-\mapa{Speech and audio}{}
-\begin{mapsub}
-\mapq{Who judges?}
-\mapa{Human listeners}{\mref{MOS}{sec:mos}}
-\mapa{An algorithm, against a clean reference}{\mref{PESQ}{sec:pesq}}
-\mapa{An algorithm, for intelligibility after noise or enhancement}{\mref{STOI}{sec:stoi}}
-\end{mapsub}
+\maproot{What is being generated?}
+\begin{forest} dmap
+[, coordinate, l sep=0pt
+  [{\dm{text}{Compared against what?}}
+    [{\dl{held-out text}{\mref{Perplexity}{sec:perplexity}}}]
+    [{\dl{one reference, by meaning}{\mref{BERTScore}{sec:bertscore}}}]
+    [{\dl{a corpus of human text}{\mref{MAUVE}{sec:mauve}}}]
+    [{\dl{other models, on standard tasks}{\mref{Benchmarks}{sec:benchmarks}}}]
+  ]
+  [{\dm{images}{Compared against what?}}
+    [{\dl{nothing: quality and diversity of a set}{\mref{IS}{sec:is}}}]
+    [{\dl{a reference set}{\mref{FID}{sec:fid}}}]
+    [{\dl{one reference image}{\mref{LPIPS}{sec:lpips}}}]
+    [{\dm{the prompt}{How thoroughly?}}
+      [{\dl{one similarity score}{\mref{CLIP Score}{sec:clip-score}}}]
+      [{\dl{a question per detail}{\mref{DSG}{sec:dsg}}}]
+      [{\dl{one yes/no probability}{\mref{VQAScore}{sec:vqascore}}}]
+    ]
+  ]
+  [{\dm{speech or audio}{Who judges?}}
+    [{\dl{people}{\mref{MOS}{sec:mos}}}]
+    [{\dl{an algorithm, against a clean reference}{\mref{PESQ}{sec:pesq}}}]
+    [{\dl{an algorithm, for intelligibility}{\mref{STOI}{sec:stoi}}}]
+  ]
+]
+\end{forest}
 \mapnotes{Reference-free scores are as good as the judge behind them (CLIP, BLIP, a VQA model) and share its failures. Human evaluation, as MOS or side-by-side preference, is what every automatic score is validated against.}
 \end{decisionmap}
 
