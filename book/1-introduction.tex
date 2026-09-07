@@ -6,65 +6,34 @@
 \thispagestyle{customstyle}
 \section{Who this is for}
 
-You build models, or you keep an eye on models that are already running, and you know what a confusion matrix and a residual are. That is
-all we assume. What you probably don't have is a clear answer to the question that comes up in every model review: which number should
-we be looking at, and what does it hide?
-
-That is the whole point of this book. Each metric gets two pages. Not a lecture, just the things you'd want a colleague to tell you
-before you pick it: what it measures, when it is the right choice, and where it will fool you.
+This book is for data scientists, ML engineers and anyone building, improving or monitoring machine learning models. We assume
+you know what a confusion matrix and a residual are, and not much more than that.
 
 \section{How to read a metric page}
 
-Every metric follows the same layout, so once you've read one you know where to look on all the others.
+Almost every metric follows the same layout.
 
-\textbf{Page one} is the definition. A short paragraph on what the number means in practice, then the formula with every symbol
-labeled, then how to read the value: the range, what counts as good, what counts as bad. After that, when to use it and when not to, and
-two boxes side by side: strengths on the left, weaknesses on the right. We tried to make every bullet concrete. ``Sensitive to outliers''
-tells you nothing; ``one prediction off by 100 counts as much as 99 predictions off by 1'' does.
+The first page defines the metric. It says what the metric measures, shows the formula with every symbol labeled, explains how to
+read the value, tells you when to use it and when to avoid it, and lists its strengths and weaknesses side by side.
 
-\textbf{Page two} is the metric in action. The figure shows how the metric turns inputs into a score, and every number on it comes
-from the data it draws. The caption tells you how to read it. Then a ``did you know'' box with one fact that changes how you think
-about the metric, and a short note on related metrics: which neighbors to consider, and what it means when two of them disagree.
+The second page shows the metric at work. A figure built from data walks through how the metric turns predictions into a score, a
+``Did you know'' box gives one fact worth remembering, and a short note points to related metrics.
 
-The data observability chapter is the exception. Its monitors are simple statistics, so each one gets a single page with a figure.
+\section{Formula colors}
 
-\section{The colors in the formulas}
-
-Every symbol in a formula is colored by what it is, and the arrows spell it out:
+Formulas use five colors:
 
 \begin{itemize}[left=0pt]
-    \item {\color{nmlcyan}\textbf{Cyan}} is the truth: targets, labels, actual values.
-    \item {\color{nmlpurple}\textbf{Purple}} is what the model produced: predictions, scores, estimates.
-    \item {\color{nmlred}\textbf{Red}} is a count or a size: how many samples, classes, bins or items.
-    \item {\color{nmlgreen}\textbf{Green}} is a special function, like the indicator $\mathds{1}[\cdot]$.
-    \item {\color{nmlyellow}\textbf{Yellow}} is something you choose: a threshold, a weight, a quantile level.
+    \item {\color{nmlcyan}\textbf{Cyan}} for the truth: targets, labels, actual values.
+    \item {\color{nmlpurple}\textbf{Purple}} for what the model produced: predictions, scores, estimates.
+    \item {\color{nmlred}\textbf{Red}} for counts and sizes: samples, classes, bins, items.
+    \item {\color{nmlgreen}\textbf{Green}} for special functions, like the indicator $\mathds{1}[\cdot]$.
+    \item {\color{nmlyellow}\textbf{Yellow}} for what you choose: thresholds, weights, quantile levels.
 \end{itemize}
-
-The same colors mean the same thing in every chapter.
-
-\section{Picking a metric}
-
-Three questions settle most of it.
-
-\textbf{What does a mistake cost?} If a big miss hurts much more than a small one, you want squared errors. If a false alarm and a
-missed case cost different amounts, you want precision or recall rather than accuracy, or the expected cost directly. If you can't say
-what a mistake costs, the metric is deciding for you.
-
-\textbf{How rare is the thing you care about?} Rare positives make accuracy and ROC AUC look great while the model misses them.
-Tiny targets make percentage errors explode. Different base rates across groups make most fairness criteria impossible to satisfy at
-the same time. Check the balance before you check the score.
-
-\textbf{Who is going to read the number?} A metric in the target's own units, like MAE, is for the people who own the target. A
-scale-free one, like $R^2$ or nDCG, is for comparing models across datasets. A proper scoring rule, like log loss, is for training and
-calibration. One model can deserve all three, reported to different people.
-
-Each chapter starts with a one-page key that walks through these questions for its metrics. And when two metrics that should agree
-don't, the disagreement is usually the most useful thing on the page: RMSE far above MAE means a few large errors; ROC AUC high with
-PR AUC low means the rare class is being missed.
 
 \section{How the book is organized}
 
-Chapters follow what the model outputs. Regression and classification first, since almost everyone meets those. Then clustering and
-ranking, then computer vision, NLP and generative models, where the reference answer gets fuzzier and learned judges take over. The
-last three chapters step back: estimating a metric before the labels arrive, checking whether the score is the same for every group,
-and watching the tables that feed all of it. Every figure is generated by code in the book's repository, from the data it shows.
+Chapters follow the kind of model being evaluated: regression, classification, clustering, ranking, computer vision, NLP and
+generative AI. The last three chapters cover estimating performance before the labels arrive, fairness across groups, and monitoring
+the data that feeds the models. Each chapter opens with a one-page guide to choosing among its metrics, and every figure is
+generated by code in the book's repository, from the data it shows.

@@ -1,13 +1,13 @@
 \chapteropener{Regression}{cyanlight}{cyanaccent}{%
 Regression models predict a quantity: tomorrow's demand, a house price, a delivery time. Nearly every metric in this chapter summarizes
 the residuals $Y - \hat{Y}$ into one number, and they differ in what they do to a residual before averaging. MAE takes its magnitude, MSE its
-square, MAPE its ratio to the target, the deviances its likelihood under an assumed noise model. That choice decides which errors dominate
-the score: squared errors let a few large misses set the number, absolute errors weigh every unit the same, percentage errors punish
-misses on small targets. $R^2$, $D^2$ and explained variance compare the residuals with a baseline instead of reporting them raw, and
-MDA ignores their size to score only the direction of change. Read MAE first; the rest are variations on which residuals matter most.}{In this chapter}
+square, MAPE its ratio to the target, the deviances its likelihood under an assumed noise model.\par\smallskip
+How a residual is transformed decides which errors dominate the score: squared errors let a few large misses set the number, absolute
+errors weigh every unit the same, and percentage errors punish misses on small targets. $R^2$, $D^2$ and explained variance compare the
+residuals with a baseline instead of reporting them raw, and MDA ignores their size and scores only the direction of change.}{In this chapter}
 
 % ---------- Decision map ----------
-\begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Start at the question on the left and follow the answer that fits your model; the metric it leads to is on the right, with its page.}
+\begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What does the model predict?}
 \begin{forest} dmap
 [, coordinate, l sep=0pt
@@ -47,7 +47,7 @@ MDA ignores their size to score only the direction of change. Read MAE first; th
 \subsection{Mean Absolute Error}
 
 MAE is one of the most intuitive regression metrics: it tells you, on average, how far off your predictions are in the same units as your target.
-If you're predicting house prices and your MAE is \$15,000, each prediction is off by \$15K on average. This directness makes MAE the go-to metric
+If you're predicting house prices and your MAE is \$15k, each prediction is off by \$15k on average. This directness makes MAE the go-to metric
 when you need to communicate model performance to non-technical stakeholders.
 
 % equation
@@ -458,7 +458,7 @@ more), or for intermittent demand with many zeros (use MASE).
 
 % strength and weakness box
 \coloredboxes{
-    \item Scale-free. You can directly compare a $5\%$ MAPE on \$10 products with a $5\%$ MAPE on \$10,000 products. No normalization needed.
+    \item Scale-free. You can directly compare a $5\%$ MAPE on \$10 products with a $5\%$ MAPE on \$10k products. No normalization needed.
     \item Universally understood by business stakeholders. ``The model is $7\%$ off on average'' needs no further explanation.
 }
 {

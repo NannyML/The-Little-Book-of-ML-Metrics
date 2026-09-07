@@ -466,6 +466,9 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
             tier/.option=level,
         },
         where n children=0{tier=leaf, text width=3.6cm}{},
+        % with an odd number of children the parent sits level with the middle one, so its stub and that child's tick form one line
+        where n children=3{calign=child, calign child=2}{},
+        where n children=5{calign=child, calign child=3}{},
         where level=1{fork sep=0pt, if n children=0{}{text width=2.3cm}}{},
         where level=2{if n children=0{}{text width=2.5cm}}{},
         where level=3{if n children=0{}{text width=2.5cm}}{},

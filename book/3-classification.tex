@@ -7,7 +7,7 @@ report depends on two things: the cost of each error type and how rare the posit
 every other page is a function of its four cells.}{In this chapter}
 
 % ---------- Decision map ----------
-\begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Start with what you are judging: the probabilities, the ranking they induce, or the labels a threshold turns them into.}
+\begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What are you judging?}
 \begin{forest} dmap
 [, coordinate, l sep=0pt
@@ -1287,8 +1287,8 @@ Cohen's Kappa is mathematically related but designed for inter-annotator agreeme
 \subsection{Expected Cost}
 
 Expected Cost bridges classification metrics and business economics. Instead of treating all errors equally (accuracy) or weighting
-by class (F1), EC lets you assign explicit dollar costs to each type of mistake. Approving a fraudulent loan costs \$80K;
-rejecting a good applicant costs \$40K. EC computes the expected monetary cost of the model's decisions. 
+by class (F1), EC lets you assign explicit dollar costs to each type of mistake. Approving a fraudulent loan costs \$80k;
+rejecting a good applicant costs \$40k. EC computes the expected monetary cost of the model's decisions. 
 
 \begin{center}
 \tikz{
