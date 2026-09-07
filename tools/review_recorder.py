@@ -131,7 +131,7 @@ PDF_STAMP = {"mtime": None}
 def build_version():
     """git short sha of the book repo, with the time appended when the tree has uncommitted changes."""
     sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip() or "local"
-    dirty = subprocess.run(["git", "status", "--porcelain", "book"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    dirty = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no", "book"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     return sha + (dt.datetime.now().strftime("-%H%M") if dirty else "")
 
 
