@@ -24,8 +24,8 @@ __pycache__/
 *.pyc
 *.ptc
 
-# review recordings (audio is large; notes.jsonl and NOTES.md are kept)
-review/audio/
+# review notes and recordings are never committed (the reviewer app lives in its own repo)
+review/
 
 # formula tuner backups
 *.tex.bak
