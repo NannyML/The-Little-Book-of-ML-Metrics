@@ -13,6 +13,13 @@ tagged with the page, chapter and metric it was recorded on and written to
     review/NOTES.md         all notes grouped by chapter and metric, regenerated on every save
 
 Hand NOTES.md to a Claude session ("apply review/NOTES.md") to have the notes worked through metric by metric.
+Every note has a status, open or done.  Whoever applies a note marks it done with what was done:
+
+    uv run python tools/review_recorder.py --list                    # open notes
+    uv run python tools/review_recorder.py --done <id> "what was done"
+    uv run python tools/review_recorder.py --reopen <id>
+
+The status shows on the note in the app (with mark-done / reopen links) and in NOTES.md.
 
 Pages with an annotated formula show a "Tune arrows" button: it opens the formula tuner
 (tools/formula_tuner.py) for that formula; "Save to .tex" writes the block back and
@@ -152,7 +159,10 @@ def write_markdown(notes):
     for n in notes:
         meta = idx.get(n["page"], {"chapter": "?", "section": "?", "section_page": 0})
         groups.setdefault(meta["chapter"], {}).setdefault((meta["section_page"], meta["section"]), []).append(n)
-    lines = ["# Review notes", "", f"{len(notes)} notes, regenerated {dt.datetime.now():%Y-%m-%d %H:%M}. Source of truth: `review/notes.jsonl`.", ""]
+    n_open = sum(1 for n in notes if n.get("status", "open") != "done")
+    lines = ["# Review notes", "",
+             f"{len(notes)} notes, {n_open} open, {len(notes) - n_open} done. Regenerated {dt.datetime.now():%Y-%m-%d %H:%M}. "
+             "Source of truth: `review/notes.jsonl`; mark a note done with `tools/review_recorder.py --done <id> \"what was done\"`.", ""]
     for chapter in sorted(groups, key=lambda c: min(k[0] for k in groups[c])):
         lines += [f"## {chapter}", ""]
         for (spage, section), ns in sorted(groups[chapter].items()):
@@ -160,10 +170,28 @@ def write_markdown(notes):
             lines.append("")
             for n in sorted(ns, key=lambda n: (n["page"], n["ts"])):
                 text = (n.get("text") or "").strip() or "(no transcript yet)"
-                src = " typed" if n.get("typed") else f" audio: `review/audio/{n['id']}.webm`"
-                lines.append(f"- **p. {n['page']}** ({n['ts'][:16].replace('T', ' ')},{src})  \n  {text}")
+                src = "typed" if n.get("typed") else f"audio `{n['id']}`"
+                if n.get("status") == "done":
+                    head = f"- [x] **p. {n['page']}** ({n['ts'][:16].replace('T', ' ')}, {src}) — done {n.get('done_at', '')[:10]}: {n.get('done_text', '')}"
+                else:
+                    head = f"- [ ] **p. {n['page']}** ({n['ts'][:16].replace('T', ' ')}, {src}) — open, id `{n['id']}`"
+                lines.append(f"{head}  \n  {text}")
             lines.append("")
     NOTES_MD.write_text("\n".join(lines))
+
+
+def set_status(notes, nid, status, text=""):
+    for n in notes:
+        if n["id"] == nid:
+            n["status"] = status
+            if status == "done":
+                n["done_at"] = dt.datetime.now().isoformat(timespec="seconds")
+                n["done_text"] = text
+            else:
+                n.pop("done_at", None); n.pop("done_text", None)
+            save_notes(notes)
+            return True
+    return False
 
 
 def transcribe_missing(all_notes=False):
@@ -208,6 +236,10 @@ HTML = r"""<!doctype html>
   .note{border:1px solid #e3e3e3;border-radius:6px;padding:8px;margin-bottom:6px;background:#fafafa;position:relative}
   .note small{color:#888}
   .note .del{position:absolute;right:6px;top:6px;border:none;background:none;color:#aaa;font-size:16px;padding:0 4px}
+  .note.done{background:#f1f9f1;border-color:#cfe8cf}
+  .note .st{font-size:12px;margin-top:4px}
+  .note .st.done{color:#1f6b2a}
+  .note .st a{color:#0077aa;cursor:pointer;margin-left:6px}
   .note .del:hover{color:#dd4040}
   .note textarea{width:100%;box-sizing:border-box;border:none;background:transparent;font:inherit;resize:vertical;min-height:40px}
   #typed{width:100%;box-sizing:border-box;font:inherit;padding:6px;border:1px solid #ccc;border-radius:6px;min-height:50px}
@@ -235,7 +267,8 @@ HTML = r"""<!doctype html>
   <div id="live" class="interim">Live transcript appears here while you talk.</div>
   <div id="formulas"></div>
   <h3>Or type</h3>
-  <textarea id="typed" placeholder="Type a note and press Cmd+Enter"></textarea>
+  <textarea id="typed" placeholder="Type a note"></textarea>
+  <div><button onclick="saveTyped()">Save note</button> <span style="color:#888;font-size:12px">or Cmd+Enter</span></div>
   <h3>Notes on this page</h3>
   <div id="notes"></div>
   <div id="status2" style="color:#888;font-size:12px"><span id="count"></span> notes in total &middot; <a href="/notes.md" target="_blank">NOTES.md</a></div>
@@ -269,10 +302,14 @@ function renderNotes(){
   const box = document.getElementById('notes'); box.innerHTML = '';
   for (const n of notes.filter(n => n.page === page)){
     const div = document.createElement('div'); div.className = 'note';
-    div.innerHTML = '<small>' + n.ts.slice(0,16).replace('T',' ') + (n.typed ? ' · typed' : ' · audio') + '</small><button class="del" title="delete">&times;</button><textarea></textarea>';
+    const done = n.status === 'done'; if (done) div.classList.add('done');
+    div.innerHTML = '<small>' + n.ts.slice(0,16).replace('T',' ') + (n.typed ? ' · typed' : ' · audio') + '</small><button class="del" title="delete">&times;</button><textarea></textarea>'
+      + (done ? '<div class="st done">&#10003; done ' + (n.done_at || '').slice(0,10) + (n.done_text ? ': ' + n.done_text : '') + '<a data-s="open">reopen</a></div>'
+              : '<div class="st">open<a data-s="done">mark done</a></div>');
     div.querySelector('textarea').value = n.text || '(no transcript; run --transcribe)';
     div.querySelector('textarea').onchange = e => fetch('/api/edit', {method:'POST', body: JSON.stringify({id:n.id, text:e.target.value})}).then(loadNotes);
     div.querySelector('.del').onclick = () => { if (confirm('Delete this note?')) fetch('/api/delete', {method:'POST', body: JSON.stringify({id:n.id})}).then(loadNotes).then(renderNotes); };
+    div.querySelector('.st a').onclick = e => { const st = e.target.dataset.s; const t = st === 'done' ? (prompt('What was done? (optional)') || '') : ''; fetch('/api/status', {method:'POST', body: JSON.stringify({id:n.id, status:st, text:t})}).then(loadNotes).then(renderNotes); };
     box.appendChild(div);
   }
 }
@@ -400,6 +437,9 @@ class Handler(formula_tuner.Handler):
                     n["text"] = req["text"]
             save_notes(notes)
             self._send({"ok": True})
+        elif self.path == "/api/status":
+            set_status(notes, req["id"], req["status"], req.get("text", ""))
+            self._send({"ok": True})
         elif self.path == "/api/delete":
             notes = [n for n in notes if n["id"] != req["id"]]
             (AUDIO / f"{req['id']}.webm").unlink(missing_ok=True)
@@ -410,6 +450,20 @@ class Handler(formula_tuner.Handler):
 
 
 if __name__ == "__main__":
+    if "--list" in sys.argv:
+        idx = page_index()
+        for n in load_notes():
+            if n.get("status") != "done":
+                meta = idx.get(n["page"], {})
+                print(f"{n['id']}  p.{n['page']}  {meta.get('chapter', '')} / {meta.get('section', '')}\n    {(n.get('text') or '(no transcript)')[:300]}")
+        sys.exit(0)
+    if "--done" in sys.argv:
+        i = sys.argv.index("--done")
+        ok = set_status(load_notes(), sys.argv[i + 1], "done", sys.argv[i + 2] if len(sys.argv) > i + 2 else "")
+        sys.exit(0 if ok else "no such note")
+    if "--reopen" in sys.argv:
+        ok = set_status(load_notes(), sys.argv[sys.argv.index("--reopen") + 1], "open")
+        sys.exit(0 if ok else "no such note")
     if "--transcribe" in sys.argv:
         transcribe_missing(all_notes="--all" in sys.argv)
         sys.exit(0)
