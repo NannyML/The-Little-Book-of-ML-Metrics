@@ -23,7 +23,8 @@ The status shows on the note in the app (with mark-done / reopen links) and in N
 
 Pages with an annotated formula show a "Tune arrows" button: it opens the formula tuner
 (tools/formula_tuner.py) for that formula; "Save to .tex" writes the block back and
-"Recompile book" rebuilds main.pdf so the page image catches up.
+"Recompile book" rebuilds main.pdf so the page image catches up, and "Publish to reviewer" uploads
+that build to the hosted reviewer app (needs the book-reviewer repo next to this one, with its .env).
 """
 import base64
 import datetime as dt
@@ -53,6 +54,8 @@ PORT = 8766
 DPI = 100
 CACHE = Path(tempfile.mkdtemp(prefix="review_pages_"))
 COMPILE = {"running": False, "log": "", "ok": None}
+PUBLISH = {"running": False, "log": "", "ok": None}
+REVIEWER = Path(os.environ.get("REVIEWER_DIR", ROOT.parent / "book-reviewer"))
 
 
 def clean_title(t):
@@ -123,6 +126,31 @@ def compile_book():
 
 
 PDF_STAMP = {"mtime": None}
+
+
+def build_version():
+    """git short sha of the book repo, with the time appended when the tree has uncommitted changes."""
+    sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip() or "local"
+    dirty = subprocess.run(["git", "status", "--porcelain", "book"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    return sha + (dt.datetime.now().strftime("-%H%M") if dirty else "")
+
+
+def publish_book(note):
+    if PUBLISH["running"] or COMPILE["running"]:
+        return
+    PUBLISH.update(running=True, log="", ok=None)
+
+    def run():
+        script = REVIEWER / "scripts" / "publish_book.py"
+        if not script.exists():
+            PUBLISH.update(running=False, ok=False, log=f"reviewer repo not found at {REVIEWER}"); return
+        version = build_version()
+        r = subprocess.run(["uv", "run", "--with", "pypdf", "python", str(script), str(PDF), "--version", version, "--note", note or "published from the local reviewer"],
+                           cwd=REVIEWER, capture_output=True, text=True)
+        tail = (r.stdout + r.stderr).strip().splitlines()[-1:] or [""]
+        PUBLISH.update(running=False, ok=(r.returncode == 0), log=(f"build {version}: " if r.returncode == 0 else "") + tail[0])
+
+    threading.Thread(target=run, daemon=True).start()
 
 
 def render_page(p):
@@ -272,7 +300,7 @@ HTML = r"""<!doctype html>
   <h3>Notes on this page</h3>
   <div id="notes"></div>
   <div id="status2" style="color:#888;font-size:12px"><span id="count"></span> notes in total &middot; <a href="/notes.md" target="_blank">NOTES.md</a></div>
-  <div style="margin-top:auto;padding-top:12px;border-top:1px solid #eee;font-size:12px;color:#888"><button id="compile" onclick="compileBook()">Recompile book</button> <span id="cstatus">after saving a formula, so the page image catches up (about a minute)</span></div>
+  <div style="margin-top:auto;padding-top:12px;border-top:1px solid #eee;font-size:12px;color:#888"><button id="compile" onclick="compileBook()">Recompile book</button> <span id="cstatus">after saving a formula, so the page image catches up (about a minute)</span><br><button id="publish" onclick="publishBook()" style="margin-top:6px">Publish to reviewer</button> <span id="pstatus">uploads the current main.pdf as a new build for everyone</span></div>
 </div>
 <div id="overlay" hidden><iframe id="tuner"></iframe></div>
 <script>
@@ -330,6 +358,12 @@ async function compileBook(){
   await fetch('/api/compile', {method:'POST', body:'{}'}); document.getElementById('cstatus').textContent = 'compiling…'; document.getElementById('compile').disabled = true;
   const poll = setInterval(async () => { const st = await (await fetch('/api/compile')).json();
     if (!st.running){ clearInterval(poll); document.getElementById('compile').disabled = false; document.getElementById('compile').style.borderColor = ''; document.getElementById('cstatus').textContent = st.ok ? 'compiled; page images refreshed' : ('compile failed: ' + st.log); document.getElementById('page').src = '/page/' + page + '.png?t=' + Date.now(); } }, 3000);
+}
+async function publishBook(){
+  const note = prompt('What changed in this build? (shown to reviewers, optional)') ?? null; if (note === null) return;
+  await fetch('/api/publish', {method:'POST', body: JSON.stringify({note})}); document.getElementById('pstatus').textContent = 'publishing…'; document.getElementById('publish').disabled = true;
+  const poll = setInterval(async () => { const st = await (await fetch('/api/publish')).json();
+    if (!st.running){ clearInterval(poll); document.getElementById('publish').disabled = false; document.getElementById('pstatus').textContent = (st.ok ? 'published ' : 'failed: ') + st.log; } }, 2000);
 }
 async function toggle(){ recording ? await stop() : await start(); }
 async function start(){
@@ -406,6 +440,8 @@ class Handler(formula_tuner.Handler):
             self._send(blocks_for_page(int(m.group(1))))
         elif self.path == "/api/compile":
             self._send(COMPILE)
+        elif self.path == "/api/publish":
+            self._send(PUBLISH)
         elif self.path.split("?")[0] in TUNER_PATHS or self.path.startswith("/fonts/"):
             super().do_GET()
         else:
@@ -417,6 +453,10 @@ class Handler(formula_tuner.Handler):
         if self.path == "/api/compile":
             self.rfile.read(int(self.headers.get("Content-Length", 0)))
             compile_book()
+            return self._send({"ok": True})
+        if self.path == "/api/publish":
+            body = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode() or "{}"
+            publish_book(json.loads(body).get("note", ""))
             return self._send({"ok": True})
         req = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))).decode() or "{}")
         notes = load_notes()
