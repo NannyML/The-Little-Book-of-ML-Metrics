@@ -102,8 +102,11 @@ def parse_arrows(tex):
 
 def arrow_tex(a):
     bend = f"to[bend {a['bdir']}={a['bend']}]" if int(a["bend"]) else "to"
+    opts = a.get("nodeopts", "") or ""
+    if "\\\\" in a["label"] and "align" not in opts:
+        opts += ",align=center"          # a line break inside a TikZ node needs an alignment
     return (f"\\draw[{a['opts']}] ($({a['anchor']})+({a['sx']:.2f},{a['sy']:.2f})$) {bend} "
-            f"node[pos=1, {a['side']}{a.get('nodeopts', '')}] {{{a['label']}}} +({a['ex']:.2f},{a['ey']:.2f});")
+            f"node[pos=1, {a['side']}{opts}] {{{a['label']}}} +({a['ex']:.2f},{a['ey']:.2f});")
 
 
 def apply_arrows(tex, arrows):
@@ -347,7 +350,7 @@ function buildControls(){const C=document.getElementById('ctrl');C.innerHTML='';
   slider(card,a,'sx',-6,6,0.05,'start x');slider(card,a,'sy',-1.5,1.5,0.05,'start y');
   slider(card,a,'ex',-3,3,0.05,'end dx');slider(card,a,'ey',-1.5,1.5,0.05,'end dy');
   slider(card,a,'bend',0,60,1,'bend °');
-  const side=document.createElement('div');side.className='row';side.innerHTML=`<span>bend / label</span><select><option value="left">bend left</option><option value="right">bend right</option></select><select><option>left</option><option>right</option><option>above</option><option>below</option></select>`;
+  const side=document.createElement('div');side.className='row';side.innerHTML=`<span>bend / label</span><select><option value="left">bend left</option><option value="right">bend right</option></select><select title="which side of the arrow tip the text sits on"><option value="left">text left of tip</option><option value="right">text right of tip</option><option value="above">text above tip</option><option value="below">text below tip</option></select>`;
   const [s1,s2]=side.querySelectorAll('select');s1.value=a.bdir;s2.value=a.side;s1.onchange=()=>{a.bdir=s1.value;changed();};s2.onchange=()=>{a.side=s2.value;changed();};card.appendChild(side);
   C.appendChild(card);});
  const raw=document.createElement('div');raw.className='card';raw.innerHTML='<div class="lab">Raw block (edits here win over the sliders)</div><textarea id="raw"></textarea><button id="applyraw">Apply raw</button>';
