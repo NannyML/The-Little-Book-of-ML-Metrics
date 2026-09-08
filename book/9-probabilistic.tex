@@ -49,9 +49,10 @@ the gaps are averaged with the bins' sizes as weights. The classification estima
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.6,0.35)$) to[bend left=15] node[pos=1, left] {share of bin $b$} +(-0.6,-.6);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.2,-0.2)$) to[bend right=15] node[pos=1, left] {observed accuracy} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.4,-0.2)$) to[bend left=15] node[pos=1, right] {mean confidence} +(0.6,.5);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.12cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.28,0.36)$) to[bend left=15] node[pos=1, left] {share of bin $b$} +(-1.00,-0.51);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.09,-0.69)$) to[bend right=15] node[pos=1, left] {observed accuracy} +(-1.00,0.95);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.44,-0.58)$) to node[pos=1, above] {mean confidence} +(0.00,0.30);
     }
 \end{center}
 
@@ -135,8 +136,8 @@ expected confusion matrix follows from the probabilities alone.
             \widehat{\text{TN}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0]
             $
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-1.05,-0.2)$) to[bend right=15] node[pos=1, left] {calibrated probability} +(-0.5,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.75,-0.2)$) to[bend left=15] node[pos=1, right] {predicted label} +(0.3,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-2.50,-0.22)$) to node[pos=1, above] {calibrated probability} +(0.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.27,-0.36)$) to node[pos=1, above] {predicted label} +(0.00,0.43);
     }
 \end{center}
 
@@ -217,8 +218,9 @@ each reference example by how much more, or less, common its inputs have become,
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-0.2,-0.3)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.4,0.3)$) to[bend left=15] node[pos=1, left] {domain classifier} +(-0.8,-.5);
+        \path[room for labels] ([yshift=0.13cm]a.north) ([yshift=-0.18cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-0.60,-0.18)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.48,0.09)$) to[bend left=15] node[pos=1, left] {domain classifier} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -296,10 +298,11 @@ its sign, and averages those predicted errors over production inputs whose true 
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.0,0.2)$) to[bend left=15] node[pos=1, left] {production size} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.6,-0.2)$) to[bend right=15] node[pos=1, left] {nanny model} +(-0.6,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.25)$) to[bend right=15] node[pos=1, right] {input} +(0.2,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.4,-0.25)$) to[bend left=15] node[pos=1, right] {child's prediction} +(0.4,.5);
+        \path[room for labels] ([yshift=0.19cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.93,0.42)$) to[bend left=15] node[pos=1, left] {production size} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.52)$) to[bend right=15] node[pos=1, left] {nanny model} +(-1.00,0.72);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.05,0.63)$) to[bend right=15] node[pos=1, right] {input} +(1.00,-0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.45,-0.51)$) to node[pos=1, above] {child's prediction} +(0.00,0.33);
     }
 \end{center}
 

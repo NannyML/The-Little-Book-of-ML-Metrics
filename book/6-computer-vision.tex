@@ -46,8 +46,9 @@ Pixel Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {correct pixels} +(1,.5);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.5,0.1)$) to[bend left=15] node[pos=1, left] {total pixels} +(-1,-.5);
+\path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.21cm]a.south);
+\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.42,-0.30)$) to[bend right=15] node[pos=1, left] {correct pixels} +(-1.00,0.54);
+\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.68,0.12)$) to[bend left=15] node[pos=1, left] {total pixels} +(-1.00,-0.34);
 }
 \end{center}
 
@@ -58,6 +59,7 @@ $PA$ runs from $0$ to $1$, but read it against the largest class's frequency, no
 
 Use it as a quick sanity check on tasks where classes cover comparable areas: foreground/background splits of similar size, or document binarization. Avoid it when one class dominates the frame (medical lesions, road cracks, small objects) --- report mean IoU or Mean Pixel Accuracy instead, which average per-class scores so minority classes still count.
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Cheap and unambiguous. A single division over the confusion-matrix diagonal --- no thresholds to set, no per-class weights to agree on.
 \item Honest when classes are balanced. On a roughly even split, $PA = 0.95$ really does mean $95\%$ of pixels are correct.
@@ -150,12 +152,9 @@ A keypoint is a labeled landmark on an object --- an elbow, a knee, the corner o
         PCK(\alpha) = \frac{1}{\textcolor{nmlgreen}{N}} \sum_{i=1}^{N} 1\!\left(\textcolor{nmlpurple}{d_i} \le \textcolor{nmlyellow}{\alpha L}\right)
         $
     };
-    \draw[overlay,-latex,nmlyellow, semithick] ($(a.north)+(0.5,0.05)$) to[bend left=15] 
-        node[pos=1, right] {threshold Radius} +(1,.5); 
-    \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-1.15,0.1)$) to[bend left=15]
-        node[pos=1, left] {Num. keypoints} +(-1,-.5);
-    \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.2,0.05)$) to[bend right=15] 
-        node[pos=1, right] {Euclidean distance} +(1,-.5); 
+    \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.70,0.69)$) to node[pos=1, below] {threshold Radius} +(0.00,-0.37); 
+    \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-0.33,0.34)$) to[bend left=15] node[pos=1, left] {Num. keypoints} +(-1.00,-0.55);
+    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.45,-0.61)$) to[bend right=15] node[pos=1, left] {Euclidean distance} +(-1.00,0.79); 
 }
 \end{center}
 
@@ -216,9 +215,10 @@ Object Keypoint Similarity is the scoring rule behind the COCO keypoint leaderbo
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.55,-0.15)$) to[bend left=15] node[pos=1, right] {distance error} +(0.8,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.3,0.15)$) to[bend right=15] node[pos=1, left] {object scale} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.35,0.15)$) to[bend left=15] node[pos=1, right] {keypoint tolerance} +(0.9,-.5);
+        \path[room for labels] ([yshift=0.19cm]a.north) ([yshift=-0.48cm]a.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.02,-0.09)$) to[bend right=15] node[pos=1, left] {distance error} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.89,0.18)$) to[bend left=15] node[pos=1, left] {object scale} +(-1.00,-0.39);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.42,0.10)$) to node[pos=1, below] {keypoint tolerance} +(0.00,-0.31);
     }
 \end{center}
 
@@ -275,8 +275,9 @@ means the same whether pixels run $0$--$255$ or $0$--$1$.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.1,-0)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-0.8,.4);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.east)+(-0.3,-0.35)$) to[bend right=10] node[pos=1, right] {mean squared error} +(0.6,-0.15);
+        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.20cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(1.76,-0.03)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.79,0.16)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-1.00,-0.37);
     }
 \end{center}
 
@@ -290,15 +291,15 @@ with $O$ the original and $R$ the reconstruction, both $h \times w$:
         \node[inner sep=2pt, font=\large] (a) {
             {
                 $\displaystyle
-                 MSE = \frac{1}{\color{teal!70!green}h \cdot \color{nmlcyan}w} \sum_{i=1}^{h} \sum_{j=1}^{w}
+                 MSE = \frac{1}{\color{nmlgreen}h \cdot \color{nmlcyan}w} \sum_{i=1}^{h} \sum_{j=1}^{w}
                  \left(\color{nmlred} O(i,j) \color{black} - \color{nmlpurple} R(i,j) \right)^2
                 $
             }
         };
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.west)+(1.7,-0.3)$) to[bend left=15] node[pos=1, left] {height} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.west)+(2.4,-0.3)$) to[bend right=15] node[pos=1, right] {width} +(0.5,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1,0.5)$) to[bend right=15] node[pos=1, right] {original pixel value} +(0.8,-.4);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.4)$) to[bend right=15] node[pos=1, left] {reconstructed pixel value} +(-0.8,.4);
+        \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-1.93,0.34)$) to[bend left=15] node[pos=1, left] {height} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.36,0.34)$) to[bend right=15] node[pos=1, right] {width} +(1.00,-0.51);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.73,-0.49)$) to[bend right=15] node[pos=1, left] {original pixel value} +(-1.00,0.60);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.41,-0.51)$) to node[pos=1, above] {reconstructed pixel value} +(0.00,0.31);
     }
 \end{center}
 
@@ -373,8 +374,9 @@ When a segmentation model outlines a region --- an organ, a road, a building foo
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.1)$) to[bend right=15] node[pos=1, left] {predicted set} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.0,-0.1)$) to[bend left=15] node[pos=1, right] {ground truth set} +(1,.5);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.59,-0.06)$) to[bend right=15] node[pos=1, left] {predicted set} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.50,-0.06)$) to[bend left=15] node[pos=1, right] {ground truth set} +(1.00,0.30);
     }
 \end{center}
 
@@ -384,7 +386,7 @@ Here $A$ is the set of predicted-positive pixels and $B$ the set of ground-truth
 
 Use Dice for segmentation with class imbalance --- small foreground objects against a large background --- where it rewards overlap without being swamped by the easy background pixels that inflate Pixel Accuracy. Avoid it when boundary precision is the real concern: a mask can score Dice $> 0.9$ while its edges stay visibly ragged, so pair it with a boundary metric like Hausdorff distance.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Robust to background imbalance. The formula never counts true-negative (background) pixels, so a model gets no credit for the easy, empty majority of the frame.
 \item Balances precision and recall. Being the F1-score, it falls if a model over-segments (false positives) or misses parts of the object (false negatives) --- one cannot hide the other.
@@ -434,9 +436,10 @@ In panoptic segmentation, every pixel gets a class and, for countable objects, a
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {matched segment pairs} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, left] {false positives} +(-1,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(3.2,0.3)$) to[bend right=15] node[pos=1, right] {false negatives} +(1,-.5);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.46cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.41,-0.31)$) to[bend right=15] node[pos=1, left] {matched segment pairs} +(-1.00,0.55);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.67,0.22)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.43);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.61,0.22)$) to node[pos=1, below] {false negatives} +(0.00,-0.39);
     }
 \end{center}
 
@@ -447,7 +450,7 @@ It also splits into $PQ = SQ \times RQ$, both terms in $[0, 1]$: Segmentation Qu
 Use PQ for panoptic segmentation --- scene parsing for autonomous driving or robotics, where every pixel needs a label and individual objects (each car, each pedestrian) must be told apart. Avoid it when your task is only half of that: for semantic segmentation with no instances use mean IoU; for instance detection without dense ``stuff,'' use Average Precision (AP).
 
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item One score for two sub-problems. Stuff and things are graded on the same scale, so you compare a whole scene parser end-to-end instead of juggling separate semantic and instance metrics.
 \item Penalizes both error types. The $\frac{1}{2}|FP|$ and $\frac{1}{2}|FN|$ terms in the denominator dock a model for hallucinated segments and for missed ones, not just for sloppy overlap.
@@ -499,9 +502,10 @@ SSIM scores how similar two images look to a person rather than how far apart th
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.5,-0.1)$) to[bend right=15] node[pos=1, left] {statistics of image $x$} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.0,-0.1)$) to[bend left=15] node[pos=1, right] {statistics of image $y$} +(1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.5,0.5)$) to[bend left=15] node[pos=1, left] {cross-covariance} +(-1,-.5);
+        \path[room for labels] ([yshift=0.50cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.25,-0.18)$) to[bend right=15] node[pos=1, left] {statistics of image $x$} +(-1.80,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.18)$) to node[pos=1, above] {statistics of image $y$} +(0.00,0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.37,-0.19)$) to[bend left=15] node[pos=1, right] {cross-covariance} +(1.00,0.30);
     }
 \end{center}
 
@@ -511,7 +515,7 @@ SSIM ranges from $-1$ to $1$, though on natural images it rarely falls below $0$
 
 Use SSIM for image compression, denoising, and super-resolution where a human views the result --- it is the standard companion to PSNR. Avoid it when images aren't spatially aligned, since it assumes pixel correspondence and a small shift or crop tanks the score at unchanged quality; for learned perceptual similarity across differing content, use LPIPS.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Tracks perception. Scoring luminance, contrast, and structure separately, SSIM agrees with human quality ratings far more often than MSE or PSNR --- the reason it became the standard.
 \item Produces a quality map. Computed over local windows, it yields a per-region score, so you can see where an image degraded instead of reading one global number.

@@ -65,9 +65,10 @@ labels: only the text and the model's probabilities.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.70,0.20)$) to[bend left=15] node[pos=1, left] {sequence length} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.65,-0.30)$) to[bend left=16] node[pos=1, right] {model probability} +(1.00,0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.30,0.20)$) to[bend right=15] node[pos=1, right] {token at position $i$} +(1.00,-0.50);
+        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.54,0.34)$) to[bend left=15] node[pos=1, left] {sequence length} +(-1.00,-0.45);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.55,-0.74)$) to node[pos=1, above] {model probability} +(0.00,0.85);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.08,0.63)$) to node[pos=1, below] {token at position $i$} +(0.00,-0.33);
     }
 \end{center}
 
@@ -80,7 +81,7 @@ Use it to compare checkpoints of one model, to choose tokenizers or data mixes a
 when the perplexity of incoming text jumps. Avoid it for judging generation quality (use MAUVE or human ratings), for masked models like
 BERT, and across different vocabularies (compare bits per byte instead).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Cheap and label-free: one forward pass over held-out text, and lower is strictly a better fit to that text.
 \item Fine-grained. A drop from $20$ to $19$ is a $5\%$ rise in the geometric-mean token probability, enough to settle a tokenizer
@@ -142,9 +143,10 @@ token to its most similar counterpart, so near-synonyms in context count as near
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.9,0.2)$) to[bend left=15] node[pos=1, left] {reference length} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.6,-0.1)$) to[bend right=15] node[pos=1, left] {reference token embedding} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.9,-0.1)$) to[bend left=15] node[pos=1, right] {candidate token embedding} +(1,.5);
+        \path[room for labels] ([yshift=0.45cm]a.north) ([yshift=-0.50cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.63,0.27)$) to[bend left=15] node[pos=1, left] {reference length} +(-1.00,-0.55);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.90,-0.49)$) to node[pos=1, above] {reference token embedding} +(0.00,0.55);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.60,0.59)$) to node[pos=1, below] {candidate token embedding} +(0.00,-0.65);
     }
 \end{center}
 
@@ -158,7 +160,7 @@ Use it for summarization, translation and paraphrase evaluation, where a good ou
 reference. Avoid it when exact tokens carry the meaning --- numbers, names, code (use exact match or BLEU) --- and when no reference
 exists (use MAUVE or a model judge).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Rewards paraphrase: a candidate that keeps the meaning but changes every content word scores $F_{\text{BERT}} = 0.88$ where
 unigram precision is $0.40$ and BLEU, which needs matching 4-grams, is zero (figure).
@@ -223,14 +225,15 @@ human one, dropping both when the model writes text people never would and when 
                 $
             }
         };
-        \node[below=0.2cm of a, inner sep=2pt, font=\normalsize] (b) {
+        \node[below=0.15cm of a, inner sep=2pt, font=\normalsize] (b) {
             ${\color{nmlpurple}x_\lambda} = e^{-c\,\text{KL}({\color{nmlpurple}Q}\,\|\,{\color{nmlred}R_\lambda})}, \quad
               {\color{nmlcyan}y_\lambda} = e^{-c\,\text{KL}({\color{nmlcyan}P}\,\|\,{\color{nmlred}R_\lambda})}, \quad
               {\color{nmlred}R_\lambda} = \lambda\,{\color{nmlcyan}P} + (1-\lambda)\,{\color{nmlpurple}Q}$
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(b.south)+(-2.4,0.15)$) to[bend left=15] node[pos=1, left] {model text} +(-0.6,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(b.south)+(-0.1,0.15)$) to[bend left=15] node[pos=1, right] {human text} +(0.4,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(b.south)+(2.1,0.15)$) to[bend right=15] node[pos=1, right] {mixture of the two} +(0.6,-.5);
+        \path[room for labels] ([yshift=0.32cm]a.north) ([yshift=-0.34cm]b.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(b.north)+(-2.98,-0.05)$) to[bend right=15] node[pos=1, left] {model text} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.50,-0.40)$) to node[pos=1, above] {human text} +(0.00,0.42);
+        \draw[overlay,-latex,nmlred, semithick] ($(b.south)+(1.80,0.09)$) to[bend left=15] node[pos=1, left] {mixture of the two} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -244,7 +247,7 @@ Use it to compare decoding strategies (greedy, beam, nucleus) and model sizes on
 continuations --- where no single right answer exists. Avoid it for short outputs with a reference (use BERTScore or BLEU) and below a
 few thousand samples, where the histograms are too noisy.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Sees quality and diversity at once: greedy decoding is fluent and likely yet collapses into a few modes, so MAUVE scores it near
 zero while nucleus sampling from the same model scores above $0.9$.
@@ -253,8 +256,8 @@ zero while nucleus sampling from the same model scores above $0.9$.
 {
 \item Sample-hungry. The paper uses $5{,}000$ texts per side; with a few hundred, most $k$-means buckets are empty and the score swings
 from run to run.
-\item Measures the embedding's view. Piles that differ in length, topic or formatting score low even if each text is fine, and the
-embedding model and cluster count change the value.
+\item Measures the embedding's view: piles that differ in length or topic score low even if each text is fine, and the embedding
+model and $k$ change the value.
 }
 
 \clearpage
@@ -308,8 +311,8 @@ images should be spread out ($p(y)$ flat). The score is the exponential of the a
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {generated image} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {KL divergence} +(1,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.39,0.18)$) to[bend left=15] node[pos=1, left] {generated image} +(-1.00,-0.64);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.13,-0.06)$) to[bend right=15] node[pos=1, left] {KL divergence} +(-1.00,0.30);
     }
 \end{center}
 
@@ -388,8 +391,9 @@ distance between the two, so a shift in what images look like and a loss of vari
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.5,-0.1)$) to[bend right=15] node[pos=1, left] {real distribution} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {generated distribution} +(1,.5);
+        \path[room for labels] ([yshift=0.26cm]a.north) ([yshift=-0.24cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.33,0.29)$) to node[pos=1, below] {real distribution} +(0.00,-0.24);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.53,-0.27)$) to node[pos=1, above] {generated distribution} +(0.00,0.24);
     }
 \end{center}
 
@@ -403,7 +407,7 @@ Use it as the headline number for image generators --- GANs, diffusion, super-re
 distribution exist, and to detect mode collapse, which IS misses. Avoid it below about $10{,}000$ images (the bias dominates), for
 non-natural images unless you swap the extractor, and for judging a single image (use LPIPS or SSIM).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Sensitive to variety: a generator that matches the real mean but collapses to a few modes keeps the first term at zero and pays
 through the covariance term (figure).
@@ -469,9 +473,10 @@ and the distance is a learned weighting of the differences between their feature
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend right=15] node[pos=1, left] {features of image $x$} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.0,-0.1)$) to[bend left=15] node[pos=1, right] {features of image $y$} +(1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {learned weights} +(-1,-.5);
+        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.20cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.22,-0.22)$) to[bend right=15] node[pos=1, left] {features of image $x$} +(-1.30,0.35);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.54,-0.25)$) to node[pos=1, above] {features of image $y$} +(0.00,0.25);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.84,0.71)$) to node[pos=1, below] {learned weights} +(0.00,-0.62);
     }
 \end{center}
 
@@ -485,7 +490,7 @@ Use it to evaluate super-resolution, image-to-image translation, compression and
 image, and to measure sample diversity as the mean pairwise LPIPS between outputs. Avoid it when pixel fidelity is the requirement
 (medical or scientific imaging --- use PSNR or SSIM) and for sets of images without pairs (use FID).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Matches human two-alternative choices better than SSIM and PSNR: about $69\%$ agreement on the paper's benchmark against the low
 sixties, near the $74\%$ ceiling set by human disagreement.
@@ -548,9 +553,10 @@ reports their cosine similarity, rescaled and clipped at zero. No reference capt
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend right=15] node[pos=1, left] {text embedding} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,-0.1)$) to[bend left=15] node[pos=1, right] {image embedding} +(1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.5,0.3)$) to[bend left=15] node[pos=1, left] {scaling weight} +(-1,-.5);
+        \path[room for labels] ([yshift=0.66cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.92,-0.19)$) to[bend right=15] node[pos=1, left] {text embedding} +(-2.70,0.82);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.39,-0.18)$) to node[pos=1, above] {image embedding} +(0.00,0.40);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.02,-0.18)$) to[bend right=15] node[pos=1, left] {scaling weight} +(-1.00,0.40);
     }
 \end{center}
 
@@ -628,10 +634,10 @@ asks a VQA model each, and scores the image by the fraction answered yes.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.6,0.2)$) to[bend left=15] node[pos=1, left] {number of questions} +(-0.3,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.7,-0.2)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1,.5);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.north)+(1.6,-0.3)$) to[bend left=15] node[pos=1, right] {parent questions of $q$} +(1,.5);
-        \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.4,0.2)$) to[bend right=15] node[pos=1, right] {indicator function} +(1,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.98,0.34)$) to node[pos=1, below] {number of questions} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.99,-0.49)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1.00,0.77);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(1.76,0.10)$) to node[pos=1, below] {parent questions of $q$} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlgreen, semithick] ($(a.north)+(2.50,-0.37)$) to node[pos=1, above] {indicator function} +(0.00,0.62);
     }
 \end{center}
 
@@ -711,9 +717,10 @@ cannot deliver.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.1)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, left] {generated image} +(-1,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(3.0,-0.2)$) to[bend left=15] node[pos=1, right] {prompt as a question} +(1,.5);
+        \path[room for labels] ([yshift=0.46cm]a.north) ([yshift=-0.42cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.40,-0.04)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1.00,0.26);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.37,0.07)$) to node[pos=1, below] {generated image} +(0.00,-0.22);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(3.38,-0.04)$) to node[pos=1, above] {prompt as a question} +(0.00,0.22);
     }
 \end{center}
 
@@ -727,7 +734,7 @@ Use it to rank text-to-image and text-to-video outputs on compositional prompts 
 negation --- and as a reward when generating several candidates per prompt. Avoid it when you need to know which part of a prompt
 failed (use DSG), for realism (use FID), and as a filter over millions of pairs (use CLIP Score).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Compositional: on Winoground-style pairs, where two images and two captions differ only in word order, CLIP is near chance while
 VQAScore with CLIP-FlanT5 was the strongest automatic metric in the paper.
@@ -790,8 +797,8 @@ Mean Opinion Score. It is the reference every automatic speech-quality metric is
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.3,0.2)$) to[bend left=15] node[pos=1, left] {number of ratings} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {listener rating (1--5)} +(1,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.23,0.34)$) to[bend left=15] node[pos=1, left] {number of ratings} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.54,0.63)$) to[bend right=15] node[pos=1, right] {listener rating (1--5)} +(1.00,-0.30);
     }
 \end{center}
 
@@ -869,8 +876,9 @@ and measures the audible disturbance, penalizing added distortion more than lost
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-2.2,-0.1)$) to[bend right=15] node[pos=1, left] {predicted MOS} +(-0.8,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.6,0.2)$) to[bend right=15] node[pos=1, right] {raw P.862 score} +(1,-.5);
+        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.28cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.55,-0.34)$) to node[pos=1, above] {predicted MOS} +(0.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.91,0.22)$) to[bend left=15] node[pos=1, left] {raw P.862 score} +(-1.00,-0.55);
     }
 \end{center}
 
@@ -884,7 +892,7 @@ Use it to compare speech codecs, telephony pipelines and enhancement models wher
 training before a final MOS test. Avoid it without a reference (use a non-intrusive predictor or a listening test), for intelligibility
 rather than quality (use STOI), and for music or audio sampled above $16$ kHz, which it was never validated for.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Aligns before it compares: a $20$ ms delay or a $6$ dB gain change leaves PESQ at its maximum while waveform SNR collapses
 (figure).
@@ -951,9 +959,10 @@ averages the correlation between the two.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.8,0.2)$) to[bend left=15] node[pos=1, left] {bands $\times$ segments} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.2)$) to[bend right=15] node[pos=1, left] {clean envelope} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {processed envelope} +(0.4,.5);
+        \path[room for labels] ([yshift=0.24cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.69,0.42)$) to[bend left=15] node[pos=1, left] {bands $\times$ segments} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.88,-0.75)$) to[bend right=15] node[pos=1, left] {clean envelope} +(-1.00,0.99);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(3.21,0.63)$) to node[pos=1, below] {processed envelope} +(0.00,-0.30);
     }
 \end{center}
 

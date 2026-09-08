@@ -83,6 +83,20 @@ def node_boxes(anchors):
     return boxes
 
 
+def dump(block, base):
+    """Print every colored symbol's box in cm relative to the node anchors (for hand-laying arrows)."""
+    im = b64img(base["png"]); k = base["px_per_cm"]; anchors = base["anchors"]; boxes = node_boxes(anchors)
+    print(f"  {block['section']}: " + ", ".join(f"node {n} {(b['x1']-b['x0'])/k:.2f} x {(b['y1']-b['y0'])/k:.2f} cm" for n, b in boxes.items()))
+    for name, rgb in COLORS.items():
+        for s in sorted(components(im, rgb), key=lambda s: (s["cy"] // 10, s["cx"])):
+            node = "b" if "b" in boxes and boxes["b"]["y0"] - 4 <= s["cy"] <= boxes["b"]["y1"] + 4 else "a"
+            rel = []
+            for anc in (f"{node}.north", f"{node}.south"):
+                ax, ay = anchors[anc]
+                rel.append(f"{anc}+({(s['cx']-ax)/k:+.2f}, top {-(s['y0']-ay)/k:+.2f} / bottom {-(s['y1']-ay)/k:+.2f})")
+            print(f"    {name:9s} w={(s['x1']-s['x0'])/k:.2f}   " + "   ".join(rel))
+
+
 def ink(im):
     return np.any(im < 200, axis=2)
 
@@ -346,6 +360,7 @@ def main():
     ap.add_argument("--only", default="", help="comma-separated section names to process")
     ap.add_argument("--write", action="store_true")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--dump", action="store_true", help="print symbol positions in cm and exit")
     args = ap.parse_args()
     skip = {s.strip() for s in args.skip.split(",") if s.strip()}
     only = {s.strip() for s in args.only.split(",") if s.strip()}
@@ -357,6 +372,8 @@ def main():
         base = ft.base_for(b["tex"])
         if "error" in base:
             print(f"  {b['section']}: base render failed"); continue
+        if args.dump:
+            dump(b, base); continue
         arrows = ft.parse_arrows(b["tex"])
         new, notes = plan(b, base, arrows)
         new, notes2 = resolve(b, base, new)

@@ -49,9 +49,10 @@ meaning in different words scores near $0$, because BLEU only sees surface overl
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.5,0.3)$) to[bend left=15] node[pos=1, left] {brevity penalty} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {n-gram precision} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.0,0.3)$) to[bend right=15] node[pos=1, right] {n-gram weights} +(1,-.5);
+        \path[room for labels] ([yshift=0.21cm]a.north) ([yshift=-0.48cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.35,-0.61)$) to[bend right=15] node[pos=1, left] {brevity penalty} +(-1.00,0.80);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(3.22,0.60)$) to node[pos=1, below] {n-gram precision} +(0.00,-0.79);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.75,0.69)$) to[bend left=15] node[pos=1, left] {n-gram weights} +(-1.00,-0.88);
     }
 \end{center}
 
@@ -66,6 +67,7 @@ across model versions. Avoid it for open-ended generation where many wordings ar
 BERTScore), and for single-sentence scoring, where its geometric mean is unstable --- BLEU is meant to be
 averaged over a corpus.
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Fast, language-agnostic, and reproducible: scoring is just n-gram counting, so BLEU ranks
 checkpoints in seconds with no model to run.
@@ -131,8 +133,9 @@ overlap and scores $0$, METEOR still credits the matched meaning.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.5,-0.2)$) to[bend left=15] node[pos=1, right] {harmonic mean} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {fragmentation penalty} +(-1,-.5);
+        \path[room for labels] ([yshift=0.22cm]a.north) ([yshift=-0.21cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.91,-0.13)$) to[bend right=15] node[pos=1, left] {harmonic mean} +(-1.00,0.37);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.45,0.09)$) to[bend left=15] node[pos=1, left] {fragmentation penalty} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -214,8 +217,9 @@ not adding a little extra.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.0,-0.1)$) to[bend left=15] node[pos=1, right] {matching n-grams} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {total reference n-grams} +(-1,-.5);
+        \path[room for labels] ([yshift=0.22cm]a.north) ([yshift=-0.16cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.34,-0.09)$) to[bend right=15] node[pos=1, left] {matching n-grams} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.62,0.26)$) to[bend left=15] node[pos=1, left] {total reference n-grams} +(-1.00,-0.42);
     }
 \end{center}
 
@@ -291,9 +295,9 @@ one edit per five reference words; lower is better.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.1)$) to[bend right=15] node[pos=1, left] {word-level edits} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.7,-0.1)$) to[bend left=15] node[pos=1, right] {sequence shifts} +(0.0,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.51,-0.04)$) to[bend right=15] node[pos=1, left] {word-level edits} +(-1.00,0.55);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(5.63,-0.03)$) to[bend right=15] node[pos=1, left] {sequence shifts} +(-1.00,0.35);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.11,0.04)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -370,9 +374,10 @@ the gold \textit{Martin Luther King}, the same score as a completely wrong answe
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.5,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.0,-0.2)$) to[bend right=15] node[pos=1, left] {predicted text} +(-1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.9,-0.2)$) to[bend left=15] node[pos=1, right] {reference text} +(1,.5);
+        \path[room for labels] ([yshift=0.38cm]a.north) ([yshift=-0.26cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.71,0.34)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.45);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.11,-0.61)$) to[bend right=15] node[pos=1, left] {predicted text} +(-1.00,0.85);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.16,0.60)$) to[bend right=15] node[pos=1, right] {reference text} +(1.00,-0.30);
     }
 \end{center}
 
@@ -386,7 +391,7 @@ Use EM where only an exact answer is acceptable: extractive QA spans, structured
 API arguments), classification cast as text. Avoid it for open-ended or long-form generation, where it
 bottoms out near $0$ even for strong outputs --- use token-F1, ROUGE, or BERTScore for graded credit.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Unambiguous and trivial to explain: the prediction is either right or wrong, with no threshold to
 tune.
@@ -445,8 +450,9 @@ because transcription errors are naturally counted in words.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {edit operations} +(-1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1.0,0.2)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1,-.5);
+        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.22cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.05,-0.01)$) to[bend right=15] node[pos=1, left] {edit operations} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.99,0.05)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -461,7 +467,7 @@ it when meaning survives the errors --- \textit{can't} versus \textit{cannot} is
 change in meaning --- and for character-based or tonal languages, where Character Error Rate (CER), the
 same formula per character, fits better.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Diagnostic by construction. Splitting errors into substitutions, deletions, and insertions points
 at the failure mode, not just its size (see figure).

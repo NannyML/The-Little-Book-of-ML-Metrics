@@ -52,8 +52,9 @@ that is accurate for one group and inaccurate for another.
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-1.5,-0.1)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-0.3,0.3)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1,-.5);
+        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.48cm]a.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.03)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-2.34,0.18)$) to node[pos=1, below] {protected attribute} +(0.00,-0.39);
     }
 \end{center}
 
@@ -124,9 +125,10 @@ should not depend on their demographic group.
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-2.0,-0.1)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.0,-0.1)$) to[bend left=15] node[pos=1, right] {actual outcome} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.0,0.3)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1,-.5);
+        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-5.01,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
 \end{center}
 
@@ -141,7 +143,7 @@ interview, flagging patients for a beneficial follow-up, or admitting students w
 harmful and must be balanced (use Equality of Odds), or when fairness should hold at the score level, not one threshold (use Calibration
 within Groups).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Equalizes the chance a qualified person is recognized without forcing equal approval rates, avoiding the accuracy hit parity takes when qualified fractions differ.
 \item Reachable by post-processing: tune each group’s threshold until the true positive rates match, no retraining.
@@ -203,9 +205,10 @@ at once, so a model is equally good and equally error-prone for every group.
             }
         };
         \node[below=0.1cm of a, font=\normalsize] {$\forall\, y \in \{0, 1\},\; \forall\, a, b$};
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-2.0,-0.2)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.0,-0.2)$) to[bend left=15] node[pos=1, right] {actual outcome} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.0,0.6)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1,-.7);
+        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-5.02,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
 \end{center}
 
@@ -282,9 +285,10 @@ the model carries the same meaning no matter the group.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-2.0,-0.1)$) to[bend right=15] node[pos=1, left] {actual outcome} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.0,-0.1)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.0,0.3)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1,-.5);
+        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.35cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-5.01,-0.16)$) to[bend left=15] node[pos=1, right] {actual outcome} +(0.70,0.35);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.82,-0.03)$) to node[pos=1, above] {predicted outcome} +(0.00,0.25);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
 \end{center}
 
@@ -299,7 +303,7 @@ defendant on a risk score, or routing patients to a scarce treatment. Avoid it w
 reliability of the flagged (use Equality of Opportunity), or when base rates differ and you would rather equalize error rates (use Equality
 of Odds --- you cannot have both).
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
 \item A positive prediction means the same thing for everyone: if PPV is $0.8$ in both groups, a flagged person is truly positive $80\%$ of the time either way, so downstream decisions can treat it identically.
 \item Checkable from the confusion matrix alone --- the predicted-positive counts and how many were right per group, no scores or thresholds.
@@ -356,9 +360,10 @@ should truly be high-risk whether they are old or young. Formally, for any score
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.5,-0.1)$) to[bend right=15] node[pos=1, left] {actual outcome} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.5,-0.1)$) to[bend left=15] node[pos=1, right] {predicted score} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1,-.5);
+        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.45cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-3.23,0.17)$) to node[pos=1, below] {actual outcome} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-1.46,-0.04)$) to node[pos=1, above] {predicted score} +(0.00,0.28);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.14,-0.04)$) to[bend left=15] node[pos=1, right] {protected attribute} +(1.00,0.30);
     }
 \end{center}
 

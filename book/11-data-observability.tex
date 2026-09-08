@@ -149,8 +149,9 @@ the scan time and the newest timestamp in the table's partition column: how old 
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.2,-0.2)$) to[bend right=15] node[pos=1, left] {time of the scan} +(-1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.4,-0.2)$) to[bend left=15] node[pos=1, right] {newest timestamp} +(0.6,.5);
+        \path[room for labels] ([yshift=0.57cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.19,-0.09)$) to[bend right=15] node[pos=1, left] {time of the scan} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.76,-0.03)$) to node[pos=1, above] {newest timestamp} +(0.00,0.30);
     }
 \end{center}
 
@@ -191,8 +192,9 @@ and flags every difference.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.6,-0.2)$) to[bend right=15] node[pos=1, left] {columns and types now} +(-0.6,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(-0.4,0.25)$) to[bend left=15] node[pos=1, left] {at the previous scan} +(-0.8,-.5);
+        \path[room for labels] ([yshift=0.50cm]a.north) ([yshift=-0.47cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.34,-0.03)$) to node[pos=1, above] {columns and types now} +(0.00,0.22);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(-1.69,0.07)$) to node[pos=1, below] {at the previous scan} +(0.00,-0.22);
     }
 \end{center}
 
@@ -233,8 +235,9 @@ before anyone notices the blank segments in a report.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.2,-0.2)$) to[bend left=15] node[pos=1, right] {non-null values in the column} +(0.6,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.2,0.25)$) to[bend right=15] node[pos=1, right] {rows in the partition} +(0.6,-.5);
+        \path[room for labels] ([yshift=0.24cm]a.north) ([yshift=-0.19cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.37,-0.04)$) to[bend right=15] node[pos=1, left] {non-null values in the column} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.29,0.10)$) to[bend left=15] node[pos=1, left] {rows in the partition} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -276,8 +279,8 @@ identify a row.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.4,0.3)$) to[bend left=15] node[pos=1, left] {records with a non-null value} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(1.6,-0.2)$) to[bend left=15] node[pos=1, right] {how often record $r$'s value occurs} +(0.6,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.29,0.25)$) to node[pos=1, below] {records with a non-null value} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.10,-0.33)$) to node[pos=1, above] {how often record $r$'s value occurs} +(0.00,0.33);
     }
 \end{center}
 
@@ -318,7 +321,8 @@ the number of distinct non-null values in a column per partition.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.5,-0.2)$) to[bend right=15] node[pos=1, left] {value of the column in row $r$} +(-0.6,.5);
+        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.02,-0.09)$) to node[pos=1, above] {value of the column in row $r$} +(0.00,0.33);
     }
 \end{center}
 
@@ -360,8 +364,8 @@ their count, completeness and uniqueness are perfect.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.8,0.2)$) to[bend left=15] node[pos=1, left] {non-null values in the partition} +(-0.6,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.4,-0.2)$) to[bend left=15] node[pos=1, right] {numeric value in row $r$} +(0.6,.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.40,0.33)$) to node[pos=1, below] {non-null values in the partition} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.30,-0.33)$) to[bend right=15] node[pos=1, left] {numeric value in row $r$} +(-1.00,0.61);
     }
 \end{center}
 
@@ -489,8 +493,8 @@ the quartiles smooth away.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.0,-0.2)$) to[bend right=15] node[pos=1, left] {smallest non-null value} +(-0.6,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.6,-0.2)$) to[bend left=15] node[pos=1, right] {largest non-null value} +(0.4,.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.17,-0.04)$) to node[pos=1, above] {smallest non-null value} +(0.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.74,-0.04)$) to node[pos=1, above] {largest non-null value} +(0.00,0.30);
     }
 \end{center}
 
@@ -531,8 +535,8 @@ to a few extreme values.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.2)$) to[bend right=15] node[pos=1, left] {share of values at or below $x$} +(-0.6,.5);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.north)+(1.3,-0.2)$) to[bend left=15] node[pos=1, right] {the quantile level} +(0.8,.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.76,0.15)$) to node[pos=1, below] {share of values at or below $x$} +(0.00,-0.30);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(-0.21,0.13)$) to[bend right=15] node[pos=1, right] {the quantile level} +(1.00,-0.33);
     }
 \end{center}
 
@@ -573,8 +577,9 @@ are the cheapest proxies for format, and a shift in any of them says the strings
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.8,0.2)$) to[bend left=15] node[pos=1, left] {non-null strings} +(-0.6,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.2,-0.2)$) to[bend left=15] node[pos=1, right] {characters in the string} +(0.6,.5);
+        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.99,0.33)$) to[bend left=15] node[pos=1, left] {non-null strings} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.56,-0.34)$) to[bend right=15] node[pos=1, left] {characters in the string} +(-1.00,0.62);
     }
 \end{center}
 
