@@ -49,9 +49,9 @@ Mutual Information (MI) measures how much knowing one variable reduces uncertain
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.5,-0.1)$) to[bend right=15] node[pos=1, left] {true labels} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.0,-0.1)$) to[bend left=15] node[pos=1, right] {predicted labels} +(1,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.0,0.3)$) to[bend left=15] node[pos=1, left] {total samples} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.67,-0.10)$) to[bend right=15] node[pos=1, left] {true labels} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.84,-0.10)$) to[bend left=15] node[pos=1, right] {predicted labels} +(1.00,0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.60,0.42)$) to[bend left=15] node[pos=1, left] {total samples} +(-1.00,-0.51);
     }
 \end{center}
 
@@ -104,12 +104,13 @@ The Rand Index (RI) is the fraction of point pairs on which two clusterings agre
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                RI = \frac{{\color{nmlcyan}TP} + {\color{cyan}TN}}{{\color{nmlcyan}TP} + {\color{cyan}TN} + {\color{nmlpurple}FP} + {\color{nmlpurple}FN}}
+                RI = \frac{{\color{nmlcyan}TP} + {\color{nmlcyan}TN}}{{\color{nmlcyan}TP} + {\color{nmlcyan}TN} + {\color{nmlpurple}FP} + {\color{nmlpurple}FN}}
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {agreeing pairs} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {disagreeing pairs} +(-1,-.5);
+        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.21cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.07,-0.03)$) to[bend right=15] node[pos=1, left] {agreeing pairs} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.31,0.09)$) to[bend left=15] node[pos=1, left] {disagreeing pairs} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -162,9 +163,9 @@ The Calinski-Harabasz (CH) Index scores a clustering without ground-truth labels
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {between-cluster sum} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.5,0.3)$) to[bend left=15] node[pos=1, left] {within-cluster sum} +(-1,-.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.5,-0.1)$) to[bend left=15] node[pos=1, right] {clusters and samples} +(1,.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.19,-0.04)$) to[bend right=15] node[pos=1, left] {between-cluster sum} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(-0.83,0.16)$) to[bend left=15] node[pos=1, left] {within-cluster sum} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.18,0.16)$) to node[pos=1, below] {clusters and samples} +(0.00,-0.39);
     }
 \end{center}
 
@@ -181,7 +182,7 @@ When you have no ground-truth labels and need to choose $k$, or quickly score a 
 }
 {
     \item Assumes Euclidean geometry. CH misranks clusterings on non-Euclidean data (text embeddings with cosine distance, graph data); compute it in an embedding where Euclidean distance is meaningful.
-    \item Favors convex, equally-sized clusters. Long, curved, or nested clusters score low even when they reflect real structure --- DBSCAN clusterings can look terrible by CH despite being correct.
+    \item Favors convex, equally-sized clusters. Long, curved or nested clusters score low even when they reflect real structure.
 }
 
 \clearpage
@@ -218,8 +219,8 @@ The Contingency Matrix is the clustering analog of a confusion matrix: rows are 
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-2.0,-0.1)$) to[bend right=15] node[pos=1, left] {cell at row $i$, col $j$} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, right] {points in class $i$ and cluster $j$} +(1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-4.33,-0.06)$) to node[pos=1, above] {cell at row $i$, col $j$} +(0.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.98,-0.04)$) to node[pos=1, above] {points in class $i$ and cluster $j$} +(0.00,0.30);
     }
 \end{center}
 
@@ -324,8 +325,9 @@ The Completeness Score measures whether all members of a true class end up in th
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {cond. entropy of clusters} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {entropy of clusters} +(-1,-.5);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.25cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.78,-0.06)$) to[bend right=15] node[pos=1, left] {cond. entropy of clusters} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.27,0.04)$) to[bend left=15] node[pos=1, left] {entropy of clusters} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -380,8 +382,8 @@ The Homogeneity Score is the mirror of Completeness: it measures whether each cl
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend left=15] node[pos=1, right] {cond. entropy of classes} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.0,0.3)$) to[bend left=15] node[pos=1, left] {entropy of classes} +(-1,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.63,-0.04)$) to[bend right=15] node[pos=1, left] {cond. entropy of classes} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.18,0.04)$) to[bend left=15] node[pos=1, left] {entropy of classes} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -394,7 +396,7 @@ When the task requires each cluster to be class-pure: customer segmentation wher
 \enlargethispage{\baselineskip}
 \coloredboxes{
     \item Surfaces over-merging directly. If Homogeneity drops while Completeness stays high, the algorithm has merged distinct classes into the same cluster --- the exact failure mode the score is designed to detect.
-    \item Clean $[0, 1]$ interpretation: $1$ means each cluster contains a single class, $0$ means clusters mirror the marginal class distribution and convey no information.
+    \item Clean $[0, 1]$ interpretation: $1$ means every cluster holds a single class, $0$ means clusters mirror the class distribution and say nothing.
 }
 {
     \item Gameable by over-splitting. Setting $k = n$ (each point its own cluster) gives Homogeneity $= 1$ trivially. Always pair with Completeness or report V-Measure.
@@ -440,9 +442,10 @@ V-Measure is the harmonic mean of Homogeneity and Completeness --- the F-score o
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.20,0.00)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1.00,0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.95,0.00)$) to[bend left=15] node[pos=1, right] {completeness} +(1.00,0.50);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.30,0.00)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1.00,-0.50);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.24cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.18,-0.06)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.79,-0.19)$) to[bend left=15] node[pos=1, right] {completeness} +(1.00,0.30);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.16,0.06)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -496,13 +499,14 @@ The Davies-Bouldin (DB) Index scores a clustering without labels by asking, for 
     \node[inner sep=2pt, font=\Large] (a) {
     {
     $\displaystyle
-    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} \max_{{\color{nmlpurple}i} \neq {\color{cyan}j}} R_{{\color{nmlpurple}i}{\color{cyan}j}}, \qquad
-    R_{{\color{nmlpurple}i}{\color{cyan}j}} = \frac{s_{\color{nmlpurple}i} + s_{\color{cyan}j}}{d_{\color{nmlpurple}i\color{cyan}j}}
+    DB = \frac{1}{k} \sum_{{\color{nmlpurple}i}=1}^{k} \max_{{\color{nmlpurple}i} \neq {\color{nmlcyan}j}} R_{{\color{nmlpurple}i}{\color{nmlcyan}j}}, \qquad
+    R_{{\color{nmlpurple}i}{\color{nmlcyan}j}} = \frac{s_{\color{nmlpurple}i} + s_{\color{nmlcyan}j}}{d_{\color{nmlpurple}i\color{nmlcyan}j}}
     $
     }
     };
-    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.5,0.05)$) to[bend left=15] node[pos=1, right] {within-cluster spread} +(1,.5);
-    \draw[overlay,-latex,cyan, semithick] ($(a.south)+(2.5,-0.05)$) to[bend left=15] node[pos=1, right] {centroid distance} +(1,-.5);
+    \path[room for labels] ([yshift=0.13cm]a.north) ([yshift=-0.21cm]a.south);
+    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.14,-0.46)$) to[bend right=15] node[pos=1, left] {within-cluster spread} +(-1.00,0.58);
+    \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.04,0.55)$) to[bend left=15] node[pos=1, left] {centroid distance} +(-1.00,-0.80);
     }
 \end{center}
 
@@ -556,8 +560,9 @@ The Fowlkes-Mallows Index (FMI) is the geometric mean of pairwise precision and 
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.0,-0.1)$) to[bend right=15] node[pos=1, left] {correctly paired} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, left] {incorrectly paired} +(-1,-.5);
+        \path[room for labels] ([yshift=0.21cm]a.north) ([yshift=-0.18cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.16,-0.16)$) to[bend right=15] node[pos=1, left] {correctly paired} +(-1.00,0.36);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.53,0.10)$) to[bend left=15] node[pos=1, left] {incorrectly paired} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -615,14 +620,15 @@ The Silhouette Score compares each point's distance to other points in its own c
 $\displaystyle
 s(i) =
 \begin{cases}
-\dfrac{{\color{cyan}b(i)} - {\color{nmlpurple}a(i)}}{\max\left\{ {\color{nmlpurple}a(i)}, {\color{cyan}b(i)} \right\}}  & \text{if}\; |C_I| > 1 \\[4pt]
+\dfrac{{\color{nmlcyan}b(i)} - {\color{nmlpurple}a(i)}}{\max\left\{ {\color{nmlpurple}a(i)}, {\color{nmlcyan}b(i)} \right\}}  & \text{if}\; |C_I| > 1 \\[4pt]
 0  & \text{if}\; |C_I| = 1
 \end{cases}
 $
 }
 };
-\draw[overlay,-latex,cyan, semithick] ($(a.north)+(-0.9,0.05)$) to[bend right=15] node[pos=1, left] {separation} +(-1,.5);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.2,0.05)$) to[bend left=15] node[pos=1, right] {cohesion} +(1,.5);
+\path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.00cm]a.south);
+\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.19,-0.03)$) to[bend right=15] node[pos=1, left] {separation} +(-1.00,0.30);
+\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.04)$) to[bend left=15] node[pos=1, right] {cohesion} +(1.00,0.30);
 }
 \end{center}
 
@@ -635,11 +641,11 @@ When you have no labels, need to handle non-convex clusters or non-Euclidean dis
 \enlargethispage{2\baselineskip}
 \coloredboxes{
     \item Per-point granularity. The silhouette is defined for every point, so you can plot the silhouette diagram and identify exactly which clusters contain misassigned points (those with $s(i) < 0$).
-    \item Works with any pairwise distance --- cosine, edit distance, custom metric. Unlike CH and Davies-Bouldin, no Euclidean assumption is baked in.
+    \item Works with any pairwise distance (cosine, edit distance, custom); CH and Davies-Bouldin assume Euclidean.
 }
 {
     \item $O(n^2)$ to compute. Naive pairwise distance gets slow past $100\text{k}$ points; CH and Davies-Bouldin are the practical alternatives at that scale.
-    \item Favors convex, well-separated clusters. Density-based clusters (DBSCAN) and elongated shapes often score lower than k-means blobs even when they capture more meaningful structure.
+    \item Favors convex, well-separated clusters. Density-based (DBSCAN) and elongated clusters score lower than k-means blobs even when they capture the real structure.
 }
 
 \clearpage

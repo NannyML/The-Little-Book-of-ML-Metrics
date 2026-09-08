@@ -96,8 +96,9 @@ MRR scores a system on a narrow question: how high in the list is the first rele
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.5,0.2)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.0,-0.1)$) to[bend left=15] node[pos=1, right] {first relevant rank} +(1,.5);
+        \path[room for labels] ([yshift=0.00cm]a.north) ([yshift=-0.07cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.11,0.23)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.80,0.28)$) to[bend right=15] node[pos=1, right] {first relevant rank} +(1.00,-0.30);
     }
 \end{center}
 
@@ -153,9 +154,10 @@ MAP rewards rankers for placing relevant items high in the list. For each query,
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.5,0.2)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.0,-0.1)$) to[bend left=15] node[pos=1, right] {relevant items} +(1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.5,0.3)$) to[bend left=15] node[pos=1, left] {precision at $k$} +(-1,-.5);
+        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.74,0.30)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(3.46,-0.66)$) to node[pos=1, above] {relevant items} +(0.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.87,-0.66)$) to[bend right=15] node[pos=1, left] {precision at $k$} +(-1.00,0.94);
     }
 \end{center}
 
@@ -165,7 +167,7 @@ MAP lives in $[0, 1]$. A perfect ranking — every relevant item ahead of every 
 
 Use MAP when relevance is binary, the full ranked list matters, and you want one number for precision plus order. It is the standard for binary-judgment IR benchmarks. Avoid MAP for graded relevance (use nDCG) or top-only evaluation (use MRR or Precision@$K$) — averaging across all positions lets a strong tail mask a weak top.
 
-\enlargethispage{\baselineskip}
+\enlargethispage{2\baselineskip}
 \coloredboxes{
     \item Captures precision and rank order in one number. A model that surfaces relevant items earlier always scores higher.
     \item Averages cleanly across queries with different numbers of relevant items — AP is already per-query normalized.
@@ -213,9 +215,10 @@ Hit Rate answers a yes-no question per user: did the top-$K$ list contain at lea
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.0,0.2)$) to[bend left=15] node[pos=1, left] {number of users} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.0,-0.1)$) to[bend right=15] node[pos=1, left] {relevant items} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.5,-0.1)$) to[bend left=15] node[pos=1, right] {top-K items} +(1,.5);
+        \path[room for labels] ([yshift=0.00cm]a.north) ([yshift=-0.55cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.59,0.22)$) to[bend left=15] node[pos=1, left] {number of users} +(-1.00,-0.39);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.69,0.61)$) to[bend left=15] node[pos=1, left] {relevant items} +(-1.00,-1.20);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.94,0.61)$) to node[pos=1, below] {top-K items} +(0.00,-0.31);
     }
 \end{center}
 
@@ -270,8 +273,8 @@ Cumulative Gain (CG) sums the relevance scores of the items in a recommendation 
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.8,-0.1)$) to[bend left=15] node[pos=1, right] {number of items} +(1,.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.2)$) to[bend left=15] node[pos=1, left] {relevance of item $i$} +(-1,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.40,-0.07)$) to[bend right=15] node[pos=1, left] {number of items} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.23,-0.54)$) to[bend left=15] node[pos=1, right] {relevance of item $i$} +(1.00,0.30);
     }
 \end{center}
 
@@ -327,8 +330,9 @@ DCG fixes the order-blindness of CG by discounting items further down the list. 
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.1)$) to[bend right=15] node[pos=1, left] {relevance of item $i$} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,0.3)$) to[bend left=15] node[pos=1, left] {position discount} +(-1,-.5);
+        \path[room for labels] ([yshift=0.09cm]a.north) ([yshift=-0.28cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.45,-0.19)$) to[bend right=15] node[pos=1, left] {relevance of item $i$} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.85,0.31)$) to[bend left=15] node[pos=1, left] {position discount} +(-1.00,-0.61);
     }
 \end{center}
 
@@ -381,8 +385,9 @@ nDCG divides DCG by the best possible DCG for the same items (the Ideal DCG, or 
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.8,-0.1)$) to[bend right=15] node[pos=1, left] {actual DCG} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.0,0.2)$) to[bend left=15] node[pos=1, left] {ideal DCG} +(-1,-.5);
+        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.19cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.11,-0.01)$) to[bend right=15] node[pos=1, left] {actual DCG} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.10,0.06)$) to[bend left=15] node[pos=1, left] {ideal DCG} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -438,8 +443,9 @@ FCP turns ranking into a pairwise question: for every pair of items where the us
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {correctly ordered pairs} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.0,0.3)$) to[bend left=15] node[pos=1, left] {total comparable pairs} +(-1,-.5);
+        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.22cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.31,-0.04)$) to[bend right=15] node[pos=1, left] {correctly ordered pairs} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.31,0.07)$) to[bend left=15] node[pos=1, left] {total comparable pairs} +(-1.00,-0.30);
     }
 \end{center}
 
@@ -495,8 +501,9 @@ Diversity scores a recommendation list by how dissimilar its items are from each
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.5,0.2)$) to[bend left=15] node[pos=1, left] {list size} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(3.0,-0.1)$) to[bend left=15] node[pos=1, right] {pairwise dissimilarity} +(0.2,.5);
+        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.90,0.31)$) to[bend left=15] node[pos=1, left] {list size} +(-1.00,-0.30);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(3.51,-0.34)$) to[bend right=15] node[pos=1, left] {pairwise dissimilarity} +(-1.00,0.62);
     }
 \end{center}
 
@@ -596,9 +603,10 @@ Serendipity scores recommendations on two axes: relevance and unexpectedness. An
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.0,0.2)$) to[bend left=15] node[pos=1, left] {number of items} +(-1,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.5,-0.1)$) to[bend right=15] node[pos=1, left] {relevance} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.0,-0.1)$) to[bend left=15] node[pos=1, right] {unexpectedness} +(1,.5);
+        \path[room for labels] ([yshift=0.15cm]a.north) ([yshift=-0.18cm]a.south);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.53,0.34)$) to[bend left=15] node[pos=1, left] {number of items} +(-1.00,-0.55);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.25,-0.60)$) to[bend right=15] node[pos=1, left] {relevance} +(-1.00,0.78);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.55,0.69)$) to node[pos=1, below] {unexpectedness} +(0.00,-0.39);
     }
 \end{center}
 
@@ -651,8 +659,9 @@ Coverage is the fraction of the item catalog the recommender ever surfaces to an
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.5,-0.1)$) to[bend right=15] node[pos=1, left] {unique recommended} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.0,0.3)$) to[bend left=15] node[pos=1, left] {total catalog items} +(-1,-.5);
+        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.22cm]a.south);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.72,-0.04)$) to[bend right=15] node[pos=1, left] {unique recommended} +(-1.00,0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.43,0.16)$) to[bend left=15] node[pos=1, left] {total catalog items} +(-1.00,-0.39);
     }
 \end{center}
 
@@ -662,6 +671,7 @@ Two variants matter: simple Coverage counts items recommended at least once; wei
 
 Use Coverage on platforms where catalog breadth has business value: marketplaces (so sellers feel the platform serves them), media (so creators get exposure), discovery products. Track it alongside accuracy — a model with $nDCG = 0.85$ and $Coverage = 0.03$ is collapsing onto a tiny set. Avoid Coverage on platforms where only the head matters (transactional search, single-best-answer).
 
+\enlargethispage{2\baselineskip}
 \coloredboxes{
     \item System-level signal that per-list metrics miss. nDCG can be perfect while Coverage is $0.05$ — every user gets a personal top-$10$ from the same $500$ items.
     \item Cheap and label-free. Just count unique items recommended; no relevance judgments needed.

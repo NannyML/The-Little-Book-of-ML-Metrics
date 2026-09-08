@@ -54,10 +54,8 @@ C_{\textcolor{nmlred}{i}\,\textcolor{nmlcyan}{j}}
 \mathbf{1}\{ \; y_n = \textcolor{nmlred}{i} \;\land\; \hat{y}_n = \textcolor{nmlcyan}{j} \;\}
 $
 };
-\draw[overlay,-latex,nmlred, semithick] ($(a.north west)+(6.2,0)$)
- to[bend left=15] node[pos=1, left] {actual class $i$} +(-.5,.3);
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north east)+(-.2,0)$)
- to[bend left=15] node[pos=1, right] {predicted class $j$} +(.5,.3);
+\draw[overlay,-latex,nmlred, semithick] ($(a.north west)+(4.15,-0.55)$) to[bend right=34] node[pos=1, left] {actual class} +(-0.45,0.90);
+\draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.85,0.50)$) to[bend right=19] node[pos=1, right] {predicted class} +(0.55,-0.45);
 }
 \end{center}
 \vspace{-0.5em}
@@ -122,9 +120,9 @@ FPR = \frac{{\color{nmlcyan}FP}}{{\color{nmlcyan}FP} + {{\color{nmlpurple}TN}}}
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.3,0.05)$) to[bend left=15] node[pos=1, right] {false positives} +(1,.5); 
-% \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.5,-0.05)$) to[bend left=15] node[pos=1, left] {true negatives} +(-1,-.5); 
+\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.00,0.05)$) to[bend left=15] node[pos=1, right] {false positives} +(0.75,0.30); 
+% \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.10,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50); 
+\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.50,-0.05)$) to[bend right=19] node[pos=1, right] {true negatives} +(0.75,-0.30); 
 }
 \end{center}
 

@@ -1069,7 +1069,7 @@ is penalized 9x more than over-predicting, because missing the upper bound of a 
 		% Adjusted arrows
 		\draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-4.25,0.65)$) to[bend right=29] node[pos=1, right] {quantile} +(0.55,-0.80);
 		\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.80,-0.70)$) to[bend right=20] node[pos=1, left,align=center] {actual\\value} +(-0.75,0.50);
-		\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.50,0.20)$) to[bend right=29] node[pos=1, right] {predicted value} +(0.45,-0.65); 
+		\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.50,0.20)$) to[bend right=29] node[pos=1, right] {predicted value} +(0.45,-0.35); 
 	}
 \end{center}
 
@@ -1134,8 +1134,8 @@ absolute accuracy). This makes EVS useful when you care about relative dynamics 
             }
         };
         
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.2,0)$) to[bend right=15] node[pos=1, left] {actual value} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,0)$) to[bend left=15] node[pos=1, right] {predicted value} +(1,.5); 
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.50,0.05)$) to[bend left=11] node[pos=1, left] {actual value} +(-1.10,-0.30);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.20,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50); 
     }
 \end{center}
 
