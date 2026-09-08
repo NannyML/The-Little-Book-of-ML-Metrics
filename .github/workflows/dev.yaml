@@ -4,18 +4,15 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
     steps:
-      - uses: actions/checkout@v2
-        with: 
-          # Fine-grained PAT with contents:write and workflows:write scopes
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+      - uses: actions/checkout@v4
       - name: Tex compile
         uses: xu-cheng/latex-action@v3
         with:
@@ -25,9 +22,9 @@ jobs:
           extra_fonts: |
             ./fonts
       - name: Update nightly release
-        uses: pyTooling/Actions/releaser@main
-        with:
-          tag: nightly
-          rm: true
-          token: ${{ secrets.WORKFLOW_TOKEN }}
-          files: ./book/main.pdf
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view nightly > /dev/null 2>&1 || gh release create nightly --prerelease --title "Nightly build" --notes "Latest build of main."
+          gh release upload nightly book/main.pdf --clobber
+          gh release edit nightly --prerelease --title "Nightly build" --notes "Built from ${GITHUB_SHA::7} on $(date -u +%Y-%m-%d)."
