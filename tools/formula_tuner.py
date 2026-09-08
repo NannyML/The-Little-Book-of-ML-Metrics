@@ -88,6 +88,9 @@ def find_blocks():
 def parse_arrows(tex):
     arrows = []
     for m in ARROW_RE.finditer(tex):
+        line_start = tex.rfind("\n", 0, m.start()) + 1
+        if "%" in tex[line_start:m.start()]:
+            continue                      # a commented-out arrow is not an arrow
         d = m.groupdict()
         arrows.append({
             "span": [m.start(), m.end()],
