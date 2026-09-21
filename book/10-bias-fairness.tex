@@ -31,7 +31,7 @@ Fairness metrics compare groups in different ways. \emph{Separation} compares pr
 \section{Demographic Parity}\label{sec:demographic-parity}
 \subsection{Demographic Parity}
 
-Demographic parity requires the same proportion of positive predictions in every group, regardless of the actual outcomes. In hiring, for example, it checks whether the same proportion of applicants is selected from each group, without considering whether those applicants are qualified.
+Demographic parity requires the same proportion of positive predictions in every group. In hiring, for example, if a model advances $30\%$ of male applicants to an interview, it should also advance $30\%$ of female applicants. This comparison does not consider who is qualified, so matching the rates alone does not tell us whether the model chose suitable candidates.
 
 % Formula
 \begin{center}
@@ -91,7 +91,7 @@ Demographic Parity compares selection rates across whole groups. Equality of Opp
 \section{Equality of Opportunity}\label{sec:equality-of-opportunity}
 \subsection{Equality of Opportunity}
 
-Equality of opportunity requires the same true positive rate (TPR) across groups. For a loan model, this means approving the same proportion of applicants who would repay in each group. Overall approval rates can still differ because the groups may contain different proportions of those applicants.
+Equality of opportunity requires qualified people to be selected at the same rate across groups. For a loan model, we would compare men and women who would repay the loan: if it approves $80\%$ of those men, it should also approve $80\%$ of those women. This is the true positive rate. Applicants who would not repay are left out of this comparison.
 
 % Formula
 \begin{center}
@@ -152,7 +152,7 @@ Equality of Odds adds a check on false-positive rates. If Equality of Opportunit
 \section{Equality of Odds}\label{sec:equality-of-odds}
 \subsection{Equality of Odds}
 
-Equality of odds, also called equalized odds, requires both the true positive rate and the false positive rate to match across groups. It checks whether the model recognizes positive cases equally often and incorrectly flags negative cases equally often. Unlike Equality of Opportunity, it accounts for both types of error.
+Equality of odds, also called equalized odds, requires both the true positive rate and the false positive rate to match across groups. In hiring, the model should select the same proportion of qualified men as qualified women. It should also mistakenly select the same proportion of unqualified men as unqualified women. Equality of Opportunity checks only the first of these conditions.
 
 % Formula
 \begin{center}
@@ -214,7 +214,7 @@ Equality of Odds includes Equality of Opportunity because it requires equal TPR 
 \section{Predictive Parity}\label{sec:predictive-parity}
 \subsection{Predictive Parity}
 
-Predictive parity requires positive predictions to be correct equally often across groups. It compares each group's precision, also called positive predictive value (PPV). If a loan model has a PPV of $80\%$ in each group, then $80\%$ of the applicants it approves in each group would repay.
+Predictive parity requires positive predictions to be correct equally often across groups. For a loan model, we look at the applicants it approves: if $80\%$ of approved men repay, $80\%$ of approved women should repay too. Here we start with the approved applicants, rather than everyone who would repay. The proportion who repay is the model's precision, also called positive predictive value (PPV).
 
 % Formula
 \begin{center}
@@ -275,7 +275,7 @@ Predictive Parity compares precision, while Equality of Opportunity compares rec
 \section{Calibration within Groups}\label{sec:calibration-within-groups}
 \subsection{Calibration within Groups}
 
-Calibration within groups means that predicted probabilities match observed outcome rates in each group. If a model gives people a $30\%$ probability of an outcome, about $30\%$ of those people should experience it in each group. It is not enough for the groups to match each other: the observed rate must also match the predicted probability.
+Calibration within groups means that predicted probabilities match observed outcome rates in each group. Suppose a loan model gives some borrowers a $30\%$ probability of failing to repay. Among men given that score, about $30$ out of $100$ should fail to repay; the same should hold for women given that score. Matching the two groups is not enough: if $50\%$ fail to repay in both, the $30\%$ prediction is wrong for both.
 
 % Formula
 \begin{center}
