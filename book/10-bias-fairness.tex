@@ -114,7 +114,7 @@ The formula compares positive predictions only among people with $Y=1$. It is on
 
 \textbf{When to use Equality of Opportunity?}
 
-Use it when missed positives are the main concern, such as overlooking qualified applicants for interviews or admissions. Check Equality of Odds as well when false positives cause harm. Both criteria rely on actual labels, so first consider whether those labels measure the outcome you intend.
+Use it when missed positives are the main concern, such as overlooking qualified applicants for interviews or admissions. Check Equality of Odds as well when false positives cause harm. Both criteria need reliable labels. In lending, repayment is usually observed only for approved applicants, so those records alone cannot establish equality of opportunity across all applicants.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
@@ -275,7 +275,7 @@ Predictive Parity compares precision, while Equality of Opportunity compares rec
 \section{Calibration within Groups}\label{sec:calibration-within-groups}
 \subsection{Calibration within Groups}
 
-Calibration within groups means that predicted probabilities match observed outcome rates in each group. Suppose a loan model gives some borrowers a $30\%$ probability of failing to repay. Among men given that score, about $30$ out of $100$ should fail to repay; the same should hold for women given that score. Matching the two groups is not enough: if $50\%$ fail to repay in both, the $30\%$ prediction is wrong for both.
+Calibration within groups means that predicted probabilities match observed outcome rates in each group. Suppose a loan model gives some borrowers a $30\%$ probability of repaying. Among men given that score, about $30$ out of $100$ should repay; the same should hold for women given that score. Matching the two groups is not enough: if $50\%$ repay in both, the $30\%$ prediction is wrong for both.
 
 % Formula
 \begin{center}
@@ -294,11 +294,11 @@ Calibration within groups means that predicted probabilities match observed outc
     }
 \end{center}
 
-Here, $S=s$ means the model assigned probability $s$, and $Y=1$ means the outcome occurred. For $s=0.3$, the formula requires an outcome rate of $30\%$ in every group. In practice, we usually group nearby scores into bins and compare their average predicted probability with the observed rate.
+In the loan example, $S=s$ is the predicted probability of repayment, and $Y=1$ means the borrower repaid. For $s=0.3$, the formula requires an outcome rate of $30\%$ in every group. In practice, we usually group nearby scores into bins and compare their average predicted probability with the observed rate.
 
 \textbf{When to use Calibration within Groups?}
 
-Use it when decisions depend on estimated probabilities, such as loan-default risks. Check each group separately: overestimating risk in one group and underestimating it in another can cancel out in the overall result. When a threshold turns scores into yes/no decisions, check the resulting error rates too.
+Use it when decisions depend on estimated probabilities, such as the chance of repaying a loan. Check each group separately: overestimating that chance in one group and underestimating it in another can cancel out in the overall result. When a threshold turns scores into yes/no decisions, check the resulting error rates too.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -319,7 +319,7 @@ Use it when decisions depend on estimated probabilities, such as loan-default ri
     \includegraphics[width=0.95\textwidth]{figures/Calibration_within_Groups.png}
 \end{figure*}
 
-\textbf{Figure. Calibration within Groups.} The plot groups simulated prediction scores into ranges, shown along the bottom. Each range has a blue column for Group A and a purple column for Group B. The filled squares show the observed proportion of qualified people, rounded to tenths; the numbers above give percentages. The black line marks the score range's midpoint as an approximate calibration reference.
+\textbf{Figure. Calibration within Groups.} The plot groups predicted probabilities of being qualified into ranges along the bottom. Each range has a blue column for Group A and a purple column for Group B. The filled squares show the observed proportion of qualified people, rounded to tenths; the numbers above give percentages. The black line marks the score range's midpoint as an approximate calibration reference.
 
 For scores between $0.5$ and $0.6$, about $77\%$ of Group A is qualified, compared with $48\%$ of Group B. The model therefore understates the probability for A and overstates it for B in this range. The scores are not calibrated within these groups.
 
