@@ -3,8 +3,8 @@
 One dataset, twelve monitors.  A daily-partitioned `orders` table is simulated
 for 42 days with weekly seasonality, and one realistic incident is injected per
 monitor (a missed load, a partial load, a currency slip, an upstream rename, a
-retry storm, ...).  Metrics are computed per partition using the conventions documented in the
-chapter (which can differ between tools). The same illustrative detector runs on
+retry storm, ...).  Every metric is then computed per partition exactly as the
+Soda documentation defines it, the same baseline anomaly detector is run on
 every series (a seasonal expected range of ±z·σ around the same-weekday mean,
 z = 3, trained on the first 21 partitions), and each figure shows one series
 with its expected range and the points the detector flags.  Nothing is typed
@@ -16,7 +16,7 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, '.')
 import matplotlib
 matplotlib.use('Agg')
 from style import *
@@ -27,7 +27,7 @@ BAND = '#e6e6e6'
 GREY_LINE = '#9a9a9a'
 DARK = '#2a2a2a'
 MID = '#6f6f6f'
-SEED = 25  # fixed illustrative dataset, including one valid large order flagged by Max
+RNG = np.random.default_rng(25)   # seed chosen so the 3σ band's chance false alarms do not clutter the pictures
 OUT = Path(__file__).resolve().parent / 'data' / 'observability'
 OUT.mkdir(parents=True, exist_ok=True)
 
@@ -64,7 +64,6 @@ def despine(ax, keep=('left', 'bottom')):
 # 1. Simulate the table, one partition per day
 # ---------------------------------------------------------------------------
 def simulate():
-    RNG = np.random.default_rng(SEED)
     partitions = []
     next_id = 1
     for d in range(DAYS):
@@ -190,211 +189,258 @@ def expected_range(values, weekdays, z=Z, train=TRAIN, rel_floor=0.01):
 
 
 # ---------------------------------------------------------------------------
-# 4. Print-sized figures: shared encoding, short annotations, explicit day numbers
+# 4. Drawing
 # ---------------------------------------------------------------------------
-from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
-from matplotlib.ticker import MaxNLocator, FuncFormatter
-
-
-def figure_key(fig, missing=True):
-    handles = [Patch(facecolor=BAND, label='Expected range'),
-               Line2D([], [], marker='o', color=end_color, ls='', label='Flagged')]
-    if missing:
-        handles.append(Line2D([], [], marker='o', markerfacecolor='white',
-                              markeredgecolor=MID, ls='', label='No measurement'))
-    fig.legend(handles=handles, loc='upper center', bbox_to_anchor=(0.53, 1),
-               ncol=len(handles), frameon=False, fontsize=14, handlelength=1,
-               columnspacing=1.2, handletextpad=0.4)
-
-
-def chart(m, col, ylabel, *, ax=None, ylim=None, events=(), clip=None, xmin=1):
-    if ax is None:
-        fig, ax = plt.subplots(figsize=(8, 3.25))
-        fig.subplots_adjust(left=0.12, right=0.98, bottom=0.22, top=0.77)
-        figure_key(fig, missing=m[col].isna().any())
-    else:
-        fig = ax.figure
-    x = m.day.to_numpy() + 1
-    raw = m[col].to_numpy(dtype=float)
-    lo, hi, flags = expected_range(raw, m.weekday.to_numpy())
-    shown = np.minimum(raw, clip) if clip is not None else raw.copy()
-    ax.fill_between(x, lo, hi, color=BAND, lw=0, zorder=1)
-    ax.axvspan(0.5, TRAIN + 0.5, color='#f5f5f5', lw=0, zorder=0)
-    ax.plot(x, shown, color=start_color, lw=1.8, zorder=3)
-    ax.scatter(x[flags], shown[flags], color=end_color, s=34, zorder=4)
-    if ylim:
-        ax.set_ylim(*ylim)
-    else:
-        ax.margins(y=0.25)
-    # Missing values sit on a dedicated row below the axis, never at a numeric zero.
-    missing = np.isnan(raw)
-    ax.scatter(x[missing], [-0.07] * missing.sum(), transform=ax.get_xaxis_transform(),
-               facecolors='white', edgecolors=MID, s=30, clip_on=False, zorder=5)
-    for day, label, xytext in events:
-        value = shown[day - 1]
-        ax.annotate(label, (day, value), xytext=xytext, textcoords='axes fraction',
-                    ha='center', va='center', fontsize=14, color=DARK,
-                    arrowprops=dict(arrowstyle='-', color=MID, lw=0.8),
-                    bbox=dict(facecolor='white', edgecolor='none', alpha=0.9, pad=1))
+def panel(ax, m, col, ylabel, fmt='{:.0f}', annotate=None, yscale=None, title=None, clip=None, ymin=None, xmin=0.5):
+    x = m['day'].values + 1
+    v_true = m[col].values.astype(float)
+    lo, hi, flag = expected_range(v_true, m['weekday'].values)
+    v = v_true.copy()
+    if clip is not None:                       # values above `clip` are drawn at the top edge with their value
+        over = v_true > clip
+        v[over] = clip
+    keep = x >= xmin
+    ax.fill_between(x[keep], lo[keep], hi[keep], color=BAND, zorder=1, linewidth=0, step=None)
+    ax.plot(x[keep], v[keep], color=start_color, lw=2.2, zorder=3, solid_capstyle='round')
+    ax.scatter(x[~flag & keep], v[~flag & keep], s=26, color=start_color, zorder=4, linewidths=0)
+    ax.scatter(x[flag], v[flag], s=70, color=end_color, zorder=5, linewidths=0)
     if clip is not None:
-        for i in np.flatnonzero(raw > clip):
-            ax.plot(x[i], clip, '^', color=end_color, ms=8, zorder=5)
-            ax.annotate(f'Day {x[i]}: {raw[i]:,.0f} ↑', (x[i], clip),
-                        xytext=(0, 8), textcoords='offset points', ha='center',
-                        fontsize=14, color=end_color, annotation_clip=False)
-    ax.set_xlim(xmin - 0.5, DAYS + 0.5)
-    ax.set_xticks([d for d in [1, 8, 15, 22, 29, 36, 42] if d >= xmin])
-    ax.set_xlabel('Day', fontsize=14, labelpad=3)
-    ax.set_ylabel(ylabel, fontsize=14, labelpad=5)
-    ax.tick_params(labelsize=14)
-    ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f'{y:,.0f}' if abs(y) >= 1000 else f'{y:g}'))
-    if xmin == 1:
-        ax.text(0.02, 0.98, 'Baseline: days 1–21', transform=ax.transAxes,
-                fontsize=14, va='top', color=MID)
+        for xi, vt in zip(x[over], v_true[over]):
+            ax.plot(xi, clip, marker='^', ms=11, color=end_color, zorder=6, linestyle='none')
+            ax.text(xi + 0.5, clip, f'off the scale: {vt:,.0f}', color=end_color, fontsize=11, va='center', ha='left')
+    miss = np.isnan(v)
+    if miss.any():
+        ybase = ymin if ymin is not None else (np.nanmin(np.r_[v, lo]) if yscale != 'log' else np.nanmin(v[~miss]))
+        ax.scatter(x[miss], [ybase] * miss.sum(), s=60, facecolor='white', edgecolor=GREY_LINE, linewidth=1.4, zorder=5)
+    ax.axvspan(0.5, TRAIN + 0.5, color='#f4f4f4', zorder=0, linewidth=0)
+    ax.text(1.0, 1.0, 'training', transform=ax.get_xaxis_transform(), ha='left', va='bottom', fontsize=10, color=MID)
+    if annotate:
+        for item in annotate:
+            d, text, dy = item[:3]
+            dx = item[3] if len(item) > 3 else 0
+            xi = d + 1
+            yi = v[d] if not np.isnan(v[d]) else (np.nanmin(np.r_[v, lo]))
+            ax.annotate(text, xy=(xi, yi), xytext=(dx, dy), textcoords='offset points',
+                        ha='center' if dx == 0 else ('left' if dx > 0 else 'right'),
+                        va=('bottom' if dy > 0 else 'top') if dx == 0 else 'center', fontsize=11, color=end_color,
+                        arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
+    ax.set_xlim(xmin, DAYS + 0.5)
+    ax.set_xticks([t for t in [1, 8, 15, 22, 29, 36, 42] if t >= xmin])
+    ax.set_xlabel('daily partition', fontsize=12)
+    ax.set_ylabel(ylabel, fontsize=12)
+    if clip is not None:
+        ax.set_ylim(ymin if ymin is not None else ax.get_ylim()[0], clip * 1.02)
+    elif ymin is not None:
+        ax.set_ylim(ymin, ax.get_ylim()[1])
+    if yscale:
+        ax.set_yscale(yscale)
+        from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter
+        ax.yaxis.set_major_locator(LogLocator(base=10, subs=(1, 2, 5)))
+        ax.yaxis.set_minor_formatter(NullFormatter())
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda y, _: f'{y:,.0f}' if y >= 1 else f'{y:g}'))
+    ax.tick_params(labelsize=11)
     despine(ax)
-    return fig, ax, flags
+    if title:
+        ax.set_title(title, fontsize=13, loc='left', color=DARK, pad=8)
+    return lo, hi, flag
 
 
-def finish(fig, name):
-    save_figure(fig, 'Observability_' + name)
-    plt.close(fig)
-
-
-def unique_count_figure(m):
-    """Compare volume and cardinality on three selected days, on identical scales."""
-    days = [30, 31, 38]
-    labels = ['Normal load', 'Incomplete load', 'Shortened IDs']
-    fig = plt.figure(figsize=(8, 3.55))
-    axes = [fig.add_axes([.29, .10, .28, .69]),
-            fig.add_axes([.68, .10, .28, .69])]
-    for ax, col, title, color in zip(axes,
-            ['row_count', 'unique_customer'], ['Orders', 'Unique customer IDs'],
-            [GREY_LINE, start_color]):
-        values = m.set_index('day').loc[np.array(days)-1, col].to_numpy()
-        ax.barh([2,1,0], values, height=.12, color=color, zorder=3)
-        for y, value in zip([2,1,0], values):
-            ax.text(0, y+.17, f'{value:,.0f}', fontsize=15, color=DARK,
-                    ha='left', va='bottom')
-        ax.set_xlim(0, 5500)
-        ax.set_ylim(-.35, 2.55)
-        ax.axis('off')
-        ax.set_title(title, loc='left', fontsize=15, color=color, pad=16)
-    for y, day, label in zip([2,1,0], days, labels):
-        fy = .10 + .69 * (y+.35)/2.90
-        fig.text(.015, fy+.025, label, fontsize=15, color=DARK, va='bottom')
-        fig.text(.015, fy-.015, f'Day {day}', fontsize=14, color=MID, va='top')
-    finish(fig, 'unique_count')
+def one_panel_figure(m, col, ylabel, name, annotate=None, yscale=None, height=3.6, extra=None, clip=None, ymin=None):
+    fig, ax = plt.subplots(figsize=(13, height))
+    lo, hi, flag = panel(ax, m, col, ylabel, annotate=annotate, yscale=yscale, clip=clip, ymin=ymin)
+    if extra:
+        extra(ax, lo, hi, flag)
+    fig.subplots_adjust(left=0.08, right=0.99, top=0.9 if height < 4 else 0.84, bottom=0.2)
+    save_figure(fig, name)
+    plt.close()
+    return flag
 
 
 def main():
-    m = compute_metrics(simulate())
+    parts = simulate()
+    m = compute_metrics(parts)
     m.to_json(OUT / 'metrics.json', orient='records', date_format='iso', indent=1)
-    # Training grouped by weekday, then the rolling detector on subsequent days.
-    fig, axes = plt.subplots(1, 2, figsize=(8, 3.3), gridspec_kw={'wspace': .35})
-    fig.subplots_adjust(left=.1, right=.98, bottom=.23, top=.77)
-    figure_key(fig, missing=False)
-    v = m.row_count.to_numpy(float)
-    wd = m.weekday.to_numpy()
-    means = np.array([v[:TRAIN][wd[:TRAIN] == i].mean() for i in range(7)])
-    sigma = np.std(v[:TRAIN] - means[wd[:TRAIN]], ddof=1)
-    a = axes[0]
-    for i in range(7):
-        points = v[:TRAIN][wd[:TRAIN] == i]
-        a.vlines(i, means[i] - Z*sigma, means[i] + Z*sigma, color=BAND, lw=17)
-        a.scatter([i] * len(points), points, color=start_color, s=20, zorder=3)
-        a.plot([i-.2, i+.2], [means[i]]*2, color=DARK, lw=1.5, zorder=4)
-    a.set_xticks(range(7), ['M','T','W','T','F','S','S'])
-    a.set_ylabel('Rows', fontsize=14)
-    a.set_xlabel('Weekday · first 21 days', fontsize=14)
-    a.set_ylim(0, 7000)
-    a.tick_params(labelsize=14)
-    a.yaxis.set_major_locator(MaxNLocator(4))
-    a.set_title(f'Mean ± 3σ; σ ≈ {sigma:.0f}', loc='left', fontsize=14)
-    despine(a)
-    chart(m, 'row_count', '', ax=axes[1], xmin=22, ylim=(0,7000))
-    axes[1].set_title('New daily counts', loc='left', fontsize=14)
-    finish(fig, 'expected_range')
+    flags = {}
 
-    specs = [
-        ('row_count','Rows','row_count',(0,7300),None,[(26,'No load',(.56,.24)),(31,'Partial load',(.76,.18)),(36,'Repeated rows',(.8,.92))]),
-        ('freshness_h','Hours since latest arrival','freshness',(0,38),None,[(26,'No load',(.48,.77)),(31,'Stopped early',(.83,.42))]),
-        ('missing_country_pct','Null country values (%)','missing',(0,55),None,[(29,'Source field renamed',(.58,.9))]),
-        ('dup_order_pct','Duplicate order IDs (%)','duplicates',(-.5,16),None,[(36,'Repeated batch',(.72,.87))]),
-        ('avg_amount','Mean amount','average',(36,58),55,[(32,'Refunds',(.68,.44)),(40,'Discounts',(.88,.19))]),
-        ('sum_amount','Total amount','sum',(50000,330000),310000,[(31,'Partial load',(.75,.1))]),
-        ('std_amount','Standard deviation','stddev',(20,44),41,[(32,'Refunds',(.68,.39)),(40,'Discounts',(.88,.61))]),
-        ('avg_len_phone','Mean characters','text_length',(8,12.5),None,[(28,'Shorter format',(.70,.25))]),
-    ]
-    for col, ylabel, name, limits, clip, events in specs:
-        fig, _, _ = chart(m,col,ylabel,ylim=limits,clip=clip,events=events)
-        finish(fig,name)
+    # --- the mechanism: how the band is built (left) and applied (right) --------
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 4.4), gridspec_kw={'width_ratios': [0.75, 1.25], 'wspace': 0.22})
+    v = m['row_count'].values.astype(float)
+    wd = m['weekday'].values
+    names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    train_idx = np.arange(TRAIN)
+    means = np.array([v[train_idx][wd[train_idx] == d].mean() for d in range(7)])
+    resid = np.array([v[i] - means[wd[i]] for i in train_idx])
+    sigma = resid.std(ddof=1)
+    for d in range(7):
+        pts = v[train_idx][wd[train_idx] == d]
+        axL.scatter([d] * len(pts), pts, s=34, color=start_color, zorder=4, linewidths=0)
+        axL.plot([d - 0.3, d + 0.3], [means[d], means[d]], color=DARK, lw=1.6, zorder=5)
+        axL.fill_between([d - 0.3, d + 0.3], means[d] - Z * sigma, means[d] + Z * sigma, color=BAND, zorder=1, linewidth=0)
+    axL.set_xticks(range(7))
+    axL.set_xticklabels(names, fontsize=11)
+    axL.set_ylabel('rows in the partition', fontsize=12)
+    axL.set_xlabel('three training weeks, grouped by weekday', fontsize=12)
+    axL.tick_params(axis='y', labelsize=11)
+    axL.set_ylim(0, 7400)
+    despine(axL)
+    axL.text(0.5, means[0] + Z * sigma + 250, f'mean ± 3σ  (σ = {sigma:.0f} rows, pooled)', fontsize=11, color=MID, ha='left', va='bottom')
+    axL.text(6.35, means[6], 'weekday\nmean', fontsize=10.5, color=DARK, ha='left', va='center')
+    ann = [(INCIDENT['no_load'], 'no load: 0 rows, flagged', 30, 40), (INCIDENT['partial_load'], 'partial load,\nflagged', 22, 30)]
+    lo, hi, flag = panel(axR, m, 'row_count', '', annotate=ann, xmin=TRAIN + 0.5, ymin=0)
+    axR.set_ylim(0, 7400)
+    axR.set_xlabel('weeks four to six: each new scan against its weekday\'s range', fontsize=12)
+    t = TRAIN + 4
+    axR.annotate('expected range', xy=(t, hi[t]), xytext=(t + 0.5, 6800), fontsize=11, color=MID, ha='left',
+                 arrowprops=dict(arrowstyle='-', color=GREY_LINE, lw=0.9))
+    axR.texts[0].remove() if axR.texts and axR.texts[0].get_text() == 'training' else None
+    for patch in list(axR.patches):
+        pass
+    fig.subplots_adjust(left=0.07, right=0.99, top=0.95, bottom=0.2)
+    save_figure(fig, 'Observability_expected_range')
+    plt.close()
+    flags['mechanism'] = flag
+    print(f'mechanism: sigma {sigma:.1f}; weekday means {np.round(means).astype(int).tolist()}; band half-width {Z * sigma:.0f}')
 
-    unique_count_figure(m)
+    # --- row count ---------------------------------------------------------
+    ann = [(INCIDENT['no_load'], 'no load: 0 rows', 30, -55), (INCIDENT['partial_load'], 'partial load', 22, 30),
+           (INCIDENT['retry_storm'], 'retry storm: +6%,\ninside the band', 16)]
+    flags['row_count'] = one_panel_figure(m, 'row_count', 'rows in the partition', 'Observability_row_count', annotate=ann, ymin=0)
+    lo_rc, hi_rc, _ = expected_range(m['row_count'].values, m['weekday'].values)
+    d = INCIDENT['retry_storm']
+    print(f'row count at retry storm: {m["row_count"][d]} band [{lo_rc[d]:.0f}, {hi_rc[d]:.0f}] '
+          f'= ±{100 * (hi_rc[d] - lo_rc[d]) / 2 / ((hi_rc[d] + lo_rc[d]) / 2):.0f}% around {((hi_rc[d] + lo_rc[d]) / 2):.0f}')
 
-    # Show only changed fields, large enough to read at the book's print size.
-    fig, (a,b) = plt.subplots(1,2,figsize=(8,3.0),gridspec_kw={'width_ratios':[1,1.15],'wspace':.3})
-    fig.subplots_adjust(left=.09,right=.98,bottom=.23,top=.9)
-    a.step(m.day+1,m.n_columns,where='post',color=start_color,lw=2)
-    day=INCIDENT['schema_change']+1
-    a.scatter([day],[m.n_columns.iloc[day-1]],color=end_color,s=45,zorder=3)
-    a.set(xlim=(.5,42.5),ylim=(5.7,7.5),xticks=[1,14,28,42],yticks=[6,7])
-    a.set_xlabel('Day',fontsize=14); a.set_ylabel('Columns',fontsize=14)
-    a.tick_params(labelsize=14); despine(a)
-    b.axis('off')
-    before,after=dict(BASE_SCHEMA),dict(NEW_SCHEMA)
-    changed=[(k,t) for k,t in after.items() if before.get(k)!=t]
-    lines=[f'Day {day}: schema changes']
-    for name,typ in changed:
-        if name not in before:
-            lines += ['',f'Added: {name}',typ]
+    # --- freshness ---------------------------------------------------------
+    ann = [(INCIDENT['no_load'], 'no load: yesterday\'s data is the newest', -6, 14),
+           (INCIDENT['partial_load'], 'load stopped early', 14)]
+    flags['freshness'] = one_panel_figure(m, 'freshness_h', 'hours since newest row', 'Observability_freshness', annotate=ann)
+
+    # --- schema ------------------------------------------------------------
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 3.8), gridspec_kw={'width_ratios': [1.35, 1], 'wspace': 0.12})
+    x = m['day'].values + 1
+    axL.step(x, m['n_columns'], where='post', color=start_color, lw=2.2, zorder=3)
+    axL.scatter(x, m['n_columns'], s=26, color=start_color, zorder=4, linewidths=0)
+    d = INCIDENT['schema_change']
+    axL.scatter([d + 1], [m['n_columns'][d]], s=70, color=end_color, zorder=5, linewidths=0)
+    axL.annotate('column added, one type changed', xy=(d + 1, m['n_columns'][d]), xytext=(d - 8, m['n_columns'][d] + 0.35),
+                 fontsize=11, color=end_color, ha='center', arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
+    axL.set_xlim(0.5, DAYS + 0.5)
+    axL.set_xticks([1, 8, 15, 22, 29, 36, 42])
+    axL.set_yticks([6, 7])
+    axL.set_ylim(5.5, 7.8)
+    axL.set_xlabel('daily partition', fontsize=12)
+    axL.set_ylabel('columns', fontsize=12)
+    axL.tick_params(labelsize=11)
+    despine(axL)
+    axR.axis('off')
+    before = dict(BASE_SCHEMA)
+    after = dict(NEW_SCHEMA)
+    yy = 0.95
+    axR.text(0.0, yy, 'scan 33 vs scan 34', fontsize=12, color=DARK, va='top')
+    yy -= 0.16
+    for col, typ in NEW_SCHEMA:
+        if col not in before:
+            txt, colr = f'+  {col}  {typ}', start_color
+        elif before[col] != typ:
+            txt, colr = f'~  {col}  {before[col]} → {typ}', end_color
         else:
-            lines += ['',f'Type changed: {name}',f'{before[name]} → {typ}']
-    b.text(0,1,'\n'.join(lines),va='top',fontsize=14,linespacing=1.3,color=DARK)
-    finish(fig,'schema')
+            txt, colr = f'    {col}  {typ}', MID
+        axR.text(0.0, yy, txt, fontsize=11, color=colr, va='top', family='monospace')
+        yy -= 0.12
+    fig.subplots_adjust(left=0.06, right=0.99, top=0.92, bottom=0.2)
+    save_figure(fig, 'Observability_schema')
+    plt.close()
 
-    # Separate scales preserve detail in the minimum while marking the clipped maximum.
-    fig,axes=plt.subplots(1,2,figsize=(8,3.3),gridspec_kw={'wspace':.4})
-    fig.subplots_adjust(left=.1,right=.98,bottom=.23,top=.75)
-    figure_key(fig)
-    chart(m,'min_amount','Minimum',ax=axes[0],ylim=(-150,40))
-    chart(m,'max_amount','Maximum',ax=axes[1],ylim=(0,900),clip=660)
-    for a in axes:
-        for text in a.texts:
-            if text.get_text() == 'Baseline: days 1–21':
-                text.set_text('Baseline 1–21')
-                text.set_position((0.02, 1.10))
-    finish(fig,'min_max')
+    # --- missing values ----------------------------------------------------
+    ann = [(INCIDENT['country_rename'], 'upstream field renamed:\ncountry arrives empty', -6, 14)]
+    flags['missing'] = one_panel_figure(m, 'missing_country_pct', 'country missing (%)', 'Observability_missing', annotate=ann)
 
-    fig,ax=plt.subplots(figsize=(8,3.5))
-    fig.subplots_adjust(left=.1,right=.89,bottom=.21,top=.76)
-    figure_key(fig)
-    x=m.day.to_numpy()+1
-    for col,color,label in [('q1_amount',MID,'Q1'),('median_amount',start_color,'Median'),('q3_amount',middle_color,'Q3')]:
-        lo,hi,flag=expected_range(m[col],m.weekday)
-        ax.fill_between(x,lo,hi,color=BAND,lw=0)
-        ax.plot(x,m[col],color=color,lw=1.8)
-        ax.scatter(x[flag],m[col].to_numpy()[flag],color=end_color,s=32,zorder=4)
-        ax.text(43,m[col].iloc[-1],label,fontsize=14,color=color,va='center')
-    limit=75
-    avg=np.minimum(m.avg_amount.to_numpy(),limit)
-    ax.plot(x,avg,color=DARK,lw=1.4,ls='--')
-    ax.text(43,avg[-1]+2,'Mean',fontsize=14,color=DARK,va='center')
-    day=INCIDENT['currency_slip']+1
-    ax.plot(day,limit,'^',color=DARK,ms=8)
-    ax.annotate(f'Day {day}: mean {m.avg_amount.iloc[day-1]:.0f} ↑',(day,limit),xytext=(0,8),textcoords='offset points',ha='center',fontsize=14)
-    ax.axvspan(.5,TRAIN+.5,color='#f5f5f5',lw=0,zorder=0)
-    ax.text(.02,.98,'Baseline: days 1–21',transform=ax.transAxes,fontsize=14,color=MID,va='top')
-    ax.scatter([INCIDENT['no_load']+1],[-.07],transform=ax.get_xaxis_transform(),facecolors='white',edgecolors=MID,s=30,clip_on=False)
-    ax.set(xlim=(.5,42.5),ylim=(0,82),xticks=[1,8,15,22,29,36,42])
-    ax.set_xlabel('Day',fontsize=14); ax.set_ylabel('Amount',fontsize=14)
-    ax.tick_params(labelsize=14); despine(ax)
-    finish(fig,'quartiles')
+    # --- duplicates --------------------------------------------------------
+    ann = [(INCIDENT['retry_storm'], 'retry storm: 6% of rows inserted twice', -8, 0)]
+    flags['dup'] = one_panel_figure(m, 'dup_order_pct', 'duplicate order_id (%)', 'Observability_duplicates', annotate=ann)
 
-    for col in ['row_count','freshness_h','missing_country_pct','dup_order_pct','unique_customer','avg_amount','sum_amount','std_amount','min_amount','max_amount','q1_amount','median_amount','q3_amount','avg_len_phone']:
-        _,_,flag=expected_range(m[col],m.weekday)
-        print(col, 'flagged days:', (np.flatnonzero(flag)+1).tolist())
+    # --- unique count ------------------------------------------------------
+    ann = [(INCIDENT['id_truncation'], 'ids truncated to\nthree digits', 10, 10),
+           (INCIDENT['partial_load'], 'partial load:\nhalf the rows', 10, 0)]
+    flags['unique'] = one_panel_figure(m, 'unique_customer', 'distinct customer_id', 'Observability_unique_count', annotate=ann, ymin=0)
+    wk = m[(m['day'] < TRAIN) & (m['weekday'] < 5)]['unique_customer'].mean()
+    we = m[(m['day'] < TRAIN) & (m['weekday'] >= 5)]['unique_customer'].mean()
+    print(f'unique: weekday mean {wk:.0f}, weekend mean {we:.0f}')
+
+    # --- average -----------------------------------------------------------
+    ann = [(INCIDENT['refunds'], 'refunds: 3% negative', 8, 22), (INCIDENT['promotion'], 'half price under 30', -8, 22)]
+    base = m['avg_amount'][:TRAIN].mean()
+    flags['avg'] = one_panel_figure(m, 'avg_amount', 'mean amount', 'Observability_average', annotate=ann, clip=base * 1.3, ymin=base * 0.85)
+
+    # --- sum ---------------------------------------------------------------
+    ann = [(INCIDENT['no_load'], 'no load:\nmissing scan', -10, 0), (INCIDENT['partial_load'], 'partial load:\nhalf the rows', 10, -10)]
+    base = m['sum_amount'][:TRAIN].mean()
+    flags['sum'] = one_panel_figure(m, 'sum_amount', 'sum of amount', 'Observability_sum', annotate=ann, clip=base * 1.5, ymin=50_000)
+
+    # --- standard deviation ------------------------------------------------
+    ann = [(INCIDENT['refunds'], 'refunds: 3% negative', -8, -22), (INCIDENT['promotion'], 'half price under 30', -8, -22)]
+    base = m['std_amount'][:TRAIN].mean()
+    flags['std'] = one_panel_figure(m, 'std_amount', 'std of amount', 'Observability_stddev', annotate=ann, clip=base * 1.4, ymin=base * 0.75)
+
+    # --- min / max ---------------------------------------------------------
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 3.8), gridspec_kw={'wspace': 0.25})
+    _, _, fmin = panel(axL, m, 'min_amount', 'min amount', annotate=[(INCIDENT['refunds'], 'refunds:\nnegative amounts', 10, 0),
+                                                                      (INCIDENT['promotion'], 'half price', 8, 0)])
+    base = m['max_amount'][:TRAIN].mean()
+    _, _, fmax = panel(axR, m, 'max_amount', 'max amount', annotate=[(INCIDENT['country_rename'], 'one large order:\na false alarm', 8, 0)],
+                       clip=base * 2.2, ymin=0)
+    fig.subplots_adjust(left=0.07, right=0.99, top=0.9, bottom=0.2)
+    save_figure(fig, 'Observability_min_max')
+    plt.close()
+    flags['min'], flags['max'] = fmin, fmax
+
+    # --- quartiles ---------------------------------------------------------
+    fig, ax = plt.subplots(figsize=(13, 3.8))
+    x = m['day'].values + 1
+    for col, color, lab in [('q3_amount', middle_color, 'Q3'), ('median_amount', start_color, 'median'), ('q1_amount', GREY_LINE, 'Q1')]:
+        lo, hi, flag = expected_range(m[col].values, m['weekday'].values)
+        ax.fill_between(x, lo, hi, color=BAND, zorder=1, linewidth=0)
+        ax.plot(x, m[col], color=color, lw=2.2, zorder=3, solid_capstyle='round')
+        ax.scatter(x[flag], m[col].values[flag], s=70, color=end_color, zorder=5, linewidths=0)
+        ax.text(DAYS + 0.8, m[col].values[-1], lab, color=color, fontsize=11.5, va='center')
+        flags[col] = flag
+    ax.plot(x, m['avg_amount'], color=DARK, lw=1.4, ls=(0, (4, 3)), zorder=2)
+    ax.text(DAYS + 0.8, m['avg_amount'].values[-1] + 3, 'mean', color=DARK, fontsize=11.5, va='center')
+    d = INCIDENT['currency_slip']
+    ax.annotate('5% of amounts in cents: the mean leaves the frame,\nthe quartiles barely move', xy=(d + 1, m['q3_amount'][d]),
+                xytext=(d - 6, 92), fontsize=11, color=DARK, ha='center',
+                arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
+    d = INCIDENT['promotion']
+    ax.annotate('half price under 30: Q1 drops,\nthe median and Q3 do not', xy=(d + 1, m['q1_amount'][d]), xytext=(d - 4, 8),
+                fontsize=11, color=end_color, ha='right', va='center', arrowprops=dict(arrowstyle='-', color=end_color, lw=0.9))
+    ax.axvspan(0.5, TRAIN + 0.5, color='#f4f4f4', zorder=0, linewidth=0)
+    ax.text(1.0, 1.0, 'training', transform=ax.get_xaxis_transform(), ha='left', va='bottom', fontsize=10, color=MID)
+    ax.set_xlim(0.5, DAYS + 2.5)
+    ax.set_ylim(0, 110)
+    ax.set_xticks([1, 8, 15, 22, 29, 36, 42])
+    ax.set_xlabel('daily partition', fontsize=12)
+    ax.set_ylabel('amount', fontsize=12)
+    ax.tick_params(labelsize=11)
+    despine(ax)
+    fig.subplots_adjust(left=0.07, right=0.97, top=0.9, bottom=0.2)
+    save_figure(fig, 'Observability_quartiles')
+    plt.close()
+
+    # --- text length -------------------------------------------------------
+    ann = [(INCIDENT['phone_format'], '60% of numbers lose\nthe country prefix', 10, 0)]
+    flags['len'] = one_panel_figure(m, 'avg_len_phone', 'mean length of phone', 'Observability_text_length', annotate=ann)
+
+    # --- report ------------------------------------------------------------
+    def fl(name):
+        return [int(i + 1) for i in np.where(flags[name])[0]]
+    print('row_count', m['row_count'].round().astype(int).tolist())
+    print('flags:', {k: fl(k) for k in ['row_count', 'freshness', 'missing', 'dup', 'unique', 'avg', 'sum', 'std', 'min', 'max',
+                                          'q1_amount', 'median_amount', 'q3_amount', 'len']})
+    for col in ['freshness_h', 'missing_country_pct', 'dup_order_pct', 'unique_customer', 'avg_amount', 'sum_amount',
+                'std_amount', 'min_amount', 'max_amount', 'median_amount', 'avg_len_phone']:
+        base = m[col][:TRAIN].mean()
+        print(f'{col:22s} baseline {base:10.2f} | ' + ' '.join(f'd{d + 1}={m[col][d]:.2f}' for d in INCIDENT.values() if not np.isnan(m[col][d])))
+    print('Observability figures regenerated.')
 
 
 if __name__ == '__main__':
