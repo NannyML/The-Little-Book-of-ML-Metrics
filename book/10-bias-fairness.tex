@@ -3,7 +3,7 @@ Bias and fairness metrics compare how a model performs for different groups of p
 
 The figures in this chapter follow a simulated model that selects applicants for an opportunity. Group A has $60$ qualified people out of $100$, while Group B has $30$ out of $100$. These proportions are the groups' \emph{base rates}. The model recognizes qualified applicants equally often in both groups, but a selected applicant is more likely to be qualified in A. The pages that follow explain why both can be true.
 
-The difference comes from which people we compare. \emph{Separation} compares predictions across groups separately for qualified and unqualified people, requiring matching rates in each case. Equality of opportunity checks only the qualified people. \emph{Sufficiency} starts from the prediction instead: among people given the same prediction, the proportion who are actually qualified should be the same across groups. Demographic parity makes neither distinction; it compares selection rates across the whole groups.}{In this chapter}
+Fairness metrics compare groups in different ways. \emph{Separation} compares predictions across groups separately for qualified and unqualified people, requiring matching rates in each case. Equality of opportunity checks only the qualified people. \emph{Sufficiency} starts from the prediction instead: among people given the same prediction, the proportion who are actually qualified should be the same across groups. Demographic parity makes neither distinction; it compares selection rates across the whole groups.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{coralhard}{coralaccent}{Which criterion?}{Follow the branches to a criterion. The number next to it is its page.}
