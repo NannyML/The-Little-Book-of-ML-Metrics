@@ -49,7 +49,7 @@ The figures follow one simulated orders table over six weeks. Rows arriving on t
 \section{Expected Range}\label{sec:expected-range}
 \subsection{Comparing a Metric with Its History}
 
-An expected range describes the values a monitor considers normal, based on earlier measurements. A value outside this range is flagged for review. In the rule below, $\mu_t$ is the expected value for the day and $\sigma_t$ describes the usual variation around it.
+An expected range uses past measurements to show where a metric usually falls. Values outside that range are flagged for review. In the rule below, $\mu_t$ is the expected value for the day and $\sigma_t$ describes the usual variation around it.
 
 % equation
 \begin{center}
@@ -68,7 +68,7 @@ An expected range describes the values a monitor considers normal, based on earl
     }
 \end{center}
 
-The setting $z$ controls the width of the range. Lower values flag smaller changes; higher values allow more variation. A common choice for this type of rule is $z=3$, but settings depend on the tool. A good monitor also accepts human feedback: marking an alert as expected can help it learn a legitimate pattern; confirming an incident can help keep bad data out of its baseline.
+The setting $z$ determines how wide the range is. Lowering it makes the monitor more sensitive to small changes, while raising it allows more variation before triggering an alert. A common starting point for this rule is $z=3$, though tools may use different settings. Human feedback can also help: marking an alert as expected can help a monitor learn legitimate patterns, while confirming an incident can help keep bad data out of its baseline.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_expected_range.png}
@@ -78,7 +78,7 @@ The setting $z$ controls the width of the range. Lower values flag smaller chang
 
 \textbf{When to use it?}
 
-Use a historical range when normal values change over time, for example between weekdays and weekends. Adjust sensitivity to balance missed problems against false alerts. A known requirement, such as zero duplicate keys, is better checked with a fixed limit. A flagged value needs investigation; it is not necessarily an error.
+Use a historical range when normal values change over time, such as between weekdays and weekends, and adjust sensitivity to balance missed problems against false alerts. If you already know the requirement, such as zero duplicate keys, use a fixed limit instead. In either case, an alert is a reason to investigate, not proof of an error.
 
 % ---------- Row Count ----------
 \clearpage
@@ -86,7 +86,7 @@ Use a historical range when normal values change over time, for example between 
 \section{Row Count}\label{sec:row-count}
 \subsection{Volume}
 
-Row count tells you how many rows are in a table or a selected part of it. It helps detect missing, incomplete or repeated loads. Here, each scan counts one day's arrivals, called a daily partition.
+Row count tells you how many rows are in a table or a selected part of it, helping you detect missing, incomplete or repeated loads. Here, we count the rows that arrive each day, a group called a daily partition.
 
 % equation
 \begin{center}
@@ -113,7 +113,7 @@ The formula counts rows whose partition date $p(r)$ matches the day $t$ being ch
 
 \textbf{When to use it?}
 
-Use it to check whether a scheduled load delivered the expected amount of data. Compare equivalent periods and account for patterns such as quieter weekends. If rows can arrive late, recheck earlier days too. A normal count does not guarantee that the rows are correct or unique.
+Use it to check whether a scheduled load delivered the expected amount of data, allowing for patterns such as quieter weekends. If rows can arrive late, recheck earlier days too. Even when the count looks normal, you still need other checks to know whether the rows are correct or unique.
 
 % ---------- Freshness ----------
 \clearpage
@@ -121,7 +121,7 @@ Use it to check whether a scheduled load delivered the expected amount of data. 
 \section{Freshness}\label{sec:freshness}
 \subsection{Most Recent Timestamp}
 
-Freshness measures how much time has passed since the latest timestamp in a column. With an arrival timestamp, it tells you when data last reached the table. With an event timestamp, it tells you when the latest recorded event happened.
+Freshness tells you how long it has been since the latest timestamp in a column. What that tells you depends on the timestamp you choose: an arrival timestamp tracks when data last reached the table, while an event timestamp tracks when the latest recorded event happened.
 
 % equation
 \begin{center}
@@ -139,7 +139,7 @@ Freshness measures how much time has passed since the latest timestamp in a colu
     }
 \end{center}
 
-The formula subtracts the newest timestamp from the scan time, ignoring nulls. If the latest arrival is at 01:30 and the scan is at 06:00, freshness is $4.5$ hours. Some databases also record when a table was last updated. That can be checked without reading its rows, but an update does not prove that newer data arrived.
+The formula subtracts the newest timestamp from the scan time, ignoring nulls. If the latest arrival is at 01:30 and the scan is at 06:00, freshness is $4.5$ hours. Some databases also let you check when a table was last updated without reading its rows, though an update does not prove that newer data arrived.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_freshness.png}
@@ -149,7 +149,7 @@ The formula subtracts the newest timestamp from the scan time, ignoring nulls. I
 
 \textbf{When to use it?}
 
-Use it when data must arrive before a deadline. Choose the timestamp that matches what you need to check, and allow for the loading schedule and time zone. Check row count too: one recent row can make an incomplete load look fresh. Without a valid timestamp, freshness cannot be calculated.
+Use it when data must arrive before a deadline, choosing a timestamp that matches what you need to check and allowing for the loading schedule and time zone. It helps to check row count alongside freshness, since one recent row can make an incomplete load look fresh. Without a valid timestamp, freshness cannot be calculated.
 
 % ---------- Schema Changes ----------
 \clearpage
@@ -157,7 +157,7 @@ Use it when data must arrive before a deadline. Choose the timestamp that matche
 \section{Schema Changes}\label{sec:schema-changes}
 \subsection{Columns and Types}
 
-Schema monitoring detects changes to column names and data types. It can tell you when a column is added, removed or given a different type. These changes may break queries or alter how values are stored, even when the data still loads successfully.
+Schema monitoring tells you when columns are added, removed or given a different name or type. Even if the data still loads successfully, these changes may break queries or alter how values are stored.
 
 % equation
 \begin{center}
@@ -175,7 +175,7 @@ Schema monitoring detects changes to column names and data types. It can tell yo
     }
 \end{center}
 
-Each $S$ lists the column names and types at one scan. The $\triangle$ compares two lists and keeps only the differences. A renamed column appears as one removal and one addition. The check flags changes for review; an intentional change is not necessarily a problem.
+Each $S$ lists the column names and types at one scan, and $\triangle$ keeps only the differences between the two lists. A renamed column therefore appears as one removal and one addition. The check flags these changes for review so you can distinguish intended updates from problems.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_schema.png}
@@ -185,7 +185,7 @@ Each $S$ lists the column names and types at one scan. The $\triangle$ compares 
 
 \textbf{When to use it?}
 
-Use it on tables that other queries, applications or models depend on. Check whether a change affects those uses before accepting it. Changes to the values themselves can go unnoticed: storing cents instead of dollars may leave the column name and type unchanged.
+Use it on tables that other queries, applications or models depend on, and check how a schema change affects them before accepting it. You still need to monitor the values themselves: storing cents instead of dollars may leave the column name and type unchanged.
 
 % ---------- Missing Values ----------
 \clearpage
@@ -193,7 +193,7 @@ Use it on tables that other queries, applications or models depend on. Check whe
 \section{Missing Values}\label{sec:missing-values}
 \subsection{Completeness}
 
-Missing values percentage tells you what share of a column's values are null. It helps check whether needed information is present. For example, a rise in missing country codes may indicate that a source field is no longer being loaded correctly.
+Missing values percentage tells you what share of a column's values are null, helping you check whether the information you need is present. A rise in missing country codes, for example, may indicate that a source field is no longer being loaded correctly.
 
 % equation
 \begin{center}
@@ -221,7 +221,7 @@ The formula compares the number of filled rows, $\text{count}(c)$, with the tota
 
 \textbf{When to use it?}
 
-Use it on fields needed for joins, reports or model inputs. Set the acceptable level according to the field: an optional field may legitimately contain nulls. Replacing missing values with a placeholder such as \texttt{unknown} can make the percentage fall without improving the data.
+Use it on fields needed for joins, reports or model inputs, with an acceptable level that reflects how the field is used. An optional field may legitimately contain nulls. Replacing missing values with a placeholder such as \texttt{unknown} can make the percentage fall without improving the data.
 
 % ---------- Duplicates ----------
 \clearpage
@@ -229,7 +229,7 @@ Use it on fields needed for joins, reports or model inputs. Set the acceptable l
 \section{Duplicates}\label{sec:duplicates}
 \subsection{Uniqueness}
 
-Duplicate percentage shows what share of rows have a repeated key. A key is a value, such as an order ID, used to identify a record. Here, every copy counts as a duplicate, and rows with null keys are excluded.
+Duplicate percentage shows what share of rows have a repeated key, such as an order ID used to identify a record. Here, we count every copy of a repeated key as a duplicate and leave out rows whose keys are null.
 
 % equation
 \begin{center}
@@ -256,7 +256,7 @@ The set $R$ contains rows with a key, and $n(v_r)$ counts how often each key app
 
 \textbf{When to use it?}
 
-Use it on fields, or combinations of fields, that should identify rows uniquely. If any duplicate is an error, use a fixed limit of zero. Check missing keys separately. If keys must be unique across the whole table, checking only the latest day's rows is not enough.
+Use it on fields, or combinations of fields, that should identify rows uniquely, with a fixed limit of zero if any duplicate is an error. Since null keys are excluded, check for missing keys separately. Also consider where uniqueness matters: checking only the latest day's rows will miss keys repeated across different days.
 
 % ---------- Unique Count ----------
 \clearpage
@@ -264,7 +264,7 @@ Use it on fields, or combinations of fields, that should identify rows uniquely.
 \section{Unique Count}\label{sec:unique-count}
 \subsection{Cardinality}
 
-Unique count tells you how many different values appear in a column. Each value counts once, even if it appears in many rows. Nulls are excluded. In an orders table, counting unique customer IDs tells you how many different customers placed an order.
+Unique count tells you how many different values appear in a column. It leaves out nulls and counts each value once, even if it appears in many rows. In an orders table, counting unique customer IDs tells you how many different customers placed an order.
 
 % equation
 \begin{center}
@@ -287,7 +287,7 @@ Here, $P_t$ is the group of rows being checked and $c(r)$ is the value in each r
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
 \end{center}
 
-\textbf{Figure. Unique Count.} Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays. On day $31$, an incomplete load reduces the count. On day $38$, IDs are shortened to their last three digits, so different IDs become identical. Only $995$ unique values remain despite a normal load size. The hollow point marks day $26$, when no rows arrived and the check was skipped.
+\textbf{Figure. Unique Count.} Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays, but the drop on day $31$ comes from an incomplete load. On day $38$, IDs are shortened to their last three digits, making different IDs identical and leaving only $995$ unique values despite a normal load size. The hollow point marks day $26$, when no rows arrived and the check was skipped.
 
 \textbf{When to use it?}
 
@@ -299,7 +299,7 @@ Use it to monitor customer IDs, product codes or categories such as countries. I
 \section{Average}\label{sec:average}
 \subsection{Mean}
 
-The average, or mean, is the sum of a column's values divided by how many values there are. Nulls are left out. Tracking the average can reveal a change in prices, quantities or other numeric data even when the row count stays the same.
+The average, or mean, adds up a column's non-null values and divides by how many there are. Tracking the average can reveal a change in prices, quantities or other numeric data even when the row count stays the same.
 
 % equation
 \begin{center}
@@ -316,7 +316,7 @@ The average, or mean, is the sum of a column's values divided by how many values
     }
 \end{center}
 
-Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, the average is $20$. A few very large values can raise it sharply. Increases and decreases can also cancel out, so the same average can describe very different data.
+Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, we divide the total of $60$ by three to get an average of $20$. A few very large values can raise the average sharply, while increases and decreases can cancel each other out. The same average can therefore describe very different data.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_average.png}
@@ -326,7 +326,7 @@ Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, the ave
 
 \textbf{When to use it?}
 
-Use it to track the overall level of a numeric column. Check quartiles and spread to understand what changed. The median is less affected by a few extreme values. A change in the average can also be legitimate, for example during a promotion.
+Use it to track the overall level of a numeric column, then look at quartiles and spread to understand what changed. The median can help here because it is less affected by a few extreme values. Keep the context in mind too: a promotion may legitimately change the average.
 
 % ---------- Sum ----------
 \clearpage
@@ -334,7 +334,7 @@ Use it to track the overall level of a numeric column. Check quartiles and sprea
 \section{Sum}\label{sec:sum}
 \subsection{Total}
 
-The sum adds up the values in a numeric column, ignoring nulls. It can track daily revenue or total units sold. A total can change because more rows arrived, because the values changed, or both.
+The sum adds up the values in a numeric column, ignoring nulls, so you can track totals such as daily revenue or units sold. A change in the total may come from a different number of rows, different values, or both.
 
 % equation
 \begin{center}
@@ -362,7 +362,7 @@ The sum also equals the number of non-null values $n_t$ times their average $\ba
 
 \textbf{When to use it?}
 
-Use it when a report depends on a total. To investigate an alert, check the number of filled rows and their average. A normal total can hide a problem if fewer rows contain larger values, or more rows contain smaller ones.
+Use it when a report depends on a total, and check both the number of non-null values and their average when investigating an alert. These can offset each other: fewer rows with larger values, or more rows with smaller ones, may leave the total looking normal.
 
 % ---------- Standard Deviation ----------
 \clearpage
@@ -388,7 +388,7 @@ Standard deviation measures how much numeric values vary around their average. A
     }
 \end{center}
 
-For example, $[20,20,20]$ and $[10,20,30]$ both average $20$, but only the second set has any spread. The formula gives the sample standard deviation and needs at least two non-null values. Some tools use the population version, which divides by $n_t$ rather than $n_t-1$.
+For example, $[20,20,20]$ and $[10,20,30]$ both average $20$, but only the second set has any spread. The formula above gives the sample standard deviation, which needs at least two non-null values. Check which version your tool uses: the population version divides by $n_t$ rather than $n_t-1$.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_stddev.png}
@@ -406,7 +406,7 @@ Use it alongside the average to check how widely values vary. A few extreme valu
 \section{Min and Max}\label{sec:min-and-max}
 \subsection{Range}
 
-Minimum and maximum are the smallest and largest values in a column, ignoring nulls. They help detect extreme values that an average can hide. For example, a single negative quantity changes the minimum even if thousands of other quantities are valid.
+Minimum and maximum are the smallest and largest values in a column, ignoring nulls. They can reveal extremes that an average hides: a single negative quantity changes the minimum even if thousands of other quantities are valid.
 
 % equation
 \begin{center}
@@ -423,7 +423,7 @@ Minimum and maximum are the smallest and largest values in a column, ignoring nu
     }
 \end{center}
 
-The formula takes both values from the rows in $P_t$, the partition being checked. Only one row determines each result. That makes these checks sensitive to individual errors, but also to legitimate extremes, such as an unusually large order.
+The formula takes both values from the rows in $P_t$, the partition being checked. Because a single row determines each result, these checks can pick up individual errors as well as legitimate extremes, such as an unusually large order.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_min_max.png}
@@ -433,7 +433,7 @@ The formula takes both values from the rows in $P_t$, the partition being checke
 
 \textbf{When to use it?}
 
-Use fixed limits for known requirements, such as non-negative quantities. Use historical ranges when you want to spot unusual extremes, allowing for legitimate large or small values. Min and Max show the extremes, not how many rows are affected; count invalid rows separately if that matters.
+Use fixed limits for known requirements, such as non-negative quantities, or historical ranges to spot values that are unusually large or small. Min and Max show the extremes, not how many rows are affected; count invalid rows separately if that matters.
 
 % ---------- Quartiles ----------
 \clearpage
@@ -441,7 +441,7 @@ Use fixed limits for known requirements, such as non-negative quantities. Use hi
 \section{Quartiles}\label{sec:quartiles}
 \subsection{Q1, Median, Q3}
 
-Quartiles mark three positions in a column's sorted values: one-quarter of the way through, halfway through, and three-quarters of the way through. These are Q1, the median and Q3. They help show where most values lie without being dominated by a few extremes.
+Quartiles help show where most values lie without being dominated by a few extremes. If you sort a column's values, Q1 marks one-quarter of the way through, the median marks halfway, and Q3 marks three-quarters of the way through.
 
 % equation
 \begin{center}
@@ -464,7 +464,7 @@ The function $F_t(x)$ gives the share of values at or below $x$, ignoring nulls.
     \includegraphics[width=\textwidth]{figures/Observability_quartiles.png}
 \end{center}
 
-\textbf{Figure. Quartiles.} Daily order-amount quartiles, with the mean dashed. On day $23$, about $5\%$ of amounts arrive in cents. The mean rises above the scale; Q3 rises much less but is still flagged. On day $40$, prices below $30$ are halved. Q1 drops from about $25$ to $12$; that day's median and Q3 are unaffected.
+\textbf{Figure. Quartiles.} Daily order-amount quartiles, with the mean dashed. On day $23$, about $5\%$ of amounts arrive in cents, pushing the mean above the scale. Q3 rises much less but is still flagged. Halving prices below $30$ on day $40$ has a different effect: Q1 drops from about $25$ to $12$, while that day's median and Q3 are unaffected.
 
 \textbf{When to use it?}
 
@@ -494,7 +494,7 @@ Text length counts the characters in a value. Tracking the average, shortest and
     }
 \end{center}
 
-The formula adds the lengths of the non-null strings and divides by their count $n_t$. For lengths $[4,4,7]$, the average is $5$. Count characters rather than bytes: some characters occupy more than one byte.
+The formula averages the lengths of the non-null strings, so lengths of $[4,4,7]$ give an average of $5$. Here, $n_t$ is the number of strings included. Make sure to count characters rather than bytes, since some characters occupy more than one byte.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_text_length.png}
