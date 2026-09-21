@@ -262,6 +262,32 @@ def finish(fig, name):
     plt.close(fig)
 
 
+def unique_count_figure(m):
+    """Compare volume and cardinality on three selected days, on identical scales."""
+    days = [30, 31, 38]
+    labels = ['Normal load', 'Incomplete load', 'Shortened IDs']
+    fig = plt.figure(figsize=(8, 3.55))
+    axes = [fig.add_axes([.29, .10, .28, .69]),
+            fig.add_axes([.68, .10, .28, .69])]
+    for ax, col, title, color in zip(axes,
+            ['row_count', 'unique_customer'], ['Orders', 'Unique customer IDs'],
+            [GREY_LINE, start_color]):
+        values = m.set_index('day').loc[np.array(days)-1, col].to_numpy()
+        ax.barh([2,1,0], values, height=.12, color=color, zorder=3)
+        for y, value in zip([2,1,0], values):
+            ax.text(0, y+.17, f'{value:,.0f}', fontsize=15, color=DARK,
+                    ha='left', va='bottom')
+        ax.set_xlim(0, 5500)
+        ax.set_ylim(-.35, 2.55)
+        ax.axis('off')
+        ax.set_title(title, loc='left', fontsize=15, color=color, pad=16)
+    for y, day, label in zip([2,1,0], days, labels):
+        fy = .10 + .69 * (y+.35)/2.90
+        fig.text(.015, fy+.025, label, fontsize=15, color=DARK, va='bottom')
+        fig.text(.015, fy-.015, f'Day {day}', fontsize=14, color=MID, va='top')
+    finish(fig, 'unique_count')
+
+
 def main():
     m = compute_metrics(simulate())
     m.to_json(OUT / 'metrics.json', orient='records', date_format='iso', indent=1)
@@ -296,7 +322,6 @@ def main():
         ('freshness_h','Hours since latest arrival','freshness',(0,38),None,[(26,'No load',(.48,.77)),(31,'Stopped early',(.83,.42))]),
         ('missing_country_pct','Null country values (%)','missing',(0,55),None,[(29,'Source field renamed',(.58,.9))]),
         ('dup_order_pct','Duplicate order IDs (%)','duplicates',(-.5,16),None,[(36,'Repeated batch',(.72,.87))]),
-        ('unique_customer','Distinct customers','unique_count',(0,6600),None,[(31,'Partial load',(.64,.15)),(38,'IDs shortened',(.85,.43))]),
         ('avg_amount','Mean amount','average',(36,58),55,[(32,'Refunds',(.68,.44)),(40,'Discounts',(.88,.19))]),
         ('sum_amount','Total amount','sum',(50000,330000),310000,[(31,'Partial load',(.75,.1))]),
         ('std_amount','Standard deviation','stddev',(20,44),41,[(32,'Refunds',(.68,.39)),(40,'Discounts',(.88,.61))]),
@@ -305,6 +330,8 @@ def main():
     for col, ylabel, name, limits, clip, events in specs:
         fig, _, _ = chart(m,col,ylabel,ylim=limits,clip=clip,events=events)
         finish(fig,name)
+
+    unique_count_figure(m)
 
     # Show only changed fields, large enough to read at the book's print size.
     fig, (a,b) = plt.subplots(1,2,figsize=(8,3.0),gridspec_kw={'width_ratios':[1,1.15],'wspace':.3})

@@ -264,7 +264,7 @@ Use it on a key, or combination of columns, expected to be unique in the scanned
 \section{Unique Count}\label{sec:unique-count}
 \subsection{Cardinality}
 
-Unique count is the number of distinct non-null values in a column. Repeated values count once. For example, an orders table may contain many rows for the same customer; unique count tells you how many different customers appear.
+Unique count tells you how many different values appear in a column. Each value counts once, even if it appears in many rows. Nulls are excluded. In an orders table, counting unique customer IDs tells you how many different customers placed an order.
 
 % equation
 \begin{center}
@@ -281,17 +281,17 @@ Unique count is the number of distinct non-null values in a column. Repeated val
     }
 \end{center}
 
-Here, $P_t$ is the partition being checked and $c(r)$ is a row's value. The values $[A,A,B,\text{null}]$ have a unique count of $2$, although there are four rows. The count can fall because fewer rows arrived or because previously different values became identical.
+Here, $P_t$ is the group of rows being checked and $c(r)$ is the value in each row. For example, customer IDs $[101,101,205,\text{null}]$ give a unique count of $2$: only $101$ and $205$ are counted.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
 \end{center}
 
-\textbf{Figure. Unique Count.} Daily distinct customer IDs in an orders table. About $4{,}400$ appear on weekdays and $2{,}800$ on weekends. Day $31$ has fewer customers because only part of the load arrived. On day $38$, keeping only the last three digits of each ID reduces the count to $995$, despite a normal load size. Day $26$ is shown as unmeasured because value checks are skipped after an empty load; its distinct count would be zero.
+\textbf{Figure. Unique Count.} Three days from the simulated orders table. On day $31$, fewer orders arrive, so fewer customers appear. On day $38$, the load size is normal, but an error keeps only the last three digits of each customer ID. Different IDs become identical, leaving just $995$ unique values. Comparing both counts helps distinguish these two problems.
 
 \textbf{When to use it?}
 
-Use it to detect unexpected changes in identifiers or categories. Compare it with row count before interpreting a drop. It measures how many distinct values exist, not which ones: replacing one category with another can leave the count unchanged. Use an allowed-values check when the category names matter.
+Use it to monitor customer IDs, product codes or categories such as countries. If unique count falls, check whether fewer rows arrived before investigating the values. It counts different values but does not tell you what they are: replacing one country code with another can leave the count unchanged.
 
 % ---------- Average ----------
 \clearpage
