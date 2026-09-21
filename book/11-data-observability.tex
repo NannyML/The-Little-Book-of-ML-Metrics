@@ -1,7 +1,11 @@
 \chapteropener{Data Observability}{minthard}{mintaccent}{%
 Data observability monitors help check whether data arrives on time and whether its structure and values meet expectations. This chapter covers row counts, timestamps, schema changes, missing and repeated values, and summaries of numeric and text columns.
 
-The figures follow one simulated orders table over six weeks. Rows arriving on the same day form a daily partition. Most monitors compare each day's measurement with a range learned from earlier days; schema monitoring compares column names and types directly. Gray bands show expected ranges, red points mark alerts, and hollow points indicate skipped or unavailable measurements. Each page explains one monitor, what it can detect, and what it can miss.}{In this chapter}
+The figures in this chapter follow one simulated example: an \texttt{orders} table with six weeks of purchases from an online shop. Each row records an order, with fields such as its amount, customer ID and arrival time. We introduce problems along the way, including incomplete loads, missing values and amounts stored in the wrong units, to see which monitors notice them.
+
+We group each day's arrivals into a daily partition and calculate most metrics separately for each partition. The sum, for example, adds up that day's order amounts, while the average tells us the mean amount per order that day. Freshness checks the latest timestamp across the table, and schema monitoring checks its column names and types.
+
+In the plots, gray bands show the expected ranges learned from earlier measurements, red points mark alerts, and hollow points indicate skipped or unavailable measurements. Following the same example across the chapter lets you compare what each monitor detects and what it misses.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{minthard}{mintaccent}{Which monitor?}{Follow the branches to a monitor. The number next to it is its page.}
@@ -193,7 +197,7 @@ Use it on tables that other queries, applications or models depend on, and check
 \section{Missing Values}\label{sec:missing-values}
 \subsection{Completeness}
 
-Missing values percentage tells you what share of a column's values are null, helping you check whether the information you need is present. A rise in missing country codes, for example, may indicate that a source field is no longer being loaded correctly.
+Missing values percentage tells you what share of a column's values are null within the partition being checked, helping you check whether the information you need is present. A rise in missing country codes, for example, may indicate that a source field is no longer being loaded correctly.
 
 % equation
 \begin{center}
@@ -229,7 +233,7 @@ Use it on fields needed for joins, reports or model inputs, with an acceptable l
 \section{Duplicates}\label{sec:duplicates}
 \subsection{Uniqueness}
 
-Duplicate percentage shows what share of rows have a repeated key, such as an order ID used to identify a record. Here, we count every copy of a repeated key as a duplicate and leave out rows whose keys are null.
+Duplicate percentage shows what share of rows in a partition have a repeated key, such as an order ID used to identify a record. Here, we count every copy of a repeated key as a duplicate and leave out rows whose keys are null.
 
 % equation
 \begin{center}
@@ -264,7 +268,7 @@ Use it on fields, or combinations of fields, that should identify rows uniquely,
 \section{Unique Count}\label{sec:unique-count}
 \subsection{Cardinality}
 
-Unique count tells you how many different values appear in a column. It leaves out nulls and counts each value once, even if it appears in many rows. In an orders table, counting unique customer IDs tells you how many different customers placed an order.
+Unique count tells you how many different values appear in a column within a partition. It leaves out nulls and counts each value once, even if it appears in many rows. In our daily partitions, counting unique customer IDs tells you how many different customers appear in that day's load.
 
 % equation
 \begin{center}
@@ -299,7 +303,7 @@ Use it to monitor customer IDs, product codes or categories such as countries. I
 \section{Average}\label{sec:average}
 \subsection{Mean}
 
-The average, or mean, adds up a column's non-null values and divides by how many there are. Tracking the average can reveal a change in prices, quantities or other numeric data even when the row count stays the same.
+The average, or mean, is calculated within each partition: it adds up a column's non-null values and divides by how many there are. Here, it gives the average order amount for each day. Tracking the average can reveal a change in prices, quantities or other numeric data even when the row count stays the same.
 
 % equation
 \begin{center}
@@ -334,7 +338,7 @@ Use it to track the overall level of a numeric column, then look at quartiles an
 \section{Sum}\label{sec:sum}
 \subsection{Total}
 
-The sum adds up the values in a numeric column, ignoring nulls, so you can track totals such as daily revenue or units sold. A change in the total may come from a different number of rows, different values, or both.
+The sum adds up the non-null values in a numeric column within each partition. In our example, it gives the total order amount for each day. A change in the total may come from a different number of rows, different values, or both.
 
 % equation
 \begin{center}
@@ -370,7 +374,7 @@ Use it when a report depends on a total, and check both the number of non-null v
 \section{Standard Deviation}\label{sec:standard-deviation}
 \subsection{Spread}
 
-Standard deviation measures how much numeric values vary around their average. A larger value means they are more spread out; zero means they are all the same. It is expressed in the same units as the original values.
+Standard deviation measures how much numeric values vary around their average within a partition. Here, it tells us how widely order amounts vary within each day. A larger value means they are more spread out; zero means they are all the same. It is expressed in the same units as the original values.
 
 % equation
 \begin{center}
@@ -406,7 +410,7 @@ Use it alongside the average to check how widely values vary. A few extreme valu
 \section{Min and Max}\label{sec:min-and-max}
 \subsection{Range}
 
-Minimum and maximum are the smallest and largest values in a column, ignoring nulls. They can reveal extremes that an average hides: a single negative quantity changes the minimum even if thousands of other quantities are valid.
+Minimum and maximum are the smallest and largest non-null values in a column within a partition. Here, they give the smallest and largest order amounts for each day. They can reveal extremes that an average hides: a single negative quantity changes the minimum even if thousands of other quantities are valid.
 
 % equation
 \begin{center}
@@ -441,7 +445,7 @@ Use fixed limits for known requirements, such as non-negative quantities, or his
 \section{Quartiles}\label{sec:quartiles}
 \subsection{Q1, Median, Q3}
 
-Quartiles help show where most values lie without being dominated by a few extremes. If you sort a column's values, Q1 marks one-quarter of the way through, the median marks halfway, and Q3 marks three-quarters of the way through.
+Quartiles summarize the values within each partition, helping show where most lie without being dominated by a few extremes. Here, we calculate them separately for each day's order amounts. If you sort those values, Q1 marks one-quarter of the way through, the median marks halfway, and Q3 marks three-quarters of the way through.
 
 % equation
 \begin{center}
@@ -476,7 +480,7 @@ Use quartiles to track typical values and spread when a few large or small value
 \section{Text Length}\label{sec:text-length}
 \subsection{Format}
 
-Text length counts the characters in a value. Tracking the average, shortest and longest lengths can reveal cut-off text, missing prefixes or changes in code format. Nulls are excluded, but an empty string has length zero.
+Text length counts the characters in a value. Summarizing these lengths within each partition can reveal cut-off text, missing prefixes or changes in code format. Here, we track the average phone-value length for each day. Nulls are excluded, but an empty string has length zero.
 
 % equation
 \begin{center}
