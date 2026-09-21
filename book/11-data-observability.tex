@@ -1,11 +1,7 @@
 \chapteropener{Data Observability}{minthard}{mintaccent}{%
-Before a model, a dashboard or a metric can be trusted, the table behind it has to arrive on time, complete, and in the shape everyone
-expects. The monitors in this chapter are deliberately simple statistics: how many rows, how old, which columns, how many nulls, how
-many distinct values, what the mean, the extremes and the string lengths are. What makes them useful is not the statistic but its
-history: each is computed at every scan, compared with an expected range learned from earlier scans, and flagged when it leaves it
-(schema changes are flagged outright). Every page shows the same table, an
-orders feed monitored daily for six weeks, so the incidents one monitor catches and another misses can be read side by side. Unlike
-the rest of the book, each monitor takes one page.}{In this chapter}
+Data observability monitors track whether data arrives on time and whether its structure and values meet expectations. This chapter covers row counts, timestamps, schema changes, missing and repeated values, and summaries of numeric and text columns.
+
+The figures follow one simulated orders table over $42$ days. Each daily partition contains that day's arrivals. The first $21$ days establish a baseline; later scans compare measurements with an expected range. Gray bands show that range, red points show alerts, and hollow markers show unavailable measurements. Schema changes are checked directly. Each monitor takes one page, with an example and its limitations.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{minthard}{mintaccent}{Which monitor?}{Follow the branches to a monitor. The number next to it is its page.}
@@ -33,22 +29,27 @@ the rest of the book, each monitor takes one page.}{In this chapter}
   [{\dl{text changed shape}{\mref{Text Length}{sec:text-length}}}]
 ]
 \end{forest}
-\mapnotes{Check freshness and row count first: every other monitor is meaningless on a partial load. Schema changes are the one monitor that needs no history.}
+\mapnotes{Check freshness and row count alongside value monitors: incomplete loads can affect their results. Compare schema changes with the previous or approved schema.}
 \end{decisionmap}
 
 % All figures in this chapter come from one simulated `orders` table, monitored daily for 42 days
 % (notebooks/observability_plots.py). Metric definitions follow the Soda documentation:
 % https://docs.soda.io/data-observability/metric-monitoring-dashboard
 
+% Review sources (2026-09-21):
+% https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm
+% https://www.postgresql.org/docs/current/functions-aggregate.html
+% https://numpy.org/doc/stable/reference/generated/numpy.quantile.html
+% Duplicate percentage here counts all non-null records in repeated-key groups;
+% conventions differ across tools. The detector is illustrative, not a Soda implementation.
+
 % ---------- Expected Range ----------
 \clearpage
 \thispagestyle{observabilitystyle}
 \section{Expected Range}\label{sec:expected-range}
-\subsection{How every monitor decides}
+\subsection{Comparing a Metric with Its History}
 
-A row count of $2{,}600$ is not an anomaly in itself; it is one on a Wednesday that usually brings $5{,}000$. Every metric in this
-chapter is a plain statistic computed on the newest partition of a table at each scan, and it becomes a monitor only when the
-history of those statistics is turned into an expected range and today's value is checked against it.
+An expected range describes the values a monitor considers normal. A measurement outside it is flagged for investigation, not automatically treated as a data error. The example below uses a baseline $\mu_t$ and a spread $\sigma_t$ estimated from earlier measurements.
 
 % equation
 \begin{center}
@@ -60,31 +61,24 @@ history of those statistics is turned into an expected range and today's value i
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.2,-0.2)$) to[bend right=15] node[pos=1, left] {today's measurement} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.4,-0.2)$) to[bend left=15] node[pos=1, right] {baseline from history} +(0.8,.5);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.0,0.25)$) to[bend right=15] node[pos=1, left] {sensitivity} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.75,0.25)$) to[bend left=15] node[pos=1, right] {spread of history} +(0.4,-.5);
+        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.94,-0.26)$) to[bend right=15] node[pos=1, left] {today's measurement} +(-1,.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.95,-0.24)$) to[bend left=15] node[pos=1, right] {baseline from history} +(0.25,.5);
+        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(3.28,0.23)$) to[bend right=15] node[pos=1, left] {sensitivity} +(-0.8,-.5);
+        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(3.66,0.15)$) to[bend left=15] node[pos=1, right] {spread of history} +(-0.55,-.5);
     }
 \end{center}
 
-The baseline $\mu_t$ follows the metric's seasonality (in this chapter, the same weekday in earlier weeks), $\sigma_t$ is the spread of
-past values around it, and $z$ sets how far outside a value must fall: $3$ by default, adjustable between $0.3$ and $6$. Feedback closes
-the loop: a point marked as expected widens the range, a point marked as anomaly teaches the detector to alert on values like it.
+Here, $z$ controls the width: a smaller value flags more deviations; a larger one flags fewer. Three standard deviations is a common starting point, not a universal default. Available settings depend on the implementation. A useful monitor also lets people label alerts as expected or unexpected, so its baseline or alert rules can be adjusted.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_expected_range.png}
 \end{center}
 
-\textbf{Figure. Expected Range.} Daily row counts of an orders table. \underline{Left:} three training weeks grouped by weekday give a
-mean per weekday and a pooled spread of $\sigma = 200$ rows; the range is the mean $\pm 3\sigma$. \underline{Right:} the next three weeks
-checked against it. Weekends sit inside their own range although they carry $40\%$ fewer rows; a day with no load and a day whose load
-stopped half-way fall outside and are flagged. Every other page in this chapter shows this table under a different monitor.
+\textbf{Figure. Expected Range.} Simulated daily order counts. \underline{Left:} the first $21$ days establish a mean for each weekday and a pooled spread of about $200$ rows. \underline{Right:} subsequent counts are checked against the weekday mean $\pm 3\sigma$, updated using unflagged observations. Days $26$ and $31$ fall below the range; lower weekend counts are expected.
 
 \textbf{When to use it?}
 
-Every monitor uses it, so the question is how to set it. Keep $z = 3$ where false alarms are cheap and lower it where normal variation
-is tiny (freshness, duplicates); scan at the same time every day so the baseline is stable; and partition by a column that reflects
-arrival time, since a row stamped two days ago that lands today is never evaluated.
+Use historical ranges when a metric varies predictably over time. Match the baseline to patterns such as weekdays and weekends, and tune it to the cost of missed incidents and false alerts. Use fixed rules for known requirements, such as zero duplicate keys. This example detector illustrates the approach; production implementations differ.
 
 % ---------- Row Count ----------
 \clearpage
@@ -92,9 +86,7 @@ arrival time, since a row stamped two days ago that lands today is never evaluat
 \section{Row Count}\label{sec:row-count}
 \subsection{Volume}
 
-A nightly job that loads half of yesterday's orders raises no error: the table exists, the columns are right, the rows that arrived
-are valid. Only their number gives it away. Row count is the number of rows in the newest partition at scan time, the first monitor
-to put on any table and the one that catches missed, partial and doubled loads.
+Row count is the number of rows in a table or a selected part of it. Tracking it over time helps identify missing, incomplete or repeated loads. In this chapter, each measurement counts the rows received on one day, called a daily partition.
 
 % equation
 \begin{center}
@@ -111,24 +103,17 @@ to put on any table and the one that catches missed, partial and doubled loads.
     }
 \end{center}
 
-The partition is defined by a date or timestamp column that reflects arrival, and the count is a plain $\text{count}(*)$ over it, with
-no sampling. The metadata variant, total row count and its change since the last scan, costs nothing to compute but sees the whole
-table rather than the newest slice.
+Here, $T$ is the table and $p(r)$ is row $r$'s partition date. The formula counts rows whose date matches the day being checked, equivalent to a filtered SQL \texttt{COUNT(*)}. A count from database metadata may be faster, but can be approximate or delayed and may cover the whole table.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_row_count.png}
 \end{center}
 
-\textbf{Figure. Row Count.} The load that never ran (zero rows) and the one that stopped half-way ($2{,}600$ against a Wednesday baseline
-near $5{,}000$) are flagged. The retry storm that inserted $6\%$ of one day's rows twice is not: $5{,}358$ rows, $7\%$ above the Monday
-baseline, sit inside a band that reaches $11\%$ either way. Volume catches what is missing far better than what is repeated; the
-Duplicates page catches that.
+\textbf{Figure. Row Count.} Daily counts for a simulated orders table. No rows arrive on day $26$; only $2{,}600$ arrive on day $31$. Both fall below the expected range. On day $36$, repeating $6\%$ of the load raises the count to $5{,}358$, still within the range. A normal count does not guarantee that the rows are correct or unique.
 
 \textbf{When to use it?}
 
-On every table with a regular arrival cadence: it is cheap, needs no knowledge of the content, and a missed or partial load is the most
-common incident there is. Avoid trusting it alone for tables that receive late-arriving rows stamped with old dates (they never enter
-the newest partition) and for tables loaded in bulk at irregular intervals, where Freshness is the better first signal.
+Use it to check the volume of scheduled loads. Compare the same time window at each scan and allow for weekly patterns. If rows can arrive late, recheck earlier partitions or group by arrival time. For irregular loads, compare against an expected batch size or schedule rather than a daily historical range.
 
 % ---------- Freshness ----------
 \clearpage
@@ -136,8 +121,7 @@ the newest partition) and for tables loaded in bulk at irregular intervals, wher
 \section{Freshness}\label{sec:freshness}
 \subsection{Most Recent Timestamp}
 
-A dashboard can be up, fast and wrong because the table behind it stopped receiving data two days ago. Freshness is the interval between
-the scan time and the newest timestamp in the table's partition column: how old the latest data is at the moment someone looks.
+Freshness is the time since the latest timestamp in a chosen column. It shows how old the most recent data is at scan time. An arrival timestamp measures when data last reached the table; an event timestamp measures when the latest recorded event occurred.
 
 % equation
 \begin{center}
@@ -155,22 +139,17 @@ the scan time and the newest timestamp in the table's partition column: how old 
     }
 \end{center}
 
-A steady pipeline gives a steady freshness: a load that finishes at 01:30 and a scan at 06:00 read $4.5$ hours every day. The metadata
-variant, last modification time, reads the same quantity from the warehouse's own bookkeeping without a query.
+The maximum is taken over the table $T$, ignoring null timestamps. If the latest arrival is at 01:30 and the scan is at 06:00, freshness is $4.5$ hours. Some databases expose a last-modified timestamp in metadata. That records a table update, which need not mean that newer events arrived.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_freshness.png}
 \end{center}
 
-\textbf{Figure. Freshness.} Because the load lands at the same hour every night, the normal spread is minutes and the band is thin. On the
-day nothing arrived the newest row is yesterday's and freshness jumps to $28.5$ hours. The partial load is caught too: the job died
-$25$ minutes in, so the newest row is an hour older than usual, $5.6$ hours against $4.5$.
+\textbf{Figure. Freshness.} The orders table is scanned at 06:00 each day, usually $4.5$ hours after its latest arrival. No load arrives on day $26$, so freshness reaches $28.5$ hours. On day $31$, the load stops early and freshness reaches $5.6$ hours. Both exceed the expected range.
 
 \textbf{When to use it?}
 
-On every table that feeds something time-sensitive, and as the first monitor on tables that arrive in irregular bulk loads, where row
-count has no stable baseline. Avoid reading it on tables whose timestamp column records an upstream event rather than arrival (an
-order placed last week and loaded today looks a week stale), and pair it with Row Count: a fresh table can still be half empty.
+Use it when data must arrive before a deadline. Choose the timestamp to match that requirement and account for time zones and the loading schedule. Pair it with a volume check: one recent row can make an incomplete table appear fresh. If all timestamps are null, report a missing measurement rather than zero age.
 
 % ---------- Schema Changes ----------
 \clearpage
@@ -178,9 +157,7 @@ order placed last week and loaded today looks a week stale), and pair it with Ro
 \section{Schema Changes}\label{sec:schema-changes}
 \subsection{Columns and Types}
 
-An upstream team renames a column, adds a discount field and switches a price from decimal to float. Nothing fails; downstream
-queries silently read nulls or rounded cents. The schema monitor compares the full table definition at each scan with the one before
-and flags every difference.
+Schema monitoring detects changes to a table's column names and data types. For example, a removed column can break a query, while a numeric type change can affect precision. A change needs review, but may be intentional.
 
 % equation
 \begin{center}
@@ -198,22 +175,17 @@ and flags every difference.
     }
 \end{center}
 
-The symmetric difference $\triangle$ holds the columns added, removed or retyped; there is no expected range, since any change is an
-anomaly by definition. A rename appears as one removal plus one addition.
+Each schema $S_t$ is a set of column-name and type pairs. The symmetric difference $\triangle$ lists pairs present in only one scan. A type change or rename appears as an old pair removed and a new one added. This check flags any difference; an approved schema can also serve as the reference.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_schema.png}
 \end{center}
 
-\textbf{Figure. Schema Changes.} \underline{Left:} the column count is flat for $33$ scans and steps from $6$ to $7$ at scan $34$.
-\underline{Right:} the diff behind the step: a column added and a type changed. The count alone would have missed a type change on its
-own, which is why the monitor stores the whole definition and not a summary.
+\textbf{Figure. Schema Changes.} \underline{Left:} the table grows from six columns to seven on day $34$. \underline{Right:} \texttt{discount\_pct} is added and \texttt{amount} changes from \texttt{DECIMAL(10,2)} to \texttt{FLOAT}. Counting columns detects the addition but would miss the type change alone.
 
 \textbf{When to use it?}
 
-On every table that other people's code reads, and on every table you do not control. Its alerts are rarely noise: something changed,
-and every consumer must decide whether it matters. Avoid relying on it for semantic changes that leave the
-definition intact (a currency switch inside a numeric column, an enum gaining a value); those show up in Average, Max or Unique Count.
+Use it on tables that feed queries, applications or models. Review whether each change is compatible with those consumers. This check covers names and types only: a switch from dollars to cents can leave both unchanged. Monitor values as well as structure.
 
 % ---------- Missing Values ----------
 \clearpage
@@ -221,9 +193,7 @@ definition intact (a currency switch inside a numeric column, an enum gaining a 
 \section{Missing Values}\label{sec:missing-values}
 \subsection{Completeness}
 
-A field that is usually empty for $2\%$ of rows and is suddenly empty for $40\%$ has not failed any type check. Missing values
-percentage tracks the share of null values in a column per partition, so a jump signals an upstream field that stopped arriving long
-before anyone notices the blank segments in a report.
+Missing values percentage is the share of rows whose value in a selected column is null. It measures completeness. For example, a rise in missing country codes can indicate that a source field is no longer being loaded correctly.
 
 % equation
 \begin{center}
@@ -241,23 +211,17 @@ before anyone notices the blank segments in a report.
     }
 \end{center}
 
-SQL's $\text{count}(c)$ skips nulls, so the ratio is the share of filled rows and one minus it the share of empty ones. Empty
-strings and sentinel values such as \texttt{N/A} or $-1$ are not null, so they count as present; catching them is a job for Unique Count
-and for Min and Max.
+Both counts use the same partition: $\text{count}(*)$ counts all rows and $\text{count}(c)$ counts rows where column $c$ is not null. If $20$ of $100$ rows are null, the result is $20\%$. Empty strings and placeholders such as \texttt{N/A} need separate rules; they are not SQL nulls.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_missing.png}
 \end{center}
 
-\textbf{Figure. Missing Values.} The country column is empty for about $2\%$ of orders every day, the band around it is a fraction of a
-point wide, and the day an upstream field was renamed it jumps to $41\%$. The hollow marker is the day with no load: there is no
-partition to measure, so the scan is recorded as missing rather than as a value.
+\textbf{Figure. Missing Values.} About $2\%$ of country values are normally null. On day $29$, a simulated source-field rename raises this to $41\%$, outside the expected range. The hollow marker on day $26$ means no rows arrived: the percentage is undefined, not $0\%$.
 
 \textbf{When to use it?}
 
-On columns that downstream joins, filters and features depend on; a jump in missing values is the most common way a broken upstream
-mapping announces itself. Avoid reading a stable non-zero level as a problem (many fields are legitimately optional) and remember that
-the metric is blind to placeholders: a column that switches from null to \texttt{"unknown"} looks fully complete.
+Use it on fields needed for joins, reporting or model features. Set the acceptable level from the field's purpose: optional fields may legitimately contain nulls. A stable percentage does not prove completeness, and replacing nulls with a placeholder can hide a problem from this check.
 
 % ---------- Duplicates ----------
 \clearpage
@@ -265,9 +229,7 @@ the metric is blind to placeholders: a column that switches from null to \texttt
 \section{Duplicates}\label{sec:duplicates}
 \subsection{Uniqueness}
 
-A retrying job inserts the same batch twice and every total downstream is inflated by a few percent, too little for the row count to
-notice. Duplicate percentage is the share of non-null values in a column that occur more than once, measured on the column that should
-identify a row.
+Duplicate percentage measures how many records share a value that should identify them uniquely. Here, it is the percentage of non-null records whose key occurs more than once, counting every copy. A repeated batch can inflate totals even when the overall row count looks normal.
 
 % equation
 \begin{center}
@@ -284,22 +246,17 @@ identify a row.
     }
 \end{center}
 
-Every copy counts, including the first: the values $[1, 1, 2, \text{null}, \text{null}]$ give two of three non-null records, $66\%$. On
-a key column the expected level is exactly zero, so the band is as narrow as the floor allows and a single repeated batch is caught.
+The set $R$ contains records with non-null keys, and $n(v_r)$ counts occurrences of record $r$'s key. For $[1,1,2,\text{null},\text{null}]$, both records with key $1$ count as duplicates: $2/3 \approx 66.7\%$. Other definitions count only extra copies; check which convention your tool uses.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_duplicates.png}
 \end{center}
 
-\textbf{Figure. Duplicates.} The order id is unique on every ordinary day. On the day $6\%$ of rows were inserted twice, $2 \times 6$ of
-every $106$ records share their id with another, $11.3\%$, and the monitor flags it while the row count on the same day stays inside its
-band.
+\textbf{Figure. Duplicates.} Daily duplicate percentages for order IDs. On day $36$, $6\%$ of the original records are inserted a second time. Per $100$ original records, $12$ of the resulting $106$ records now share a key, giving about $11.3\%$. All other non-empty days have unique order IDs.
 
 \textbf{When to use it?}
 
-On primary keys and business keys, where any value above zero is a defect, and on columns that should be nearly unique (emails, device
-ids) to catch a stalled id generator. Avoid it on categorical columns, where duplication is the normal state and the percentage sits
-near $100\%$; a change in the number of categories is a job for Unique Count.
+Use it on a key, or combination of columns, expected to be unique in the scanned data. A fixed zero-tolerance rule is clearer than a learned range when duplicates are never valid. Check null keys separately and include earlier data if uniqueness must hold across partitions.
 
 % ---------- Unique Count ----------
 \clearpage
@@ -307,9 +264,7 @@ near $100\%$; a change in the number of categories is a job for Unique Count.
 \section{Unique Count}\label{sec:unique-count}
 \subsection{Cardinality}
 
-A customer id truncated to three digits by a type change still passes every null and duplicate check on an orders table: ids repeat
-across orders anyway. What collapses is the number of distinct customers per day, from thousands to at most a thousand. Unique count is
-the number of distinct non-null values in a column per partition.
+Unique count is the number of distinct non-null values in a column. Repeated values count once. For example, an orders table may contain many rows for the same customer; unique count tells you how many different customers appear.
 
 % equation
 \begin{center}
@@ -326,23 +281,17 @@ the number of distinct non-null values in a column per partition.
     }
 \end{center}
 
-Its companion, count, is the number of non-null values; the two together separate ``fewer rows'' from ``fewer kinds''. Cardinality
-scales with volume, so a half-empty partition also shows fewer distinct values, and the expected range must be read with Row Count
-beside it.
+Here, $P_t$ is the partition being checked and $c(r)$ is a row's value. The values $[A,A,B,\text{null}]$ have a unique count of $2$, although there are four rows. The count can fall because fewer rows arrived or because previously different values became identical.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
 \end{center}
 
-\textbf{Figure. Unique Count.} About $4{,}400$ distinct customers order on a weekday and $2{,}800$ at the weekend. The day ids were
-truncated to three digits the count drops to $995$ of the $1{,}000$ values three digits allow. The partial-load day is flagged too: half
-the rows bring fewer distinct customers, an anomaly that Row Count already explains.
+\textbf{Figure. Unique Count.} Daily distinct customer IDs in an orders table. About $4{,}400$ appear on weekdays and $2{,}800$ on weekends. Day $31$ has fewer customers because only part of the load arrived. On day $38$, keeping only the last three digits of each ID reduces the count to $995$, despite a normal load size. Day $26$ is shown as unmeasured because value checks are skipped after an empty load; its distinct count would be zero.
 
 \textbf{When to use it?}
 
-On identifiers and on categorical columns whose set of values should be stable: a drop signals truncation, a broken join or a
-defaulted field, a rise a new category, a change of case or a stray whitespace variant. Avoid it on free-text and high-precision
-numeric columns, where nearly every value is distinct and the count just mirrors the row count.
+Use it to detect unexpected changes in identifiers or categories. Compare it with row count before interpreting a drop. It measures how many distinct values exist, not which ones: replacing one category with another can leave the count unchanged. Use an allowed-values check when the category names matter.
 
 % ---------- Average ----------
 \clearpage
@@ -350,9 +299,7 @@ numeric columns, where nearly every value is distinct and the count just mirrors
 \section{Average}\label{sec:average}
 \subsection{Mean}
 
-When $5\%$ of one day's amounts arrive in cents instead of currency units, the daily mean order value goes from $44$ to $252$.
-The average is the cheapest distribution monitor: one number per partition that moves whenever the values themselves change, even when
-their count, completeness and uniqueness are perfect.
+The average is the sum of a column's non-null numeric values divided by their count. It summarizes their level in the same units as the data. For order amounts, a change may reflect different prices, a different mix of orders or a data error.
 
 % equation
 \begin{center}
@@ -369,23 +316,17 @@ their count, completeness and uniqueness are perfect.
     }
 \end{center}
 
-Missing values are ignored, the data is not sampled, and the mean reacts to every part of the distribution at once: a few extreme values,
-a shift in the bulk and a change in a subset all move it, which makes it sensitive and, on its own, ambiguous.
+Here, $n_t$ counts non-null values in partition $P_t$; nulls are omitted from the sum. For $[10,20,30]$, the average is $20$. Extreme values can move it substantially, while increases and decreases can cancel out. An unchanged average does not imply an unchanged distribution.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_average.png}
 \end{center}
 
-\textbf{Figure. Average.} The same monitor catches three different incidents. The currency slip multiplies the mean by six and leaves
-the frame. Refunds booked as negative amounts pull it down $6\%$, and a half-price promotion on cheap items $9\%$; both are outside a
-band that normally allows about $3\%$. Which of the three happened is not readable from this page; Quartiles and Min and Max tell them
-apart.
+\textbf{Figure. Average.} Daily mean order amount. On day $23$, roughly $5\%$ of amounts are multiplied by $100$, raising the mean from about $44$ to $252$ (above the plotted scale). Negative refunds on day $32$ and a discount on amounts below $30$ on day $40$ lower the mean. All three changes are flagged.
 
 \textbf{When to use it?}
 
-As the default monitor on every numeric measure that feeds a total or a KPI: price, quantity, duration, score. Avoid trusting it to
-localize a change (pair it with Quartiles and Standard Deviation) and on heavy-tailed columns, where a single legitimate large value
-moves it enough to alert; the median is the steadier choice there.
+Use it for numeric measures such as prices, durations and quantities. Check spread and quartiles to understand what changed. For skewed data, the median is less sensitive to a few extreme values. A flagged change may be legitimate, such as a promotion, rather than a loading error.
 
 % ---------- Sum ----------
 \clearpage
@@ -393,9 +334,7 @@ moves it enough to alert; the median is the steadier choice there.
 \section{Sum}\label{sec:sum}
 \subsection{Total}
 
-Revenue reports read a total, not a mean. The sum per partition is the figure the business will see, and it moves for two unrelated
-reasons: the values changed, or the number of rows did. It is the monitor closest to the number that matters and the hardest to
-interpret alone.
+The sum is the total of the non-null values in a numeric column. It can track daily revenue, units sold or another additive quantity. The total changes when the number of values changes, their average changes, or both.
 
 % equation
 \begin{center}
@@ -408,27 +347,22 @@ interpret alone.
             }
         };
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.2,-0.2)$) to[bend right=15] node[pos=1, left] {numeric value in row $r$} +(-0.8,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1.4,0.3)$) to[bend left=15] node[pos=1, left] {rows} +(-0.4,-.5);
+        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1.4,0.3)$) to[bend left=15] node[pos=1, left] {non-null values} +(-0.4,-.5);
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.2)$) to[bend left=15] node[pos=1, right] {mean} +(0.6,.5);
     }
 \end{center}
 
-The identity on the right is the diagnostic: a sum anomaly with a normal row count is a value problem, a sum anomaly with a normal mean is
-a volume problem. Nulls contribute nothing, so a completeness failure also lowers the total.
+For at least one non-null value, the total equals the non-null count $n_t$ times the mean $\bar{x}_t$. Use both to investigate a change. Nulls are ignored; SQL \texttt{SUM} returns null when there are no non-null inputs. Replacing that result with zero should be an explicit choice.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_sum.png}
 \end{center}
 
-\textbf{Figure. Sum.} Daily revenue. The currency slip lifts it sixfold, off the scale, with the row count unchanged; the partial load
-cuts it in half with the mean unchanged. The half-price promotion, which moved the mean by $9\%$, disappears here inside the volume
-noise of a normal Friday: the sum's band inherits the noise of the row count and of the mean at once.
+\textbf{Figure. Sum.} Daily total order amount. On day $23$, multiplying roughly $5\%$ of amounts by $100$ raises the total above the plotted scale. The incomplete load on day $31$ roughly halves it. The discount on day $40$ stays within the range, showing that a moderate price change can go unflagged when daily volume also varies.
 
 \textbf{When to use it?}
 
-On the one or two columns whose totals appear in reports, so the monitor watches the same number the business does. Avoid using it as
-a substitute for Row Count and Average: its band inherits the noise of both, so it misses moderate changes in either, and every alert
-needs one of them to explain it.
+Use it when downstream reports depend on a total. Pair it with the count of non-null values and the average to distinguish changes in volume from changes in value. Monitor missing values too: losing positive amounts lowers the total, while losing negative amounts can raise it.
 
 % ---------- Standard Deviation ----------
 \clearpage
@@ -436,9 +370,7 @@ needs one of them to explain it.
 \section{Standard Deviation}\label{sec:standard-deviation}
 \subsection{Spread}
 
-Two days can share a mean order value and look nothing alike: one with every order near $44$, one with half at $20$ and half at $70$.
-The standard deviation per partition tracks the spread of a numeric column, and it is the monitor that reacts hardest to a handful of
-extreme values.
+Standard deviation measures how widely numeric values are spread around their mean. It has the same units as the data. Values $[20,20,20]$ and $[10,20,30]$ share a mean of $20$, but only the second set has a non-zero standard deviation.
 
 % equation
 \begin{center}
@@ -456,22 +388,17 @@ extreme values.
     }
 \end{center}
 
-Variance is its square and moves the same way. Because deviations are squared, one value a hundred times too large dominates the sum:
-the standard deviation is the amplifier of the outlier, useful as a detector and useless as a description of the typical row.
+The formula uses the sample convention, dividing by $n_t-1$, with nulls excluded and at least two values required. The population convention divides by $n_t$ instead. Squared deviations make both sensitive to extreme values; variance is the square of standard deviation.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_stddev.png}
 \end{center}
 
-\textbf{Figure. Standard Deviation.} Five percent of amounts in cents multiply the spread by forty, far more than they multiply the
-mean, and send it off the scale. The refund day and the promotion day are flagged too, at $+15\%$ and $+11\%$: negative amounts and
-halved prices both widen the distribution without moving its center much.
+\textbf{Figure. Standard Deviation.} Daily spread of order amounts. On day $23$, multiplying roughly $5\%$ of amounts by $100$ increases the spread about fortyfold, above the plotted scale. Negative refunds on day $32$ and discounts on amounts below $30$ on day $40$ also widen the spread and are flagged.
 
 \textbf{When to use it?}
 
-Beside Average on any numeric column, to tell a shift of the whole distribution (mean moves, spread does not) from a change in its
-shape or tails (spread moves). Avoid it as a standalone alarm on heavy-tailed data, where it fires on every legitimately large order;
-there, watch Quartiles for the bulk and Max for the tail.
+Use it alongside the mean to detect changes in variability. Adding the same constant to every value changes the mean but leaves standard deviation unchanged. With heavy-tailed data, inspect extreme values before treating an alert as an error; quartiles give a less outlier-sensitive view of the central values.
 
 % ---------- Min / Max ----------
 \clearpage
@@ -479,9 +406,7 @@ there, watch Quartiles for the bulk and Max for the tail.
 \section{Min and Max}\label{sec:min-and-max}
 \subsection{Range}
 
-A negative order amount, a delivery date in $1970$, a quantity of $9{,}999$: the values that break a downstream calculation are usually
-the extreme ones, and a single row is enough. Minimum and maximum per partition watch the two ends of a column's range, which the mean and
-the quartiles smooth away.
+Minimum and maximum are the smallest and largest non-null values in a column. They track the extremes of the observed range. A single negative amount, invalid date or unusually large quantity can change one of them even if most rows remain unchanged.
 
 % equation
 \begin{center}
@@ -498,22 +423,17 @@ the quartiles smooth away.
     }
 \end{center}
 
-Each is a single value rather than an aggregate, so the expected range has to absorb whatever the most extreme legitimate row of the
-day looks like; for the maximum of a heavy-tailed column that is a wide band and the occasional false alarm.
+Both are computed over partition $P_t$, ignoring nulls. They are aggregate statistics determined by individual observations, so one row can trigger an alert. A larger partition also has more opportunities to contain an extreme value, even without a change in the underlying distribution.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_min_max.png}
 \end{center}
 
-\textbf{Figure. Min and Max.} \underline{Left:} the minimum amount sits near $4$ until refunds are booked as negative orders, $-121$, and
-again when a promotion halves the cheapest prices. \underline{Right:} the maximum jumps from about $330$ to $22{,}410$ on the currency-slip
-day, off the scale, and is also flagged on a day whose largest order, $487$, was merely large: a single value is a noisy statistic.
+\textbf{Figure. Min and Max.} Daily order-amount extremes. \underline{Left:} negative refunds on day $32$ lower the minimum to $-121$; discounts on day $40$ reduce it to $1.86$. \underline{Right:} a unit error on day $23$ raises the maximum to $22{,}410$, above the scale. Day $29$ flags a valid $487$ order: unusual does not necessarily mean wrong.
 
 \textbf{When to use it?}
 
-On columns with a physical or business range (amounts, ages, percentages, dates) to catch sign errors, sentinel values and unit
-changes; a fixed valid range can be set alongside the learned one. Avoid reading every Max alert as an incident on heavy-tailed
-columns, and use Quartiles when the question is about the bulk of the data rather than its edge.
+Use fixed bounds for known constraints, such as non-negative quantities, and historical ranges to identify unusual extremes. Allow for legitimate changes in volume and rare large values. These metrics do not show how many rows are affected; add an invalid-value count when that matters.
 
 % ---------- Quartiles ----------
 \clearpage
@@ -521,9 +441,7 @@ columns, and use Quartiles when the question is about the bulk of the data rathe
 \section{Quartiles}\label{sec:quartiles}
 \subsection{Q1, Median, Q3}
 
-Where the mean answers ``how much on average'', the quartiles answer ``how much for the typical row, the cheap quarter and the expensive
-quarter''. The first quartile, median and third quartile per partition describe the shape of a column's distribution and barely react
-to a few extreme values.
+Quartiles locate the $25$th, $50$th and $75$th percentiles of a numeric column. The middle quartile is the median; the distance from Q1 to Q3 is the interquartile range. Together, they describe the center and spread of the middle half of the values.
 
 % equation
 \begin{center}
@@ -540,22 +458,17 @@ to a few extreme values.
     }
 \end{center}
 
-A quartile moves only when values cross it. Multiplying $5\%$ of the amounts by $100$ pushes those rows above every quartile, so each
-quartile climbs to the value $5\%$ of the way further up the distribution, a shift of a few percent, while the mean multiplies by six.
+The function $F_t(x)$ is the share of non-null values at or below $x$. The formula selects the first value reaching the required share. Sample quantile methods differ; the figures use linear interpolation. Extreme values can shift quartiles, but their magnitude has much less influence than it has on the mean.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_quartiles.png}
 \end{center}
 
-\textbf{Figure. Quartiles.} Q1, median and Q3 of the daily amounts, with the mean dashed. On the currency-slip day the mean leaves the
-frame; Q3 rises $6\%$ and is flagged, the median barely moves. On the promotion day the picture inverts: Q1 drops from $25$ to $12$
-because every price under $30$ was halved, while the median and Q3, which sit above the affected items, do not move at all.
+\textbf{Figure. Quartiles.} Daily order-amount quartiles, with the mean dashed. On day $23$, multiplying roughly $5\%$ of amounts by $100$ sends the mean above the scale; Q3 rises modestly and is flagged. On day $40$, halving amounts below $30$ lowers Q1 from about $25$ to $12$, leaving that day's median and Q3 unchanged.
 
 \textbf{When to use it?}
 
-On numeric columns where the question is how the bulk of the data is distributed, and wherever the mean is too jumpy: prices, durations,
-latencies, anything heavy-tailed. Avoid them as the only monitor on the tails, since by construction they ignore the extreme values
-that Min and Max exist to catch.
+Use quartiles to track typical values and spread, especially in skewed distributions. Use the same quantile method when comparing systems. They summarize only three positions: tail errors or changes elsewhere can go unnoticed. Check extremes or additional percentiles when those parts of the distribution matter.
 
 % ---------- Text Length ----------
 \clearpage
@@ -563,9 +476,7 @@ that Min and Max exist to catch.
 \section{Text Length}\label{sec:text-length}
 \subsection{Format}
 
-Phone numbers that lose their country prefix, postcodes that gain a space, product codes that switch from twelve to fourteen characters:
-format changes in text columns leave no null and no duplicate behind. The average, minimum and maximum character length per partition
-are the cheapest proxies for format, and a shift in any of them says the strings changed shape.
+Text length is the number of characters in a non-null string. Its average, minimum and maximum summarize lengths within a partition. These checks can detect truncation, missing prefixes or a change in code format without needing to interpret the text.
 
 % equation
 \begin{center}
@@ -583,19 +494,14 @@ are the cheapest proxies for format, and a shift in any of them says the strings
     }
 \end{center}
 
-Minimum and maximum length bound the format: a fixed-width code should have all three equal, and a minimum of zero means empty strings
-are arriving in place of nulls, which Missing Values would not have seen.
+The formula averages lengths over the $n_t$ non-null strings in $P_t$. Empty strings have length zero and are included. A fixed-width code should have equal minimum, average and maximum lengths. Use character length rather than byte length when multibyte characters are possible.
 
 \begin{center}
     \includegraphics[width=\textwidth]{figures/Observability_text_length.png}
 \end{center}
 
-\textbf{Figure. Text Length.} Every phone number is eleven characters long, so the band is as narrow as the detector's floor allows. The
-day $60\%$ of numbers arrived as seven-digit strings, without the formatted prefix, the mean length fell to $8.7$: no value was missing,
-none was duplicated, and every row still passed the column's type.
+\textbf{Figure. Text Length.} Daily mean length of a simulated phone field. Values normally have eleven characters, including punctuation. On day $28$, roughly $60\%$ change to seven-character strings and the mean falls to $8.7$. They remain non-null text values, so a null check or data-type check would not detect this change.
 
 \textbf{When to use it?}
 
-On identifiers, codes and any text field with a de facto format that downstream parsing relies on: phone numbers, postcodes, SKUs,
-email addresses. Avoid it on free text (comments, descriptions), where length varies too much for the band to mean anything, and use
-Unique Count there instead to catch a column that suddenly carries the same placeholder.
+Use it on fields with predictable lengths, such as product codes and formatted identifiers. A correct length does not guarantee a valid value; combine it with format checks. For free text, changes in length may be useful, but need a baseline that allows for normal variation.
