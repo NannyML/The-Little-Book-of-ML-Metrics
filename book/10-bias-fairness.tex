@@ -91,7 +91,7 @@ Demographic Parity compares selection rates across whole groups. Equality of Opp
 \section{Equality of Opportunity}\label{sec:equality-of-opportunity}
 \subsection{Equality of Opportunity}
 
-Equality of opportunity requires qualified people to be selected at the same rate across groups. For a loan model, we would compare men and women who would repay the loan: if it approves $80\%$ of those men, it should also approve $80\%$ of those women. This is the true positive rate. Applicants who would not repay are left out of this comparison.
+Equality of opportunity requires qualified people to be selected at the same rate across groups. For a loan model, we compare only applicants who would repay: if it approves $80\%$ of the men who would repay, it should also approve $80\%$ of the women who would repay. This is the true positive rate. Demographic parity instead calculates approval rates using all applicants, including those who would not repay. Those overall approval rates can differ even when equality of opportunity holds.
 
 % Formula
 \begin{center}
