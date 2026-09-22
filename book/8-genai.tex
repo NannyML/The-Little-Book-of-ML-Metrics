@@ -1023,10 +1023,13 @@ processed audio is the downstream check.
 \section{Benchmarks}\label{sec:benchmarks}
 \subsection{Benchmarks}
 
-The metrics in this chapter score outputs. A benchmark pairs a dataset with a grading rule so we can compare models on the same tasks.
-The prompt, access to tools, number of attempts and compute budget must also match because each can change the result. Test questions
-seen during training weaken the evidence that a model will generalize, while scores near the ceiling make models hard to distinguish.
-The examples below show how benchmarks test different capabilities and how their designers have responded to these problems.
+Checking a model on a handful of examples can reveal obvious failures, but it cannot tell us how reliably the model performs. Benchmarks
+give us a repeatable test. They define a set of tasks, the data used for those tasks and how answers are scored. When models take the
+same test under the same conditions, their results are easier to compare and their strengths and weaknesses become clearer.
+
+For that comparison to be fair, the evaluation setup must also be consistent. The prompt, access to tools, number of attempts and compute
+budget can all change the result. Benchmark scores also become less informative when test questions appear in training data or when most
+models score near the ceiling. The examples below show what different benchmarks test and how they have changed as models improved.
 
 \textbf{GLUE --- General Language Understanding Evaluation}
 % reference:
@@ -1064,7 +1067,6 @@ prompting, however, PaLM and Codex exceeded that baseline on $10$ and $17$ tasks
 and prompts. BBEH ($2025$) later replaced each task with a harder one in a similar reasoning domain. Its authors tuned task difficulty
 against two reference models, so ``extra hard'' describes that model context rather than a permanent threshold.
 
-\newpage
 \textbf{MATH}
 
 % reference:
