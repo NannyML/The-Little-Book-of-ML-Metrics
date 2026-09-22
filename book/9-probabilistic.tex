@@ -1,20 +1,19 @@
 \chapteropener{Probabilistic}{orangehard}{orangeaccent}{%
-This chapter covers two related tasks: checking whether a model's probabilities match observed outcomes, and estimating its
-performance while new labels are unavailable. A loan model, for example, predicts repayment when someone applies, but the outcome
-may take months to arrive. During that wait, we can estimate performance using what we learned from earlier predictions and
-their outcomes.
+In this chapter, we check whether a model's probabilities match observed outcomes and estimate its performance while we wait
+for new labels. A loan model, for example, predicts repayment when someone applies, but we may wait months to learn whether
+they repay. During that wait, we can estimate performance using earlier predictions and their outcomes.
 
-The methods in this chapter use a labeled \emph{reference dataset} from a period before monitoring begins. We then estimate
-performance for each new batch of predictions, called a \emph{chunk} in the figures. Reference examples must be separate from
-the monitored model's training data; the estimator also needs its own held-out validation.
+Starting with a labeled \emph{reference dataset} from an earlier period, we estimate performance for each new batch of
+predictions. In the figures, we call these batches \emph{chunks}. We keep the reference examples separate from the monitored
+model's training data and validate the estimator on held-out data.
 
-The agreement between probabilities and outcomes is called \emph{calibration}; we begin with a measure of it, Expected Calibration
-Error (ECE). Two classification methods, CBPE and PAPE, use calibrated probabilities to estimate metrics such as accuracy and F1.
+We call the agreement between probabilities and outcomes \emph{calibration} and measure it with Expected Calibration Error (ECE).
+Two classification methods, CBPE and PAPE, then use calibrated probabilities to estimate metrics such as accuracy and F1.
 For regression, Direct Loss Estimation (DLE) learns to predict the model's error.
 
-These estimates can track a changing mix of inputs, known as \emph{covariate shift}, but assume the relationship between inputs
-and outcomes stays the same. If that relationship changes, we have \emph{concept drift}. Once labels arrive, Reverse Concept
-Drift (RCD) estimates its effect on performance.}{In this chapter}
+These estimates can track changes in the input mix, which we call \emph{covariate shift}. They assume the relationship between
+inputs and outcomes stays the same. If that relationship changes, we have \emph{concept drift}. Once labels arrive, we use
+Reverse Concept Drift (RCD) to estimate its effect on performance.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangehard}{orangeaccent}{Which metric?}{Follow the branches to a method. The number next to it is its page.}
