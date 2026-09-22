@@ -1023,13 +1023,14 @@ processed audio is the downstream check.
 \section{Benchmarks}\label{sec:benchmarks}
 \subsection{Benchmarks}
 
-Checking a model on a handful of examples can reveal obvious failures, but it cannot tell us how reliably the model performs. Benchmarks
-give us a repeatable test. They define a set of tasks, the data used for those tasks and how answers are scored. When models take the
-same test under the same conditions, their results are easier to compare and their strengths and weaknesses become clearer.
+Checking a model on a handful of examples can reveal obvious failures, but it cannot tell us how reliably the model performs. A benchmark
+makes the test repeatable by fixing the tasks, test data and scoring rules. When models face the same test under the same conditions, we
+can compare their results and see which capabilities improve.
 
-For that comparison to be fair, the evaluation setup must also be consistent. The prompt, access to tools, number of attempts and compute
-budget can all change the result. Benchmark scores also become less informative when test questions appear in training data or when most
-models score near the ceiling. The examples below show what different benchmarks test and how they have changed as models improved.
+Benchmark leaderboards age quickly, so this section is a short history rather than a list of today's hardest tests. We follow several
+influential benchmarks: what each introduced, why it mattered and how long it remained useful. When a model reached a human baseline or
+score ceiling, we name the model, year and evaluation setup. That setup matters because prompts, tool access, attempts and compute can all
+change a score. Test questions seen during training and results near the ceiling also weaken the comparison.
 
 \textbf{GLUE --- General Language Understanding Evaluation}
 % reference:
@@ -1038,22 +1039,23 @@ models score near the ceiling. The examples below show what different benchmarks
 % https://gluebenchmark.com/
 % https://super.gluebenchmark.com/
 
-The General Language Understanding Evaluation (GLUE), introduced in $2018$, brought nine sentence and sentence-pair tasks into one
-evaluation, including sentiment classification, paraphrase detection and natural language inference. As scores approached its human
-baseline, SuperGLUE ($2019$) introduced harder tasks and broader protocols. Together they show how a shared test supports comparison but
-can lose its ability to separate stronger models over time.
+The General Language Understanding Evaluation (GLUE, $2018$) brought nine sentence and sentence-pair tasks into one evaluation, including
+sentiment classification, paraphrase detection and natural language inference. By May $2019$, models had passed its non-expert human
+baseline, leaving little room to tell stronger systems apart. Its creators responded with SuperGLUE, a harder set of tasks. In January
+$2021$, a $1.5$-billion-parameter DeBERTa became the first single model to pass SuperGLUE's human macro-average: $89.9$ versus $89.8$.
 
 \textbf{IFEval --- Instruction-Following Eval}
 
 % reference:
 % https://arxiv.org/pdf/2311.07911
 
-Instruction-Following Eval (IFEval, $2023$) checks constraints that a program can verify. Its $541$ prompts use $25$ instruction types,
-including word limits, required phrases and output formats. Instruction-level accuracy counts individual constraints; prompt-level
-accuracy requires every constraint in a prompt to pass. Both have strict and loose versions. Loose checks tolerate some formatting
-differences but can add false positives, so comparisons must use the same variant. These scores test selected constraints, not the
-overall correctness or usefulness of an answer.
+Instruction-Following Eval (IFEval, $2023$) offered a reproducible alternative to slow, subjective reviews: constraints that a program can
+check. Its $541$ prompts use $25$ instruction types, including word limits, required phrases and output formats. Instruction-level accuracy counts individual
+constraints; prompt-level accuracy requires every constraint in a prompt to pass. Both have strict and loose versions, and loose checks
+can accept some formatting differences. These scores test whether selected instructions were followed, not whether the answer was
+correct or useful. The original was English-only; M-IFEval extended the idea to French, Japanese and Spanish in $2025$.
 
+\newpage
 \textbf{BBH --- BIG-Bench Hard}
 
 % reference:
@@ -1072,31 +1074,31 @@ against two reference models, so ``extra hard'' describes that model context rat
 % reference:
 % https://arxiv.org/pdf/2103.03874
 
-MATH ($2021$) contains $12{,}500$ competition problems across seven subjects, with $7{,}500$ for training and $5{,}000$ for testing.
-Each has a step-by-step solution and a final answer that can be checked exactly. Later reports often use other subsets: DeepSeek-R1,
-for example, reported $97.3\%$ pass@1 on MATH-500 in $2025$. That is not a score on the full MATH test set, so comparisons must name both
-the split and scoring protocol.
+MATH ($2021$) contains $12{,}500$ competition problems across seven subjects, each with a step-by-step solution and an exact final answer.
+The original paper reported low scores from the models it tested. In September $2024$, OpenAI described MATH as no longer effective for
+separating frontier models; o1-2024-12-17 scored $96.4\%$ pass@1 that December. Later reports also use subsets: DeepSeek-R1, for example, reported
+$97.3\%$ pass@1 on MATH-500 in $2025$. That is not the full test set, so comparisons must name the split and scoring protocol.
 
 \textbf{GPQA --- Graduate-Level Google-Proof Q\&A}
 
 % reference:
 % https://arxiv.org/pdf/2311.12022
 
-GPQA ($2023$) tests graduate-level physics, biology and chemistry. On the $546$-question Extended set, domain experts reached $64.8\%$
-accuracy and skilled non-experts with web access reached $34.1\%$. These are results from the original validation study, not a universal
-expert threshold. The $448$-question main set filters for expert agreement and non-expert difficulty; the stricter $198$-question Diamond
-subset requires agreement from both experts and mistakes from most non-experts. Results must name the subset. Repeated runs measure
-generation variability, but do not add questions.
+GPQA ($2023$) tests graduate-level physics, biology and chemistry. On its $546$-question Extended set, domain experts reached $64.8\%$
+accuracy and skilled non-experts with web access reached $34.1\%$. The $448$-question main set filters for expert agreement and
+non-expert difficulty; the stricter $198$-question Diamond subset requires agreement from both experts and mistakes from most
+non-experts. In September $2024$, OpenAI reported o1 as the first model to outperform the PhD experts it recruited for Diamond, with
+$77.3\%$ pass@1. That milestone applies to this subset and study, not to scientific expertise in general.
 
 \textbf{MuSR --- Multistep Soft Reasoning}
 
 % reference:
 % https://arxiv.org/pdf/2310.16049
 
-Multistep Soft Reasoning (MuSR, $2023$) asks questions about long generated murder mysteries, object-placement puzzles and team-assignment
-problems. Its construction process embeds facts from a hidden reasoning tree in each story, so answers require combining information
-across the narrative. Accuracy shows whether the model reached the right answer, not whether it followed the hidden tree or its own
-written reasoning. Fresh generated instances can reduce exposure risk; the published dataset can still leak like any public benchmark.
+Multistep Soft Reasoning (MuSR, $2023$) used generated murder mysteries, object-placement puzzles and team-assignment problems. Its authors
+designed it to challenge GPT-4 and to generate new instances as models improved. The construction process embeds facts from a hidden reasoning tree in each
+story, so answers require combining information across the narrative. Accuracy shows whether the model reached the right answer, not
+whether it followed that tree. Fresh instances can reduce exposure risk; the published dataset can still leak like any public benchmark.
 
 \newpage
 \textbf{MMLU-Pro}
@@ -1105,10 +1107,10 @@ written reasoning. Fresh generated instances can reduce exposure risk; the publi
 % https://arxiv.org/pdf/2406.01574
 % https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro
 
-MMLU-Pro ($2024$) contains $12{,}032$ multiple-choice questions across $14$ subject areas. It uses ten options instead of four and removed
-questions answered correctly by more than four of eight specified models. That difficulty filter was fixed during construction; it does
-not change as models improve. In the paper's experiment, chain-of-thought prompting raised GPT-4o from $53.5\%$ to $72.6\%$, a
-$19.1$-point gain tied to that model and prompt setup rather than a general property of the benchmark.
+By $2024$, scores on the original MMLU were beginning to plateau. MMLU-Pro responded with $12{,}032$ harder questions across $14$ subject
+areas, ten answer options instead of four and a stronger emphasis on reasoning. During construction, its authors removed questions that
+more than four of eight specified models answered correctly; that filter does not change as models improve. In the paper's experiment,
+chain-of-thought prompting raised GPT-4o from $53.5\%$ to $72.6\%$, so even the prompt changed the result by $19.1$ points.
 
 \textbf{SQuAD}
 
@@ -1116,9 +1118,10 @@ $19.1$-point gain tied to that model and prompt setup rather than a general prop
 % https://arxiv.org/pdf/1806.03822
 % https://rajpurkar.github.io/SQuAD-explorer/
 
-SQuAD $1.1$ ($2016$) contains over $100{,}000$ questions about Wikipedia passages, scored with exact match and token F1. Every question
-was guaranteed to have an answer in the text. SQuAD $2.0$ ($2018$) added over $50{,}000$ unanswerable questions that resemble answerable
-ones, so a model must also decide when not to answer. The versions evaluate different tasks and their scores are not interchangeable.
+SQuAD $1.1$ ($2016$) contains over $100{,}000$ questions about Wikipedia passages, all guaranteed to have an answer in the text. SQuAD
+$2.0$ ($2018$) added over $50{,}000$ unanswerable questions, so a model must also decide when not to answer. Later that year, BERT reported
+$93.2$ test F1 on SQuAD $1.1$ and $83.1$ on SQuAD $2.0$, both new state-of-the-art results. The versions test different tasks, so their
+scores are not interchangeable.
 
 \textbf{ARC-AGI}
 
@@ -1126,10 +1129,10 @@ ones, so a model must also decide when not to answer. The versions evaluate diff
 % https://arxiv.org/pdf/1911.01547
 % https://arcprize.org/arc-agi
 
-ARC-AGI-$1$ and ARC-AGI-$2$ use grid puzzles in which a system infers a transformation from a few examples. ARC-AGI-$1$ has $400$ public
-training and $400$ public evaluation tasks, plus hidden sets for official results. Hidden tasks reduce direct exposure, but strong systems
-have combined learned priors with synthetic data, program search or test-time fine-tuning. More search can raise a score, so comparisons
-need the same version, split and compute allowance; a limit measures efficiency rather than proving that a system reasoned.
+ARC-AGI-$1$, introduced in $2019$, uses grid puzzles in which a system infers a transformation from a few examples. In December $2024$,
+o3-preview scored $75.7\%$ on its semi-private set within the competition's \$10{,}000 compute limit; a configuration using $172$ times
+more compute reached $87.5\%$. The jump prompted ARC-AGI-$2$, whose harder grid tasks arrived in $2025$. It also showed why results must
+name the version, split and compute allowance.
 
-ARC-AGI-$3$, introduced for the $2026$ competition, is different. Agents act in unfamiliar environments, receive feedback and are scored
-on success and efficiency relative to people. Its results are not interchangeable with the static grid tasks.
+ARC-AGI-$3$, introduced for the $2026$ competition, changed the task. Agents act in unfamiliar environments, receive feedback and are
+scored on success and efficiency relative to people. Its results are not interchangeable with the static grid puzzles.
