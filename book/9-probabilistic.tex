@@ -3,10 +3,8 @@ In this chapter, we check whether a model's probabilities match observed outcome
 arrive. A loan model, for example, predicts repayment when someone applies, but we may wait months to learn whether they repay.
 Earlier predictions and their outcomes can help us estimate performance during that wait.
 
-Those earlier examples form a labeled \emph{reference dataset}. The estimator learns from their known outcomes, then estimates
-performance for each new batch of predictions before its labels arrive. Each batch forms a \emph{chunk}
-in the figures. We keep the reference examples separate from the monitored model's training data and validate the estimator on
-held-out data.
+The \emph{reference dataset} contains earlier examples that the model did not use for training, along with its predictions and
+their actual outcomes. We use it to estimate performance on new data and check those estimates on another labeled dataset.
 
 Before using probabilities to estimate performance, we need to check their \emph{calibration}: how well they agree with observed
 outcomes. We start with Expected Calibration Error (ECE) for this check, then introduce CBPE and PAPE, two methods that use
