@@ -1,10 +1,20 @@
 \chapteropener{Probabilistic}{orangehard}{orangeaccent}{%
-Apart from ECE, these pages describe estimates of a metric rather than metrics of a prediction. Once a model is in production its labels
-arrive late or never, and the question is what its accuracy, F1 or MAE is right now. If the model's probabilities are calibrated, which ECE measures,
-CBPE turns them into an expected confusion matrix; PAPE re-weights the calibration to the inputs production actually sends; DLE does
-the same job for regression with a second model that predicts the error. All three see covariate shift and are blind to concept drift,
-the case where the same inputs now deserve different labels, which RCD isolates once labels exist. Together they let a model be
-monitored without waiting for the truth.}{In this chapter}
+This chapter covers two related tasks: checking whether a model's probabilities match observed outcomes, and estimating its
+performance while new labels are unavailable. A loan model, for example, predicts repayment when someone applies, but the outcome
+may take months to arrive. During that wait, we can estimate performance using what we learned from earlier predictions and
+their outcomes.
+
+The methods in this chapter use a labeled \emph{reference dataset} from a period before monitoring begins. We then estimate
+performance for each new batch of predictions, called a \emph{chunk} in the figures. Reference examples must be separate from
+the monitored model's training data; the estimator also needs its own held-out validation.
+
+The agreement between probabilities and outcomes is called \emph{calibration}; we begin with a measure of it, Expected Calibration
+Error (ECE). Two classification methods, CBPE and PAPE, use calibrated probabilities to estimate metrics such as accuracy and F1.
+For regression, Direct Loss Estimation (DLE) learns to predict the model's error.
+
+These estimates can track a changing mix of inputs, known as \emph{covariate shift}, but assume the relationship between inputs
+and outcomes stays the same. If that relationship changes, we have \emph{concept drift}. Once labels arrive, Reverse Concept
+Drift (RCD) estimates its effect on performance.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangehard}{orangeaccent}{Which metric?}{Follow the branches to a method. The number next to it is its page.}
@@ -14,13 +24,12 @@ monitored without waiting for the truth.}{In this chapter}
   [{\dl{yes: how much is concept drift?}{\mref{RCD}{sec:rcd}}}]
   [{\dm{no, and it is a classifier}{Are the reference probabilities calibrated?}}
     [{\dl{check that first}{\mref{ECE}{sec:ece}}}]
-    [{\dl{yes, and the inputs shifted mildly}{\mref{CBPE}{sec:cbpe}}}]
-    [{\dl{the inputs shifted far}{\mref{PAPE}{sec:pape}}}]
+    [{\dl{calibration still holds in production}{\mref{CBPE}{sec:cbpe}}}]
+    [{\dl{input mix changed; reference covers it}{\mref{PAPE}{sec:pape}}}]
   ]
   [{\dl{no, and it is a regressor}{\mref{DLE}{sec:dle}}}]
 ]
 \end{forest}
-\mapnotes{All three estimators assume the relationship between inputs and labels is unchanged; RCD is the check once labels exist. Validate an estimator against realized performance on the reference period before trusting it in production.}
 \end{decisionmap}
 
 
@@ -35,9 +44,10 @@ monitored without waiting for the truth.}{In this chapter}
 % Guo, Pleiss, Sun, Weinberger (2017) — On Calibration of Modern Neural Networks (temperature scaling)
 % Murphy (1973) — decomposition of the Brier score
 
-A model that says ``$80\%$'' should be right $80\%$ of the time it says so. ECE measures how far it is from that: predictions are
-binned by confidence, the probability of the predicted class, each bin's mean confidence is compared with its observed accuracy, and
-the gaps are averaged with the bins' sizes as weights. The classification estimates in this chapter rest on it.
+Expected Calibration Error measures the gap between a classifier's confidence and how often its predictions are correct. Here,
+confidence means the probability assigned to the predicted class. If predictions made with about $80\%$ confidence are correct
+only $70\%$ of the time, the model is overconfident in that range. ECE groups predictions into confidence bins and averages these
+gaps, giving more weight to bins with more predictions.
 
 % equation
 \begin{center}
@@ -56,26 +66,23 @@ the gaps are averaged with the bins' sizes as weights. The classification estima
     }
 \end{center}
 
-ECE runs from $0$ to $1$; below about $0.02$ is well calibrated, and cross-entropy-trained networks often sit at $0.05$--$0.15$,
-over-confident. The value depends on the binning ($10$ or $15$ equal-width bins is the convention), so report the scheme.
+ECE ranges from $0$ to $1$: $0.08$ means an average gap of eight percentage points across the bins. There is no universal cutoff
+for good calibration; the result depends on the bin boundaries, sample size, and which predictions are grouped together.
 
 \textbf{When to use ECE?}
 
-Use it before trusting probabilities for anything --- cost-based thresholds, risk ranking, label-free estimation (CBPE) --- and to
-compare Platt scaling, isotonic regression and temperature scaling. Avoid reading it as accuracy: predicting the base rate for everyone
-gives $\text{ECE} = 0$, so pair it with log loss or ROC AUC.
+Use ECE on held-out labeled data when confidence affects decisions or to compare calibration methods. For a loan's repayment
+probability, or for CBPE, check positive-class calibration too: group by the probability of repayment and compare it with the fraction who repay.
+The confidence-based ECE shown here can hide differences between classes.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Reads in the units that matter: $\text{ECE} = 0.08$ means the stated confidence is off by eight points on average, and so is
-any decision made on it.
-\item Diagnosable. The reliability diagram behind it shows \emph{where} the model is wrong, which is what calibration methods correct
-(figure).
+\item Summarizes calibration in probability units, so comparisons using the same data and bins are easy to interpret.
+\item A reliability diagram shows which confidence ranges are overconfident or underconfident, helping explain the overall score.
 }
 {
-\item Binning-dependent: the same model scores differently under $10$ or $15$ bins, and sparse bins add noise; use equal-mass bins for
-skewed scores.
-\item Zero is not good enough. The base-rate model is perfectly calibrated and useless; ECE says nothing about discrimination.
+\item Wide bins can hide errors that cancel out; narrow bins may contain too few examples. Report the binning scheme and inspect counts.
+\item Low ECE does not imply useful predictions. Always predicting the class proportions can be calibrated while failing to distinguish individual cases.
 }
 
 \clearpage
@@ -86,24 +93,25 @@ skewed scores.
     \includegraphics[width=\textwidth]{figures/ECE_reliability.png}
 \end{center}
 
-\textbf{Figure. ECE.} Reliability diagrams for one classifier before and after temperature scaling. Each bar is a confidence bin: its
-height the observed accuracy, its shade the share of predictions, the red segment the gap to the diagonal. \underline{Left:} an
-over-confident model puts $55\%$ of its predictions in the top bin at a mean confidence of $0.99$ and is right $90\%$ of the time
-there; the weighted gaps sum to $\text{ECE} = 0.110$. \underline{Right:} dividing every logit by $T = 2.5$ brings each bin to the
-diagonal, $\text{ECE} = 0.007$, while ROC AUC stays at $0.867$ because no ranking changed.
+\textbf{Figure. ECE.} Reliability diagrams for a simulated binary classifier before and after temperature scaling, which adjusts
+confidence by dividing the model's raw scores (logits) by a positive value $T$. Each bar is a confidence bin: its
+height is the observed accuracy, its shade the share of predictions, and the red segment the gap to the diagonal.
+\underline{Left:} the model puts $55\%$ of its predictions in the top bin at a mean confidence of $0.99$ and is right $90\%$ of
+the time there; the weighted gaps sum to $\text{ECE} = 0.110$. \underline{Right:} with $T = 2.5$, the bars move closer to the
+diagonal and ECE falls to $0.007$. ROC AUC stays at $0.867$ because the ranking is unchanged in this binary example.
 
 \orangebox{Did you know that...}
-{Calibration and discrimination are separate axes, and ECE measures only one. DeGroot and Fienberg (1983) showed that the Brier score
-splits exactly into a calibration term and a refinement term; ECE is the absolute-value cousin of the first. A model can move along one axis without
-touching the other: temperature scaling divides every logit by the same constant, which changes no ranking, so ROC AUC is untouched
-while ECE drops, and averaging an ensemble improves discrimination while typically making the model under-confident. Two models with
-the same log loss can be a calibrated weak ranker and an over-confident strong one.}
+{DeGroot and Fienberg ($1983$) separated the Brier score into calibration and refinement terms. Calibration describes whether
+probabilities match outcome frequencies; refinement describes how well the forecasts separate cases with different outcome rates.
+A model that gives everyone the overall event rate can be calibrated while offering no such separation. Temperature scaling
+illustrates another distinction: it preserves the predicted class in both binary and multiclass classification, but only in the
+binary case does it necessarily preserve the ranking of probabilities across examples, and hence ROC AUC.}
 
 \textbf{Other related metrics}
 
-Brier score and log loss (Classification chapter) penalize miscalibration and poor ranking together; if log loss improves while ECE does
-not, the gain came from discrimination. ROC AUC ignores calibration entirely. A low reference ECE is what makes CBPE's estimate
-trustworthy, and Calibration within Groups (Bias \& Fairness chapter) asks the same question one group at a time.
+Brier score and log loss evaluate the probabilities as a whole, while ROC AUC measures ranking. Log loss can improve without
+changing either ROC AUC or binned ECE, so read them together before explaining a change. Calibration within Groups
+(Bias \& Fairness chapter) can reveal errors hidden by pooling groups; CBPE additionally needs calibration to hold in production.
 
 % ---------- CBPE ----------
 \clearpage
@@ -113,11 +121,12 @@ trustworthy, and Calibration within Groups (Bias \& Fairness chapter) asks the s
 
 % reference:
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#confidence-based-performance-estimation-cbpe
-% https://arxiv.org/abs/2401.08348 (Białek, Kuberski, Perrakis, Bifet, 2024)
+% https://arxiv.org/abs/2505.05295 (Kivimäki, Białek, Kuberski, Nurminen, 2025)
 
-A fraud model runs on Monday; the chargebacks that reveal which predictions were right arrive months later. CBPE gives Monday's
-accuracy or F1 without waiting: if the probabilities are calibrated, a prediction made at $0.9$ is right $90\%$ of the time, so the
-expected confusion matrix follows from the probabilities alone.
+CBPE estimates a classifier's performance from probabilities before labels arrive. A fraud model can therefore be monitored
+while chargebacks are still pending. Here, $c_j$ is the calibrated probability of fraud and $\hat{y}_j$ the predicted label.
+A transaction flagged as fraud with $c_j=0.9$ contributes $0.9$ to expected
+true positives and $0.1$ to expected false positives.
 
 % equation
 \begin{center}
@@ -141,27 +150,24 @@ expected confusion matrix follows from the probabilities alone.
     }
 \end{center}
 
-Each prediction contributes its probability of being a true positive and of being a false positive at once; from the four sums follow
-accuracy, precision, recall, F1 and, by sweeping thresholds, ROC AUC. An isotonic calibrator fitted on reference labels supplies $c_j$.
+The indicator $\mathds{1}$ selects the predictions with the stated label, and each sum runs over one production batch. An
+unflagged transaction contributes $c_j$ to expected false negatives and $1-c_j$ to expected true negatives. Substituting these
+counts into metric formulas gives expected accuracy and precision, and approximations for recall and F1.
 
 \textbf{When to use CBPE?}
 
-Use it to monitor a classifier when labels are delayed or never come --- fraud, churn, credit, triage --- and to catch drops caused by
-covariate shift before labels confirm them. Avoid it under concept drift (invisible to the probabilities), when production reaches
-inputs the calibrator never saw (use PAPE), and for regression (use DLE).
+Use CBPE when labels are delayed and calibration is expected to hold in production. Fit the calibrator on labeled reference
+predictions and validate the estimates on separate data. If a changing input mix disrupts calibration, consider PAPE; neither
+method can reliably estimate performance for inputs absent from the reference data.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Label-free and metric-complete: one calibrated probability per prediction yields the whole confusion matrix, months before the
-labels would.
-\item Tracks covariate shift: as production drifts toward harder inputs, probabilities move toward $0.5$ and the estimate falls with the
-realized metric (figure).
+\item Estimates several metrics from one expected confusion matrix, without waiting for production labels.
+\item Can follow performance changes caused by a new input mix when calibration still holds.
 }
 {
-\item Blind to concept drift. If the same inputs now deserve different labels, the probabilities do not change and CBPE keeps reporting
-the old performance (figure).
-\item Only as good as the calibration: over-confident models give over-optimistic estimates, and at a $0.5$ threshold the estimate
-cannot fall below $0.5$, whatever the truth.
+\item Misses concept drift when inputs stay the same: changed outcomes do not change the model's probabilities.
+\item Estimated accuracy is at least $0.5$ if each label chooses the more likely class under the probabilities used.
 }
 
 \clearpage
@@ -175,24 +181,22 @@ cannot fall below $0.5$, whatever the truth.
 
 \textbf{Figure. CBPE.} \underline{Left:} twelve production predictions with calibrated probabilities and no labels. Each bar is the
 probability the prediction is right, $c$ for $\hat{y}=1$ and $1-c$ for $\hat{y}=0$; their mean, $0.77$, is the expected accuracy. The
-labels that arrive later make nine of twelve right, $0.75$: the estimate is an expectation, not a count. \underline{Right:} twelve
-chunks of $2{,}000$; the band is $\pm 3$ standard deviations of the reference chunks' accuracy. While only the inputs drift (chunks
-$1$--$7$) realized accuracy stays inside it. From chunk $8$ the input--label relationship changes too; the probabilities do not notice,
-and the estimate stays near $0.86$ as accuracy falls to $0.60$.
+labels that arrive later make nine of twelve right, $0.75$. \underline{Right:} twelve simulated chunks of $2{,}000$ predictions.
+Accuracy rises as the input mix changes in chunks $1$--$7$. From chunk $8$, the input--outcome relationship changes too: accuracy
+falls to $0.60$, while the estimate stays near $0.86$. The illustrative band follows the estimate at $\pm 3$ standard deviations
+of reference-chunk accuracy; it is neither a validated uncertainty interval nor a fixed alert threshold.
 
 \orangebox{Did you know that...}
-{CBPE's number is not a guess about the labels; it is the expectation of the metric over the labels the probabilities imply, the same
-reasoning that makes log loss and the Brier score proper scoring rules. Even with perfect calibration, the realized accuracy on a
-chunk of $2{,}000$ predictions differs from its expectation by sampling noise alone, a standard error near
-$\sqrt{p(1-p)/2{,}000} \approx 0.01$. A gap that small means nothing, which is why the estimate carries the band in the figure, three
-standard deviations of the reference chunks' accuracy, and alerts only when it leaves it.}
+{Even a sound estimate need not equal the accuracy measured when labels arrive. For $2{,}000$ independent predictions, each with
+an $80\%$ chance of being correct, the standard error of accuracy is $\sqrt{0.8(1-0.8)/2{,}000}\approx0.009$, almost one percentage
+point. Uncertainty intervals account for variation around an estimate, while historical alert thresholds flag changes from past
+performance. To judge a gap, consider both sampling variation and estimation error.}
 
 \textbf{Other related metrics}
 
-ECE decides whether CBPE can be trusted: the estimation error is bounded by the calibration error, so a reference ECE of a few
-hundredths caps the estimate's error at about that size. PAPE is CBPE with the calibrator re-weighted to the production inputs, the
-safer choice under covariate shift. When labels arrive, the gap between realized and estimated performance is concept drift, which
-RCD quantifies.
+Low reference ECE does not bound production error. PAPE adjusts calibration for a changed input mix, but its estimates also need
+validation. When labels arrive, investigate gaps between estimated and measured performance; RCD can help assess concept drift,
+while estimator error and sampling variation may also contribute.
 
 % ---------- PAPE ----------
 \clearpage
@@ -204,9 +208,10 @@ RCD quantifies.
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/probabilistic-adaptive-performance-estimation-pape
 % https://arxiv.org/abs/2401.08348 — Estimating Model Performance Under Covariate Shift Without Labels
 
-A credit model calibrated on last year's applicants now scores this year's, who are younger and borrow less. Its probabilities are
-calibrated on average, but not on the population it now sees. PAPE re-fits the calibrator to the production distribution by weighting
-each reference example by how much more, or less, common its inputs have become, then estimates performance as CBPE does.
+PAPE estimates classification performance by adapting calibration to the production input mix. Suppose a loan model assigns
+$80\%$ repayment probability to two equally sized applicant groups, but their repayment rates are $90\%$ and $70\%$. The combined
+rate is $80\%$, so calibration looks right. If the first group becomes more common, the combined rate rises even though neither
+group's behavior changed. PAPE gives reference examples from that group more weight when refitting the calibrator.
 
 % equation
 \begin{center}
@@ -230,21 +235,18 @@ applied to production scores, and the confusion matrix is built as in CBPE.
 
 \textbf{When to use PAPE?}
 
-Use it as the default label-free estimate for a classifier under covariate shift --- a changed customer mix, a new region, an
-uncovered season --- as long as the shift stays within inputs the reference contains. Avoid it under concept drift, when production
-reaches inputs the reference never had, and when either sample is small.
+Use PAPE when a changed customer mix may have disrupted calibration, provided the reference data covers the inputs seen in
+production. Check that enough reference examples support the new mix. Weighting cannot supply missing examples or reveal
+concept drift without new labels.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Learns the shift instead of assuming it. Across $959$ dataset--model pairs and $36{,}557$ production chunks of US census data,
-its error was the lowest of seven methods for accuracy, F1 and ROC AUC.
-\item Adaptive: weights are recomputed per chunk, so a calibrator that is right on average becomes right for the inputs at hand (figure).
+\item Uses production inputs to adjust reference calibration, so it can follow changes that a fixed calibrator misses.
+\item Recomputes weights for each chunk, allowing the calibration adjustment to change as the customer mix changes.
 }
 {
-\item Cannot extrapolate. Where production has inputs the reference never had, the density ratio is undefined and the estimate reaches
-only as far as the reference data does.
-\item Two more models to get wrong: a weak density-ratio classifier or a calibrator fit on few effective samples adds noise, and like
-CBPE it cannot see concept drift.
+\item Cannot extrapolate: the density ratio is undefined where production has inputs with no reference support.
+\item Inaccurate weights distort calibration. If a few reference examples carry most of the weight, the estimate can be unstable even with many rows.
 }
 
 \clearpage
@@ -255,25 +257,24 @@ CBPE it cannot see concept drift.
     \includegraphics[width=\textwidth]{figures/PAPE_reweighting.png}
 \end{center}
 
-\textbf{Figure. PAPE.} A model calibrated on the reference population as a whole, whose calibration depends on an input, $x_2$, that
-production drifts along. \underline{Left:} the density-ratio classifier turns the mismatch between reference (gray) and production
-(purple) into a weight per reference point; the curve is the mean weight at each $x_2$, about $18$ near the production region and zero
-elsewhere. \underline{Right:} CBPE keeps reading the reference-wide calibration and stays at $0.75$ while realized accuracy climbs to
-$0.89$; PAPE follows it with a mean error of $0.009$ against CBPE's $0.089$.
+\textbf{Figure. PAPE.} A simulated classifier whose calibration varies with an artificial input, $x_2$.
+\underline{Left:} the reference (gray) and final production chunk (purple) have different input distributions. The curve shows
+the mean weight assigned to reference points at each $x_2$, about $18$ near the production region and close to zero elsewhere.
+\underline{Right:} CBPE uses the fixed reference calibration and stays near $0.75$ while realized accuracy climbs to
+$0.89$; PAPE follows it with a mean absolute error of $0.009$ against CBPE's $0.089$.
 
 \orangebox{Did you know that...}
-{PAPE is importance weighting applied to the calibrator rather than to the labels. Classic importance weighting re-weights the
-reference labels until they look like production and reads the metric off them, so the estimate can never contain more than the
-reference data knew, and it degrades when a few examples carry most of the weight. PAPE puts the weights into the calibration step and
-then scores production's own predictions, so the estimate is built from production inputs, with reference labels supplying only the map
-from score to probability. In the paper's benchmark that difference gave PAPE the lowest error on every metric, with importance
-weighting and CBPE behind it.}
+{Importance weighting can estimate performance directly by giving more weight to errors on reference examples that resemble
+production. PAPE instead uses those weights to fit a calibrator, then estimates performance from production predictions.
+In Białek and colleagues' $2025$ benchmark, covering $959$ evaluation cases and $36{,}557$ production chunks from US census data,
+PAPE had the lowest aggregate error for accuracy, F1, and ROC AUC among eight evaluated methods. That result supports the approach
+in those experiments; it does not guarantee that weighting improves every estimate.}
 
 \textbf{Other related metrics}
 
-CBPE is PAPE without the weights and is adequate when the shift is mild; if the two disagree, the reference calibration does not hold on
-production inputs and PAPE is the one to trust. DLE is the regression counterpart. All three estimate the effect of covariate shift
-only; RCD, once labels arrive, measures the part of a performance change that concept drift explains.
+If CBPE and PAPE disagree, check whether production inputs are covered by the reference data and whether a few examples dominate
+the weights. Compare both estimates with measured performance on labeled periods with similar shifts before choosing between them.
+DLE estimates regression loss; RCD uses new labels to assess the effect of a changed input--outcome relationship.
 
 % ---------- DLE ----------
 \clearpage
@@ -284,9 +285,10 @@ only; RCD, once labels arrive, measures the part of a performance change that co
 % reference:
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#direct-loss-estimation-dle
 
-A demand-forecasting model's error is not the same everywhere: small for staples, large for promotions. Direct Loss Estimation trains a
-second, ``nanny'' model on the reference period to predict the monitored ``child'' model's error for each input, its size rather than
-its sign, and averages those predicted errors over production inputs whose true values are still unknown.
+Direct Loss Estimation estimates a regression model's performance by learning how large its errors tend to be for different
+inputs. A demand forecast, for example, may be more accurate for staples than for promotions. DLE trains a second model on
+reference errors, then averages its predicted losses over each production batch. In NannyML's terminology, this loss model is
+the \emph{nanny}, and the monitored model is the \emph{child}.
 
 % equation
 \begin{center}
@@ -306,28 +308,24 @@ its sign, and averages those predicted errors over production inputs whose true 
     }
 \end{center}
 
-The nanny $h$ is trained on reference data to predict the child's loss --- $|y - f(x)|$ for MAE, the squared error for MSE and RMSE ---
-from the inputs plus the child's own prediction. Predicting how large an error will be is an easier problem than predicting the target,
-so the nanny can be the same class of model as the child, or simpler.
+For MAE, train $h$ to predict $|y-f(x)|$ from the inputs and the monitored model's prediction $f(x)$. These errors must come from
+data that $f$ did not train on. For MSE, predict squared errors instead; for RMSE, take the square root after averaging them.
+Validate $h$'s estimates on separate labeled data before using them for monitoring.
 
 \textbf{When to use DLE?}
 
-Use it to monitor regression models without targets --- demand and price forecasts, delivery times, energy load --- where errors vary
-across the input space and the production mix drifts. Avoid it under concept drift, for shifts into unseen inputs, and when noise is
-homoscedastic, where it only reproduces the reference error.
+Use DLE when regression targets arrive late and the input mix changes. It is useful when expected loss varies predictably across
+inputs, whether because of noise or systematic model errors. It cannot reliably handle a changed input--outcome relationship
+or inputs outside the reference data.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Delivers the metric you report: MAE, MSE and RMSE come straight from predicted losses, with no assumption about the residual
-distribution.
-\item Exploits heteroscedasticity: when noise grows with the input, the nanny follows the true MAE from the easy region to the hard one
-as production drifts (figure).
+\item Estimates familiar regression metrics directly from losses, without having to model the full distribution of possible outcomes.
+\item Error size can be easier to predict than the outcome itself: a promotion may have uncertain demand but consistently larger errors.
 }
 {
-\item Needs the error to be predictable from the inputs: under homoscedastic noise the nanny learns a constant, and under concept
-drift it confidently reports the old error.
-\item A second model to train, tune and validate, whose own errors add to the estimate; check it against realized loss when targets
-do arrive.
+\item Assumes learned error patterns still hold. If errors grow for unchanged inputs, the loss model continues to predict the earlier error.
+\item A second model needs training and validation. Noisy reference losses or a poorly fitted loss model can distort the performance estimate.
 }
 
 \clearpage
@@ -338,25 +336,24 @@ do arrive.
     \includegraphics[width=\textwidth]{figures/DLE_nanny.png}
 \end{center}
 
-\textbf{Figure. DLE.} \underline{Left:} reference data whose noise grows with the input, a linear model $f$ fitted to it, and the
-nanny $h$, a second linear model trained on the same inputs plus $f(x)$ to predict $|y - f(x)|$. The band $f \pm h$ widens where the
-data scatter: the nanny has learned where the child is unreliable. Two of its training targets are marked in red.
-\underline{Right:} eight production chunks drifting from the easy region to the hard one. The realized MAE rises from $0.13$ to $0.67$
-and the DLE estimate, computed from inputs alone, tracks it to within $0.01$.
+\textbf{Figure. DLE.} \underline{Left:} simulated data whose noise grows with the input, a linear prediction model $f$, and a
+linear loss model $h$. The shaded band shows $f(x)\pm h(x)$: the prediction plus or minus the estimated mean absolute error.
+It illustrates error size, with no stated coverage probability. Two absolute errors used to train $h$ are marked in red.
+\underline{Right:} eight production chunks move toward the noisier region. Measured MAE rises from $0.13$ to $0.67$, and DLE
+tracks it to within $0.01$ in this example.
 
 \orangebox{Did you know that...}
-{The nanny predicts the size of the error and not the error itself, and the difference matters. A model that predicts the signed
-residual $y - f(x)$ is a second regressor trying to correct the first, which is what gradient boosting does, and if it could do that
-well the child should have been better. The absolute error is a different quantity: it says how wrong the child is, not in which
-direction, and it is often easy to predict when the target is not, because it follows the noise level and the child's weak regions.
-NannyML's documentation records the two alternatives it rejected, Bayesian error models and conformal quantile estimates, both of
-which needed assumptions about the noise that estimating the loss directly does not.}
+{NannyML explored Bayesian models and conformalized quantile regression before adopting DLE. One attempt converted two predicted
+quantiles into an outcome distribution by assuming it was normal, then calculated expected loss from that distribution.
+Predicting the loss directly removed those intermediate steps. The normality assumption belonged to that particular conversion:
+conformal prediction itself does not require normally distributed noise. Its usual coverage guarantee instead depends on
+calibration and future examples being exchangeable, as they are under independent sampling from the same distribution.}
 
 \textbf{Other related metrics}
 
-CBPE and PAPE are the classification counterparts; DLE needs no calibration because it models the loss itself. When DLE's estimate and
-the realized MAE disagree once targets arrive, either the noise changed (concept drift) or production reached inputs the nanny never
-saw; input-drift monitoring on the features tells which.
+CBPE and PAPE estimate classification performance; DLE learns the loss directly. When measured and estimated loss disagree,
+check input changes, recent labeled errors, and the loss model's validation results. The gap may reflect concept drift, poor
+estimation, or sampling variation, and input monitoring alone cannot distinguish them.
 
 % ---------- RCD ----------
 \clearpage
@@ -367,9 +364,10 @@ saw; input-drift monitoring on the features tells which.
 % reference:
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/reverse-concept-drift-rcd
 
-Six months after deployment the labels arrive and accuracy has dropped four points. Part of that is covariate shift, which the
-label-free estimates already flagged; the rest is concept drift, the same inputs now deserving different labels. RCD isolates the
-second part by learning the new concept from the monitored labels and asking how the model would score on its reference data under it.
+Reverse Concept Drift estimates how a changed relationship between inputs and outcomes affects model performance on the
+reference population. For a loan model, it keeps the earlier applicants' inputs fixed and estimates how accurate the same model
+would be under today's repayment behavior. A separate model $g$ learns that behavior, called the new \emph{concept}, from
+recent labeled data.
 
 % equation
 \begin{center}
@@ -389,29 +387,25 @@ second part by learning the new concept from the monitored labels and asking how
     }
 \end{center}
 
-$g$ is a flexible model (gradient-boosted trees by default) trained on the monitored period's inputs and labels; its probabilities on
-the \emph{reference} inputs play the part labels play in CBPE, so the mean is the model's performance on its own data under the new
-concept, with covariate shift held fixed. A companion magnitude, $\frac{1}{n}\sum_j |g(x_j) - g_{\text{ref}}(x_j)|$, with
-$g_{\text{ref}}$ fitted on the reference period, says how much $P(y \mid x)$ moved.
+The equation shows binary accuracy: $g(x)$ is the estimated probability of class $1$ under the new concept, $m(\hat{y},y)$ is
+$1$ for a correct prediction and $0$ otherwise, and $m_{\text{ref}}$ is measured reference accuracy. Averaging over the same
+reference inputs holds their mix fixed, so $\Delta$ estimates the accuracy change due to the new concept. F1 and ROC AUC need
+different metric calculations.
 
 \textbf{When to use RCD?}
 
-Use it when labels for a monitored period exist and performance has changed, to attribute the change: retrain if concept drift
-dominates, re-weight or re-calibrate if covariate shift does. Avoid it without labels, when the monitored period is too small for $g$,
-and when production inputs leave the reference support.
+Use RCD after labels arrive to investigate whether changed outcomes for comparable inputs could explain a performance change.
+A negative accuracy impact is a reason to evaluate retraining, not a guarantee it will help. Recent labeled data must be sufficient
+to learn the new concept across the reference inputs.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Separates the two causes of a drop: covariate shift moves the inputs, concept drift moves the labels for fixed inputs, and RCD
-reports the second alone, the part retraining fixes (figure).
-\item Reads in the metric's own units: an impact of $-0.04$ accuracy means the new concept costs four points on the reference
-population.
+\item Evaluates a changed concept on a fixed population, avoiding confusion with changes in how common different inputs are.
+\item Uses the metric's own units: an accuracy impact of $-0.04$ estimates a four-percentage-point drop on the reference population.
 }
 {
-\item Needs labels and a good concept model: a weak $g$ blurs the concept and attributes noise to drift; check $g$ on held-out
-monitored data first.
-\item Reference-anchored: it asks what the new concept does to the old population, so drift confined to inputs the reference never had
-is invisible to it.
+\item Errors in $g$ can look like concept drift. Check its predictions and calibration on held-out recent data before interpreting the impact.
+\item Describes the reference population; it does not capture drift confined to inputs absent from that population.
 }
 
 \clearpage
@@ -422,22 +416,21 @@ is invisible to it.
     \includegraphics[width=\textwidth]{figures/RCD_decomposition.png}
 \end{center}
 
-\textbf{Figure. RCD.} \underline{Left:} the reference inputs, the monitored model's boundary (black) and the new concept $g$ learned
-from the monitored labels (red); where they disagree, the same input now deserves a different label. \underline{Right:} the accuracy
-change from $0.832$ to $0.746$ split in two. Scoring the monitored inputs under the old concept (known here, estimated by PAPE in
-practice) isolates covariate shift, $+0.010$; applying $g$'s probabilities to the reference inputs, as CBPE would apply labels, isolates
-concept drift, $-0.065$. The residual, $-0.031$, is interaction plus sampling noise. Retraining addresses the red bar.
+\textbf{Figure. RCD.} \underline{Left:} simulated reference inputs, the monitored model's decision boundary (black), and the new
+concept model's boundary (red). Between them, the models predict different classes. \underline{Right:} measured accuracy falls
+from $0.832$ to $0.746$. Changing the input mix while keeping the old concept gives an estimated effect of $+0.010$; applying
+the new concept to the reference inputs gives $-0.065$. These reach $0.777$, leaving a residual of $-0.031$. Interaction between
+the shifts, concept-model error, and sampling variation can all contribute to that remainder.
 
 \orangebox{Did you know that...}
-{The name is literal: instead of applying the model to new data, RCD applies the new data's concept to the model's old data, in
-reverse. The reference side stays label-free through the same expectation CBPE uses, with $g$'s probabilities standing in for labels,
-so the impact is an expected metric rather than a guess. Any change in performance then has two parts that can be measured
-separately: $P(x)$ moved, which PAPE estimates without labels, and $P(y \mid x)$ moved, which RCD estimates once labels exist. When
-the two together fall well short of the realized change, the monitored period contains inputs the reference never covered, and
-neither method can speak for them.}
+{A large concept change can leave overall accuracy unchanged. Suppose a model predicts repayment for everyone in two equally
+sized groups. Both groups initially repay $80\%$ of the time; later, one repays $100\%$ and the other $60\%$. Each rate changed
+by twenty percentage points, but average accuracy is still $80\%$: the improvement in one group cancels the deterioration in
+the other. A small overall impact can therefore hide a substantial change for particular groups.}
 
 \textbf{Other related metrics}
 
-CBPE, PAPE and DLE estimate performance under covariate shift and are silent on concept drift; when their estimate and the realized
-metric diverge, RCD names how much of the gap concept drift explains. The magnitude complements the impact: a large magnitude with a
-small impact means $P(y \mid x)$ moved mostly where the model was not deciding anything.
+CBPE, PAPE, and DLE assume the input--outcome relationship is stable; RCD helps investigate that assumption once labels arrive.
+RCD also reports a \emph{magnitude}, $\frac{1}{n}\sum_j |g(x_j)-g_{\text{ref}}(x_j)|$, where $g_{\text{ref}}$ models the old concept
+and the sum covers the reference inputs. This measures how much estimated probabilities changed, regardless of their effect on
+accuracy. If magnitude is large but impact is small, examine individual groups for changes that cancel in the average.
