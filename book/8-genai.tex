@@ -1,10 +1,13 @@
 \chapteropener{GenAI}{purplehard}{purpleaccent}{%
-Generated text, images and audio rarely have a single reference, so their metrics take three routes. Fit: perplexity scores how well a
-model predicts held-out text. Learned similarity: BERTScore, LPIPS and CLIP Score compare outputs with references or prompts in the
-embedding space of a pretrained model, and inherit that model's habits. Distributions: MAUVE, Inception Score and FID compare a pile of
-outputs with a pile of real samples instead of one pair at a time. For text-to-image, DSG and VQAScore ask a vision--language model
-whether the prompt is depicted; for speech, PESQ and STOI predict what a listening panel (MOS) would say. The chapter closes with the
-benchmarks that leaderboards report.}{In this chapter}
+An image can look convincing while missing something the prompt requested. A passage can be fluent but unlike human writing, and speech
+can sound clean while remaining hard to understand. These failures need different checks: one output against a reference or prompt, a
+collection against real examples, or an automatic score against what people see or hear.
+
+This chapter applies those comparisons to text, images and speech. Perplexity, BERTScore and MAUVE evaluate predictive fit, meaning and
+the distribution of generated text. Inception Score evaluates a generated image set by itself; FID compares it with real images, while
+LPIPS compares one image with its reference. CLIP Score, DSG and VQAScore check prompt alignment. For speech, MOS measures listener-rated
+quality, PESQ predicts quality from a clean reference and STOI predicts intelligibility. The final pages trace several influential
+benchmarks and how they changed as models improved.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplehard}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
@@ -51,9 +54,9 @@ benchmarks that leaderboards report.}{In this chapter}
 % https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/
 % https://arxiv.org/abs/1904.09751 (Holtzman et al., The Curious Case of Neural Text Degeneration)
 
-A language model that scores held-out text at a perplexity of $20$ is, at each token, as uncertain as if it were choosing among $20$
-equally likely words. Perplexity is the exponential of the average negative log-likelihood of the actual next tokens, and it needs no
-labels: only the text and the model's probabilities.
+A language model predicts one token --- a word or word piece --- at a time. On held-out text, a perplexity of $20$ means its average
+negative log probability is the same as uniform guessing among $20$ tokens. Individual predictions can be much more or less certain;
+perplexity is the exponential of their average and needs only the text and the model's probabilities.
 
 % equation
 \begin{center}
@@ -77,21 +80,21 @@ geometric mean of $1/p$: one token at $p = 10^{-6}$ costs $13.8$ nats, as much a
 
 \textbf{When to use Perplexity?}
 
-Use it to compare checkpoints of one model, to choose tokenizers or data mixes at a fixed architecture, and to flag distribution shift
-when the perplexity of incoming text jumps. Avoid it for judging generation quality (use MAUVE or human ratings), for masked models like
-BERT, and across different vocabularies (compare bits per byte instead).
+Use it to compare checkpoints or data mixes when the tokenizer and evaluation text stay fixed, and to flag distribution shift when the
+perplexity of incoming text jumps. Avoid it for judging generated samples (use MAUVE or human ratings) and for masked models like BERT.
+To compare tokenizers or vocabularies, use bits per byte so the unit stays fixed.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Cheap and label-free: one forward pass over held-out text, and lower is strictly a better fit to that text.
-\item Fine-grained. A drop from $20$ to $19$ is a $5\%$ rise in the geometric-mean token probability, enough to settle a tokenizer
-decision a benchmark would miss.
+\item Fine-grained. A drop from $20$ to $19$ is about a $5\%$ rise in the geometric-mean token probability, so it can reveal changes a
+coarse benchmark misses.
 }
 {
-\item Tokenizer-dependent. Byte-level pieces are each easier to predict, so per-token perplexity looks lower on the same text. Compare
-bits per byte instead.
-\item Fit is not quality. Repetitive, generic continuations get lower perplexity than the human text they replace, so samples can get
-duller as perplexity improves.
+\item Tokenizer-dependent. Changing what counts as one token changes both the number of predictions and their unit. Compare bits per byte
+instead.
+\item Held-out fit is not sample quality. A model can assign high likelihood to repetitive continuations, so lower perplexity on human
+text does not guarantee better generations.
 }
 
 \clearpage
@@ -108,16 +111,18 @@ Swapping one word costs $10.1$ nats for ``Ohio'' ($p = 0.00004$), makes ``France
 from $8.3$ to $23.1$.
 
 \orangebox{Did you know that...}
-{The lowest-perplexity text is not the most human. Holtzman et al. (2020) gave GPT-2 a prompt and compared its own beam-search
-continuation with the real one: the model rated the human text far less probable than the repetitive text it had generated itself.
-Human writing is full of low-probability choices, so maximizing likelihood at decoding time yields loops and clichés. Perplexity
-measures how well a model fits text, not how good its own text will be, and the two can move in opposite directions.}
+{Holtzman et al. (2020) gave GPT-2 a prompt and compared the likelihood of its beam-search continuation with the real continuation. The
+model assigned more probability to its own repetitive text. This differs from held-out perplexity, which averages probabilities over a
+fixed collection of human text, but it exposes a related problem: always choosing the most likely continuation produces loops and
+clichés because human writing includes less predictable choices. Predictive fit and generated-text quality can therefore move
+differently.}
 
 \textbf{Other related metrics}
 
-BLEU and ROUGE (NLP chapter) measure overlap with a reference; MAUVE measures whether generated text is distributed like human text.
-Perplexity falling while MAUVE stays flat means the model predicts better but decodes badly. For masked models, pseudo-perplexity
-(masking and scoring each token in turn) is the nearest substitute.
+BLEU and ROUGE (NLP chapter) measure overlap with a reference; MAUVE compares generated and human-text distributions. If held-out
+perplexity falls while MAUVE stays flat, predictive fit improved but this MAUVE evaluation found no corresponding distributional
+improvement in the samples. Inspect the generations and decoding setup before drawing a conclusion. For masked models,
+pseudo-perplexity scores each token while masking it in turn.
 
 % ---------- BERTScore ----------
 \clearpage
@@ -152,23 +157,23 @@ token to its most similar counterpart, so near-synonyms in context count as near
 
 $R_{\text{BERT}}$ is recall: each reference token finds its best candidate token (embeddings are unit-normalized, so the dot product is
 a cosine). Precision runs the matching from the candidate side and $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the
-top of the scale, so the reference implementation rescales them against a random-pair baseline.
+top of the scale; the reference implementation can optionally rescale them against a random-pair baseline. The figure uses raw scores,
+so $0.88$ is a similarity value, not $88\%$ correct.
 
 \textbf{When to use BERTScore?}
 
-Use it for summarization, translation and paraphrase evaluation, where a good output can be worded very differently from its
-reference. Avoid it when exact tokens carry the meaning --- numbers, names, code (use exact match or BLEU) --- and when no reference
-exists (use MAUVE or a model judge).
+Use it for summarization, translation and paraphrase evaluation, where a good output can be worded very differently from its reference.
+When numbers, names or code must be exact, check those values directly instead of trusting an aggregate similarity or overlap score. If
+there is no matched reference, compare collections with MAUVE or use a model judge.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Rewards paraphrase: a candidate that keeps the meaning but changes every content word scores $F_{\text{BERT}} = 0.88$ where
-unigram precision is $0.40$ and BLEU, which needs matching 4-grams, is zero (figure).
+\item Rewards paraphrase: the example scores $F_{\text{BERT}} = 0.88$ despite changing every content word; unigram precision is
+$0.40$ and BLEU is zero (figure).
 \item Token-level. The matching matrix shows which reference words went unmatched, so a low score points to a specific omission.
 }
 {
-\item Model- and layer-dependent. Scores from bert-base and roberta-large are not comparable; a number without its configuration is
-meaningless.
+\item Configuration-dependent. Report the model, layer, IDF weighting and baseline rescaling; each changes the scale.
 \item Weak on word order and negation: swapping who did what to whom, or inserting ``not'', keeps most token matches and the score
 barely moves (figure).
 }
@@ -181,9 +186,10 @@ barely moves (figure).
     \includegraphics[width=\textwidth]{figures/BERTScore_matching.png}
 \end{center}
 
-\textbf{Figure. BERTScore.} \underline{Left:} cosine similarities between reference tokens (rows) and candidate tokens (columns) from
-layer $9$ of bert-base-uncased. Each row's maximum (boxed) is that token's best match and their mean is recall; column maxima (dots)
-give precision. ``Doctor'' finds ``physician'' at $0.82$, so $F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.
+\textbf{Figure. BERTScore.} \underline{Left:} raw cosine similarities between reference tokens (rows) and candidate tokens (columns) from
+layer $9$ of bert-base-uncased, without baseline rescaling or IDF weighting. Each row's maximum (boxed) is that token's best match and
+their mean is recall; column maxima (dots) give precision. ``Doctor'' finds ``physician'' at $0.82$, so raw
+$F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.
 \underline{Right:} the paraphrase scores high and the unrelated sentence low, but swapping who called whom scores $0.90$, above the
 paraphrase, and negation still scores $0.84$.
 
@@ -196,9 +202,10 @@ configuration next to every score.}
 
 \textbf{Other related metrics}
 
-BLEU, METEOR and ROUGE (NLP chapter) count surface overlap; BERTScore counts semantic overlap. Low BLEU with high BERTScore means
-paraphrase; both high and still wrong means the error is a detail both under-weight, such as a number or a negation. MAUVE compares
-whole distributions and needs no reference per sample.
+BLEU, METEOR and ROUGE (NLP chapter) count surface overlap; BERTScore compares contextual token similarity. Low BLEU with high BERTScore
+can be consistent with a good paraphrase, but it can also hide a role swap or negation, so inspect whether the wording changed or the
+meaning did. Numbers, names and other exact values need their own checks. MAUVE compares collections and needs a human reference
+collection, but no matched reference for each sample.
 
 % ---------- MAUVE ----------
 \clearpage
@@ -211,9 +218,9 @@ whole distributions and needs no reference per sample.
 % https://arxiv.org/pdf/2102.01454
 % https://krishnap25.github.io/mauve/
 
-Five thousand articles from a model and five thousand written by people are judged as two piles rather than article by article.
-MAUVE embeds every text, clusters the embeddings into a histogram per pile, and measures how far the model's histogram sits from the
-human one, dropping both when the model writes text people never would and when it never writes text people often do.
+MAUVE compares generated articles with human articles from the same setting. It asks whether the model covers the same kinds of text in
+similar proportions, without pairing individual articles. MAUVE embeds the texts, clusters them and counts each collection's share in
+every cluster. The score falls when the model fills clusters the human collection does not, or misses clusters it does.
 
 % equation
 \begin{center}
@@ -237,27 +244,26 @@ human one, dropping both when the model writes text people never would and when 
     }
 \end{center}
 
-Each $\lambda$ mixes the two distributions; sweeping it traces a curve from $(0,1)$ to $(1,0)$, and MAUVE is the area under it, $1$ when
-the histograms coincide ($c = 5$ sets the scale). The horizontal coordinate falls when $Q$ puts mass where $P$ has none (junk); the vertical one when $Q$ lacks
-mass where $P$ has it (lost diversity).
+Each $\lambda$ mixes the distributions and produces one point on the divergence curve. The reference implementation adds $(0,1)$ and
+$(1,0)$ before calculating the area; the sweep itself need not reach them. Identical histograms score $1$. The horizontal coordinate
+falls for model-only mass, while the vertical coordinate falls when the model misses human-text mass.
 
 \textbf{When to use MAUVE?}
 
-Use it to compare decoding strategies (greedy, beam, nucleus) and model sizes on open-ended generation --- stories, dialogue,
-continuations --- where no single right answer exists. Avoid it for short outputs with a reference (use BERTScore or BLEU) and below a
-few thousand samples, where the histograms are too noisy.
+Use it to compare open-ended generation under the same human corpus, sample count, feature model and settings. Aim for at least
+$1{,}000$ texts per side, preferably a few thousand; repeat smaller evaluations and report their variation. For short outputs with
+matched references, use BERTScore or BLEU.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Sees quality and diversity at once: greedy decoding is fluent and likely yet collapses into a few modes, so MAUVE scores it near
-zero while nucleus sampling from the same model scores above $0.9$.
-\item Needs no references and no per-sample labels: two piles of text and an embedding model.
+\item Sees quality and diversity together. In Pillutla et al.'s $2021$ GPT-2 web-text experiment, greedy decoding scored about $0.012$
+and nucleus sampling $0.936$ under the same setup.
+\item Needs no matched reference for each output: only a human reference collection from the same setting and an embedding model.
 }
 {
-\item Sample-hungry. The paper uses $5{,}000$ texts per side; with a few hundred, most $k$-means buckets are empty and the score swings
-from run to run.
-\item Measures the embedding's view: piles that differ in length or topic score low even if each text is fine, and the embedding
-model and $k$ change the value.
+\item Sample-hungry. Small evaluations can look too good and vary between runs; the follow-up recommends at least $1{,}000$ texts per
+side and uses $5{,}000$.
+\item Measures the embedding's view: length or topic differences can lower the score, and the embedding model and $k$ change it.
 }
 
 \clearpage
@@ -269,8 +275,8 @@ model and $k$ change the value.
 \end{center}
 
 \textbf{Figure. MAUVE.} \underline{Left:} human text $P$ (gray) and three model distributions $Q$ over eight embedding clusters.
-\underline{Right:} the curve each pair traces as $\lambda$ sweeps the mixture from $Q$ to $P$; MAUVE is the shaded area, computed exactly
-with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
+\underline{Right:} the curve produced as $\lambda$ changes, completed with the two boundary points used for integration; MAUVE is the
+shaded area with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
 human text falls in loses area along the horizontal axis; one that writes only the three commonest kinds of text loses it along the
 vertical axis.
 
@@ -297,9 +303,9 @@ fits in feature space rather than histograms.
 % https://arxiv.org/abs/1606.03498 (Salimans et al., Improved Techniques for Training GANs)
 % https://arxiv.org/abs/1801.01973 (Barratt & Sharma, A Note on the Inception Score)
 
-A generator trained on ImageNet should produce images a classifier recognizes without hesitation, and all kinds of them. The Inception
-Score checks both with a pretrained Inception-v3: each image should get a confident label ($p(y|x)$ peaked) and the labels across
-images should be spread out ($p(y)$ flat). The score is the exponential of the average KL divergence between the two.
+A generator trained on ImageNet should produce images a classifier recognizes confidently and should cover many classes. Inception-v3
+assigns a probability to every class for each image; this vector is $p(y|x)$. Averaging those vectors over the generated set gives
+$p(y)$. Inception Score is high when individual predictions are concentrated but their average is spread across classes.
 
 % equation
 \begin{center}
@@ -316,27 +322,28 @@ images should be spread out ($p(y)$ flat). The score is the exponential of the a
     }
 \end{center}
 
-Equivalently $\exp\big(H(y) - \mathbb{E}_x H(y|x)\big)$, the exponential of the mutual information between an image and its label,
-from $1$ (every image gets the same label distribution) to the number of classes, $1{,}000$ for ImageNet. Real CIFAR-10 images score
-about $11$; ImageNet generators reach the hundreds. Compute it on $50{,}000$ samples split into ten groups and report the spread.
+The score runs from $1$, when every image receives the same full class-probability vector, to the number of classifier classes
+($1{,}000$ for ImageNet). Historical reports commonly split a fixed sample into ten groups and report the mean and standard deviation of
+their scores. Each split estimates its own $p(y)$, so keep the sample count, split count and classifier setup fixed; that standard
+deviation is not a confidence interval for image quality.
 
 \textbf{When to use IS?}
 
-Use it to track a generator on natural-image data during training, when one number that penalizes blurry samples and missing
-classes is enough and no real samples are at hand. Avoid it far from ImageNet (medical, satellite, faces --- use FID with a domain
-extractor) and whenever real samples exist (use FID, which also sees collapse within a class).
+Use it to track classifier confidence and class coverage on ImageNet-like generations when no real reference set is available. It does
+not measure blur or fidelity. With real samples, FID adds a distribution comparison but still needs task-specific and human checks; far
+from ImageNet, choose a domain-relevant evaluator.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Needs only generated images and a classifier. Blur spreads $p(y|x)$ and lowers the score; a model that emits one class makes
-the marginal identical to every row, so its KL is zero (figure).
-\item Interpretable scale: $\text{IS} = 10$ means the labels behave as if the generator covered ten confidently separated classes.
+\item Needs only generated images and a classifier. If every image receives the same probability vector, it equals $p(y)$ and the
+score is exactly $1$ (figure).
+\item Its scale reflects the effective separation of classifier labels, within that classifier.
 }
 {
-\item Blind to variety within a class: one memorized image per class, repeated, scores near the maximum of $1{,}000$ from $1{,}000$
-distinct pictures. FID would flag the collapsed covariance.
-\item Anchored to ImageNet: realistic but ambiguous images (a landscape, a texture) count as failures, and a few points of difference
-is noise between Inception checkpoints.
+\item Blind within a class: repeated memorized images can approach the maximum. Reference metrics may reveal the collapse, but can miss
+it too.
+\item Anchored to the classifier: realistic but ambiguous images can count as failures. Checkpoint, preprocessing, sample count and split
+settings must match before comparing scores.
 }
 
 \clearpage
@@ -349,8 +356,8 @@ is noise between Inception checkpoints.
 
 \textbf{Figure. Inception Score.} Each row is one generated image's class distribution $p(y|x)$; the bottom row is their average, the
 marginal $p(y)$. IS is the exponential of the mean KL divergence between rows and marginal, so it is high only when the rows are peaked
-\emph{and} the marginal is flat: sharp, diverse images reach $2.98$ of a possible $4$. Four equally sharp images of one class make the
-marginal identical to every row, giving the minimum $\text{IS} = 1$; blurry images score $1.06$ however many classes they cover.
+\emph{and} the marginal is flat: confident, diverse predictions reach $2.98$ of a possible $4$. Four equally confident predictions of
+one class give $\text{IS} = 1$; diffuse predictions score $1.06$ however many classes they cover.
 
 \orangebox{Did you know that...}
 {The Inception Score is $\exp$ of a mutual information, $I(x;y) = H(y) - H(y|x)$: the label entropy across samples minus the average
@@ -361,9 +368,9 @@ a gap larger than many claimed improvements between GANs.}
 
 \textbf{Other related metrics}
 
-IS and FID usually move together during training. When IS rises while FID stalls, the generator is producing sharper images of the
-same few things --- collapse within a class, which FID's covariance term catches and IS cannot. For similarity of one image to one
-target, use LPIPS.
+IS and FID often move together during training. If IS rises while FID stalls, sharper predictions without broader coverage are one
+possible explanation; inspect class coverage and repeated images before calling it collapse. For similarity of one image to one target,
+use LPIPS.
 
 % ---------- Fréchet Inception Distance ---------
 \clearpage
@@ -377,9 +384,9 @@ target, use LPIPS.
 % https://arxiv.org/abs/2104.11222 (Parmar, Zhang, Zhu — On Aliased Resizing and Surprising Subtleties in GAN Evaluation)
 % https://arxiv.org/abs/1911.07023 (Chong & Forsyth — Effectively Unbiased FID and Inception Score)
 
-Two generators can both produce sharp, confidently classified faces while one drifts toward a narrow set of expressions. FID compares
-generated and real images in the $2{,}048$-dimensional feature space of Inception-v3, fitting a Gaussian to each set and measuring the
-distance between the two, so a shift in what images look like and a loss of variety both raise the score.
+Two generators can produce sharp faces while one repeats a narrow set of expressions. FID places generated and real images in
+Inception-v3's feature space, fits a Gaussian to each set and measures the distance between them. A shift in appearance and a loss of
+variety both raise the score.
 
 % equation
 \begin{center}
@@ -397,26 +404,26 @@ distance between the two, so a shift in what images look like and a loss of vari
     }
 \end{center}
 
-The first term is the squared distance between feature means (a systematic shift such as a color cast); the trace term compares
-covariances and grows when the generated set covers less of the space. FID is $0$ for identical sets and unbounded; strong models on
-faces or CIFAR-10 reach single digits. The estimate is biased upward at small $N$, so fix $N$ (conventionally $50{,}000$) when comparing.
+The first term compares feature means; the trace term compares covariances and grows when the generated set covers less of the space.
+FID is $0$ when the fitted moments match and is unbounded. Finite-sample estimates have model-dependent bias: equal counts help
+comparability but do not remove it. Use the same reference set and preprocessing, report both counts and check close rankings as $N$
+grows.
 
 \textbf{When to use FID?}
 
-Use it as the headline number for image generators --- GANs, diffusion, super-resolution --- whenever real samples from the target
-distribution exist, and to detect mode collapse, which IS misses. Avoid it below about $10{,}000$ images (the bias dominates), for
-non-natural images unless you swap the extractor, and for judging a single image (use LPIPS or SSIM).
+Use FID to compare generated and reference sets under one protocol, especially for historical GAN or diffusion results. For modern
+text-to-image models, pair it with prompt-alignment and human evaluation: distribution match is a different question. Small samples make
+rankings less stable; there is no universal cutoff. For one image, use LPIPS or SSIM.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Sensitive to variety: a generator that matches the real mean but collapses to a few modes keeps the first term at zero and pays
 through the covariance term (figure).
-\item Tracks human judgment of realism: blur, noise, swirls and black rectangles all raised FID monotonically with the level of
-disturbance in the original paper.
+\item In the original experiment, increasing blur, noise, swirls and black rectangles raised FID. Later work finds disagreements with
+people in other settings.
 }
 {
-\item Biased by sample size: FID at $N = 5{,}000$ is systematically higher than at $50{,}000$ for the same model, so results at different
-$N$ are not comparable.
+\item Biased by sample size and generator: matching $N$ does not remove the bias, and close rankings can reverse as $N$ changes.
 \item Assumes Gaussian features: sets with the same mean and covariance but different shapes get $\text{FID} \approx 0$ (figure), and
 resize and JPEG settings shift the score by points.
 }
@@ -431,9 +438,9 @@ resize and JPEG settings shift the score by points.
 
 \textbf{Figure. FID.} A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
 samples (gray) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
-term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third generator
-produces two separate clouds that happen to share the real set's mean and covariance, and FID reports $0.02$: the Gaussian fit cannot
-tell the shapes apart.
+term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third
+population was constructed with the same mean and covariance as the reference but a different shape. Its $500$ sampled points have
+slightly different fitted moments, giving $0.02$; exactly matching fitted moments would give zero.
 
 \orangebox{Did you know that...}
 {FID depends on how you shrink the images. Inception expects $299 \times 299$ inputs and the resize step is not part of the metric's
@@ -445,10 +452,8 @@ Landau in 1982.}
 
 \textbf{Other related metrics}
 
-Against IS: a rising IS with a flat FID means sharper but less varied samples. Against LPIPS: FID says whether a set looks like the real
-set, LPIPS whether one image looks like one target; a super-resolution model can have a fine FID and a poor LPIPS if it invents
-plausible detail in the wrong places. When samples are scarce, the Kernel Inception Distance (KID), an unbiased kernel distance between
-the two feature sets, is safer.
+IS and FID can disagree, which is a reason to inspect class coverage and repetition. LPIPS compares image pairs rather than sets. With
+limited samples, Kernel Inception Distance (KID) has an unbiased standard estimator.
 
 
 % ---------- Learned Perceptual Image Patch Similarity ---------
@@ -459,9 +464,8 @@ the two feature sets, is safer.
 
 % references: https://arxiv.org/pdf/1801.03924
 
-A photograph shifted four pixels to the right is far from the original in pixel-wise distance, as if it had been corrupted, while a
-person sees the same picture. LPIPS measures image distance the way people judge it: both images pass through a pretrained network,
-and the distance is a learned weighting of the differences between their feature maps rather than their pixels.
+A four-pixel shift makes a photograph look badly corrupted to a pixel distance, though a person sees the same picture. LPIPS instead
+passes both images through a pretrained network and learns how to weight differences between their feature maps.
 
 % equation
 \begin{center}
@@ -480,15 +484,14 @@ and the distance is a learned weighting of the differences between their feature
     }
 \end{center}
 
-Activations at several layers are unit-normalized per channel, differenced, weighted by learned per-channel weights $w_l$ and averaged
-over space. LPIPS is $0$ for identical images, stays below about $0.1$ for changes that are hard to see, and passes $0.5$ for images
-that differ in content; values depend on the backbone (AlexNet by default), so report it.
+At each position, LPIPS normalizes the feature vector across channels, compares the two vectors and weights each channel by $w_l$ before
+averaging over space and layers. Identical images score $0$; otherwise, lower means more similar under that setup. Report the backbone
+and weights, and validate any pass/fail cutoff on the application's images.
 
 \textbf{When to use LPIPS?}
 
-Use it to evaluate super-resolution, image-to-image translation, compression and diffusion reconstructions against a ground-truth
-image, and to measure sample diversity as the mean pairwise LPIPS between outputs. Avoid it when pixel fidelity is the requirement
-(medical or scientific imaging --- use PSNR or SSIM) and for sets of images without pairs (use FID).
+Use it for super-resolution, image-to-image translation, compression and diffusion reconstructions with a ground-truth image, or for
+sample diversity via mean pairwise LPIPS. Avoid it when exact pixel fidelity matters, and for unpaired image sets (use FID).
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
@@ -514,20 +517,21 @@ pair.
 \textbf{Figure. LPIPS.} Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so a pixel metric rates them equally
 bad. LPIPS with the AlexNet backbone does not: shifting the image by four pixels or brightening it scores $0.07$ and $0.03$, changes a
 viewer would not call damage, while noise and blur at the same MSE score $0.69$ and $0.82$. Deep features are pooled over neighborhoods and
-normalized per channel, so they forgive position and intensity and punish the loss of the texture and edges people notice.
+normalized across channels at each position, so they forgive some changes in position and intensity and react strongly to lost texture
+and edges.
 
 \orangebox{Did you know that...}
 {Zhang et al. found that features from a network with random weights already match SSIM at predicting which of two distorted images
-people find closer to the original, and that any trained network, whatever its task, beats it; the learned weights $w_l$ add only a
-few points. The same idea in loss form is the ``perceptual loss'' used to train super-resolution and style-transfer models, which makes
-evaluating such a model with LPIPS partly circular: it is being graded on the quantity it was optimized for. Pair it with a metric it
-was not trained against.}
+people find closer to the original, and that trained networks do better; the learned weights $w_l$ add a smaller improvement. Related
+feature losses, often built from VGG activations, are used to train super-resolution and style-transfer models. They are not necessarily
+the same calculation as LPIPS. The evaluation becomes most circular when a model is trained directly against the same LPIPS variant and
+checkpoint used to score it. In that case, add an independent metric and a human comparison.}
 
 \textbf{Other related metrics}
 
-PSNR and SSIM (Computer Vision chapter) measure pixel fidelity, LPIPS measures perceptual similarity. When PSNR is high and LPIPS is
-poor the output is blurry --- blur preserves pixel averages but erases the texture features people notice --- and when the reverse holds
-the output has sharp but displaced detail. FID compares distributions of images and needs no pairs.
+PSNR and SSIM (Computer Vision chapter) measure pixel fidelity, while LPIPS compares deep features. High PSNR with poor LPIPS can be
+consistent with blur, because blur preserves broad pixel values while removing texture. The reverse can occur when detail is sharp but
+slightly displaced. These patterns are clues to inspect the images, not diagnoses. FID compares sets of images and needs no pairs.
 
 % ---------- CLIPScore ---------
 \clearpage
@@ -539,9 +543,8 @@ the output has sharp but displaced detail. FID compares distributions of images 
 % https://arxiv.org/pdf/2104.08718 (Hessel et al., CLIPScore, EMNLP 2021)
 % https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html
 
-A text-to-image model asked for ``a corgi wearing sunglasses on a beach'' returns a picture, and CLIP Score checks the match without
-a human: it embeds the image and the prompt with the same CLIP model, trained to put matching image--text pairs close together, and
-reports their cosine similarity, rescaled and clipped at zero. No reference caption or image is needed.
+A text-to-image model returns a picture of ``a corgi wearing sunglasses on a beach.'' CLIP Score embeds the picture and prompt with
+the same CLIP model and reports their cosine similarity, rescaled and clipped at zero. It needs no reference image or caption.
 
 % equation
 \begin{center}
@@ -560,15 +563,14 @@ reports their cosine similarity, rescaled and clipped at zero. No reference capt
     }
 \end{center}
 
-CLIP's cosines are compressed: matching pairs land around $0.25$--$0.35$ and unrelated ones around $0.1$--$0.2$, so $w = 2.5$
-stretches typical scores to $0.6$--$0.9$ (some libraries use $w = 100$). Values are comparable only within one CLIP checkpoint;
-compare systems by their mean score on the same prompts.
+With CLIP ViT-B/32 in the original experiments, matching pairs often had raw cosines around $0.25$--$0.35$. The authors used $w=2.5$;
+some libraries use $100$. The scaled score can exceed $1$ and is not a probability. Compare systems with the same checkpoint, scaling,
+prompts and preprocessing.
 
 \textbf{When to use CLIP Score?}
 
-Use it to rank text-to-image systems or samples on prompt adherence, to evaluate captioning without references, and to filter
-training pairs at scale. Avoid it when the meaning lies in the arrangement --- counts, spatial relations, negation, attribute binding ---
-where CLIP behaves like a bag of words (use VQAScore or DSG), and for image quality (use FID).
+Use it to rank prompt adherence, evaluate captioning without references and filter training pairs at scale. Avoid it when counts,
+relations, negation or attribute binding matter (use VQAScore or DSG), and for image quality (use FID).
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -578,10 +580,10 @@ has captioned.
 a single reference.
 }
 {
-\item Bag of words: ``a woman in a navy uniform in front of a flag'' with ``woman'' and ``flag'' swapped scores \emph{higher} than
-the original caption (figure), and ``not'' barely moves it.
-\item Compressed and checkpoint-bound: matched and mismatched pairs differ by about $0.1$ in raw cosine, and ViT-B/32 and ViT-L/14
-produce different scales, so small gaps are noise.
+\item Compositional failures in this setup: swapping ``woman'' and ``flag'' raises the score, while adding ``not'' barely moves it
+(figure). Other checkpoints may behave differently.
+\item Compressed and checkpoint-bound: matched and mismatched pairs can occupy a narrow range, and ViT-B/32 and ViT-L/14 produce
+different scales. Whether a small average gap is meaningful depends on the paired variation across prompts.
 }
 
 \clearpage
@@ -596,20 +598,20 @@ produce different scales, so small gaps are noise.
 the caption and image embeddings. The caption written for each image (boxed) beats every caption written for another image, so
 ranking across subjects works. But the raw cosines span only $0.06$--$0.35$, and for the first image the two probe captions (dashed)
 show the limit: with ``flag'' and ``woman'' swapped the score rises to $0.82$ against $0.79$ for the correct caption, and the negated
-caption keeps $0.69$. The score sees which words are present, not how they are arranged.
+caption keeps $0.69$. In this example and checkpoint, the score responds more to which words are present than to how they are arranged.
 
 \orangebox{Did you know that...}
-{CLIP cannot fairly score a model trained with CLIP. Many text-to-image systems use CLIP inside their training or guidance, so a high
-CLIP Score partly measures how well the generator learned to satisfy the judge rather than the prompt; images optimized directly against
-CLIP grow text-like scribbles and characteristic textures that raise the score while looking worse. The same reward hacking appears
-whenever the evaluation model is also the training signal, and the fix is the one that applies to LPIPS: evaluate with a model the
-generator never saw.}
+{A model can learn to exploit the judge when it is optimized directly against the same CLIP checkpoint used for evaluation. Images
+optimized this way can develop text-like marks or textures that raise the score without improving the result for people. Merely using a
+CLIP encoder somewhere in a system does not create the same problem: the risk depends on whether the evaluation score or a close proxy
+was part of the objective. For a strong claim, add an independent evaluator and human judgments.}
 
 \textbf{Other related metrics}
 
-CLIP Score answers ``are the right things mentioned?''; VQAScore and DSG answer ``is the prompt actually depicted?'', and the two
-separate on compositional prompts where CLIP is near chance. When CLIP Score is high and FID is poor, the images match their prompts
-but do not look like photographs; when FID is good and CLIP Score is low, the model draws realistic pictures of the wrong thing.
+CLIP Score gives a broad measure of image--text alignment; VQAScore and DSG probe composition more directly. High CLIP Score with poor
+FID can suggest that prompt alignment improved while the generated set moved away from the chosen reference distribution. Good FID with
+low CLIP Score can suggest the opposite. Inspect examples before assigning a cause: FID does not itself test whether images look like
+photographs, and all three metrics inherit their evaluators' blind spots.
 
 % ---------- Davidsonian Scene Graph ---------
 \clearpage
@@ -648,8 +650,9 @@ right; a language model generates the questions once per prompt.
 \textbf{When to use DSG?}
 
 Use it to evaluate text-to-image models on prompts with several objects, attributes and relations, and to find which part of a prompt
-failed. Avoid it when one alignment number suffices at scale (CLIP Score is far cheaper) and for style or aesthetic prompts (``in the
-style of Hokusai''), which do not decompose into checkable facts.
+failed. Avoid it when one alignment number suffices at scale (CLIP Score is far cheaper). Style and aesthetic prompts can be turned into
+questions, but a question such as ``is this in the style of Hokusai?'' is more subjective and depends heavily on the question generator
+and VQA model.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -673,11 +676,11 @@ calls per image.
     \includegraphics[width=\textwidth]{figures/DSG_question_graph.png}
 \end{center}
 
-\textbf{Figure. DSG.} The question graph a language model produces for one prompt, answered by a VQA model on two images. Edges are
+\textbf{Figure. DSG.} A constructed walkthrough of the question graph for one prompt and hypothetical VQA answers for two images. Edges are
 dependencies: a question only counts if its parents were answered yes. Image A has the right objects in the wrong colors, so the two
 attribute questions fail and it scores $3/5$. Image B has no bicycle, so the questions about the bicycle's color and position are
-skipped even though the VQA model would have said yes to both (a common hallucination), and the wall's two questions carry the score to
-$2/5$.
+skipped; the assumed yes answers illustrate the hallucination that dependency edges are meant to block. The wall's two questions carry
+the score to $2/5$.
 
 \orangebox{Did you know that...}
 {The name comes from Donald Davidson's semantics of events: a sentence like ``the bicycle leans against the wall'' is a small logical form
@@ -688,9 +691,9 @@ color of a bicycle it does not contain. The dependency edges close that hole.}
 
 \textbf{Other related metrics}
 
-CLIP Score gives one embedding similarity and is near chance on attribute swaps; VQAScore asks one question about the whole prompt and
-captures composition without decomposing it; DSG asks many small questions and tells you which failed. When VQAScore and DSG disagree,
-the prompt is usually long enough that the single-question model lost a detail, or the question generator misread the prompt.
+CLIP Score gives one embedding similarity; VQAScore asks one question about the whole prompt; DSG asks many smaller questions and shows
+which ones failed. A disagreement between VQAScore and DSG tells us that the evaluators read the image or prompt differently. A missed
+detail in the single question and a faulty decomposition are two possibilities to check, not conclusions from the scores alone.
 
 % ---------- Visual Question Answering Score ---------
 \clearpage
@@ -702,10 +705,10 @@ the prompt is usually long enough that the single-question model lost a detail, 
 % https://arxiv.org/pdf/2404.01291 (Lin et al., ECCV 2024)
 % https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/
 
-Instead of scoring how similar a prompt and an image are, VQAScore asks a vision--language model a question --- ``Does this figure
-show `a horse riding an astronaut'? Please answer yes or no.'' --- and takes the probability it assigns to ``Yes''. Because the model
-reads the prompt in order, the swapped version, an astronaut riding a horse, gets a different answer, which an embedding similarity
-cannot deliver.
+Instead of comparing one image embedding with one text embedding, VQAScore asks a vision--language model a question --- ``Does this
+figure show `a horse riding an astronaut'? Please answer yes or no.'' --- and reads the probability it assigns to ``Yes''. In the
+paper's compositional tests, this question-answering setup distinguished word-order swaps more reliably than the embedding metrics it
+was compared with.
 
 % equation
 \begin{center}
@@ -724,9 +727,10 @@ cannot deliver.
     }
 \end{center}
 
-The score is the model's probability that the prompt is depicted, continuous though not calibrated, and a word-order swap that CLIP
-cannot see lowers it (figure). The strongest version uses CLIP-FlanT5, a generative model trained for question answering, but any VQA
-model that exposes answer probabilities works, and the template extends to video by scoring frames.
+The score is the evaluator's probability of producing the token ``Yes'' after that image and question. It is useful for ranking, but it
+is not a calibrated probability that the prompt is correct: $0.8$ does not mean that eight out of ten such images are faithful. The
+paper's strongest version uses CLIP-FlanT5, a generative model trained for question answering. Other VQA models can be used, but their
+scores and failure modes need not match.
 
 \textbf{When to use VQAScore?}
 
@@ -743,7 +747,8 @@ VQAScore with CLIP-FlanT5 was the strongest automatic metric in the paper.
 {
 \item Inherits the VQA model's failures: a model that cannot count to five scores a prompt with five cats by guessing, and the template
 wording moves the probability.
-\item Opaque. A score of $0.4$ says the model is unsure but not why; for diagnosis, DSG's per-question answers are needed.
+\item Opaque. A middling score does not reveal what failed or whether the evaluator itself made the error; DSG's per-question answers
+offer more detail.
 }
 
 \clearpage
@@ -769,9 +774,9 @@ a $1$--$5$ rating instead and found the ratings clustered near the top of the sc
 
 \textbf{Other related metrics}
 
-CLIP Score is faster and coarser; DSG is slower and diagnostic; VQAScore sits between them. When CLIP Score and VQAScore agree, the
-prompt is simple. When CLIP Score is high and VQAScore is low, the right objects are present in the wrong arrangement, the case
-VQAScore was designed for.
+CLIP Score is faster and coarser; DSG is slower and more diagnostic; VQAScore sits between them. Agreement raises confidence only when
+the evaluators make sufficiently different errors. A high CLIP Score and low VQAScore can point to a compositional mistake, such as the
+right objects in the wrong arrangement, but inspecting the image is still necessary.
 
 % ---------- Mean Opinion Score ---------
 \clearpage
@@ -783,9 +788,9 @@ VQAScore was designed for.
 % https://arxiv.org/pdf/2204.02249
 % ITU-T P.800 (absolute category rating), P.808 (crowdsourced)
 
-Twenty listeners hear a synthesized sentence and each rates it from $1$ (bad) to $5$ (excellent); the mean of those ratings is the
-Mean Opinion Score. It is the reference every automatic speech-quality metric is validated against, because the quantity of interest
---- how the audio sounds to people --- has no other ground truth. The cost is that every number needs a listening test.
+Twenty listeners hear a synthesized sentence and rate it from $1$ (bad) to $5$ (excellent); their mean is the Mean Opinion Score. MOS
+summarizes perceived speech quality, but its value depends on the listeners, material, instructions and test design. Compare systems
+under the same protocol.
 
 % equation
 \begin{center}
@@ -802,26 +807,25 @@ Mean Opinion Score. It is the reference every automatic speech-quality metric is
     }
 \end{center}
 
-Ratings follow ITU-T's absolute category rating scale and are reported with the number of listeners: with $20$ raters and a typical
-spread of $\sigma \approx 0.8$, the $95\%$ confidence interval is about $\pm 0.35$, so systems at $4.1$ and $4.3$ are not
-distinguishable. Natural recorded speech scores around $4.5$, not $5$.
+Ratings often follow ITU-T's absolute category scale. Report the listeners, stimuli, sampling unit and whether the design is paired. For
+illustration, $20$ independent ratings with $\sigma=0.8$ give a $95\%$ interval of roughly $\pm0.35$ around one mean. Comparing two
+systems instead depends on their paired differences.
 
 \textbf{When to use MOS?}
 
-Use it as the final judgment of a text-to-speech, voice-conversion, codec or enhancement system, and to validate an automatic metric
-on your own data. Avoid it for tracking training runs or dozens of configurations (use PESQ or STOI) and for separating two good
-systems, where a paired comparison (CMOS) with the same listeners has more power.
+Use it for the final evaluation of text-to-speech, voice conversion, codecs or enhancement, and to validate an automatic metric. It is
+too costly for tracking many training runs. For close systems, a paired comparison with the same listeners has more power.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item It is the quantity everything else approximates: PESQ, its successor POLQA, and learned predictors are fitted to MOS data, so a
-well-run MOS test settles disagreements between them.
-\item Hears everything: a new kind of artifact that no objective metric was ever fitted on still lowers MOS, because listeners do not
-need to have met it before.
+\item PESQ, POLQA and learned quality predictors are fitted to MOS data, so a well-run listening test settles disagreements between
+them.
+\item Can catch perceptible artifacts that an automatic metric misses, because listeners judge the result directly rather than through
+a fixed signal model.
 }
 {
-\item Noisy and expensive: pinning a MOS to $\pm 0.1$ takes about $250$ ratings, separating two systems $0.1$ apart about $1{,}000$
-each, and listener pool and sample order shift the mean.
+\item Noisy and expensive: under independence, about $250$ ratings with $\sigma=0.8$ give a margin near $\pm0.1$. A system comparison
+depends on the paired design, variability and power; repeated ratings are not independent.
 \item The mean hides the distribution: a system everyone rates $3$ and one that half rate $5$ and half rate $1$ have the same MOS
 (figure). Report the interval too.
 }
@@ -836,21 +840,23 @@ each, and listener pool and sample order shift the mean.
 
 \textbf{Figure. MOS.} Twenty listeners rate each of three systems and all three land on $\text{MOS} = 3.0$ with a median of $3$. The
 consensus system is one everyone finds mediocre; the polarized one half the panel likes and half cannot stand; the skewed one leans
-toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but the confidence interval does: $\pm 0.00$,
-$\pm 0.90$ and $\pm 0.45$. Report the interval or the distribution with the mean, and compare systems with the same listeners.
+toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but their rating distributions do. The intervals shown
+are illustrative summaries of these constructed samples; the zero width for the consensus system follows from giving every listener the
+same rating. Report the distribution and uncertainty with the mean, and compare systems under the same protocol.
 
 \orangebox{Did you know that...}
-{The MOS scale has a ceiling below $5$. In a well-run test clean natural speech scores about $4.5$: some listeners reserve the top
-category, and the anchor samples that calibrate the panel pull the mean down. A text-to-speech system at $4.4$ is therefore not $0.6$
-points from perfect; it is within the noise of the recordings it imitates, which is why recent systems report ``parity with ground
-truth'' rather than a score. The scale is also ordinal --- the step from $2$ to $3$ need not equal the step from $4$ to $5$ --- so the
-mean is a convention, and the ITU pairs it with confidence intervals and, for close systems, a paired comparison test.}
+{A MOS does not have a fixed natural-speech ceiling. Clean recordings often score below $5$, but their mean changes with the recordings,
+listeners, scale, anchors and test conditions. This is why claims of ``parity with ground truth'' should compare a system with natural
+recordings in the same test and report uncertainty. A non-significant difference is not proof of equivalence; an equivalence test needs
+a margin chosen in advance. The scale is also ordinal --- the step from $2$ to $3$ need not equal the step from $4$ to $5$ --- so the
+mean is a useful convention rather than a physical unit.}
 
 \textbf{Other related metrics}
 
-PESQ and STOI are fitted to predict MOS and intelligibility from signals; when PESQ and MOS disagree on a new system, trust MOS and
-suspect an artifact PESQ was never fitted on. Comparison MOS (CMOS: the same listeners rate A against B on a $-3$ to $+3$ scale) and
-MUSHRA (rating against a hidden reference) are the higher-powered variants for close systems.
+PESQ predicts perceived speech quality from a reference signal, while STOI predicts intelligibility. A disagreement with a well-designed
+listening test shows that the automatic metric does not capture this case; inspect the audio and protocol before assigning the cause.
+Comparison MOS (CMOS: the same listeners rate A against B on a $-3$ to $+3$ scale) and MUSHRA-style tests can offer more power for close
+systems.
 
 % ---------- Perceptual Evaluation of Speech Quality ---------
 \clearpage
@@ -862,9 +868,9 @@ MUSHRA (rating against a hidden reference) are the higher-powered variants for c
 % ITU-T P.862 (2001), P.862.1 (MOS-LQO mapping), P.862.2 (wideband)
 % https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html
 
-Running a listening test for every checkpoint of a speech codec is impractical, so PESQ predicts the listening test. It takes the clean
-reference and the degraded signal, aligns them in time, transforms both into an auditory representation of loudness over frequency,
-and measures the audible disturbance, penalizing added distortion more than lost signal, as listeners do.
+Running a listening test for every codec checkpoint is impractical, so PESQ predicts perceived quality. It aligns a clean reference and
+degraded signal, transforms them into an auditory representation and measures the disturbance, penalizing added distortion more than
+lost signal.
 
 % equation
 \begin{center}
@@ -882,28 +888,28 @@ and measures the audible disturbance, penalizing added distortion more than lost
     }
 \end{center}
 
-The raw P.862 score runs from $-0.5$ to $4.5$; the mapping above (ITU-T P.862.1, narrowband) squashes it onto $1.02$--$4.55$ so it
-reads like a MOS, and most libraries return the mapped value. Wideband PESQ (P.862.2, $16$ kHz) uses a different mapping and is not
-comparable. Above $4$ is transparent; below $2.5$ listeners call the speech poor.
+The raw P.862 score runs from $-0.5$ to $4.5$; P.862.1 maps narrowband scores to a MOS-like $1.02$--$4.55$ scale. Wideband PESQ
+(P.862.2, $16$ kHz) uses another mapping. Compare the same mode, implementation and material; ``transparent'' and ``poor'' have no
+universal cutoffs.
 
 \textbf{When to use PESQ?}
 
-Use it to compare speech codecs, telephony pipelines and enhancement models where the clean reference is available, and to track
-training before a final MOS test. Avoid it without a reference (use a non-intrusive predictor or a listening test), for intelligibility
-rather than quality (use STOI), and for music or audio sampled above $16$ kHz, which it was never validated for.
+Use it to reproduce speech-codec, telephony and enhancement experiments with the same setup and a clean reference. ITU-T withdrew P.862
+in January $2024$ and points new work to P.863 (POLQA), so justify PESQ in a new evaluation. Avoid it for intelligibility (use STOI),
+music, unsupported sampling modes or cases without a reference.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
 \item Aligns before it compares: a $20$ ms delay or a $6$ dB gain change leaves PESQ at its maximum while waveform SNR collapses
 (figure).
-\item Standardized: P.862 fixed the algorithm in 2001, so a PESQ of $3.2$ means the same thing across labs, and its correlation with
-MOS on the ITU validation set was about $0.93$.
+\item Standardized core: P.862 specifies the algorithm and original validation. Mode, version, preprocessing and implementation can
+still move results, so report them.
 }
 {
 \item Intrusive and narrow: needs the clean signal, works only at $8$ or $16$ kHz, and was validated on codec distortions, so it can
 favor a denoiser that removes speech detail.
-\item Not differentiable and licensed: it cannot serve as a training loss without an approximation, and commercial use needs an ITU
-license (as does POLQA, its 2011 successor).
+\item Not differentiable and licensed: training needs an approximation, and implementations may require rights from patent or software
+licensors. ITU publishes the recommendation; it is not the software licensor.
 }
 
 \clearpage
@@ -929,9 +935,10 @@ speech along with the noise: removed speech counts as a mild loss, while the noi
 
 \textbf{Other related metrics}
 
-STOI predicts whether words can be understood, PESQ how good they sound; a heavily denoised signal can score well on PESQ and poorly
-on STOI when the enhancement smears the speech envelope. Both are checked against MOS. For reference-free monitoring in production,
-learned predictors such as DNSMOS and NISQA estimate the MOS from the degraded signal alone.
+STOI predicts intelligibility, while PESQ predicts perceived quality. If one rises while the other falls, the two objectives may be
+trading off, or one metric may be outside the conditions where it works well. Listen to the audio and run the relevant listening test
+before deciding which. For reference-free monitoring in production, learned predictors such as DNSMOS and NISQA estimate quality from
+the degraded signal alone.
 
 % ---------- Short-Time Objective Intelligibility ---------
 \clearpage
@@ -945,9 +952,9 @@ learned predictors such as DNSMOS and NISQA estimate the MOS from the degraded s
 % https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html
 % Shannon et al. (1995), Science — Speech recognition with primarily temporal cues
 
-A hearing-aid algorithm can make speech sound cleaner and no easier to understand. STOI predicts intelligibility rather than
-quality: it splits clean and processed speech into $15$ frequency bands, tracks each band's slow envelope over $384$ ms windows, and
-averages the correlation between the two.
+A hearing-aid algorithm can make speech cleaner and no easier to understand. STOI predicts intelligibility. It splits clean and
+processed speech into $15$ bands, follows each envelope --- the slow rise and fall of energy that traces syllables --- over $384$ ms,
+and averages the correlation between clean and processed envelopes.
 
 % equation
 \begin{center}
@@ -966,27 +973,26 @@ averages the correlation between the two.
     }
 \end{center}
 
-$x_{j,m}$ is the clean energy envelope in band $j$ over segment $m$ and $\tilde{y}_{j,m}$ the processed one, normalized and clipped
-so noise cannot make it look better than the clean signal. On the original data, $0.5$ is about half the words understood and $0.7$
-over $90\%$.
+$x_{j,m}$ is the clean envelope in band $j$, segment $m$; $\tilde{y}_{j,m}$ is the processed one. STOI normalizes level differences,
+then clips large deviations so a few samples do not dominate the correlation. Higher is better predicted intelligibility, but there is
+no universal conversion to a percentage of words understood.
 
 \textbf{When to use STOI?}
 
-Use it for speech enhancement, noise suppression and hearing-aid processing, where the goal is that noisy speech be understood,
-especially at $0$ dB SNR and below. Avoid it for clean speech, where it saturates near $1$ and says nothing about quality (use PESQ),
-and for fluctuating maskers such as a competing talker (use ESTOI).
+Use it for speech enhancement, noise suppression and hearing aids when the goal is understanding noisy speech. Avoid it for clean
+speech, where it saturates and says little about quality. With strongly modulated maskers such as competing talkers, consider ESTOI.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Predicts listening tests on noisy speech with correlation above $0.9$, and moves when quality metrics do not: a denoiser that
-smears the envelope drops STOI while PESQ rises.
-\item Transparent: the per-band, per-segment correlations show where intelligibility was lost, which band and which second (figure).
+\item In the original experiments, STOI correlated strongly with intelligibility across several noisy-speech conditions and could
+move differently from quality metrics.
+\item Inspectable: the per-band, per-segment correlations show where the processed and clean envelopes differ (figure).
 }
 {
 \item Intrusive and unaligned: needs the clean reference sample-aligned (a $20$ ms delay alone drops it from $1.0$ to $0.70$) and
 evaluates only $150$ Hz--$4.3$ kHz.
-\item Calibrated on stationary noise; for modulated maskers its extension ESTOI, which correlates whole spectro-temporal segments,
-tracks listeners better, and a listening test is still needed to claim a percentage of words.
+\item Tested on stationary and real-world noises, but less reliable for some modulated maskers. ESTOI can work better there; only a
+listening test supports a percentage of words understood.
 }
 
 \clearpage
@@ -1006,16 +1012,16 @@ and $0.70$ at $-5$ dB.
 \orangebox{Did you know that...}
 {STOI ignores almost everything about a sound except the slow rise and fall of energy in each frequency band, and that is the point.
 Shannon and colleagues showed in 1995 that speech stays intelligible when its fine structure is replaced by noise as long as the
-envelopes of a handful of bands are preserved, which is also why cochlear implants work. STOI measures that carrier of intelligibility,
-so processing that keeps the envelopes but changes timbre, pitch or phase scores high, while a noise suppressor that fills the pauses
-between syllables scores low even if the result sounds cleaner. The clipping step caps the processed envelope relative to the clean
-one, so extra energy never counts as extra speech.}
+envelopes of a handful of bands are preserved, an insight that also informed cochlear-implant research. STOI measures this carrier of
+intelligibility, so processing that preserves the envelopes can score well despite changes in timbre, pitch or phase. Its clipping step
+does not simply remove all extra energy; it limits how much large local deviations influence each correlation.}
 
 \textbf{Other related metrics}
 
-PESQ scores quality, STOI intelligibility; both need the clean reference and both are validated against listening tests. When PESQ
-improves and STOI falls, the enhancement traded speech cues for a pleasant sound. WER (NLP chapter) on a recognizer fed the
-processed audio is the downstream check.
+PESQ estimates quality, while STOI estimates intelligibility; both need the clean reference and both were validated against listening
+tests. When PESQ improves and STOI falls, the scores flag a possible tradeoff rather than proving its cause. Listen to the audio and test
+intelligibility with people. WER (NLP chapter) on a recognizer fed the processed audio is a separate downstream check, not a substitute
+for human intelligibility.
 
 % ---------- Benchmarks ---------
 \clearpage
