@@ -1,9 +1,15 @@
 \chapteropener{NLP}{cyanhard}{cyanaccent}{%
-Text has many correct answers, so most NLP metrics compare a candidate with one or more references by overlap. BLEU counts matching
-n-grams with a precision bias and ROUGE with a recall bias; METEOR adds stems and synonyms and rewards contiguous matches; TER counts
-the edits needed to reach the reference, and WER does the same for transcribed speech. Exact match is the strictest, for tasks with
-one right span. All of them reward surface agreement and can punish a good paraphrase; the GenAI chapter picks up where they stop, with
-metrics that compare meaning and distributions rather than tokens.}{In this chapter}
+Natural language processing (NLP) includes tasks such as translating text, summarizing documents and
+transcribing speech. To evaluate the text a model produces, we often compare it with a human-written
+answer, called a \textit{reference}. A translation can have several valid wordings, so an evaluation may
+provide more than one reference for the same input.
+\par\medskip
+The metrics in this chapter measure different kinds of agreement with those references. Some count
+shared words and phrases; others count the edits needed to turn the model's output into a reference.
+Exact Match checks whether an answer matches an accepted reference in full. These comparisons help us
+track changes between models, but they do not tell the whole story: different wording can express the
+same idea, and shared words can hide a change in meaning. The GenAI chapter adds comparisons that
+account for the context in which words appear.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{cyanhard}{cyanaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
@@ -20,7 +26,7 @@ metrics that compare meaning and distributions rather than tokens.}{In this chap
   [{\dl{speech transcription}{\mref{WER}{sec:wer}}}]
 ]
 \end{forest}
-\mapnotes{A correct paraphrase scores low on every metric here. When meaning matters more than wording, BERTScore (p.~\pageref{sec:bertscore}) is the reference-based option, and human judgment the final one.}
+\mapnotes{These metrics can penalize valid alternative wording; the effect depends on the references and matching rules. METEOR recognizes some stems and synonyms. BERTScore (p.~\pageref{sec:bertscore}) compares learned text representations, but neither score replaces checking what an answer means.}
 \end{decisionmap}
 
 
@@ -34,10 +40,10 @@ metrics that compare meaning and distributions rather than tokens.}{In this chap
 
 
 
-BLEU scores a machine translation by how much of its wording also appears in one or more human
-references: it counts matching unigrams, then bigrams, trigrams, and 4-grams, and combines them.
-A candidate that reuses the reference's exact phrasing scores near $1$; one that conveys the same
-meaning in different words scores near $0$, because BLEU only sees surface overlap.
+BLEU measures how much of a machine translation's wording matches one or more human references.
+It looks for shared words and sequences of adjacent words, called \textit{n-grams}. A unigram is one
+word, a bigram is a pair, and so on. The usual BLEU-4 score combines matches of one to four words,
+so it rewards shared phrases as well as individual words.
 
 % equation
 \begin{center}
@@ -56,29 +62,27 @@ meaning in different words scores near $0$, because BLEU only sees surface overl
     }
 \end{center}
 
-BLEU ranges from $0$ to $1$ (often reported $\times 100$) but only compares within a fixed tokenization
-and reference set. The brevity penalty ${\color{nmlred}BP}$ stops a model from inflating precision by
-emitting only the words it is most confident about.
+Each ${\color{nmlcyan}p_n}$ is the fraction of the output's $n$-grams that match a reference. Repeating a
+phrase earns credit only up to its largest count in any one reference. For a whole test set, BLEU pools
+these counts before combining the four precisions with equal weights. It then applies the brevity
+penalty ${\color{nmlred}BP}$ if the total output is too short relative to the references. The score ranges from $0$ to $1$, often
+reported on a $0$--$100$ scale; higher means more overlap.
 
 \textbf{When to use BLEU?}
 
-Use BLEU for machine translation and tasks with tight references, such as regression-testing quality
-across model versions. Avoid it for open-ended generation where many wordings are valid (use METEOR or
-BERTScore), and for single-sentence scoring, where its geometric mean is unstable --- BLEU is meant to be
-averaged over a corpus.
+Use BLEU to compare translation systems on the same test set and references. Compute it over the
+whole set, rather than averaging sentence scores. Individual sentences often have too few long
+phrase matches for a useful unsmoothed score.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Fast, language-agnostic, and reproducible: scoring is just n-gram counting, so BLEU ranks
-checkpoints in seconds with no model to run.
-\item Correlates with human ranking at the corpus level --- which is why it became MT research's default
-stopping signal, replacing a human eval after every change.
+\item Fast to compute: it counts shared words and phrases without running another model.
+\item Gives a repeatable comparison across model versions when the evaluation data and settings stay fixed.
 }
 {
-\item Blind to meaning. A correct paraphrase that shares no 4-grams with the reference scores near $0$,
-the same as a wrong translation (see figure).
-\item Sensitive to tokenization and casing. The same outputs can differ by several points; report
-sacreBLEU (a standardized tokenization) for numbers comparable across papers.
+\item Can miss valid paraphrases and meaning errors. Word overlap alone does not establish translation quality.
+\item Tokenization, casing and smoothing affect the score. Report the test set and sacreBLEU signature,
+which records its version and settings.
 }
 
 \clearpage
@@ -89,24 +93,25 @@ sacreBLEU (a standardized tokenization) for numbers comparable across papers.
     \includegraphics[width=0.62\textwidth]{figures/BLEU_ngram_precision.png}
 \end{center}
 
-\textbf{Figure. BLEU.} The candidate swaps two words, breaking every 4-gram, so the 4-gram precision $p_4$ is
-$0$. Because BLEU is the geometric mean of the four precisions, that single zero drags the whole score
-to $0$ --- even though $78\%$ of unigrams still match. An arithmetic mean would have reported $0.39$.
-This is why sentence-level BLEU needs smoothing and is meant to be aggregated over a corpus.
+\textbf{Figure. BLEU.} Replacing \textit{fox} with \textit{cat} and \textit{lazy} with \textit{tired}
+breaks every four-word match. In this unsmoothed BLEU-4 example, $p_4=0$ makes the geometric mean
+$0$, even though $78\%$ of individual words still match. An arithmetic mean of the four precisions
+would be $0.39$, but BLEU does not combine them that way. Smoothing can give a nonzero score when
+an $n$-gram order has no matches.
 
 \orangebox{Did you know that...}
-{BLEU multiplies its n-gram precisions rather than averaging them: $\exp(\sum_n w_n \log p_n)$ is a
-weighted \textbf{geometric} mean. The consequence is unforgiving --- if even one n-gram order has zero
-matches, $\log 0 = -\infty$ and the whole score collapses to $0$, however good the lower orders are.
-Introduced by Papineni et al. (2002) at IBM, BLEU was the first automatic MT metric to track human
-judgment well enough to replace per-change human evaluation.}
+{Papineni and colleagues at IBM introduced BLEU in 2002 to make translation evaluation faster and
+less dependent on repeated human ratings. Their experiments compared systems over a collection of
+sentences, not one translation at a time. That distinction still matters: BLEU's geometric mean
+combines the precisions calculated from pooled counts, so averaging separate sentence scores gives
+a different result.}
 
 \textbf{Other related metrics}
 
-If BLEU is low but the translation reads correctly, the model is probably paraphrasing --- check METEOR
-(credits synonyms and stems) or BERTScore (embedding similarity, see the GenAI chapter). TER reports the
-same quality as an edit count rather than an overlap, and disagrees with BLEU on reordering, which it
-penalizes more gently.
+METEOR can recognize stems and synonyms that BLEU misses; BERTScore compares learned representations
+of words in context. TER gives another view by counting edits, including phrase moves. If these scores
+disagree, inspect the translations: a gap can reflect valid wording changes, but it does not rule out
+errors.
 
 % ---------- Metric for Evaluation of Translation with Explicit ORdering ----------
 % references:
@@ -117,11 +122,10 @@ penalizes more gently.
 \section{METEOR}\label{sec:meteor}
 \subsection{Metric for Evaluation of Translation with Explicit ORdering}
 
-METEOR scores a translation the way a lenient grader would: it aligns the candidate to the reference
-word by word, accepting not only exact matches but also stems (\textit{run}/\textit{running}) and
-synonyms (\textit{quick}/\textit{fast}), then rewards how much of the reference it recovers. It exists
-to fix the failure that hurts BLEU most --- a correct paraphrase worded differently. Where BLEU sees no
-overlap and scores $0$, METEOR still credits the matched meaning.
+METEOR measures how well the words in a translation match a reference, allowing some differences in
+wording. Alongside exact matches, it can recognize shared stems (\textit{run}/\textit{running}) and
+synonyms (\textit{quick}/\textit{fast}). It combines how much of each text matches, then lowers the
+score when those matches are scattered rather than forming phrases in the same order.
 
 % equation
 \begin{center}
@@ -139,30 +143,29 @@ overlap and scores $0$, METEOR still credits the matched meaning.
     }
 \end{center}
 
-METEOR is the harmonic mean of unigram precision and recall (${\color{nmlcyan}F_{mean}}$), scaled down
-by a fragmentation penalty (${\color{nmlred}\gamma}\cdot{\color{nmlpurple}frag}^{\beta}$) that grows as
-matched words scatter out of order. It ranges from $0$ to $1$ and weights recall about nine times more
-than precision, so recovering content matters more than staying terse.
+${\color{nmlcyan}F_{mean}}$ combines word-match precision and recall. The fragmentation term
+${\color{nmlpurple}frag}$ is the number of contiguous matched groups divided by the number of matched
+words; a group must stay adjacent and in order in both texts. ${\color{nmlred}\gamma}$ and $\beta$
+control the penalty. The example uses the original settings, $\gamma=0.5$ and $\beta=3$.
+Scores lie between $0$ and $1$; higher means closer agreement under these matching rules.
 
 \textbf{When to use METEOR?}
 
-Use METEOR for translation and captioning when adequacy matters as much as exact wording, and for
-morphologically rich or low-resource languages where exact n-gram matches are too strict. Avoid it when
-you need cross-paper comparability (BLEU/sacreBLEU is standard) or when no stemmer or synonym resource
-exists for your language --- the very thing that gives METEOR its edge.
+Use METEOR for translation or captioning when you want to credit supported word forms and synonyms.
+Check which matching resources exist for the language, and report the implementation, enabled
+matching modules and parameter settings so others can reproduce the score.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Credits synonyms and stems, so a fluent paraphrase scores near a literal translation --- exactly
-where BLEU collapses to $0$ (see figure).
-\item Correlates with human judgment at the \textit{sentence} level, not just the corpus level, because
-precision, recall, and word order fold into one stable, recall-weighted score.
+\item Recognizes some word changes that exact overlap misses, while still accounting for word order.
+\item Can score individual sentences, combining how many output words match with how much of the reference
+they cover.
 }
 {
-\item Needs linguistic resources. Stemmers and synonym tables (e.g.\ WordNet) must exist for the target
-language; quality drops where they don't.
-\item Slower and less standardized than BLEU. The alignment step and tunable parameters
-($\alpha,\gamma,\beta$) mean two papers' METEOR numbers may not be comparable.
+\item Matches depend on language resources. A valid alternative can receive no credit if the matcher
+does not recognize it.
+\item Word matches do not guarantee the same meaning. Even a high score can hide a reversal of who did
+what (see figure).
 }
 
 \clearpage
@@ -173,24 +176,25 @@ language; quality drops where they don't.
     \includegraphics[width=\textwidth]{figures/METEOR_vs_BLEU.png}
 \end{center}
 
-\textbf{Figure. METEOR.} One reference scored against three candidates. Replacing words with synonyms
-(\textit{fast}, \textit{leaps}, \textit{idle}) breaks every n-gram, so BLEU falls to $0$, but METEOR
-matches them through its synonym and stem tables and stays at $1.0$. Reordering the paraphrase keeps the
-matched words but scatters them, so METEOR's fragmentation penalty docks it to $0.79$ while BLEU again
-reads $0$.
+\textbf{Figure. METEOR.} This illustration uses hand-chosen word pairs to show how matching works,
+rather than a full METEOR implementation. The middle row retains some one- and two-word matches but
+loses every three- and four-word match, making unsmoothed BLEU-4 zero. The last row changes who jumps
+over whom, so it is not an equivalent paraphrase despite the label. It also drops \textit{brown}; its
+lower METEOR score reflects both missing matches and fragmentation. The displayed $1.00$ scores are
+rounded.
 
 \orangebox{Did you know that...}
-{METEOR's harmonic mean is deliberately unbalanced: $F_{mean} = \frac{P\cdot R}{\alpha P + (1-\alpha)R}$
-with $\alpha = 0.9$, so recall carries nine times the weight of precision. A translation that recovers
-all of the reference's meaning but adds a few words is barely penalized; one that drops content is hit
-hard --- adequacy over brevity, by design. Developed at Carnegie Mellon (Banerjee \& Lavie, 2005) as a
-direct response to BLEU.}
+{Banerjee and Lavie introduced METEOR at Carnegie Mellon in 2005, partly to address BLEU's lack of an
+explicit recall term. Their weighted harmonic mean, $F_{mean}=\frac{P\cdot R}{\alpha P+(1-\alpha)R}$,
+used $\alpha=0.9$, giving recall nine times the weight of precision. Missing a reference word therefore
+matters more than adding an unmatched word. This is a parameter choice, also used in the figure,
+not a fixed property of every METEOR configuration.}
 
 \textbf{Other related metrics}
 
-A large METEOR--BLEU gap means the model is conveying the meaning with different words, not making
-errors --- the paraphrase case BLEU cannot see. For a surface edit-based view compare TER; for
-embedding-based similarity that needs no synonym table, see BERTScore in the GenAI chapter.
+A high METEOR score alongside low BLEU can reflect stems or synonyms that BLEU does not match.
+It is a reason to inspect the wording, not evidence that the translation is correct. TER counts edits;
+BERTScore, in the GenAI chapter, compares learned representations of words in context.
 
 % ---------- Recall-Oriented Understudy for Gisting Evaluation ----------
 % references:
@@ -202,10 +206,10 @@ embedding-based similarity that needs no synonym table, see BERTScore in the Gen
 \section{ROUGE}\label{sec:rouge}
 \subsection{Recall-Oriented Understudy for Gisting Evaluation}
 
-ROUGE evaluates a summary by how much of the reference it recovers: it counts overlapping unigrams
-(ROUGE-1), bigrams (ROUGE-2), or the longest common subsequence (ROUGE-L), divided by the reference
-total. It reports recall rather than precision because in summarization the risk is leaving content out,
-not adding a little extra.
+ROUGE is a family of metrics that compares a summary's wording with a reference summary. ROUGE-1
+counts shared words, and ROUGE-2 counts shared pairs of adjacent words. ROUGE-L looks for the longest
+sequence of words that appears in the same order in both texts, allowing gaps. These comparisons can
+be reported as precision, recall or an F-score that combines the two.
 
 % equation
 \begin{center}
@@ -223,28 +227,27 @@ not adding a little extra.
     }
 \end{center}
 
-ROUGE ranges from $0$ to $1$; the variant matters more than the absolute number. ROUGE-1 captures content
-overlap, ROUGE-2 local fluency (word pairs), and ROUGE-L in-order overlap. Report ROUGE-1 and ROUGE-L
-together --- a high ROUGE-1 with a low ROUGE-L means the right words in the wrong order.
+The formula shows ROUGE-N \textit{recall}: matching $n$-grams divided by the number in the references.
+Precision instead divides by the number in the model's summary. Scores range from $0$ to $1$, with
+higher values indicating more overlap. State both the matching rule and the reported quantity, such
+as ROUGE-1 recall or ROUGE-L F1, because they answer different questions.
 
 \textbf{When to use ROUGE?}
 
-Use ROUGE for summarization and tasks scored against reference text where coverage is the priority
-(headline generation, extractive QA). Avoid recall-only ROUGE when verbosity matters --- a padded summary
-keeps full recall while precision collapses (see figure); report ROUGE-F or a length budget instead. For
-meaning over wording, use BERTScore.
+Use ROUGE to compare summaries or headlines against references under the same evaluation settings.
+Recall shows how much reference wording is recovered; precision helps reveal extra, unmatched text.
+Report an F-score when both matter, and inspect factual accuracy separately.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Cheap and reproducible: pure n-gram counting, scaling to thousands of summaries with no model to run.
-\item The variant set is diagnostic --- ROUGE-1 vs ROUGE-2 vs ROUGE-L localizes a gap to content, local
-fluency, or ordering.
+\item Computes word and phrase overlap without running another language model.
+\item Offers complementary comparisons: shared words, adjacent pairs and words appearing in the same order.
 }
 {
-\item Recall-only by default rewards length: a summary that copies the whole document earns near-perfect
-recall, and only precision (usually unreported) catches the padding (see figure).
-\item Lexical, not semantic. A correct abstractive paraphrase scores low; even human-written summaries
-can score poorly under ROUGE.
+\item Recall alone does not penalize added words that leave existing matches intact. Precision and F1
+help expose this padding.
+\item Shared wording does not establish factual accuracy or fluency. Valid paraphrases can also lose
+credit when their wording differs.
 }
 
 \clearpage
@@ -255,35 +258,37 @@ can score poorly under ROUGE.
     \includegraphics[width=0.6\textwidth]{figures/ROUGE_variants.png}
 \end{center}
 
-\textbf{Figure. ROUGE.} A concise summary already covers the reference, so its ROUGE-1 recall is $0.78$.
-Appending filler words that aren't in the reference cannot lower recall --- it stays flat at $0.78$ ---
-while precision falls from $1.0$ to $0.29$. Recall, the number ROUGE reports, is blind to padding; only
-precision, which it omits, sees it.
+\textbf{Figure. ROUGE.} The reference is \textit{the central bank raised interest rates to curb inflation}.
+The shorter summary, \textit{the bank raised rates to curb inflation}, matches seven of its nine words,
+giving recall $7/9\approx0.78$. Appending filler keeps those seven matches while increasing the summary
+to $24$ words: recall stays fixed and precision falls from $7/7=1$ to $7/24\approx0.29$.
+The red curve is ROUGE-1 precision; the plot's claim that ROUGE does not report it is incorrect.
 
 \orangebox{Did you know that...}
-{Because plain ROUGE is recall, it can only rise or stay flat as a summary grows: extra words never
-remove a reference match, they only add chances for new ones. A system that emits the entire source
-document scores near-perfect ROUGE recall while being useless as a summary --- which is why leaderboards
-pair ROUGE with a length limit or report the F-score. Introduced by Chin-Yew Lin (2004); the name stands
-for Recall-Oriented Understudy for Gisting Evaluation.}
+{Chin-Yew Lin introduced ROUGE in 2004 for summary evaluation. Its name emphasizes recall, but the
+original paper also defined ROUGE-L using precision and recall together. The distinction matters:
+copying an entire source document can recover all the reference's wording \textit{if that wording
+appears in the source}, while producing a poor summary. Recall alone misses the excess; precision
+and an F-score help account for it.}
 
 \textbf{Other related metrics}
 
-ROUGE is the recall-shaped mirror of BLEU's precision: to penalize over-generation, BLEU or ROUGE-F is
-the better lens. A high ROUGE-1 with a low ROUGE-2 or ROUGE-L flags right-content, wrong-order. For
-credit beyond exact tokens, see BERTScore in the GenAI chapter.
+High ROUGE-1 with lower ROUGE-2 or ROUGE-L means that fewer shared words also match as adjacent pairs
+or in sequence. This can help locate examples worth reading, but it does not tell us whether their
+content is right. BLEU emphasizes output-side phrase precision; BERTScore can recognize similarities
+beyond exact wording.
 
 % ---------- Translation Error Rate ----------
 % reference: https://aclanthology.org/2006.amta-papers.25.pdf
 \clearpage
 \thispagestyle{nlpstyle}
 \section{TER}\label{sec:ter}
-\subsection{Translation Error Rate}
+\subsection{Translation Edit Rate}
 
-TER reports translation quality as post-editing effort: the fraction of edits a human would need to turn
-the machine output into the reference. It counts insertions, deletions, substitutions, and --- unlike
-word-error metrics --- shifts, where a whole phrase moves to a new position. A TER of $0.2$ means roughly
-one edit per five reference words; lower is better.
+TER measures how many edits turn a machine translation into a reference, relative to the reference's
+length. It counts inserted, deleted and replaced words, as well as \textit{shifts}, where a whole phrase
+moves to a new position. A TER of $0.2$ means one edit per five reference words; lower scores mean
+fewer edits to reach the reference.
 
 % equation
 \begin{center}
@@ -301,29 +306,25 @@ one edit per five reference words; lower is better.
     }
 \end{center}
 
-TER starts at $0$ (no edits) and can exceed $1$ when the output needs more edits than the reference has
-words. Because it counts edits over reference length, TER reads directly as edits per reference word ---
-which is why it tracks human post-editing time more closely than overlap scores.
+TER starts at $0$ for an exact match and can exceed $1$ when the edit count is larger than the number
+of reference words. Some counted edits may replace wording that was already acceptable. Human-targeted
+TER (HTER) addresses this by using a reference made by correcting the model's own output.
 
 \textbf{When to use TER?}
 
-Use TER when the downstream cost is human post-editing: translation-memory pipelines, localization
-vendors paid per edit. Its shift operation suits frequent reordering --- one moved phrase, one edit.
-Avoid TER when correct paraphrases use different words (every substitution is an error; use METEOR or
-BERTScore), and for leaderboards, where BLEU is the convention.
+Use TER when an edit count helps explain differences between translations, especially when phrases
+move. For a benchmark, follow its evaluation protocol. If the question is how long editing will take,
+measure that time directly: TER does not count the effort of reading and deciding what to change.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
-\item Interpretable as work. A TER of $0.3$ estimates three edits per ten words --- a number a
-localization manager can convert into hours and cost.
-\item Handles reordering. The shift moves a whole phrase for one edit, so a correctly translated but
-relocated clause isn't punished as several substitutions (see figure).
+\item A score of $0.3$ means three counted edits per ten reference words.
+\item Treats an allowed phrase move as one edit, so reordering need not cost a separate edit for every word.
 }
 {
-\item Surface-level. Different-but-correct word choices count as substitutions; TER has no notion of
-synonymy.
-\item Tends to overestimate effort. Its shift search is a greedy heuristic, not optimal, so it can
-report more edits than a human would actually make.
+\item Different but correct wording still requires edits to match the reference.
+\item Uses an approximate search for phrase moves. Its edit count is not guaranteed to be the smallest
+possible, or to match a human's editing process.
 }
 
 \clearpage
@@ -334,23 +335,24 @@ report more edits than a human would actually make.
     \includegraphics[width=\textwidth]{figures/TER_edit_breakdown.png}
 \end{center}
 
-\textbf{Figure. TER.} The hypothesis is the reference with the phrase \textit{on monday morning} moved to the
-front. Scored as plain word edits, relocating the three-word phrase costs three deletions plus three
-insertions ($\text{TER}=6/7=0.86$). TER's shift operation moves the whole phrase as a single edit
-($\text{TER}=1/7=0.14$), matching the one drag a human editor would actually perform.
+\textbf{Figure. TER.} The model output moves \textit{on monday morning} to the front. With only word
+insertions, deletions and substitutions, the minimum edit count is six: three deletions and three
+insertions achieve it. That gives a WER-style rate of $6/7\approx0.86$, incorrectly labeled TER in
+the gray annotation. Allowing one phrase shift gives TER $=1/7\approx0.14$.
 
 \orangebox{Did you know that...}
-{The shift is what separates TER from word error rate. WER must delete every word of a misplaced phrase
-and re-insert it elsewhere --- six edits for a three-word move --- so it punishes reordering harshly.
-TER charges one edit for the move, whatever the phrase length or distance, because that mirrors the
-single action a human takes. Finding the optimal set of shifts is expensive, so TER uses a greedy
-approximation. Introduced by Snover et al.\ (2006).}
+{Snover and colleagues introduced TER in 2006 with phrase shifts alongside the usual word edits.
+Finding the best combination of moves is expensive, so TER uses a greedy search: it repeatedly picks
+a move that reduces the remaining edit count. WER has no shift operation, but it need not delete and
+reinsert every word of a moved phrase. Moving a shorter neighboring phrase, or substituting words,
+may produce a cheaper alignment.}
 
 \textbf{Other related metrics}
 
-TER and WER are the same edit-distance idea; TER adds the shift, so on reordered output TER is far lower
-than a WER-style count. Against BLEU it often ranks systems differently, forgiving the reordering that
-BLEU's n-grams punish. Lower TER is better --- the opposite direction to BLEU and METEOR.
+WER uses the same word-edit operations without phrase shifts. TER can therefore give a much lower
+edit count when a shift resolves a reordering, as in the figure. BLEU measures phrase overlap, while
+METEOR also allows selected word-form and synonym matches. Lower TER is better; higher BLEU and METEOR
+indicate more agreement with their references.
 
 % ---------- Exact Match ----------
 % reference: https://nlp.stanford.edu/pubs/rajpurkar2016squad.pdf
@@ -359,10 +361,10 @@ BLEU's n-grams punish. Lower TER is better --- the opposite direction to BLEU an
 \section{EM}\label{sec:em}
 \subsection{Exact Match}
 
-Exact Match is the fraction of predictions identical to the reference: each scores $1$ if it matches the
-gold answer exactly --- after light normalization (lowercasing, stripping punctuation and articles) ---
-and $0$ otherwise. It is the strictest text metric: \textit{Martin Luther King Jr.} scores $0$ against
-the gold \textit{Martin Luther King}, the same score as a completely wrong answer (see figure).
+Exact Match measures the fraction of predictions that match an accepted reference answer in full.
+Each prediction receives $1$ for a match and $0$ otherwise, under the task's comparison rules.
+For example, if the only accepted answer is \textit{Martin Luther King}, adding \textit{Jr.} scores
+$0$ even though the answer may refer to the same person. EM gives no partial credit for shared words.
 
 % equation
 \begin{center}
@@ -381,28 +383,26 @@ the gold \textit{Martin Luther King}, the same score as a completely wrong answe
     }
 \end{center}
 
-EM ranges from $0$ to $1$. Being all-or-nothing per example, it is most informative when the answer is
-short and canonical; on long outputs it sits near $0$ even for good predictions, so it is usually paired
-with token-level F1, which scores partial word overlap.
+EM ranges from $0$ to $1$, with higher scores meaning more full matches. The rules may normalize text
+before comparing it: SQuAD lowercases answers and removes punctuation, articles and extra whitespace.
+Other tasks may require those details to match. When several reference answers are accepted, matching
+any one can earn full credit.
 
 \textbf{When to use EM?}
 
-Use EM where only an exact answer is acceptable: extractive QA spans, structured outputs (JSON keys, SQL,
-API arguments), classification cast as text. Avoid it for open-ended or long-form generation, where it
-bottoms out near $0$ even for strong outputs --- use token-F1, ROUGE, or BERTScore for graded credit.
+Use EM for short answers or labels when full agreement with an accepted answer matters. For JSON,
+SQL or API arguments, also check the parsed structure or execution: different strings can behave the
+same way, and removing punctuation can erase a meaningful difference.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Unambiguous and trivial to explain: the prediction is either right or wrong, with no threshold to
-tune.
-\item Strict correctness guarantee. When any deviation breaks downstream use --- a malformed JSON key, a
-wrong SQL clause --- EM is exactly the bar that matters.
+\item Easy to interpret: each prediction either matches an accepted answer or does not.
+\item Directly measures full agreement, without giving partial credit to answers that only share words.
 }
 {
-\item All-or-nothing. A prediction off by one token scores $0$, identical to a fully wrong one:
-\textit{Martin Luther King Jr.} and \textit{Malcolm X} both score $0$ against the gold (see figure).
-\item Normalization-sensitive. Whether casing, punctuation, and articles are stripped before comparison
-can swing EM by several points, so the scheme must be reported.
+\item Rejects valid alternatives missing from the reference set, including equivalent names or phrasing.
+\item Depends on the comparison rules. Report normalization and accepted answers; a match alone does not
+validate the reference's correctness.
 }
 
 \clearpage
@@ -411,23 +411,24 @@ can swing EM by several points, so the scheme must be reported.
     \includegraphics[width=0.95\textwidth]{figures/EM_vs_F1.png}
 \end{center}
 
-\textbf{Figure. EM.} Four predictions against the gold answer \textit{Martin Luther King}. Only the exact
+\textbf{Figure. EM.} Four predictions against the single accepted answer \textit{Martin Luther King}. Only the exact
 match scores EM $=1$; adding \textit{Jr.}, abbreviating to \textit{Dr.\ King}, or answering
 \textit{Malcolm X} all score EM $=0$. Token-level F1 instead grades the overlap --- $0.86$, $0.40$,
 $0.00$ --- giving the partial credit EM withholds.
 
 \orangebox{Did you know that...}
-{Exact Match anchors the Stanford Question Answering Dataset (SQuAD) benchmark, always paired with
-token-level F1. Token-F1 treats each answer as a bag of words and takes the harmonic mean of how many
-predicted tokens appear in the gold answer (precision) and how many gold tokens were recovered (recall)
---- so \textit{Martin Luther King Jr.} earns F1 $=0.86$ for its three correct tokens while EM gives it
-nothing. EM reports exact correctness; F1 reports how close the near-misses came.}
+{The Stanford Question Answering Dataset (SQuAD), introduced by Rajpurkar and colleagues in 2016,
+reports EM alongside token-level F1. F1 combines word-match precision and recall: against
+\textit{Martin Luther King}, adding \textit{Jr.} gives precision $3/4$, recall $3/3$ and F1
+$\approx0.86$. SQuAD also allows multiple accepted answers and takes the best match for each
+prediction, so a valid alternative need not score zero if it appears in the reference set.}
 
 \textbf{Other related metrics}
 
-EM and token-F1 are read together: a large F1--EM gap means the model is almost right --- correct
-content, wrong boundaries or extra words --- rather than wrong. For n-gram overlap on longer text, see
-BLEU or ROUGE; for semantic equivalence, BERTScore.
+A large token-F1--EM gap means that many answers share words without matching in full. Some may have
+extra words or different answer boundaries; others may contain a wrong date or a negation that changes
+the meaning. Read those answers before deciding they are nearly correct. For longer text, ROUGE
+measures word and sequence overlap, while BERTScore compares words in context.
 
 % ---------- Word Error Rate ----------
 \clearpage
@@ -435,10 +436,10 @@ BLEU or ROUGE; for semantic equivalence, BERTScore.
 \section{WER}\label{sec:wer}
 \subsection{Word Error Rate}
 
-WER scores a speech recognizer by how many word-level edits separate its transcript from the reference:
-count the substitutions, deletions, and insertions in the best alignment, then divide by the number of
-reference words. A WER of $0.1$ means one word in ten is wrong. It is the standard yardstick for ASR
-because transcription errors are naturally counted in words.
+WER measures how many word edits separate a speech recognizer's transcript from a reference transcript.
+It finds the alignment with the fewest substitutions, deletions and insertions, then divides that edit
+count by the number of reference words. A WER of $0.1$ means one edit per ten reference words; the
+edit could correct a wrong word, restore a missing one or remove an extra one.
 
 % equation
 \begin{center}
@@ -456,29 +457,27 @@ because transcription errors are naturally counted in words.
     }
 \end{center}
 
-WER starts at $0$ and can exceed $1$ ($100\%$) when a transcript inserts more wrong words than the
-reference has. The three error types are diagnostic on their own: many insertions point to a decoder that
-hallucinates words, many deletions to dropped speech, substitutions to confusable words (see figure).
+WER starts at $0$ and can exceed $1$ ($100\%$) when the edit count exceeds the reference length.
+For a test set, add the edit counts across recordings and divide by their total reference-word count;
+do not average recording-level percentages equally. Report substitutions, deletions and insertions
+separately when you need to see what kinds of differences dominate.
 
 \textbf{When to use WER?}
 
-Use WER for ASR, voice assistants, and dictation, where every word should be transcribed correctly. Avoid
-it when meaning survives the errors --- \textit{can't} versus \textit{cannot} is one substitution but no
-change in meaning --- and for character-based or tonal languages, where Character Error Rate (CER), the
-same formula per character, fits better.
+Use WER for speech recognition, voice assistants and dictation. Compare systems on the same recordings,
+references and text-processing rules. For languages such as Chinese, where written words are not
+separated by spaces, Character Error Rate (CER) can avoid dependence on how text is split into words.
 
 \enlargethispage{2\baselineskip}
 \coloredboxes{
-\item Diagnostic by construction. Splitting errors into substitutions, deletions, and insertions points
-at the failure mode, not just its size (see figure).
-\item Standard and interpretable. ``One word in ten wrong'' is understood across the field, making WER
-comparable across systems and datasets.
+\item Gives an edit count with a clear denominator: the number of words in the reference transcripts.
+\item Separates extra, missing and replaced words, helping you choose examples to inspect.
 }
 {
-\item Blind to meaning and importance. Every word counts equally: misrecognizing a critical digit and
-dropping a filler ``um'' both cost one edit, though only one changes the message.
-\item Sensitive to normalization. Punctuation, casing, contractions, and number formatting must be
-standardized first, or formatting differences inflate WER with no real recognition error.
+\item Gives each edit the same cost. A wrong digit and a missing filler word can affect the score equally
+while having different consequences.
+\item Text processing affects the result. Decide how to handle punctuation, numbers and alternatives
+such as \textit{can't}/\textit{cannot} before scoring.
 }
 
 \clearpage
@@ -501,7 +500,7 @@ Error Rate (CER). The distance was introduced by Levenshtein in 1965.}
 
 \textbf{Other related metrics}
 
-WER and TER share the edit-distance core; TER adds a shift operation, so on reordered output (common in
-translation, rare in transcription) TER reads far lower. For languages where word boundaries are unclear,
-CER applies the identical formula per character. For meaning-level scoring beyond surface edits, see
-BERTScore.
+CER applies the edit-distance calculation to characters rather than words. The choice concerns the
+written units and word boundaries, not whether a spoken language uses tones. TER adds phrase shifts
+for translation, so it can reduce the edit count when words move together. BERTScore provides a
+comparison based on learned text representations, but does not replace checking transcription errors.
