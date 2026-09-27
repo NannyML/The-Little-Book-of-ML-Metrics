@@ -2,8 +2,8 @@
 \newlength{\bookbleed}\setlength{\bookbleed}{.125in}
 \newlength{\booktrimwidth}\setlength{\booktrimwidth}{5.5in}
 \newlength{\booktrimheight}\setlength{\booktrimheight}{8.5in}
-\newcommand{\bookleftmargin}{17mm}
-\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{17mm}\else\renewcommand{\bookleftmargin}{16.175mm}\fi}
+\newcommand{\bookleftmargin}{16mm}
+\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{16mm}\else\renewcommand{\bookleftmargin}{17.175mm}\fi}
 \patchcmd{\chapteropener}{\clearpage}{\clearpage\booksetleftmargin}{}{}
 % First page of a metric is verso (left/even); the next page is recto.
 % Padding is inserted only when necessary and carries neither folio nor band.
@@ -17,10 +17,11 @@
  \setlength{\metrictitlecapheight}{\fontcharht\font`M}%
  \tikz[remember picture,overlay,baseline=0pt]{%
   \coordinate (metric-title-\thepage) at (0,\the\metrictitlecapheight);}}
-% The 9.75 mm trimmed band leaves a 3.25 mm white gutter to the
-% 13 mm outer text margin. Centre the label in the safe 6.35--9.75 mm
-% portion of the band. Fixed height/depth prevent chapter names with different
-% ascenders and descenders from changing its horizontal position.
+% The 10.75 mm trimmed band leaves a 3.25 mm white gutter to the
+% 14 mm outer text margin. Keep the label 8.05 mm from trim, leaving about
+% 1.3 mm of coloured padding on its text-facing side. Fixed height/depth
+% prevent chapter names with different ascenders and descenders from
+% changing its horizontal position.
 \tikzset{metric edge label/.style={rotate=90,anchor=east,
  inner sep=0pt,outer sep=0pt,text height=6.08pt,text depth=1.92pt,
  font=\sffamily\fontsize{8}{10}\selectfont}}
@@ -28,11 +29,11 @@
  \ifmetricentrypage
  \begin{tikzpicture}[remember picture,overlay]
  \ifodd\value{page}
-  \fill[\metricband] ([xshift=-12.925mm]current page.north east) rectangle (current page.south east);
+  \fill[\metricband] ([xshift=-13.925mm]current page.north east) rectangle (current page.south east);
   \node[metric edge label]
    at ([xshift=-11.225mm]current page.north east |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
  \else
-  \fill[\metricband] (current page.north west) rectangle ([xshift=12.925mm]current page.south west);
+  \fill[\metricband] (current page.north west) rectangle ([xshift=13.925mm]current page.south west);
   \node[metric edge label]
    at ([xshift=11.225mm]current page.north west |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
  \fi
