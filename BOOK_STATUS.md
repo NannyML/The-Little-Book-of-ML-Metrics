@@ -14,6 +14,6 @@ Use the current conversation and the **book-reviewer** Supabase comments for out
 
 ## Current follow-up
 
-Santiago's September 27, 2026 feedback: the GenAI chapter opener starts with examples and should instead establish the subject in plain language. The writing skill contains an illustrative replacement for calibration; it has not been applied to the chapter by the skills cleanup.
+The GenAI chapter opener was revised on September 27, 2026 to establish the subject and purpose before introducing the comparisons. The revised text is pending Santiago's review; see page one of `output/pdf/genai-before-after.pdf`, against the original at `447b323`.
 
 Do not maintain a second per-comment checklist here. Resolve comments in Supabase only after the corresponding correction has been applied and verified.

@@ -1,13 +1,14 @@
 \chapteropener{GenAI}{purplehard}{purpleaccent}{%
-An image can look convincing while missing something the prompt requested. A passage can be fluent but unlike human writing, and speech
-can sound clean while remaining hard to understand. These failures need different checks: one output against a reference or prompt, a
-collection against real examples, or an automatic score against what people see or hear.
+Generative AI models produce text, images and speech. For many of these tasks, there is more than one acceptable output, so checking
+for an exact match is too restrictive. We need to assess qualities such as how well an output follows a prompt, preserves meaning or
+resembles real examples.
 
-This chapter applies those comparisons to text, images and speech. Perplexity, BERTScore and MAUVE evaluate predictive fit, meaning and
-the distribution of generated text. Inception Score evaluates a generated image set by itself; FID compares it with real images, while
-LPIPS compares one image with its reference. CLIP Score, DSG and VQAScore check prompt alignment. For speech, MOS measures listener-rated
-quality, PESQ predicts quality from a clean reference and STOI predicts intelligibility. The final pages trace several influential
-benchmarks and how they changed as models improved.}{In this chapter}
+The metrics in this chapter measure these qualities in different ways. Some compare an output with a reference, such as a human-written
+answer, while others compare collections of generated and real examples. We also look at how well a language model predicts text,
+whether an image matches its prompt, and how listeners rate speech quality.
+
+We begin with text, then move to images and speech. The final pages trace several influential benchmarks, explaining what they tested
+and how they changed as models improved.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplehard}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
