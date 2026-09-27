@@ -1,7 +1,7 @@
 \chapteropener{Computer Vision}{mintlight}{mintaccent}{%
 Computer vision models extract information from images or transform the images themselves. A model might label the road and cars in a street scene, locate a person's elbows and knees, or remove noise from a photograph. Each task needs a different comparison: are the labels right, are the landmarks in the right places, or does the restored image preserve the original?
 
-This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice compare the regions a model labels with an annotated image; Panoptic Quality also checks whether it separates individual objects. PCK and OKS measure errors in landmark positions. For image restoration, PSNR compares pixel values, while SSIM compares local brightness, contrast and structure. The distinction matters: two reconstructions can have the same pixel error yet look different, and a segmentation model can label most pixels correctly while missing every small object.}{In this chapter}
+This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice compare the regions a model labels with an annotated image; Panoptic Quality also checks whether it separates individual objects. PCK and OKS measure errors in landmark positions. For image restoration, PSNR compares pixel values, while SSIM compares local brightness, contrast and structure.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{mintlight}{mintaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
