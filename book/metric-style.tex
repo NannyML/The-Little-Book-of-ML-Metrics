@@ -96,10 +96,12 @@
  \setlength{\metricpanelheight}{\dimexpr\ht\metricleftpanel+\dp\metricleftpanel\relax}
  \ifdim\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax>\metricpanelheight
   \setlength{\metricpanelheight}{\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax}\fi
+ % Preserve the column widths and vertical padding while aligning the outer
+ % card boundary with the text frame, clear of the navigation strip.
  \noindent\makebox[\textwidth][c]{\hspace*{8pt}\begin{tikzpicture}
- \node[anchor=north west,inner sep=8pt,outer sep=0pt,rounded corners=2pt,fill=mygreen] (left) at (0,0) {%
+ \node[anchor=north west,inner xsep=6pt,inner ysep=8pt,outer sep=0pt,rounded corners=2pt,fill=mygreen] (left) at (0,0) {%
   \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricleftpanel}\end{minipage}};
- \node[anchor=north west,inner sep=8pt,outer sep=0pt,rounded corners=2pt,fill=myred] at ([xshift=12pt]left.north east) {%
+ \node[anchor=north west,inner xsep=6pt,inner ysep=8pt,outer sep=0pt,rounded corners=2pt,fill=myred] at ([xshift=12pt]left.north east) {%
   \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricrightpanel}\end{minipage}};
  \end{tikzpicture}}\par\endgroup}
 \definecolor{metricnotefill}{HTML}{FFF5D7}

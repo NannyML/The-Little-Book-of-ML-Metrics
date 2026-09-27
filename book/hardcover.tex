@@ -2,8 +2,8 @@
 \newlength{\bookbleed}\setlength{\bookbleed}{.125in}
 \newlength{\booktrimwidth}\setlength{\booktrimwidth}{5.5in}
 \newlength{\booktrimheight}\setlength{\booktrimheight}{8.5in}
-\newcommand{\bookleftmargin}{18mm}
-\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{18mm}\else\renewcommand{\bookleftmargin}{15.175mm}\fi}
+\newcommand{\bookleftmargin}{17mm}
+\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{17mm}\else\renewcommand{\bookleftmargin}{16.175mm}\fi}
 \patchcmd{\chapteropener}{\clearpage}{\clearpage\booksetleftmargin}{}{}
 % First page of a metric is verso (left/even); the next page is recto.
 % Padding is inserted only when necessary and carries neither folio nor band.
@@ -11,17 +11,19 @@
  \clearpage
  \ifodd\value{page}\thispagestyle{empty}\null\newpage\fi
  \metricentrytitle{#1}{#2}\global\metricstartpage=\value{page}}
+% The 9.75 mm trimmed band leaves a 3.25 mm white gutter to the
+% 13 mm outer text margin. Lettering stays more than 6.35 mm from trim.
 \AddToHook{shipout/background}{%
  \ifmetricentrypage
  \begin{tikzpicture}[remember picture,overlay]
  \ifodd\value{page}
-  \fill[\metricband] ([xshift=-13.425mm]current page.north east) rectangle (current page.south east);
+  \fill[\metricband] ([xshift=-12.925mm]current page.north east) rectangle (current page.south east);
   \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=-11.675mm,yshift=-13.175mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
+   at ([xshift=-11.175mm,yshift=-13.175mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
  \else
-  \fill[\metricband] (current page.north west) rectangle ([xshift=13.425mm]current page.south west);
+  \fill[\metricband] (current page.north west) rectangle ([xshift=12.925mm]current page.south west);
   \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=11.675mm,yshift=-13.175mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
+   at ([xshift=11.175mm,yshift=-13.175mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
  \fi
  \end{tikzpicture}
  \global\metricentrypagefalse
