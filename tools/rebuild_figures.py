@@ -121,6 +121,7 @@ def worker(source):
         assert glyph_printed >= 7.0, (name, glyph_printed)
         records[name]={
             'smallest_printed_glyph_pt': glyph_printed,
+            'printed_width_pt': style.PRINT_WIDTH_IN * 72 * width_fraction,
             'source':source,'source_sha256':sha(NOTEBOOKS/source),
             'original_pixels':original_size,'regenerated_original_pixels':base_size,'inter_pixels':output_size,
             'original_pixels_match_replay':pixel_equal,

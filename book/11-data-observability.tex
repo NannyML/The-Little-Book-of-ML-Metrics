@@ -329,7 +329,7 @@ The average, or mean, is calculated within each partition: it adds up a column's
     }
 \end{metricformula}
 
-Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, we divide the total of $60$ by three to get an average of $20$. A few very large values can raise the average sharply, while increases and decreases can cancel each other out. The same average can therefore describe very different data.
+Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, the total $60$ divided by three gives $20$. A few very large values can raise the average sharply, while increases and decreases can cancel each other out. The same average can therefore describe very different data.
 
 \begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_average.png}
@@ -339,7 +339,7 @@ Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, we divi
 
 \metricheading{When to use}
 
-Use it to track the overall level of a numeric column, then look at quartiles and spread to understand what changed. The median can help here because it is less affected by a few extreme values. Keep the context in mind too: a promotion may legitimately change the average.
+Use it to track the overall level of a numeric column. Inspect quartiles and spread to understand changes; the median is less affected by extremes. Context matters too: a promotion may legitimately change the average.
 
 % ---------- Sum ----------
 \clearpage

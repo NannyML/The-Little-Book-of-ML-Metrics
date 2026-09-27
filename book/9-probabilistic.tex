@@ -111,7 +111,7 @@ changing either ROC AUC or binned ECE, so read them together before explaining a
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#confidence-based-performance-estimation-cbpe
 % https://arxiv.org/abs/2505.05295 (Kivimäki, Białek, Kuberski, Nurminen, 2025)
 
-CBPE estimates classification performance from probabilities before labels arrive, such as while fraud chargebacks are pending. Here $c_j$ is calibrated fraud probability and $\hat{y}_j$ the predicted label. A flagged transaction at $c_j=0.9$ contributes $0.9$ to expected true positives and $0.1$ to false positives.
+CBPE estimates classification performance from probabilities while labels, such as fraud chargebacks, are pending. Here $c_j$ is calibrated fraud probability and $\hat{y}_j$ the predicted label. A flagged transaction at $c_j=0.9$ contributes $0.9$ expected true positives and $0.1$ false positives.
 
 % equation
 \begin{metricformula}
@@ -119,14 +119,14 @@ CBPE estimates classification performance from probabilities before labels arriv
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \widehat{\text{TP}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1], \qquad
+                \widehat{\text{TP}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1], \quad
                 \widehat{\text{FP}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 1]
                 $
             }
         };
         \node[below=0.12cm of a, inner sep=2pt, font=\large] (b) {
             $\displaystyle
-            \widehat{\text{FN}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0], \qquad
+            \widehat{\text{FN}} = \sum_{j} {\color{nmlpurple}c_j}\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0], \quad
             \widehat{\text{TN}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0]
             $
         };
@@ -136,22 +136,20 @@ CBPE estimates classification performance from probabilities before labels arriv
     }
 \end{metricformula}
 
-$\mathds{1}$ selects the stated predicted label; each sum covers one production batch. Unflagged transactions contribute $c_j$ to expected false negatives and $1-c_j$ to true negatives. Substituting these counts gives expected accuracy and precision, and approximations for recall and F1.
+In each production batch, $\mathds{1}$ selects transactions with the stated predicted label. Unflagged transactions contribute $c_j$ expected false negatives and $1-c_j$ true negatives. These counts give expected accuracy and precision, and approximate recall and F1.
 
 \metricheading{When to use}
 
-Use CBPE when labels are delayed and calibration is expected to hold in production. Fit the calibrator on labeled reference
-predictions and validate the estimates on separate data. If a changing input mix disrupts calibration, consider PAPE; neither
-method can reliably estimate performance for inputs absent from the reference data.
+Use CBPE when calibration should hold while production labels are delayed. Fit calibration on labeled reference predictions and validate estimates on separate data. Consider PAPE if a changing input mix disrupts calibration. Neither method reliably covers inputs absent from the reference data.
 
 
 \coloredboxes{
-\item Estimates several metrics from one expected confusion matrix, without waiting for production labels.
-\item Can follow performance changes caused by a new input mix when calibration still holds.
+\item Estimates several metrics from one expected confusion matrix before production labels arrive.
+\item Follows performance changes from a new input mix if calibration still holds.
 }
 {
-\item Misses concept drift when inputs stay the same: changed outcomes do not change the model's probabilities.
-\item Estimated accuracy is at least $0.5$ if each label chooses the more likely class under the probabilities used.
+\item Misses concept drift with unchanged inputs: new outcomes do not change the model's probabilities.
+\item Estimated accuracy is at least $0.5$ when labels choose the more likely class under the probabilities used.
 }
 
 \metricsecondpage

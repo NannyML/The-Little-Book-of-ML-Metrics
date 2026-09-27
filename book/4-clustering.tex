@@ -119,7 +119,7 @@ RI ranges from $0$ to $1$. Independent, roughly balanced assignments to three gr
 Use RI to describe pairwise agreement and ARI when comparing against chance. Both can compare two clustering runs without designating either as truth. Large groups contribute many more pairs than small ones, so inspect small reference classes in the contingency table rather than relying only on the aggregate.
 
 \coloredboxes{
-    \item Symmetric in true vs predicted. Swapping the two arguments returns the same score, which makes RI/ARI convenient for comparing two clusterings without designating a reference.
+    \item Symmetric: swapping the two groupings returns the same RI or ARI, so neither needs to be designated as the reference.
     \item ARI provides a baseline at $0$, accounting for chance agreement under fixed group sizes.
 }
 {
@@ -389,7 +389,7 @@ Here $H(C)$ is class uncertainty before we know the cluster. $H(C \mid K)$ is th
 
 \metricheading{When to use}
 
-Use Homogeneity when each cluster should be class-pure, such as customer segments that should not mix profiles or document clusters that should not span topics. Pair it with Completeness or use V-Measure: putting each point in its own cluster gives Homogeneity $=1$.
+Use Homogeneity when each cluster should be class-pure, such as customer segments that should not mix profiles or document clusters that should not span topics. Pair it with Completeness or use V-Measure to detect over-splitting.
 
 
 \coloredboxes{

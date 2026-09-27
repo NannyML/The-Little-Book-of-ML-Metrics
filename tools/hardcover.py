@@ -151,7 +151,8 @@ def verify():
                 if c['upright'] and c['text']!='•' and c['size']<7-.005:
                     small.append({'page':n,'text':c['text'],'size':c['size']})
             for im in page.images:
-                images.append({'page':n,'dpi':min(im['srcsize'][0]*72/im['width'],im['srcsize'][1]*72/im['height'])})
+                images.append({'page':n,'pixels':list(im['srcsize']),'width_pt':im['width'],
+                               'dpi':min(im['srcsize'][0]*72/im['width'],im['srcsize'][1]*72/im['height'])})
             page_folio=[c for c in chars if c['upright'] and c['top']>580]
             if page_folio:
                 digits=''.join(c['text'] for c in sorted(page_folio,key=lambda c:c['x0']))
@@ -198,9 +199,22 @@ def verify():
         if manifest['errors']:errors.append('Figure generation failures')
         for name,row in manifest['figures'].items():
             if row['output_sha256']!=sha(ROOT/'book/figures'/name):errors.append('Stale figure '+name)
-        glyph=min(r['smallest_printed_glyph_pt'] for r in manifest['figures'].values())
+        # Scale the generation-time glyph measurements to actual PDF inclusion
+        # widths. A later margin change must not silently invalidate the report.
+        glyphs=[]
+        for im in images:
+            candidates=[r for r in manifest['figures'].values()
+                        if r['inter_pixels']==im['pixels']]
+            if not candidates:
+                errors.append(f"Unverified image on page {im['page']}")
+                continue
+            glyphs.append(min(r['smallest_printed_glyph_pt'] * im['width_pt'] /
+                              r.get('printed_width_pt',109.7/MM*r['width_fraction'])
+                              for r in candidates))
+        glyph=min(glyphs,default=0)
         if glyph<7:errors.append('Figure glyph smaller than 7pt')
-        plot_report={'count':len(manifest['figures']),'minimum_glyph_pt':glyph,'data_and_scales_preserved':True}
+        plot_report={'count':len(manifest['figures']),'minimum_glyph_pt':glyph,
+                     'actual_inclusion_widths_checked':True,'data_and_scales_preserved':True}
     else:
         errors.append('Missing figure generation/preflight manifest; run tools/rebuild_figures.py')
     report={'passed':not errors,'errors':errors,'pdf':str(OUT),'sha256':sha(OUT),'pages':count,

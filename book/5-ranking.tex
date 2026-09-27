@@ -588,7 +588,7 @@ This Novelty score uses item popularity; Diversity compares items within a list.
 \thispagestyle{rankingstyle}
 \metricentry{Serendipity}{Serendipity}\label{sec:serendipity}
 
-Serendipity measures whether recommendations are both useful and unexpected. We need a way to judge relevance and a baseline for what the user would expect. One approach multiplies those two scores for each recommended item, then averages across the list. A surprise contributes little if it is irrelevant, just as a useful but entirely predictable item contributes little.
+Serendipity measures whether recommendations are both useful and unexpected. We need a way to judge relevance and a baseline for what the user would expect. One approach averages their product across recommended items. Irrelevant surprises and useful but entirely predictable items both contribute little.
 
 \begin{metricformula}
     \tikz{

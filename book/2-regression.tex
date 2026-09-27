@@ -44,7 +44,7 @@ This chapter explains these ways of measuring error and when each is useful. We 
 \thispagestyle{regressionstyle}
 \metricentry{MAE}{Mean Absolute Error (MAE)}\label{sec:mae}
 
-MAE is one of the most intuitive regression metrics: it tells you, on average, how far off your predictions are in the same units as your target. If you're predicting house prices and your MAE is $\$15{,}000$, your predictions are off by $\$15{,}000$ on average. This directness makes MAE a useful metric when you need to communicate model performance to non-technical stakeholders.
+MAE tells you, on average, how far off your predictions are, in the same units as your target. If you're predicting house prices and your MAE is $\$15{,}000$, your predictions are off by $\$15{,}000$ on average. This makes MAE useful for explaining performance to non-technical stakeholders.
 
 % equation
 \begin{metricformula}
@@ -62,7 +62,7 @@ MAE is one of the most intuitive regression metrics: it tells you, on average, h
     }
 \end{metricformula}
 
-MAE ranges from $0$ (perfect) to $+\infty$. To interpret it in context, compare it with the MAE of always predicting the training data's mean target value. A much lower MAE on the same test data means your model improves on that simple baseline; a similar MAE means it performs much the same.
+MAE ranges from $0$ (perfect) to $+\infty$. Compare it with a baseline that always predicts the training mean. A much lower MAE on the same test data means smaller average errors; a similar score means similar performance.
 
 \metricheading{When to use}
 
@@ -330,7 +330,7 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter.
 }
 {
     \item Here, actuals and predictions must be nonnegative. The added one permits zeros but means changing units can change the score.
-    \item Its larger penalty for under-prediction need not match the cost of a shortfall. RMSLE is already RMSE on $\log(1+Y)$; that transformation does not remove the asymmetry in raw errors.
+    \item Its larger penalty for under-prediction may not match shortfall costs. RMSLE is already RMSE on $\log(1+Y)$; this does not remove raw-error asymmetry.
 }
 
 \metricsecondpage
@@ -662,7 +662,7 @@ MAE and RMSE assess error magnitude, while MASE compares it with a historical er
 \thispagestyle{regressionstyle}
 \metricentry{MPD}{Mean Poisson Deviance (MPD)}\label{sec:mpd}
 
-MPD measures errors in predictions of an expected count. For example, a model might predict an average of $12$ calls for days with similar conditions, while one such day receives $10$. MPD uses the observed and predicted counts in a loss derived from a Poisson probability model, then averages that loss across observations.
+MPD measures errors in predictions of an expected count. A model might predict an average of $12$ calls for days with similar conditions, while one day receives $10$. MPD averages a loss derived from a Poisson probability model over the observed and predicted counts.
 
 % formula
 \begin{metricformula}
@@ -684,7 +684,7 @@ MPD ranges from $0$ to $+\infty$, with lower values indicating smaller loss. Com
 
 \metricheading{When to use}
 
-Use MPD to assess predictions of mean counts or rates, such as calls per day or claims per year. A Poisson model assumes equal mean and variance among cases with the same inputs, but exact Poisson outcomes are not required to calculate the score. Many zero outcomes alone do not require a different loss.
+Use MPD for mean counts or rates, such as calls per day or claims per year. A Poisson model assumes equal conditional mean and variance, but calculating MPD does not require Poisson outcomes. Many zeros alone do not require a different loss.
 
 % strength and weakness box
 \coloredboxes{
@@ -719,7 +719,7 @@ MPD and MGD are members of the Tweedie deviance family. The compound Poisson--Ga
 \thispagestyle{regressionstyle}
 \metricentry{MGD}{Mean Gamma Deviance (MGD)}\label{sec:mgd}
 
-MGD measures errors in predictions of a positive mean, using the ratio between each observed and predicted value. A prediction that is half the actual value receives the same penalty whether the actual is $100$ or $1{,}000$. The loss comes from a Gamma probability model and is commonly used for positive amounts such as insurance claim severity.
+MGD measures errors in predictions of a positive mean, using the ratio between each observed and predicted value. Predicting half the actual value receives the same penalty whether the actual is $100$ or $1{,}000$. Derived from a Gamma probability model, the loss is used for positive amounts such as insurance claim severity.
 
 % formula
 \begin{metricformula}
@@ -976,7 +976,7 @@ For nonconstant targets, EVS has a maximum of $1$ and no lower bound. It equals 
 
 \metricheading{When to use}
 
-Use EVS alongside $R^2$ to check how much of the squared error comes from predictions being too high or too low on average. The gap between the scores measures this contribution relative to the variation in the targets. Inspect errors within groups too, since over-prediction in one group can cancel under-prediction in another.
+Use EVS alongside $R^2$ to check how much of the squared error comes from predictions being too high or too low on average. Inspect errors within groups too, since over-prediction in one group can cancel under-prediction in another.
 
 \coloredboxes{
     \item Comparing EVS with $R^2$ separates the contribution of the overall mean error from the variation around it.

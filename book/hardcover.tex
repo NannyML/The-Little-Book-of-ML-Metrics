@@ -2,8 +2,8 @@
 \newlength{\bookbleed}\setlength{\bookbleed}{.125in}
 \newlength{\booktrimwidth}\setlength{\booktrimwidth}{5.5in}
 \newlength{\booktrimheight}\setlength{\booktrimheight}{8.5in}
-\newcommand{\bookleftmargin}{16mm}
-\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{16mm}\else\renewcommand{\bookleftmargin}{17.175mm}\fi}
+\newcommand{\bookleftmargin}{18mm}
+\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{18mm}\else\renewcommand{\bookleftmargin}{17.175mm}\fi}
 \patchcmd{\chapteropener}{\clearpage}{\clearpage\booksetleftmargin}{}{}
 % First page of a metric is verso (left/even); the next page is recto.
 % Padding is inserted only when necessary and carries neither folio nor band.
@@ -43,6 +43,15 @@
 \patchcmd{\chapteropener}{xshift=1.25cm}{xshift=\bookleftmargin}{}{}
 \patchcmd{\chapteropener}{yshift=-1.1cm}{yshift=-14.175mm}{}{}
 \patchcmd{\chapteropener}{yshift=-4.9cm}{yshift=-52.175mm}{}{}
+% Keep figures at their verified printed size as the text column narrows.
+% The 1 mm overhang on each side remains well within the safe margins.
+\newlength{\bookfigurewidth}\setlength{\bookfigurewidth}{109.7mm}
+\RenewDocumentEnvironment{metricfigure}{+b}{%
+ \par\addvspace{4.5pt}\begingroup\setlength{\parskip}{0pt}\noindent\makebox[\linewidth][c]{%
+  \begin{minipage}{\bookfigurewidth}\setlength{\parskip}{0pt}\centering
+   #1\par
+  \end{minipage}}\par\endgroup
+}{}
 % Fine rules must survive print at their final inclusion scale.
 \tikzset{semithick/.style={line width=.95pt}}
 \forestset{dmap/.append style={for tree={edge={draw,line width=.8pt,black!40}}}}
