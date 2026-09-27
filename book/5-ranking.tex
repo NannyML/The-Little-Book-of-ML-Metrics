@@ -1,9 +1,9 @@
 \chapteropener{Ranking}{corallight}{coralaccent}{%
-Ranking systems put items in an order for a query or a user. Evaluation asks whether that order helps people find useful results: the same relevant item at rank $1$ and at rank $10$ offers a different experience. To score a ranking, we need judgments of which items are relevant. These can be yes-or-no labels or grades that distinguish a helpful result from a partly useful one.
+Ranking models decide which items to show first. A search engine ranks web pages for a query, while a movie recommender ranks films for a viewer. In either case, a relevant result in first place is easier to find than the same result in tenth place.
 
-The metrics in this chapter measure different parts of that experience. Some check how soon the first useful result appears; others consider several relevant items, their grades, or their order. We can also limit evaluation to the first $K$ results when only part of the list matters.
+To evaluate a ranking, we need judgments of which items are relevant. These can be yes-or-no labels or grades that distinguish a very helpful result from a partly useful one. Some metrics check how soon the first useful result appears; others consider several relevant items and their positions in the list. We can also evaluate just the first $K$ results when that is the part of the list that matters.
 
-For recommendations, relevance is one part of the picture. A list may contain useful items yet offer little variety or opportunity for discovery. The final pages introduce ways to measure diversity, novelty and unexpected relevant recommendations, along with how much of the catalog the system reaches across users.}{In this chapter}
+For a movie recommender, a list of relevant films may still be repetitive. We might also want it to offer variety or help a viewer discover something unfamiliar they would enjoy. The final pages introduce metrics for these qualities and for catalog coverage: the share of available items recommended across users.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{corallight}{coralaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
