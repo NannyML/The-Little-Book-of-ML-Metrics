@@ -36,8 +36,7 @@ For recommendations, we also look beyond relevance. A movie list might suit a vi
 % ---------- @K Metrics ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{@K Metrics}\label{sec:k-metrics}
-\subsection{@K Metrics}
+\metricentry{@K Metrics}{@K Metrics}\label{sec:k-metrics}
 
 An @K metric evaluates only the first $K$ items in a ranked list. Precision@$K$ measures the fraction of those items that are relevant, while Recall@$K$ measures the fraction of all relevant items we retrieved. If three of the top five recommendations are relevant and there are ten relevant items in total, $Precision@5 = 3/5$ and $Recall@5 = 3/10$. We calculate these scores for each query or user before averaging.
 
@@ -47,7 +46,7 @@ An @K metric evaluates only the first $K$ items in a ranked list. Precision@$K$ 
 
 Choose $K$ for the stage being evaluated: a retriever might supply $100$ candidates to a reranker that shows five results. Recall@$100$ checks what reached the reranker; Precision@$5$ checks the final five slots. Comparing several cutoffs can help decide how many candidates to retrieve.
 
-\textbf{When to use @K Metrics?}
+\metricheading{When to use}
 
 Use @K for a limited recommendation window or candidate budget. Compare systems on the same queries, eligible items and cutoff. To isolate a reranker's contribution, also hold its candidate lists fixed. Scores calculated with sampled distractors need not match scores over the full catalog.
 
@@ -64,29 +63,28 @@ Use @K for a limited recommendation window or candidate budget. Compare systems 
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/at_K_precision_recall.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/at_K_precision_recall.png}
+\end{metricfigure}
 
-\textbf{Figure. @K Metrics.} One simulated query has $20$ relevant items. As we extend its ranked list, recall cannot fall: we keep every relevant item already retrieved. Precision can rise when the next item is relevant or fall when it is not, although its overall trend here is downward. At $K = 20$, precision and recall match because both divide the number of retrieved relevant items by $20$. That equality does not identify the best cutoff.
+\metriccaption{Figure. @K Metrics.}{One simulated query has $20$ relevant items. As we extend its ranked list, recall cannot fall: we keep every relevant item already retrieved. Precision can rise when the next item is relevant or fall when it is not, although its overall trend here is downward. At $K = 20$, precision and recall match because both divide the number of retrieved relevant items by $20$. That equality does not identify the best cutoff.}
 
 \orangebox{Did you know that...}
 {The choice of $K$ connects evaluation to the product. If an app shows five cards, Precision@$5$ measures relevance in those five slots. A larger cutoff can still be useful earlier in the pipeline, where a retrieval system needs to collect enough relevant candidates for the final selection.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$, and nDCG@$K$. For a binary check of whether any relevant item appears in the top-$K$, see Hit Rate.
 
 % ---------- Mean Reciprocal Rank ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{MRR}\label{sec:mrr}
-\subsection{Mean Reciprocal Rank}
+\metricentry{MRR}{Mean Reciprocal Rank (MRR)}\label{sec:mrr}
 
 Mean Reciprocal Rank (MRR) measures how early the first relevant result appears. For each query, find that result and take one divided by its rank: a first hit at rank $1$ scores $1$, while a first hit at rank $5$ scores $0.2$. MRR averages these scores across all queries, counting a query with no relevant result as zero.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -95,15 +93,15 @@ Mean Reciprocal Rank (MRR) measures how early the first relevant result appears.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.00cm]a.north) ([yshift=-0.07cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.11,0.23)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.80,0.28)$) to[bend right=15] node[pos=1, right] {first relevant rank} +(1.00,-0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.11,0.23)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.80,0.28)$) to[bend right=15] node[pos=1, right] {first relevant rank} +(1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 MRR ranges from $0$ to $1$. A score of $1$ means every query has a relevant result first. An MRR of $0.5$ does not imply an average first-hit rank of two: the reciprocal ranks for hits at positions $1$, $4$ and $4$ also average to $0.5$. For MRR@$K$, a query with no hit in the first $K$ results contributes zero.
 
-\textbf{When to use MRR?}
+\metricheading{When to use}
 
 Use MRR when finding a first useful answer is the goal, as in known-item search or question answering. There may be several acceptable answers, but MRR only rewards the first. When users benefit from finding several relevant items, use a measure such as MAP or nDCG as well.
 
@@ -121,17 +119,17 @@ Use MRR when finding a first useful answer is the goal, as in known-item search 
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/MRR_ranked_lists.png}
-\end{figure*}
+    \includegraphics[width=1\textwidth]{figures/MRR_ranked_lists.png}
+\end{metricfigure}
 
-\textbf{Figure. MRR.} Six example queries, one per row. The filled cyan dot marks each query's first relevant item — the only one MRR scores. Open circles are additional relevant items that the metric ignores; small gray dots are irrelevant. The per-query reciprocal rank sits on the right; MRR averages them at the bottom. Q1 (relevant at rank $1$) and Q5 (rank $10$) differ by $10\times$ in score; Q6 (no relevant item in the top-$10$) contributes zero.
+\metriccaption{Figure. MRR.}{Six example queries, one per row. The filled cyan dot marks each query's first relevant item — the only one MRR scores. Open circles are additional relevant items that the metric ignores; small gray dots are irrelevant. The per-query reciprocal rank sits on the right; MRR averages them at the bottom. Q1 (relevant at rank $1$) and Q5 (rank $10$) differ by $10\times$ in score; Q6 (no relevant item in the top-$10$) contributes zero.}
 
 \orangebox{Did you know that...}
 {The TREC-8 question-answering track in 1999 scored systems by the reciprocal rank of their first correct answer, considering up to five responses per question. A correct answer first earned $1$, a correct answer fifth earned $0.2$, and no correct answer earned zero. The scoring rule made the goal concrete: return a correct answer as early as possible.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 For multi-relevant evaluation use MAP. For graded relevance (some items more relevant than others, e.g., a five-star rating system) use nDCG — it credits every relevant item with a position-discounted contribution, whereas MRR collapses the entire list to a single number from the first hit. For a binary top-$K$ check use Hit Rate.
 
@@ -139,12 +137,11 @@ For multi-relevant evaluation use MAP. For graded relevance (some items more rel
 % ---------- Mean Average Precision ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{MAP}\label{sec:map}
-\subsection{Mean Average Precision}
+\metricentry{MAP}{Mean Average Precision (MAP)}\label{sec:map}
 
 Mean Average Precision (MAP) measures how well a ranking brings relevant items toward the top. For each query, add the precision at every relevant result and divide by the total number of relevant items. This gives Average Precision (AP); MAP averages AP across queries. The fourth relevant item at rank $10$, for example, contributes a precision of $4/10$.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -153,20 +150,20 @@ Mean Average Precision (MAP) measures how well a ranking brings relevant items t
                 $
             }
         };
-        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.74,0.30)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(3.46,-0.66)$) to node[pos=1, above] {relevant items} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.87,-0.66)$) to[bend right=15] node[pos=1, left] {precision at $k$} +(-1.00,0.94);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.74,0.30)$) to[bend left=15] node[pos=1, left] {number of queries} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(3.46,-0.66)$) to node[pos=1, above] {relevant items} +(0.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.87,-0.66)$) to[bend right=15] node[pos=1, left] {precision at $k$} +(-1.00,0.94);
     }
-\end{center}
+\end{metricformula}
 
 Here $R_q$ contains all known relevant items for query $q$, $n$ is the list length, and $rel(k)$ is $1$ for a relevant item and $0$ otherwise. Unretrieved relevant items contribute zero. AP reaches $1$ when every relevant item appears before any irrelevant one. Compare against a baseline on the same queries, such as shuffled rankings.
 
-\textbf{When to use MAP?}
+\metricheading{When to use}
 
 Use MAP for binary relevance when retrieving several useful results matters. MAP@$K$ sums only the first $K$ positions. TREC's map\_cut still divides by all known relevant items, penalizing those outside the cutoff; report the convention you use. For relevance grades, consider nDCG.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item Rewards moving relevant items ahead of irrelevant ones.
     \item Normalizes AP by the number of relevant items before averaging across queries.
@@ -180,17 +177,17 @@ Use MAP for binary relevance when retrieving several useful results matters. MAP
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/MAP_precision_strips.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. MAP.} Two rankings with the same four relevant items. The number under each filled dot is the running precision at that rank: $1/1 = 1.00$ for the first relevant item at rank $1$, $4/6 = 0.67$ for the fourth relevant item landing at rank $6$. AP is exactly the mean of those numbers; a single position shift reshuffles the whole sum. Same recall, very different AP.
+\metriccaption{Figure. MAP.}{Two rankings with the same four relevant items. The number under each filled dot is the running precision at that rank: $1/1 = 1.00$ for the first relevant item at rank $1$, $4/6 = 0.67$ for the fourth relevant item landing at rank $6$. AP is exactly the mean of those numbers; a single position shift reshuffles the whole sum. Same recall, very different AP.}
 
 \orangebox{Did you know that...}
 {The Text REtrieval Conference (TREC) began in 1992 and helped establish MAP as a widely used retrieval measure. Its evaluations use relevance judgments for a shared set of queries, allowing systems to be compared on the same task. Those judgments are often incomplete, which is why the evaluation procedure matters alongside the score.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 For graded relevance use nDCG. For the first relevant result use MRR; for the number of relevant results in the first $K$ slots use Precision@$K$. AP scores one query, while MAP averages AP across queries.
 
@@ -200,12 +197,11 @@ For graded relevance use nDCG. For the first relevant result use MRR; for the nu
 % ---------- Hit Rate ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Hit Rate}\label{sec:hit-rate}
-\subsection{Hit Rate}
+\metricentry{Hit Rate}{Hit Rate}\label{sec:hit-rate}
 
 Hit Rate measures the fraction of users whose top-$K$ list contains at least one labeled-relevant item. Each user contributes $1$ for a hit and $0$ for a miss, and we average those values. It ignores how many relevant items appeared and where they were within the first $K$ positions.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -214,16 +210,16 @@ Hit Rate measures the fraction of users whose top-$K$ list contains at least one
                 $
             }
         };
-        \path[room for labels] ([yshift=0.00cm]a.north) ([yshift=-0.55cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.59,0.22)$) to[bend left=15] node[pos=1, left] {number of users} +(-1.00,-0.39);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.69,0.61)$) to[bend left=15] node[pos=1, left] {relevant items} +(-1.00,-1.20);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.94,0.61)$) to node[pos=1, below] {top-K items} +(0.00,-0.31);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.59,0.22)$) to[bend left=15] node[pos=1, left] {number of users} +(-1.00,-0.39);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.69,0.61)$) to[bend left=15] node[pos=1, left] {relevant items} +(-1.00,-1.20);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.94,0.61)$) to node[pos=1, below] {top-K items} +(0.00,-0.31);
     }
-\end{center}
+\end{metricformula}
 
 A Hit Rate of $0.72$ means $72\%$ of evaluated users have at least one labeled-relevant item in their top-$K$ list. The other $28\%$ have no labeled hit there. That tells us how often the list misses the known interests in the evaluation; it does not directly measure whether users were satisfied.
 
-\textbf{When to use Hit Rate?}
+\metricheading{When to use}
 
 Use Hit Rate to check how often a top-$K$ list contains any known relevant item. It is useful when a completely unsuccessful list matters, but pair it with a metric that rewards additional hits or their positions when those also matter.
 
@@ -241,29 +237,28 @@ Use Hit Rate to check how often a top-$K$ list contains any known relevant item.
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Hit_Rate_vs_K.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Hit_Rate_vs_K.png}
+\end{metricfigure}
 
-\textbf{Figure. Hit Rate.} These illustrative values show $15\%$ of users with a labeled hit at $K = 1$ and $96\%$ at $K = 50$. Hit Rate cannot decrease when we extend the same ranked lists, because earlier hits remain included. The remaining $4\%$ have no hit in the first $50$ positions; their first relevant item could still appear later.
+\metriccaption{Figure. Hit Rate.}{These illustrative values show $15\%$ of users with a labeled hit at $K = 1$ and $96\%$ at $K = 50$. Hit Rate cannot decrease when we extend the same ranked lists, because earlier hits remain included. The remaining $4\%$ have no hit in the first $50$ positions; their first relevant item could still appear later.}
 
 \orangebox{Did you know that...}
 {Recommender systems papers often call Hit Rate ``Recall@$K$'' and use the two interchangeably. They are the same metric only when each user has exactly one relevant item — the typical leave-one-out evaluation setup. With multiple relevant items per user, Recall@$K$ measures the fraction retrieved, while Hit Rate stays binary. The naming clash trips up cross-paper comparisons more often than you would expect.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 For position-aware evaluation use MRR or nDCG. For counting how many relevant items the list retrieved, use Recall@$K$. Hit Rate is the binary collapse of Recall@$K$.
 
 % ---------- Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{CG}\label{sec:cg}
-\subsection{Cumulative Gain}
+\metricentry{CG}{Cumulative Gain (CG)}\label{sec:cg}
 
 Cumulative Gain (CG) sums the relevance scores of the items in a recommendation list. With graded relevance — $3$ for ``perfect'', $1$ for ``marginal'', $0$ for ``irrelevant'' — $CG_K$ is the total relevance packed into the top-$K$. The catch is that CG ignores rank: a relevant item at position $1$ adds the same as one at position $K$.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -272,14 +267,14 @@ Cumulative Gain (CG) sums the relevance scores of the items in a recommendation 
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.40,-0.07)$) to[bend right=15] node[pos=1, left] {number of items} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.23,-0.54)$) to[bend left=15] node[pos=1, right] {relevance of item $i$} +(1.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(0.40,-0.07)$) to[bend right=15] node[pos=1, left] {number of items} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.23,-0.54)$) to[bend left=15] node[pos=1, right] {relevance of item $i$} +(1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 CG is not normalized: with grades from $0$ to $3$, the top-$K$ total cannot exceed $3K$. Reordering the same selected items leaves their total unchanged. Moving an item into or out of that selection can change CG, so it measures how much relevance we retrieved without judging the order within it.
 
-\textbf{When to use CG?}
+\metricheading{When to use}
 
 Use CG when only total retrieved relevance matters and ordering is decided downstream (a re-ranker reshuffles the list, or items are shown simultaneously). Avoid CG when position matters to the user — which covers most ranking applications. Use DCG or nDCG instead.
 
@@ -296,31 +291,30 @@ Use CG when only total retrieved relevance matters and ordering is decided downs
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/CG_order_blind.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. CG.} The same ten items in one order and its reverse. CG adds the relevance grades and reaches $12$ either
+\metriccaption{Figure. CG.}{The same ten items in one order and its reverse. CG adds the relevance grades and reaches $12$ either
 way: it cannot tell the two lists apart. DCG discounts each grade by $1/\log_2(i+1)$ and scores them $7.28$ and $4.38$. CG is a check on
-how much relevance a list retrieved, not on where it put it.
+how much relevance a list retrieved, not on where it put it.}
 
 \orangebox{Did you know that...}
 {Swapping items within the top $K$ leaves CG@$K$ unchanged, but a swap across the cutoff can change it. That distinction matters in a retrieval-then-rerank pipeline: the retriever chooses the set of candidates, while the reranker decides their order. CG can evaluate the total graded relevance of that set; DCG adds a preference for finding the best items earlier.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 DCG extends CG by discounting later positions. nDCG normalizes DCG against the ideal ranking, so scores are comparable across queries with different relevance budgets. In practice, CG is the warm-up step toward those two.
 
 % ---------- Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{DCG}\label{sec:dcg}
-\subsection{Discounted Cumulative Gain}
+\metricentry{DCG}{Discounted Cumulative Gain (DCG)}\label{sec:dcg}
 
 Discounted Cumulative Gain (DCG) adds up relevance scores while giving less weight to items further down the list. In this version, an item's weight is $1/\log_2(i+1)$ at rank $i$. Rank $1$ receives full weight; ranks $2$, $10$ and $100$ receive about $0.63$, $0.29$ and $0.15$. A useful result therefore contributes more when it appears earlier.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -329,15 +323,15 @@ Discounted Cumulative Gain (DCG) adds up relevance scores while giving less weig
                 $
             }
         };
-        \path[room for labels] ([yshift=0.09cm]a.north) ([yshift=-0.28cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.45,-0.19)$) to[bend right=15] node[pos=1, left] {relevance of item $i$} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.85,0.31)$) to[bend left=15] node[pos=1, left] {position discount} +(-1.00,-0.61);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.45,-0.19)$) to[bend right=15] node[pos=1, left] {relevance of item $i$} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.85,0.31)$) to[bend left=15] node[pos=1, left] {position discount} +(-1.00,-0.61);
     }
-\end{center}
+\end{metricformula}
 
 The cutoff $p$ tells us how many positions to include. DCG adds the contribution from every item up to that point, whereas MRR stops at the first relevant result. DCG@$5$ can therefore distinguish two five-item lists that share the same first hit but differ in the remaining results.
 
-\textbf{When to use DCG?}
+\metricheading{When to use}
 
 Use DCG when you want to reward relevance grades and early positions within a chosen list length. Scores also depend on how much relevance is available for each query. To express the result as a share of that query's best possible score, use nDCG.
 
@@ -353,29 +347,28 @@ Use DCG when you want to reward relevance grades and early positions within a ch
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.8\textwidth]{figures/CG_vs_DCG.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/CG_vs_DCG.png}
+\end{metricfigure}
 
-\textbf{Figure. DCG.} The same list scored by CG (red) and DCG (blue). Both agree at rank $1$; later contributions receive less weight in DCG. At $K = 10$, the scores are $12.0$ and $7.16$, a reduction of about $40\%$ in the position-weighted score. The reduction is the vertical gap between the curves at that cutoff, not the area of the shading.
+\metriccaption{Figure. DCG.}{The same list scored by CG (red) and DCG (blue). Both agree at rank $1$; later contributions receive less weight in DCG. At $K = 10$, the scores are $12.0$ and $7.16$, a reduction of about $40\%$ in the position-weighted score. The reduction is the vertical gap between the curves at that cutoff, not the area of the shading.}
 
 \orangebox{Did you know that...}
 {Kalervo J\"arvelin and Jaana Kek\"al\"ainen introduced logarithmic discounting in their 2000 SIGIR paper and developed the work further in 2002. This chapter uses each relevance grade directly as its gain. Another common choice, $2^{rel}-1$, gives high grades more influence: grades $1$ and $3$ become gains of $1$ and $7$.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 nDCG divides DCG by the best possible score for each query. MAP uses binary relevance and precision at each hit, while MRR considers only the first hit.
 
 % ---------- Normalized Discounted Cumulative Gain ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{nDCG}\label{sec:ndcg}
-\subsection{Normalized Discounted Cumulative Gain}
+\metricentry{nDCG}{Normalized Discounted Cumulative\\ Gain (nDCG)}\label{sec:ndcg}
 
-Normalized Discounted Cumulative Gain (nDCG) measures how close a ranked list comes to the best possible discounted relevance. It divides the list's DCG by an ideal DCG (IDCG), calculated by placing the highest-graded eligible items first. The ideal includes relevant items the model failed to retrieve, so a list cannot earn full credit simply by ordering a poor selection well.
+Normalized Discounted Cumulative\\ Gain (nDCG) measures how close a ranked list comes to the best possible discounted relevance. It divides the list's DCG by an ideal DCG (IDCG), calculated by placing the highest-graded eligible items first. The ideal includes relevant items the model failed to retrieve, so a list cannot earn full credit simply by ordering a poor selection well.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -384,15 +377,15 @@ Normalized Discounted Cumulative Gain (nDCG) measures how close a ranked list co
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.19cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.11,-0.01)$) to[bend right=15] node[pos=1, left] {actual DCG} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.10,0.06)$) to[bend left=15] node[pos=1, left] {ideal DCG} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.11,-0.01)$) to[bend right=15] node[pos=1, left] {actual DCG} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.10,0.06)$) to[bend left=15] node[pos=1, left] {ideal DCG} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 With nonnegative grades and a positive IDCG, nDCG ranges from $0$ to $1$. Zero means no item within the cutoff has positive gain; $1$ means the best possible score. With linear gain, returning a grade-$1$ item when a grade-$3$ item was available gives $nDCG@1 = 1/3$. If IDCG is zero, report whether such queries are excluded or assigned a conventional score.
 
-\textbf{When to use nDCG?}
+\metricheading{When to use}
 
 Use nDCG@$K$ when both relevance and position matter within the first $K$ results. It supports binary labels as well as grades and expresses each query's score relative to its ideal. MRR instead asks about the first hit, while Precision@$K$ counts hits without rewarding their order.
 
@@ -408,17 +401,17 @@ Use nDCG@$K$ when both relevance and position matter within the first $K$ result
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.85\textwidth]{figures/nDCG_degradation.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/nDCG_degradation.png}
+\end{metricfigure}
 
-\textbf{Figure. nDCG.} This simulated sequence starts with a perfectly ordered list and swaps pairs of positions. Swaps between equally relevant items leave the score unchanged. At swap $8$, exchanging a grade-$5$ item at rank $1$ with a grade-$1$ item at rank $7$ causes the large fall; swap $16$ returns grade $5$ to the top. Random swaps can improve an already disturbed ranking. The size of each change depends on the grades and positions involved.
+\metriccaption{Figure. nDCG.}{This simulated sequence starts with a perfectly ordered list and swaps pairs of positions. Swaps between equally relevant items leave the score unchanged. At swap $8$, exchanging a grade-$5$ item at rank $1$ with a grade-$1$ item at rank $7$ causes the large fall; swap $16$ returns grade $5$ to the top. Random swaps can improve an already disturbed ranking. The size of each change depends on the grades and positions involved.}
 
 \orangebox{Did you know that...}
 {The TREC 2020 Deep Learning Track used nDCG@$10$ as its main measure for document and passage ranking. It captured graded relevance near the top of the results, while other reported measures covered complementary questions, including retrieval across a longer list. A chosen cutoff is part of what a benchmark asks a system to do well.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 nDCG normalizes DCG against the ideal ranking. MAP is another option for binary relevance, with different weights on early hits. Use MRR when only the first useful result matters, or Precision@$K$ when order within the selected list does not matter.
 
@@ -428,29 +421,28 @@ nDCG normalizes DCG against the ideal ranking. MAP is another option for binary 
 % ---------- Fraction of Concordant Pairs ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{FCP}\label{sec:fcp}
-\subsection{Fraction of Concordant Pairs}
+\metricentry{FCP}{Fraction of Concordant Pairs (FCP)}\label{sec:fcp}
 
 Fraction of Concordant Pairs (FCP) measures how often a model puts two items in the user's preferred order. We count pairs ordered correctly and divide by the number of pairs we can compare. A perfect ordering scores $1$; random ordering averages $0.5$ when there are no ties.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                FCP = \frac{|{\color{nmlcyan}\text{concordant pairs}}|}{|{\color{nmlpurple}\text{comparable pairs}}|}
+                \mathrm{FCP} = \frac{\color{nmlcyan}N_{\mathrm{correct}}}{\color{nmlpurple}N_{\mathrm{pairs}}}
                 $
             }
         };
-        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.22cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.31,-0.04)$) to[bend right=15] node[pos=1, left] {correctly ordered pairs} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.31,0.07)$) to[bend left=15] node[pos=1, left] {total comparable pairs} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.31,-0.04)$) to[bend right=15] node[pos=1, left] {correctly ordered pairs} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.31,0.07)$) to[bend left=15] node[pos=1, left] {total comparable pairs} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
-Here we compare pairs with a known preference and different predicted scores, excluding ties in either the ratings or predictions. Pool the correctly ordered and comparable pairs across users before dividing. The score is undefined if none remain. State the tie rule, since implementations can treat predicted ties differently.
+$N_{\mathrm{correct}}$ counts correctly ordered pairs and $N_{\mathrm{pairs}}$ counts all comparable pairs. Here we compare pairs with a known preference and different predicted scores, excluding ties in either the ratings or predictions. Pool the correctly ordered and comparable pairs across users before dividing. The score is undefined if none remain. State the tie rule, since implementations can treat predicted ties differently.
 
-\textbf{When to use FCP?}
+\metricheading{When to use}
 
 Use FCP when recovering preference order matters more than matching rating values. It works with ordinal ratings, including five-star ratings, but ignores the size of the gaps between them. With clicks, define which items the user could have seen before interpreting an unclicked item as less preferred.
 
@@ -466,17 +458,17 @@ Use FCP when recovering preference order matters more than matching rating value
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/FCP_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. FCP.} Two rankers order the same five items, giving ten pairs to compare. The left ranker gets nine pairs right: only the order of items $2$ and $3$ is reversed, so FCP is $0.90$. The right ranker gets three pairs right, giving $0.30$. FCP counts these pairwise agreements, not the number of points sitting on the diagonal.
+\metriccaption{Figure. FCP.}{Two rankers order the same five items, giving ten pairs to compare. The left ranker gets nine pairs right: only the order of items $2$ and $3$ is reversed, so FCP is $0.90$. The right ranker gets three pairs right, giving $0.30$. FCP counts these pairwise agreements, not the number of points sitting on the diagonal.}
 
 \orangebox{Did you know that...}
 {For two rankings without ties, FCP and Kendall's tau express the same pairwise agreement on different scales: $\tau = 2 \cdot FCP - 1$. FCP ranges from $0$ to $1$, while tau ranges from $-1$ to $1$. The identity does not generally hold for tie-adjusted versions such as Kendall's tau-b.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Kendall's tau also compares pairwise order, with variants that handle ties. nDCG weights positions and relevance grades, while MAP uses binary relevance. MRR focuses on the first relevant result.
 
@@ -486,12 +478,11 @@ Kendall's tau also compares pairwise order, with variants that handle ties. nDCG
 % ---------- Diversity ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Diversity}\label{sec:diversity}
-\subsection{Diversity}
+\metricentry{Diversity}{Diversity}\label{sec:diversity}
 
 Diversity scores a recommendation list by how dissimilar its items are from each other on average. Sum the pairwise dissimilarities $d(i, j)$ across all unordered pairs and divide by the number of pairs. With genre-based dissimilarity, a list of ten action movies scores low; a list mixing action, comedy and documentary scores higher.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -500,15 +491,15 @@ Diversity scores a recommendation list by how dissimilar its items are from each
                 $
             }
         };
-        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.90,0.31)$) to[bend left=15] node[pos=1, left] {list size} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(3.51,-0.34)$) to[bend right=15] node[pos=1, left] {pairwise dissimilarity} +(-1.00,0.62);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.90,0.31)$) to[bend left=15] node[pos=1, left] {list size} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(3.51,-0.34)$) to[bend right=15] node[pos=1, left] {pairwise dissimilarity} +(-1.00,0.62);
     }
-\end{center}
+\end{metricformula}
 
 The list is $L$, and $d(i,j)$ specifies how different two items are. For a simple genre comparison, set it to $0$ for two films in the same genre and $1$ for films in different genres. Diversity is then the fraction of pairs with different genres. The double sum counts each pair twice, once in each order, so the denominator does too. With richer item descriptions, we can instead compare their feature vectors.
 
-\textbf{When to use Diversity?}
+\metricheading{When to use}
 
 Use Diversity alongside relevance when offering useful variety matters, such as a movie list that should cover several interests. A list can be both relevant and varied, but improving one score does not guarantee the other improves. Measure both for the systems you are comparing.
 
@@ -524,37 +515,34 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Diversity_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Diversity.} Two six-item recommendation lists rendered as horizontal strips, each tile colored by genre. \underline{Top:} one item per genre — Intra-List Diversity hits its maximum ($ILD = 1.00$) because every pair of items disagrees on category. Bottom: six action items — every pair matches, so $ILD = 0.00$. The metric reads the visible color mix of the list, not its accuracy.
+\metriccaption{Figure. Diversity.}{Two six-item recommendation lists rendered as horizontal strips, each tile colored by genre. \textit{Top:} one item per genre — Intra-List Diversity hits its maximum ($ILD = 1.00$) because every pair of items disagrees on category. Bottom: six action items — every pair matches, so $ILD = 0.00$. The metric reads the visible color mix of the list, not its accuracy.}
 
 \orangebox{Did you know that...}
 {Reordering a list leaves this diversity score unchanged. With three action films and one each from three other genres, $12$ of the $15$ pairs differ, giving diversity $0.8$. If the action films appear first, diversity within the first three is $0$. When users see only part of a list, calculate diversity for that part too.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Diversity measures how different the items in one list are. The popularity-based Novelty score estimates unfamiliarity from how rarely items appear in interaction history. Serendipity combines relevance with unexpectedness, while Coverage measures catalog reach across many lists.
 
 % ---------- Novelty ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Novelty}\label{sec:novelty}
-\subsection{Novelty}
+\metricentry{Novelty}{Novelty}\label{sec:novelty}
 
 Novelty measures how unfamiliar recommendations may be to a user. The version here estimates that from item popularity: an item that appears rarely in past interactions gets a higher score. This is a proxy, not evidence that a particular person has never seen it. A rare film may already be familiar to its biggest fan.
 
-\begin{center}
-    \[
-        Novelty(i) = -\log_2 P(i)
-    \]
-\end{center}
+\begin{metricformula}
+\tikz{\node[inner sep=2pt,font=\Large] {$\displaystyle\operatorname{Novelty}(i)=-\log_2 P(i)$};}
+\end{metricformula}
 
 Let $P(i)$ be the fraction of historical interactions involving item $i$. An item with $P(i) = 0.5$ scores $1$ bit; one with $P(i) = 0.01$ scores about $6.6$ bits. Average item scores to evaluate a list. Zero-count items need an explicit policy, such as smoothing the counts, because $\log 0$ is undefined.
 
-\textbf{When to use Novelty?}
+\metricheading{When to use}
 
 Use Novelty when discovery matters, including exploratory search, and assess relevance alongside it. It is less useful for looking up a known item: finding the requested song matters more than whether it is obscure. Specify the formulation; alternatives such as $1-P(i)$ can rank whole lists differently after averaging.
 
@@ -571,29 +559,28 @@ Use Novelty when discovery matters, including exploratory search, and assess rel
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Novelty_curve.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Novelty_curve.png}
+\end{metricfigure}
 
-\textbf{Figure. Novelty.} Popularity-based novelty falls as $P(i)$ rises. The reference points show an item with $P(i) = 0.01$ scoring about $6.6$ bits and one with $P(i) = 0.5$ scoring $1$ bit. The score continues to fall beyond $0.5$, reaching zero at $P(i) = 1$.
+\metriccaption{Figure. Novelty.}{Popularity-based novelty falls as $P(i)$ rises. The reference points show an item with $P(i) = 0.01$ scoring about $6.6$ bits and one with $P(i) = 0.5$ scoring $1$ bit. The score continues to fall beyond $0.5$, reaching zero at $P(i) = 1$.}
 
 \orangebox{Did you know that...}
 {This novelty score uses self-information, an idea from information theory. Halving an item's popularity adds one bit to its score: probabilities of $0.5$, $0.25$ and $0.125$ give $1$, $2$ and $3$ bits. This explains why small popularity differences among rare items can produce large score differences.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 This Novelty score uses item popularity; Diversity compares items within a list. Serendipity additionally asks whether a relevant item is unexpected for the user, which need not mean it is unpopular. Coverage measures catalog reach.
 
 % ---------- Serendipity ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Serendipity}\label{sec:serendipity}
-\subsection{Serendipity}
+\metricentry{Serendipity}{Serendipity}\label{sec:serendipity}
 
 Serendipity measures whether recommendations are both useful and unexpected. We need a way to judge relevance and a baseline for what the user would expect. One approach multiplies those two scores for each recommended item, then averages across the list. A surprise contributes little if it is irrelevant, just as a useful but entirely predictable item contributes little.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -602,16 +589,16 @@ Serendipity measures whether recommendations are both useful and unexpected. We 
                 $
             }
         };
-        \path[room for labels] ([yshift=0.15cm]a.north) ([yshift=-0.18cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.53,0.34)$) to[bend left=15] node[pos=1, left] {number of items} +(-1.00,-0.55);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.25,-0.60)$) to[bend right=15] node[pos=1, left] {relevance} +(-1.00,0.78);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.55,0.69)$) to node[pos=1, below] {unexpectedness} +(0.00,-0.39);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.53,0.34)$) to[bend left=15] node[pos=1, left] {number of items} +(-1.00,-0.55);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.25,-0.60)$) to[bend right=15] node[pos=1, left] {relevance} +(-1.00,0.78);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.55,0.69)$) to node[pos=1, below] {unexpectedness} +(0.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 Suppose a listener likes a recommended jazz track, so we assign relevance $1$. If a baseline built from their listening history would not recommend it, we assign unexpectedness $1$ too. Its contribution is then $1 \times 1 = 1$. A liked track included by the baseline has unexpectedness $0$ and contributes zero. Continuous scores in $[0,1]$ also work, giving a result in $[0,1]$.
 
-\textbf{When to use Serendipity?}
+\metricheading{When to use}
 
 Use Serendipity for discovery, such as music browsing or exploratory search. Agree on what counts as unexpected before comparing models. It is less useful for known-item lookup, where the user wants a particular result rather than a pleasant surprise.
 
@@ -627,29 +614,28 @@ Use Serendipity for discovery, such as music browsing or exploratory search. Agr
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/Serendipity_scatter.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Serendipity_scatter.png}
+\end{metricfigure}
 
-\textbf{Figure. Serendipity.} These hypothetical recommendations illustrate the product of relevance and unexpectedness. Darker contours mark higher products, reached when both factors are high. A small factor reduces the score; an exactly zero factor makes it zero. Moderate values can still contribute: $0.5 \times 0.5 = 0.25$.
+\metriccaption{Figure. Serendipity.}{These hypothetical recommendations illustrate the product of relevance and unexpectedness. Darker contours mark higher products, reached when both factors are high. A small factor reduces the score; an exactly zero factor makes it zero. Moderate values can still contribute: $0.5 \times 0.5 = 0.25$.}
 
 \orangebox{Did you know that...}
 {Horace Walpole coined ``serendipity'' in a letter to Horace Mann dated 28 January 1754. He drew the word from \emph{The Three Princes of Serendip}, a tale whose heroes made discoveries through both accident and perceptive reasoning. The name captures the appeal of finding something valuable that we were not deliberately looking for.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Serendipity combines relevance with unexpectedness relative to a chosen baseline. Novelty may use popularity as a proxy for unfamiliarity; Diversity measures variety within the list. Neither alone tells us whether a recommendation is both useful and surprising.
 
 % ---------- Coverage ----------
 \clearpage
 \thispagestyle{rankingstyle}
-\section{Coverage}\label{sec:coverage}
-\subsection{Coverage}
+\metricentry{Coverage}{Coverage}\label{sec:coverage}
 
 Catalog coverage measures the fraction of available items that appear in a set of recommendations. If a system recommends $1{,}200$ distinct items from a $10{,}000$-item catalog during an evaluation week, its coverage is $0.12$. We count each item once, however many users receive it, so the score describes reach across lists rather than the quality of one person's list.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -658,19 +644,19 @@ Catalog coverage measures the fraction of available items that appear in a set o
                 $
             }
         };
-        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.22cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.72,-0.04)$) to[bend right=15] node[pos=1, left] {unique recommended} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.43,0.16)$) to[bend left=15] node[pos=1, left] {total catalog items} +(-1.00,-0.39);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.72,-0.04)$) to[bend right=15] node[pos=1, left] {unique recommended} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.43,0.16)$) to[bend left=15] node[pos=1, left] {total catalog items} +(-1.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 Define the evaluation period, users, list length and available catalog before comparing coverage. More recommendation opportunities can raise the score without improving the model. Coverage also ignores how often each item appears; entropy over items' recommendation shares can complement it, with higher entropy indicating more evenly spread exposure for a fixed catalog.
 
-\textbf{When to use Coverage?}
+\metricheading{When to use}
 
 Use Coverage when catalog reach matters, such as exposure for marketplace sellers or media creators. Evaluate it alongside relevance and the distribution of recommendations. A narrow reach may be appropriate for a small audience or a known-item search task; the score alone cannot tell us whether it is a failure.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item System-level signal that per-list metrics miss. nDCG can be perfect while Coverage is $0.05$ — every user gets a personal top-$10$ from the same $500$ items.
     \item Cheap and label-free. Just count unique items recommended; no relevance judgments needed.
@@ -683,16 +669,16 @@ Use Coverage when catalog reach matters, such as exposure for marketplace seller
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Coverage_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Coverage.} Three hypothetical systems recommend from the same $100$-item catalog. Each cyan square is an item recommended at least once in the evaluation. In this example, System A recommends only popular items and reaches $12\%$ of the catalog; B reaches $48\%$ and C reaches $89\%$. The grids show reach, but contain no relevance measurements from which to infer an accuracy trade-off.
+\metriccaption{Figure. Coverage.}{Three hypothetical systems recommend from the same $100$-item catalog. Each cyan square is an item recommended at least once in the evaluation. In this example, System A recommends only popular items and reaches $12\%$ of the catalog; B reaches $48\%$ and C reaches $89\%$. The grids show reach, but contain no relevance measurements from which to infer an accuracy trade-off.}
 
 \orangebox{Did you know that...}
 {Popularity bias is one possible reason for low coverage: a system may repeatedly recommend items that already attract many interactions. But a small audience, restricted inventory or a short evaluation can also produce low coverage. Check which items were recommended and under what conditions before attributing the score to popularity bias or choosing a remedy.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Coverage measures catalog reach across lists, while Diversity measures variety within one list. Popularity-based Novelty estimates unfamiliarity from interaction counts. Use nDCG or MAP for relevance, and Serendipity for relevant recommendations that are also unexpected.

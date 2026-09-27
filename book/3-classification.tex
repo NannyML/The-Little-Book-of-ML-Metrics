@@ -39,12 +39,10 @@ Many classifiers also predict probabilities, which give us more information than
 
 % ---------- Confusion Matrix ----------
 \thispagestyle{classificationstyle}
-\section{Confusion Matrix}\label{sec:confusion-matrix}
-\subsection{Confusion Matrix}
+\metricentry{Confusion Matrix}{Confusion Matrix}\label{sec:confusion-matrix}
 A confusion matrix counts how often each actual class receives each predicted label. For two classes, it has four cells. If spam is the positive class, correctly flagged spam is a true positive (TP), while missed spam is a false negative (FN). A legitimate email flagged as spam is a false positive (FP); one correctly left alone is a true negative (TN).
 
-\vspace{-0.5em}
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 $\displaystyle
@@ -53,15 +51,14 @@ C_{\textcolor{nmlred}{i}\,\textcolor{nmlcyan}{j}}
 \mathbf{1}\{ \; y_n = \textcolor{nmlred}{i} \;\land\; \hat{y}_n = \textcolor{nmlcyan}{j} \;\}
 $
 };
-\draw[overlay,-latex,nmlred, semithick] ($(a.north west)+(4.15,-0.55)$) to[bend right=34] node[pos=1, left] {actual class} +(-0.45,0.90);
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.85,0.50)$) to[bend right=19] node[pos=1, right] {predicted class} +(0.55,-0.45);
+\draw[-latex,nmlred, semithick] ($(a.north west)+(4.15,-0.55)$) to[bend right=34] node[pos=1, left] {actual class} +(-0.45,0.90);
+\draw[-latex,nmlcyan, semithick] ($(a.south)+(2.85,0.50)$) to[bend right=19] node[pos=1, right] {predicted class} +(0.55,-0.45);
 }
-\end{center}
-\vspace{-0.5em}
+\end{metricformula}
 
 Here, $M$ is the number of examples. The indicator adds one to cell $C_{ij}$ whenever an example's actual class is $i$ and its predicted class is $j$.
 
-\textbf{When to use Confusion Matrix?}
+\metricheading{When to use}
 
 Use the confusion matrix when you want the full per-class breakdown of correct vs incorrect predictions instead of a single summary score. It's the right tool when false positives and false negatives have different costs (medical diagnosis, fraud detection, content moderation). For model selection or hyperparameter tuning, pair it with a derived metric like F1 or MCC.
 
@@ -76,15 +73,15 @@ Use the confusion matrix when you want the full per-class breakdown of correct v
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Confusion_Matrix_cells.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Confusion Matrix.} \underline{Left:} ten predictions, each one a pair of actual and predicted label, sorted into
+\metriccaption{Figure. Confusion Matrix.}{\textit{Left:} ten predictions, each one a pair of actual and predicted label, sorted into
 its cell: a true positive (TP) or true negative (TN) when the two agree, a false negative (FN) or false positive (FP) when they don't.
-\underline{Right:} the four counts as the $2 \times 2$ matrix, and the metrics as reads of it. Along the top row, recall
+\textit{Right:} the four counts as the $2 \times 2$ matrix, and the metrics as reads of it. Along the top row, recall
 $= 3/4$; along the bottom row, the false positive rate $= 1/6$; down the first column, precision $= 3/4$; the diagonal over
-everything, accuracy $= 0.80$. These decision metrics use the four counts; ranking and probability metrics also need the original scores.
+everything, accuracy $= 0.80$. These decision metrics use the four counts; ranking and probability metrics also need the original scores.}
 
 In predictive maintenance, acting on a prediction can change the outcome. If a warning triggers a repair, we cannot observe whether the machine would have failed without it. That is different from waiting for a label: to judge a prediction of failure within thirty days, we must let those thirty days pass. Both affect which cases we can fairly include in the matrix.
 
@@ -93,7 +90,7 @@ Did you know that...}
 {Divide each row by its total and the diagonal entries give per-class recall. Divide each column by its total and they give per-class precision. The off-diagonal entries then show which mistakes contribute to those rates. Check the row and column labels first: some tools reverse the axes.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 When summary metrics disagree, inspect the counts rather than guessing the cause. For many classes, a normalized heatmap can make patterns easier to see, while the counts show how much evidence supports each rate.
 
@@ -102,15 +99,14 @@ When summary metrics disagree, inspect the counts rather than guessing the cause
 
 % ---------- FPR ----------
 \clearpage
-\section{FPR}\label{sec:fpr}
-\subsection{False Positive Rate}
+\metricentry{FPR}{False Positive Rate (FPR)}\label{sec:fpr}
 \thispagestyle{classificationstyle}
 
 The false positive rate is the fraction of actual negatives incorrectly flagged as positive. In a spam filter, FPR is the rate
 at which legitimate emails end up in your spam folder. In medical screening, it's the rate of healthy patients getting a false alarm.
 FPR forms the horizontal axis of the ROC curve.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -119,16 +115,16 @@ FPR = \frac{{\color{nmlcyan}FP}}{{\color{nmlcyan}FP} + {{\color{nmlpurple}TN}}}
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.00,0.05)$) to[bend left=15] node[pos=1, right] {false positives} +(0.75,0.30); 
-% \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.10,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50); 
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.50,-0.05)$) to[bend right=19] node[pos=1, right] {true negatives} +(0.75,-0.30); 
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(1.00,0.05)$) to[bend left=15] node[pos=1, right] {false positives} +(0.75,0.30);
+% \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.10,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50);
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.50,-0.05)$) to[bend right=19] node[pos=1, right] {true negatives} +(0.75,-0.30);
 }
-\end{center}
+\end{metricformula}
 
 FPR ranges from 0 (no false alarms) to 1 (every negative is misclassified). FPR = 1 $-$ Specificity (TNR), so a high
 Specificity means a low FPR. In the ROC curve, FPR is the x-axis: a good classifier hugs the left side (low FPR).
 
-\textbf{When to use FPR?}
+\metricheading{When to use}
 
 Use FPR when false alarms are costly: spam filtering (legitimate email lost), fraud detection (good transactions blocked), medical
 screening (healthy patients subjected to invasive follow-up). When both FPR and FNR matter, use the ROC curve to visualize the trade-off.
@@ -147,25 +143,17 @@ screening (healthy patients subjected to invasive follow-up). When both FPR and 
 \thispagestyle{customstyle}
 
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/FPR_3d_surface.png}
-    
-    \label{fig1}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/FPR_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.55\textwidth}
-    \centering
-    \vspace{-20pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.5\textwidth]{figures/FPR_2d_line_plot.png} 
-\end{wrapfigure}
+    \label{fig1}
+\end{metricfigure}
+
+
 
 % Left text with the image on the right
-\textbf{Figure. False Positive Rate.} 
-\underline{Top:}
-3D surface illustrating FPR's non-linear relationship with FP and TN. FPR is lowest (blue) when FP is low. It increases (red) as FP increases.
-\underline{Right:}
-Shows how FPR decreases hyperbolically as total negative cases increase for fixed FP values. Lower FP maintains better FPR.
+\metriccaption{Figure. False Positive Rate.}{FPR depends on the balance between false positives and true negatives. With TN held fixed, increasing FP raises the rate; with FP held fixed, increasing TN lowers it. These are different count combinations, not thresholds on one test set.}
 
 
 \orangebox{%
@@ -174,21 +162,20 @@ Did you know that...}
 In the context of statistical hypothesis testing, the FPR is also known as the ``type I error rate'' or the probability of rejecting a true null hypothesis.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Other metrics used alongside or instead of FPR include True Positive Rate (TPR), Precision, F1-Score, the area under the ROC curve (ROC AUC), and Specificity.
 
 
 % ---------- FNR ----------
 \clearpage
-\section{FNR}\label{sec:fnr}
-\subsection{False Negative Rate}
+\metricentry{FNR}{False Negative Rate (FNR)}\label{sec:fnr}
 \thispagestyle{classificationstyle}
 
 The false negative rate is the fraction of actual positives the model misses. In cancer screening, FNR is the rate of undetected tumors.
 In fraud detection, it's the rate of fraudulent transactions that slip through. FNR = 1 $-$ Recall, so minimizing FNR is equivalent
 to maximizing Recall.
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -197,16 +184,16 @@ FNR = \frac{{\color{nmlcyan}FN}}{{\color{nmlcyan}FN} + {{\color{nmlpurple}TP}}}
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.92,-0.03)$) to[bend right=15] node[pos=1, left] {false negatives} +(-1.00,0.30); 
-% \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.65,0.09)$) to[bend left=15] node[pos=1, left] {true positives} +(-1.00,-0.30); 
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(0.92,-0.03)$) to[bend right=15] node[pos=1, left] {false negatives} +(-1.00,0.30);
+% \draw[-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5);
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.65,0.09)$) to[bend left=15] node[pos=1, left] {true positives} +(-1.00,-0.30);
 }
-\end{center}
+\end{metricformula}
 
 FNR ranges from 0 (no misses) to 1 (every positive is missed). In high-stakes domains, even a small FNR can be
 catastrophic: an FNR of $5\%$ in airport security means 1 in 20 threats goes undetected.
 
-\textbf{When to use FNR?}
+\metricheading{When to use}
 
 Use FNR when missing a positive is the primary risk: disease screening (undiagnosed cancer), security systems (missed
 threats), predictive maintenance (undetected failures). If false alarms are the bigger concern, focus on FPR instead.
@@ -225,24 +212,16 @@ threats), predictive maintenance (undetected failures). If false alarms are the 
 \thispagestyle{customstyle}
 
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/FNR_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/FNR_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.55\textwidth}
-    \centering
-    \vspace{-20pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.5\textwidth]{figures/FNR_2d_line_plot.png} 
-\end{wrapfigure}
+\end{metricfigure}
+
+
 
 % Left text with the image on the right
-\textbf{Figure. False Negative Rate.} 
-\underline{Top:}
-3D surface illustrating FNR's non-linear relationship with FN and TP. FNR is lowest (blue) when FN is low. It increases (red) as FN increases.
-\underline{Right:}
-Shows how FNR decreases hyperbolically as total positive cases increase for fixed FN values. Lower FN maintains better FNR.
+\metriccaption{Figure. False Negative Rate.}{FNR depends on the balance between false negatives and true positives. With TP held fixed, increasing FN raises the rate; with FN held fixed, increasing TP lowers it. These are different count combinations, not thresholds on one test set.}
 
 
 \orangebox{%
@@ -251,20 +230,19 @@ Did you know that...}
 In hypothesis testing, the false negative rate is $\beta$ and the power is $1-\beta$. For a fixed test and sample size, making rejection easier can raise power but also the false positive rate, $\alpha$. More informative data or a larger sample can improve power without raising $\alpha$.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Other metrics used alongside or instead of False Negative Rate
 are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
 
 % ---------- TPR ----------
 \clearpage
-\section{TPR (Recall/Sensitivity)}\label{sec:tpr-recall-sensitivity}
-\subsection{True Positive Rate (Recall/Sensitivity)}
+\metricentry{TPR (Recall/Sensitivity)}{True Positive Rate (TPR / Recall / Sensitivity)}\label{sec:tpr-recall-sensitivity}
 \thispagestyle{classificationstyle}
 
 Recall is the fraction of actual positives the model correctly identifies. In cancer screening, a recall of $0.95$ means the test detects $95\%$ of the positive cases. Recall is $1-FNR$, so increasing it reduces the miss rate. It does not tell us how many healthy patients receive a false alarm.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -273,16 +251,16 @@ Recall = \frac{{\color{nmlcyan}TP}}{{\color{nmlcyan}TP} + {{\color{nmlpurple}FN}
 $
 }
 };
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.02,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30); 
-% \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.69,0.09)$) to[bend left=15] node[pos=1, left] {false negatives} +(-1.00,-0.30); 
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(1.02,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+% \draw[-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5);
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(1.69,0.09)$) to[bend left=15] node[pos=1, left] {false negatives} +(-1.00,-0.30);
 }
-\end{center}
+\end{metricformula}
 
 Recall ranges from 0 to 1, where 1 indicates perfect recall (all positive instances were correctly identified), and 0 indicates the worst
 possible recall (no positive instances were identified).
 
-\textbf{When to use TPR?}
+\metricheading{When to use}
 
 Use recall when missed positives matter, such as undetected disease or fraud. Choose a threshold that catches as many positives as possible while keeping false alarms within an acceptable limit. That limit might be a minimum precision or the number of alerts a team can review. Predicting everything positive gives perfect recall, so recall alone cannot make this choice.
 
@@ -298,25 +276,19 @@ Use recall when missed positives matter, such as undetected disease or fraud. Ch
 
 \clearpage
 \thispagestyle{customstyle}
-\enlargethispage{2\baselineskip}
 
 
-\begin{figure*}[ht!]
+
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/Recall_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Recall_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.55\textwidth}
-    \centering
-    \vspace{-20pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.5\textwidth]{figures/Recall_2d_line_plot.png} 
-\end{wrapfigure}
+\end{metricfigure}
+
+
 
 % Left text with the image on the right
-\textbf{Figure. Recall.} 
-\underline{Top:} Recall increases as TP rises or FN falls.
-\underline{Right:} Each curve holds TP fixed while the number of actual positives grows. With $50$ true positives, recall falls from $0.5$ among $100$ positives to $0.25$ among $200$: the additional positives are all missed. These are different count combinations, not thresholds on one test set.
+\metriccaption{Figure. Recall.}{Recall increases as TP rises or FN falls. For a fixed number of actual positives, it is the fraction the model finds. The surface varies both counts; it does not trace thresholds on one test set.}
 
 \orangebox{%
 Did you know that...}
@@ -324,21 +296,20 @@ Did you know that...}
     Allen Kent and colleagues used precision and recall to evaluate literature searching in 1955. The two questions were practical: how much of the relevant literature did a search retrieve, and how much of what it retrieved was relevant?
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Precision describes the reliability of positive predictions; specificity describes correct rejections. F-beta combines precision and recall with a chosen emphasis.
 
 % ---------- TNR ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{TNR (Specificity)}\label{sec:tnr-specificity}
-\subsection{True Negative Rate (Specificity)}
+\metricentry{TNR (Specificity)}{True Negative Rate (TNR / Specificity)}\label{sec:tnr-specificity}
 
 Specificity is the fraction of actual negatives the model correctly identifies. It's the mirror of Recall —
 while Recall measures how well you detect positives, Specificity measures how well you recognize negatives. TNR = 1 $-$ FPR.
 In a drug test, high Specificity means few false accusations; in email filtering, it means few legitimate emails marked as spam.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -347,17 +318,17 @@ In a drug test, high Specificity means few false accusations; in email filtering
         $
         }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.21cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.90,-0.03)$) to[bend right=15] node[pos=1, left] {true negatives} +(-1.00,0.30); 
-        % \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5); 
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.63,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30); 
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.90,-0.03)$) to[bend right=15] node[pos=1, left] {true negatives} +(-1.00,0.30);
+        % \draw[-latex,nmlgreen, semithick] ($(a.south)+(2.1,0.1)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.63,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 TNR ranges from 0 to 1, where 1 indicates perfect specificity (all negative instances correctly identified) and 0 (no negative instances were correctly identified).
 In hypothesis testing, specificity is inversely related to the Type I error rate.
 
-\textbf{When to use TNR?}
+\metricheading{When to use}
 
 When you need to assess a test's ability to identify negative cases correctly or when the cost of false positives is high (e.g., unnecessary medical procedures).
 
@@ -375,12 +346,12 @@ When you need to assess a test's ability to identify negative cases correctly or
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/TNR_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/TNR_3d_surface.png}
+\end{metricfigure}
 
-\textbf{Figure. TNR.} TNR (Specificity) as a function of TN and FP. TNR increases as more actual negatives are correctly identified.
+\metriccaption{Figure. TNR.}{TNR (Specificity) as a function of TN and FP. TNR increases as more actual negatives are correctly identified.}
 
 \orangebox{%
 Did you know that...}
@@ -388,7 +359,7 @@ Did you know that...}
     In 1947, biostatistician Jacob Yerushalmy defined sensitivity and specificity while studying X-ray diagnosis. He distinguished finding people with disease from correctly identifying those without it, showing why one success rate was not enough.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall), FPR, which is $1 - \text{Specificity}$, F1-score, and the ROC curve.
 
@@ -396,13 +367,12 @@ Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall),
 \clearpage
 
 \thispagestyle{classificationstyle}
-\section{Accuracy}\label{sec:accuracy}
-\subsection{Accuracy}
+\metricentry{Accuracy}{Accuracy}\label{sec:accuracy}
 
 Accuracy is the fraction of predictions that are correct. An accuracy of $0.92$ means the model gets $92$ out of every $100$ predictions right. It counts each example equally, whether the model correctly identifies a positive or a negative case.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -411,21 +381,21 @@ Accuracy is the fraction of predictions that are correct. An accuracy of $0.92$ 
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.51cm]a.south);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.north)+(2.00,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(2.02,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
-        \draw[overlay,-latex, nmlred, semithick] ($(a.north)+(0.64,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
-        \draw[overlay,-latex, nmlgreen, semithick] ($(a.south)+(3.41,0.09)$) to node[pos=1, below] {false negatives} +(0.00,-0.30);
+
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(2.00,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(2.02,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
+        \draw[-latex, nmlred, semithick] ($(a.north)+(0.64,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(3.41,0.09)$) to node[pos=1, below] {false negatives} +(0.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Accuracy ranges from $0$ to $1$, with $1$ meaning every prediction is correct. On a dataset with $99\%$ negatives, a model that always predicts ``negative'' achieves $99\%$ accuracy while missing every positive. This is the \textbf{accuracy paradox}: a high overall score can hide failure on the less common class.
 
-\textbf{When to use Accuracy?}
+\metricheading{When to use}
 
 Use accuracy when the goal is to minimize the number of wrong decisions and each error has the same cost. This can include imbalanced data, provided the test population represents the cases the model will encounter. Check performance within each class as well, especially when missing the rarer class matters.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Easy to interpret as the proportion of correct decisions, in both binary and multiclass problems.
 \item Gives every evaluated example the same weight, matching an objective that counts all mistakes equally.
@@ -438,30 +408,29 @@ Use accuracy when the goal is to minimize the number of wrong decisions and each
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Accuracy_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Accuracy_3d_surface.png}
+\end{metricfigure}
 
-\textbf{Figure. Accuracy.} Accuracy as a function of TP and TN, with $FP + FN$ fixed at $50$. Accuracy increases as the number of correct predictions, $TP + TN$, grows relative to the total.
+\metriccaption{Figure. Accuracy.}{Accuracy as a function of TP and TN, with $FP + FN$ fixed at $50$. Accuracy increases as the number of correct predictions, $TP + TN$, grows relative to the total.}
 
 \orangebox{Did you know that...}
 {Even balanced data can hide a failed class. With ten equally sized classes, a model that gets nine classes entirely right and misses the tenth entirely scores $90\%$ accuracy. Here accuracy equals the average recall across classes, but that average does not tell us which class the model misses.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Balanced Accuracy gives each class's recall equal weight. Precision and Recall describe results for the positive class, while Expected Cost accounts for the consequences of different mistakes.
 
 % ---------- Balanced Accuracy ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Balanced Accuracy}\label{sec:balanced-accuracy}
-\subsection{Balanced Accuracy}
+\metricentry{Balanced Accuracy}{Balanced Accuracy}\label{sec:balanced-accuracy}
 
 Balanced accuracy averages the proportion of correct predictions within each class, giving every class equal weight. In binary classification, it averages sensitivity and specificity. If $95\%$ of cases are negative, always predicting ``negative'' gives $95\%$ accuracy but only $50\%$ balanced accuracy: it gets all the negatives right and misses all the positives.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -470,20 +439,20 @@ Balanced accuracy averages the proportion of correct predictions within each cla
                 $
             }
         };
-        \path[room for labels] ([yshift=0.54cm]a.north) ([yshift=-0.07cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.20,-0.07)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(4.08,-0.07)$) to node[pos=1, above] {true negatives} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.88,0.19)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.20,-0.07)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(4.08,-0.07)$) to node[pos=1, above] {true negatives} +(0.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.88,0.19)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Balanced accuracy ranges from $0$ to $1$. In the binary case, predicting only one class scores $0.5$, also the expected score of predictions independent of the true labels. It equals accuracy when the classes are equally common. Otherwise, either score can be higher, depending on which class the model predicts better.
 
-\textbf{When to use Balanced Accuracy?}
+\metricheading{When to use}
 
 Use balanced accuracy when you want success within each class to contribute equally, even if one class is much more common. It is useful for comparing detection of rare events with rejection of normal cases, but it does not represent the actual costs of those mistakes.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item A common class cannot dominate the average merely because it contains more examples.
 \item The same idea extends to multiple classes: calculate recall for each, then average equally.
@@ -496,30 +465,29 @@ Use balanced accuracy when you want success within each class to contribute equa
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Balanced_Accuracy_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Balanced Accuracy.} Illustrative classifier results. On the left, the always-negative baseline misses every positive. The blue model catches about $79\%$ of positives and correctly rejects about $85\%$ of negatives, giving $0.85$ accuracy and $0.82$ balanced accuracy. It finds cases the baseline misses but makes more false alarms; whether that is preferable depends on the task. On balanced data (right), the two metrics agree.
+\metriccaption{Figure. Balanced Accuracy.}{Illustrative classifier results. On the left, the always-negative baseline misses every positive. The blue model catches about $79\%$ of positives and correctly rejects about $85\%$ of negatives, giving $0.85$ accuracy and $0.82$ balanced accuracy. It finds cases the baseline misses but makes more false alarms; whether that is preferable depends on the task. On balanced data (right), the two metrics agree.}
 
 \orangebox{Did you know that...}
 {Calculating recall separately for each class and averaging the results equally is called \emph{macro-averaged recall}. This gives balanced accuracy when both averages use the same classes. With $K$ classes represented in the data, predictions independent of the true labels have expected balanced accuracy $1/K$.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 A gap between Accuracy and Balanced Accuracy is a reason to inspect the individual class recalls. MCC offers a different summary of the same confusion matrix, as a correlation between actual and predicted labels. Precision and Recall help when the positive class is the main concern.
 
 % ---------- Precision ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Precision}\label{sec:precision}
-\subsection{Precision}
+\metricentry{Precision}{Precision}\label{sec:precision}
 
 Precision is the proportion of positive predictions that are correct. If a spam filter has precision $0.80$, then $80\%$ of the messages it flags are spam and $20\%$ are legitimate messages. Here, ``positive'' means spam, so a false positive is a legitimate message sent to the spam folder.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -528,15 +496,15 @@ Precision is the proportion of positive predictions that are correct. If a spam 
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.21cm]a.south);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.north)+(1.41,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30); 
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(2.09,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
+
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(1.41,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(2.09,0.09)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Precision ranges from $0$ to $1$, but a perfect score does not tell us how many positives the model found. A fraud detector that flags just one transaction, correctly, out of $1{,}000$ fraudulent transactions has precision $1.0$ and recall $0.001$. Recall supplies the missing part of that picture.
 
-\textbf{When to use Precision?}
+\metricheading{When to use}
 
 Use precision when you need to know how reliable the model's positive decisions are, such as the alerts sent to a fraud investigator or the messages blocked as spam. Read it alongside recall to see how many relevant cases those decisions cover.
 
@@ -552,12 +520,12 @@ Use precision when you need to know how reliable the model's positive decisions 
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Precision_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Precision_3d_surface.png}
+\end{metricfigure}
 
-\textbf{Figure. Precision.} Precision as a function of TP and FP. Precision is highest when FP is low relative to TP.
+\metriccaption{Figure. Precision.}{Precision as a function of TP and FP. Precision is highest when FP is low relative to TP.}
 
 \orangebox{%
 Did you know that...}
@@ -565,7 +533,7 @@ Did you know that...}
     Lowering a fixed model's threshold flags more cases. Recall cannot fall, but precision depends on the added cases: it can rise if enough are positive, or fall if too many are false alarms. A better model can improve both precision and recall, so the trade-off is not an unavoidable rule between them.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Precision is most commonly used alongside Recall. To combine both into a single metric, use the F1-score or the F-beta score.
 For a threshold-independent evaluation, consider the PR AUC.
@@ -573,15 +541,13 @@ For a threshold-independent evaluation, consider the PR AUC.
 % ---------- F1-score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{F1-score}\label{sec:f1-score}
-\subsection{F1-score}
+\metricentry{F1-score}{F1-score}\label{sec:f1-score}
 
 F1 combines precision and recall into one score, using their harmonic mean. It measures how well the model finds positive cases while avoiding false alarms. The harmonic mean gives more influence to the lower of the two values, so a very low precision or recall holds the score down.
 
 
 % formula
-\vspace{0.5em}
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -590,19 +556,18 @@ F1 combines precision and recall into one score, using their harmonic mean. It m
                 $
             }
         };
-        \path[room for labels] ([yshift=0.00cm]a.north) ([yshift=-0.85cm]a.south);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.south)+(-2.61,0.09)$) to[bend left=15] node[pos=1, left] {\color{nmlcyan} precision} +(-1.00,-0.45);
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(-1.12,0.09)$) to node[pos=1, below] {\color{nmlpurple} recall} +(0.00,-0.45);
-        \draw[overlay,-latex, nmlgreen, semithick] ($(a.south)+(2.25,0.09)$) to node[pos=1, below] {false positive} +(0.00,-0.87);
-        \draw[overlay,-latex, gray, semithick] ($(a.south)+(3.67,0.09)$) to node[pos=1, below] {\color{gray} false negative} +(0.00,-0.45);
-        \draw[overlay,-latex, nmlred, semithick] ($(a.north)+(2.30,-0.03)$) to[bend right=15] node[pos=1, left] {\color{nmlred} true positive} +(-1.00,0.30);
+
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(-2.61,0.09)$) to[bend left=15] node[pos=1, left] {\color{nmlcyan} precision} +(-1.00,-0.45);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(-1.12,0.09)$) to node[pos=1, below] {\color{nmlpurple} recall} +(0.00,-0.45);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(2.25,0.09)$) to node[pos=1, below] {false positive} +(0.00,-0.87);
+        \draw[-latex, gray, semithick] ($(a.south)+(3.67,0.09)$) to node[pos=1, below] {\color{gray} false negative} +(0.00,-0.45);
+        \draw[-latex, nmlred, semithick] ($(a.north)+(2.30,-0.03)$) to[bend right=15] node[pos=1, left] {\color{nmlred} true positive} +(-1.00,0.30);
     }
-\end{center}
-\vspace{0.5em}
+\end{metricformula}
 
 F1 ranges from $0$ to $1$, reaching $1$ when both precision and recall are perfect. It can rise even if one of them falls, provided the other improves enough. Report both components when you need to see what changed.
 
-\textbf{When to use F1-score?}
+\metricheading{When to use}
 
 Use F1 when you want one summary of precision and recall for the positive class, with neither given extra weight. It can help compare alerting or retrieval systems, but it does not assign costs to their mistakes.
 
@@ -618,38 +583,31 @@ Use F1 when you want one summary of precision and recall for the positive class,
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/F1_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/F1_3d_surface.png}
+\end{metricfigure}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt}
-    \includegraphics[width=0.45\textwidth]{figures/F1_2d_line_plot.png}
-    \vspace{-10pt}
-\end{wrapfigure}
 
-\textbf{Figure. F1-score.} \underline{Top:} F1 as a function of Precision and Recall. Both must be high for a high F1.
-\underline{Right:} F1 vs Recall at fixed Precision values. Higher Precision shifts the curve upward.
+
+\metriccaption{Figure. F1-score.}{F1 is the harmonic mean of precision and recall. Both must be high for a high F1; a very low value in either one pulls the score down. The score reaches one only when both are one.}
 
 \orangebox{Did you know that...}
 {A model with $100\%$ precision and $1\%$ recall gets an F1 of about $0.02$, while their arithmetic mean is $50.5\%$. The harmonic mean keeps the score low because the model misses almost all positives, even though every positive prediction is correct.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 When precision and recall are not equally important, use the F-beta score. For a metric that also considers true negatives, consider MCC or the P4-metric.
 
 % ---------- F-beta ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{F-beta}\label{sec:f-beta}
-\subsection{F-beta}
+\metricentry{F-beta}{F-beta}\label{sec:f-beta}
 
 F-beta combines precision and recall while letting you choose which matters more. Values of $\beta$ above $1$ emphasize recall, while values below $1$ emphasize precision. For example, $\beta = 2$ favors finding more positive cases; $\beta = 0.5$ favors making fewer false alarms among the positive predictions. Setting $\beta = 1$ gives F1.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -658,18 +616,18 @@ F-beta combines precision and recall while letting you choose which matters more
             $
         }
         };
-        \path[room for labels] ([yshift=0.51cm]a.north) ([yshift=-0.43cm]a.south);
-        \draw[overlay,-latex, nmlred, semithick] ($(a.north)+(-0.52,-0.10)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.34);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.north)+(4.58,-0.10)$) to node[pos=1, above] {precision} +(0.00,0.30);
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(-0.82,0.17)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
-        \draw[overlay,-latex, nmlgreen, semithick] ($(a.south)+(1.08,0.17)$) to node[pos=1, below] {false negatives} +(0.00,-0.30);
-        \draw[overlay,-latex, nmlyellow, semithick] ($(a.south)+(4.85,0.17)$) to node[pos=1, below] {recall} +(0.00,-0.30);
+
+        \draw[-latex, nmlred, semithick] ($(a.north)+(-0.52,-0.10)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.34);
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(4.58,-0.10)$) to node[pos=1, above] {precision} +(0.00,0.30);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(-0.82,0.17)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.30);
+        \draw[-latex, nmlgreen, semithick] ($(a.south)+(1.08,0.17)$) to node[pos=1, below] {false negatives} +(0.00,-0.30);
+        \draw[-latex, nmlyellow, semithick] ($(a.south)+(4.85,0.17)$) to node[pos=1, below] {recall} +(0.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 For $\beta > 0$, F-beta ranges from $0$ to $1$, with $1$ meaning perfect precision and recall. It is $0$ when there are no true positives but at least one false positive or false negative. If all examples and predictions are negative, the score is undefined; software may use a specified fallback value.
 
-\textbf{When to use F-beta?}
+\metricheading{When to use}
 
 Use F-beta when you need a single precision--recall summary but want to favor one component. Choose $\beta$ for that preference and inspect both components; a higher combined score does not tell you which mistakes changed.
 
@@ -685,30 +643,29 @@ Use F-beta when you need a single precision--recall summary but want to favor on
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/F_beta_curves.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/F_beta_curves.png}
+\end{metricfigure}
 
-\textbf{Figure. F-beta.} F-beta against recall, with precision fixed at $0.8$. Below recall $0.8$, the $\beta = 0.5$ curve is highest because it favors the stronger component, precision. All curves meet at $0.8$; above that point, recall is stronger and the $\beta = 2$ curve is highest.
+\metriccaption{Figure. F-beta.}{F-beta against recall, with precision fixed at $0.8$. Below recall $0.8$, the $\beta = 0.5$ curve is highest because it favors the stronger component, precision. All curves meet at $0.8$; above that point, recall is stronger and the $\beta = 2$ curve is highest.}
 
 \orangebox{Did you know that...}
 {As $\beta$ grows, F-beta approaches recall; as $\beta$ approaches zero, it approaches precision. F2 and F0.5 sit between these extremes, keeping both measures in the score. Neither choice means that one type of error costs exactly twice as much as the other.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 The F-beta score generalizes the F1-score. If you need a metric that also accounts for true negatives, consider MCC or the P4-metric.
 
 % ---------- ROC AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{ROC AUC}\label{sec:roc-auc}
-\subsection{Area Under the Receiver Operating Characteristic Curve}
+\metricentry{ROC AUC}{Area Under the Receiver Operating Characteristic Curve (ROC AUC)}\label{sec:roc-auc}
 
 ROC AUC measures how well a model ranks positive cases above negative ones. Changing the decision threshold changes the true-positive and false-positive rates. Plotting those rates against each other gives the ROC curve; its area summarizes the model's ranking across thresholds.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -717,22 +674,22 @@ ROC AUC measures how well a model ranks positive cases above negative ones. Chan
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.12cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.14,-0.46)$) to[bend right=15] node[pos=1, left] {true positive rate} +(-1.00,0.70);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.53,-0.46)$) to[bend left=15] node[pos=1, right] {false positive rate} +(1.00,0.61);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.86,0.51)$) to[bend left=15] node[pos=1, left] {swept from $0$ to $1$} +(-1.00,-0.64);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.14,-0.46)$) to[bend right=15] node[pos=1, left] {true positive rate} +(-1.00,0.70);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.53,-0.46)$) to[bend left=15] node[pos=1, right] {false positive rate} +(1.00,0.61);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.86,0.51)$) to[bend left=15] node[pos=1, left] {swept from $0$ to $1$} +(-1.00,-0.64);
     }
-\end{center}
+\end{metricformula}
 
 An AUC of $1$ means perfect ordering, while random rankings have expected AUC $0.5$. Reversing a perfect ranking gives $0$, not $0.5$. Higher values mean better overall ordering, but what is useful depends on the task.
 
 Another way to read AUC is to pick a positive and a negative at random. With AUC $0.90$, the positive ranks higher $90\%$ of the time if there are no ties. Tied scores count as half a correct ordering.
 
-\textbf{When to use ROC AUC?}
+\metricheading{When to use}
 
 Use ROC AUC to compare ranking ability before choosing a deployment threshold. When positive cases are rare, also examine Precision and Recall: even a low false-positive rate can produce many false alarms among positive predictions.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Summarizes ranking without requiring one decision threshold.
 \item Has a concrete interpretation through positive--negative pairs.
@@ -746,31 +703,30 @@ Use ROC AUC to compare ranking ability before choosing a deployment threshold. W
 \thispagestyle{customstyle}
 
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/ROC_AUC_curves.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/ROC_AUC_curves.png}
+\end{metricfigure}
 
-\textbf{Figure. ROC AUC.} Two illustrative ROC curves. The blue curve achieves higher recall at the same false-positive rate and encloses more area. The dashed diagonal is the chance-ranking reference, with area $0.5$.
+\metriccaption{Figure. ROC AUC.}{Two illustrative ROC curves. The blue curve achieves higher recall at the same false-positive rate and encloses more area. The dashed diagonal is the chance-ranking reference, with area $0.5$.}
 
 \orangebox{Did you know that...}
 {The ROC curve was developed during World War II for analyzing radar signals. Radar operators needed to distinguish between enemy aircraft and noise,
 leading to the development of signal detection theory and the receiver operating characteristic.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PR AUC complements ROC AUC by showing precision as recall changes. For decisions at one chosen threshold, examine the confusion matrix and metrics such as F1 or MCC.
 
 % ---------- PR AUC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{PR AUC}\label{sec:pr-auc}
-\subsection{Area Under the Precision-Recall Curve}
+\metricentry{PR AUC}{Area Under the Precision-Recall Curve (PR AUC)}\label{sec:pr-auc}
 
 PR AUC summarizes precision and recall across decision thresholds. Each threshold gives a pair of values: what fraction of actual positives the model finds, and what fraction of its positive predictions are correct. Plotting precision against recall gives the PR curve; PR AUC measures the area beneath it.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -779,15 +735,15 @@ PR AUC summarizes precision and recall across decision thresholds. Each threshol
             $
         }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.north)+(1.25,-0.46)$) to[bend right=15] node[pos=1, left] {precision} +(-1.00,0.70);
-        \draw[overlay,-latex, nmlyellow, semithick] ($(a.north)+(1.85,-0.46)$) to[bend left=15] node[pos=1, right] {recall} +(1.00,0.30);
+
+        \draw[-latex, nmlcyan, semithick] ($(a.north)+(1.25,-0.46)$) to[bend right=15] node[pos=1, left] {precision} +(-1.00,0.70);
+        \draw[-latex, nmlyellow, semithick] ($(a.north)+(1.85,-0.46)$) to[bend left=15] node[pos=1, right] {recall} +(1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 The area lies between $0$ and $1$, with higher values indicating better precision across recall levels. Here, PR area uses straight lines between plotted points, calculated with the trapezoidal rule. Average precision is a different summary: it weights each precision value by the increase in recall. These conventions can give different results, especially when points are far apart.
 
-\textbf{When to use PR AUC?}
+\metricheading{When to use}
 
 Use PR AUC when finding positive cases and limiting false alarms are the main concerns. Suppose $100$ of $10{,}000$ transactions are fraudulent. Catching $90$ while raising $900$ false alarms gives $90\%$ recall but only about $9\%$ precision: roughly one in eleven alerts is correct. That is one point on the curve; we need the other thresholds to calculate its area.
 
@@ -802,30 +758,29 @@ Use PR AUC when finding positive cases and limiting false alarms are the main co
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/PR_AUC_curves.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/PR_AUC_curves.png}
+\end{metricfigure}
 
-\textbf{Figure. PR AUC.} Two illustrative PR curves. The blue curve maintains higher precision at each recall level and encloses more area. Read the curve at the recall you need to see the corresponding precision.
+\metriccaption{Figure. PR AUC.}{Two illustrative PR curves. The blue curve maintains higher precision at each recall level and encloses more area. Read the curve at the recall you need to see the corresponding precision.}
 
 \orangebox{Did you know that...}
 {The chance reference for a PR curve is the proportion of positive cases. With $10\%$ positives, selecting cases at random gives precision near $0.1$, so the reference area is $0.1$. Finite samples and the area convention affect the observed score. ROC AUC, in contrast, has expected value $0.5$ for random rankings.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PR AUC is complementary to ROC AUC. For a single-score summary that balances precision and recall at a fixed threshold, use the F1-score.
 For evaluating the predicted probabilities, consider Brier Score or Log Loss; neither isolates calibration alone.
 % ---------- Brier Score Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Brier Score Loss}\label{sec:brier-score-loss}
-\subsection{Brier Score Loss}
+\metricentry{Brier Score Loss}{Brier Score Loss}\label{sec:brier-score-loss}
 
 The Brier Score measures how close predicted probabilities are to the outcomes that occur. It averages the squared difference between each probability and its outcome, coded as $0$ or $1$. If your model says ``$70\%$ chance of rain'' and it doesn't rain, that prediction contributes $(0.7 - 0)^2 = 0.49$ to the average.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -834,17 +789,17 @@ The Brier Score measures how close predicted probabilities are to the outcomes t
             $
         }
         };
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(1.71,0.61)$) to[bend left=15] node[pos=1, left] {actual outcome} +(-2.70,-1.15);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.south)+(2.68,0.61)$) to node[pos=1, below] {predicted probability} +(0.00,-0.55);
-        \draw[overlay,-latex, nmlred, semithick] ($(a.south)+(0.27,0.36)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.51);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(1.71,0.61)$) to[bend left=15] node[pos=1, left] {actual outcome} +(-2.70,-1.15);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(2.68,0.61)$) to node[pos=1, below] {predicted probability} +(0.00,-0.55);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(0.27,0.36)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.51);
     }
-\end{center}
+\end{metricformula}
 
 The binary score ranges from $0$ to $1$, with lower values indicating better predictions. It reflects both calibration (agreement between probabilities and observed frequencies) and how well the probabilities distinguish higher-risk from lower-risk cases. Predicting $50\%$ for everyone in a balanced dataset can be calibrated, yet tells us nothing about individual differences.
 
 For multiclass classification, ${Brier\ Score} = \frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} (y_{ij} - p_{ij})^2$, where $y_{ij}$ is $1$ if sample $i$ belongs to class $j$ and $0$ otherwise. This sum over all $C$ classes ranges from $0$ to $2$.
 
-\textbf{When to use Brier Score Loss?}
+\metricheading{When to use}
 
 Use the Brier Score when evaluating probabilities matters beyond getting the class label right, such as estimating risk. To examine calibration specifically, also use a reliability diagram.
 
@@ -858,30 +813,29 @@ Use the Brier Score when evaluating probabilities matters beyond getting the cla
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Brier_Score_curves.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Brier_Score_curves.png}
+\end{metricfigure}
 
-\textbf{Figure. Brier Score.} The loss for one prediction, once its outcome is known. A positive outcome gives zero loss at $p=1$; a negative outcome gives zero loss at $p=0$. A justified $70\%$ rain forecast can still incur a loss on a dry day.
+\metriccaption{Figure. Brier Score.}{The loss for one prediction, once its outcome is known. A positive outcome gives zero loss at $p=1$; a negative outcome gives zero loss at $p=0$. A justified $70\%$ rain forecast can still incur a loss on a dry day.}
 
 \orangebox{Did you know that...}
 {Glenn W. Brier introduced the score in 1950 to evaluate weather forecasts, including forecasts with several possible outcomes. It is a proper scoring rule: before an outcome is known, the forecast that minimizes expected loss is the true event probability. This rewards honest probability estimates, even though individual outcomes remain uncertain.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 The Brier Score and Log Loss both evaluate probability predictions. Brier loss is bounded, while Log Loss grows without bound as the probability assigned to the actual outcome approaches zero. For predicted class labels, use metrics such as accuracy or F1-score.
 
 % ---------- Log Loss ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Log Loss}\label{sec:log-loss}
-\subsection{Log Loss}
+\metricentry{Log Loss}{Log Loss}\label{sec:log-loss}
 
 Log Loss measures how much probability a model assigns to the outcomes that actually occur. It takes the negative logarithm of those probabilities and averages the results, so higher probabilities give a lower loss. If your model says ``$99\%$ chance this is spam'' but the message isn't spam, it assigned only $1\%$ to the actual outcome. That prediction contributes $-\log(0.01) \approx 4.6$.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -890,17 +844,17 @@ Log Loss measures how much probability a model assigns to the outcomes that actu
             $
         }
         };
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.south)+(-1.17,0.60)$) to[bend right=15] node[pos=1, right] {actual outcome} +(2.70,-1.19);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.south)+(0.41,0.60)$) to[bend right=15] node[pos=1, right] {predicted probability} +(1.00,-0.71);
-        \draw[overlay,-latex, nmlred, semithick] ($(a.south)+(-2.60,0.34)$) to node[pos=1, below] {number of samples} +(0.00,-0.55);
+        \draw[-latex, nmlpurple, semithick] ($(a.south)+(-1.17,0.60)$) to[bend right=15] node[pos=1, right] {actual outcome} +(2.70,-1.19);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(0.41,0.60)$) to[bend right=15] node[pos=1, right] {predicted probability} +(1.00,-0.71);
+        \draw[-latex, nmlred, semithick] ($(a.south)+(-2.60,0.34)$) to node[pos=1, below] {number of samples} +(0.00,-0.55);
     }
-\end{center}
+\end{metricformula}
 
 With the natural logarithm used here, Log Loss is $0$ for perfect probability predictions and has no upper bound. Assigning a probability close to zero to an outcome that occurs gives a large loss; assigning exactly zero gives infinite loss. Implementations usually handle this numerically by clipping probabilities away from zero.
 
 The formula above is binary. For multiclass classification, $Log Loss = -\frac{1}{N} \sum_{i=1}^{N} \sum_{j=1}^{C} y_{ij} log(p_{ij})$, where $y_{ij}$ indicates whether sample $i$ belongs to class $j$.
 
-\textbf{When to use Log Loss?}
+\metricheading{When to use}
 
 Use Log Loss to evaluate probability predictions, especially when confident mistakes matter. It can reveal poor probability estimates even when a model's predicted class labels are mostly correct.
 
@@ -916,53 +870,52 @@ Use Log Loss to evaluate probability predictions, especially when confident mist
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Log_Loss_curves.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Log_Loss_curves.png}
+\end{metricfigure}
 
-\textbf{Figure. Log Loss.} The loss for one prediction as the predicted probability of the positive class changes. The loss increases without bound when the model assigns almost no probability to the outcome that occurs, unlike the bounded Brier Score.
+\metriccaption{Figure. Log Loss.}{The loss for one prediction as the predicted probability of the positive class changes. The loss increases without bound when the model assigns almost no probability to the outcome that occurs, unlike the bounded Brier Score.}
 
 \orangebox{Did you know that...}
 {Log Loss is mathematically equivalent to the negative log-likelihood of a Bernoulli distribution. This is why maximizing log-likelihood in logistic regression
 is the same as minimizing Log Loss, making it the natural loss function for probabilistic binary classifiers.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Log Loss and the Brier Score evaluate overall probability quality; neither isolates calibration. A reliability diagram compares predicted probabilities with observed frequencies. D-squared Log Loss expresses improvement over a constant-probability baseline, while accuracy and F1 evaluate class labels.
 
 % ---------- Jaccard Index ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Jaccard Index}\label{sec:jaccard-index}
-\subsection{Jaccard Index}
+\metricentry{Jaccard Index}{Jaccard Index}\label{sec:jaccard-index}
 
 The Jaccard Index measures the overlap between two sets: the size of their intersection divided by the size of their union. In binary classification, the sets contain the samples predicted positive and those actually positive. Their shared members are true positives, giving $TP / (TP + FP + FN)$. In computer vision, the same measure is called Intersection over Union (IoU).
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
-                $\displaystyle 
-                J(A, B) = 
+                $\displaystyle
+                J(A, B) =
                 \frac{\textcolor{nmlpurple}{|A \cap B|}}
                 {\textcolor{nmlcyan}{|A \cup B|}}
                 $
             }
         };
-        \path[room for labels] ([yshift=0.22cm]a.north) ([yshift=-0.19cm]a.south);
-        \draw[overlay,-latex, nmlpurple, semithick] ($(a.north)+(1.11,-0.10)$) to[bend right=15] node[pos=1, left] {\color{nmlpurple} Intersection} +(-1.00,0.34);
-        \draw[overlay,-latex, nmlcyan, semithick] ($(a.south)+(1.11,0.16)$) to[bend left=15] node[pos=1, left] {\color{nmlcyan} Union} +(-1.00,-0.39);
+
+        \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.11,-0.10)$) to[bend right=15] node[pos=1, left] {\color{nmlpurple} Intersection} +(-1.00,0.34);
+        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.11,0.16)$) to[bend left=15] node[pos=1, left] {\color{nmlcyan} Union} +(-1.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 Jaccard ranges from $0$ for no overlap to $1$ for identical, nonempty sets. Adding correctly predicted negatives leaves it unchanged, so a large negative class cannot inflate the score just by contributing true negatives. If both sets are empty, the formula is undefined and an evaluation must specify how to score that case.
 
-\textbf{When to use Jaccard Index?}
+\metricheading{When to use}
 
 Use Jaccard when the overlap between predicted and actual positives is the focus, as in image segmentation. It gives credit for partial overlap, but does not distinguish a nearby miss from one far away.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item With $1\%$ positive cases, predicting every case as negative gives $99\%$ accuracy but Jaccard $0$. The positive-class failure remains visible.
     \item Measures a proportion, so the same overlap-to-union ratio gives the same score for large and small sets.
@@ -975,30 +928,29 @@ Use Jaccard when the overlap between predicted and actual positives is the focus
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Jaccard_overlap.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Jaccard Index.} The predicted region (cyan) overlaps the actual region (purple) more on the left than on the right. Jaccard divides the shared area by the total area covered by either region. For example, two masks of $100$ pixels sharing $50$ have a union of $150$, so their Jaccard score is $1/3$.
+\metriccaption{Figure. Jaccard Index.}{The predicted region (cyan) overlaps the actual region (purple) more on the left than on the right. Jaccard divides the shared area by the total area covered by either region. For example, two masks of $100$ pixels sharing $50$ have a union of $150$, so their Jaccard score is $1/3$.}
 
 \orangebox{Did you know that...}
 {For one pair of sets, Jaccard and Sørensen-Dice satisfy $\text{Jaccard} = \text{Dice}/(2 - \text{Dice})$. This monotonic conversion preserves rankings when both scores use the same pooled counts. Averaging separate scores across images or classes can change the rankings, because averaging and this conversion do not give the same result in either order.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 For evaluations that include true negatives, use accuracy or balanced accuracy. The Computer Vision chapter covers the closely related Sørensen-Dice coefficient. When a distance between sets is needed, Jaccard distance is $1-J$ and satisfies the triangle inequality.
 
 % ---------- D-squared Log Loss Score ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{D-squared Log Loss Score}\label{sec:d-squared-log-loss-score}
-\subsection{D-squared Log Loss Score}
+\metricentry{D-squared Log Loss Score}{D-squared Log Loss Score}\label{sec:d-squared-log-loss-score}
 
 D-squared Log Loss measures how much a model reduces log loss compared with a constant prediction. The baseline assigns every sample the class proportions in the evaluation data: if $20\%$ of those samples are positive, it predicts $0.2$ for everyone. A score of $D^2=0.85$ means the model reduces log loss by $85\%$ relative to that baseline.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -1007,19 +959,19 @@ D-squared Log Loss measures how much a model reduces log loss compared with a co
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.24cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.12,-0.03)$) to[bend right=15] node[pos=1, left] {log loss of the model} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.09,0.06)$) to[bend left=15] node[pos=1, left] {log loss of the null model} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.12,-0.03)$) to[bend right=15] node[pos=1, left] {log loss of the model} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.09,0.06)$) to[bend left=15] node[pos=1, left] {log loss of the null model} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 A score of $1$ means perfect probability predictions, $0$ matches the baseline, and a negative score means higher log loss than the baseline. There is no lower bound. A negative result warrants checking the probabilities and their use in decisions; it does not, by itself, show that a model has degraded over time or lost its ability to rank cases.
 
-\textbf{When to use D-squared Log Loss Score?}
+\metricheading{When to use}
 
 Use D-squared Log Loss to report improvement over a dataset's constant-probability baseline. Across two banks, for example, it compares relative reductions in log loss. Equal scores need not mean equal absolute loss or equal value for lending decisions.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item Gives log loss a reference point: $0$ means no improvement over the baseline and $1$ means perfect predictions.
     \item Expresses a proportional reduction in loss, much as $R^2$ does for squared error.
@@ -1032,31 +984,30 @@ Use D-squared Log Loss to report improvement over a dataset's constant-probabili
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/D2_Log_Loss_curve.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/D2_Log_Loss_curve.png}
+\end{metricfigure}
 
-\textbf{Figure. D-squared Log Loss Score.} Each line uses a different class balance and therefore a different baseline loss. A model log loss of $0.4$ gives $D^2\approx0.42$ on balanced data, but about $-1.01$ with a $95/5$ split. The model beats one constant baseline and loses to the other; normalization does not make the two populations equivalent.
+\metriccaption{Figure. D-squared Log Loss Score.}{Each line uses a different class balance and therefore a different baseline loss. A model log loss of $0.4$ gives $D^2\approx0.42$ on balanced data, but about $-1.01$ with a $95/5$ split. The model beats one constant baseline and loses to the other; normalization does not make the two populations equivalent.}
 
 \orangebox{Did you know that...}
 {The D-squared framework generalizes R-squared to any deviance function, not just squared error. In scikit-learn, \texttt{d2\_log\_loss\_score} uses log loss as the deviance,
 but you can also compute D-squared with other losses like absolute error or Poisson deviance.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Use raw Log Loss to see the loss before normalization, and a reliability diagram to examine calibration. F1 and MCC summarize decisions at a chosen threshold; they answer a different question from the quality of the probabilities.
 
 % ---------- P4-metric ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{P4-metric}\label{sec:p4-metric}
-\subsection{P4-metric}
+\metricentry{P4-metric}{P4-metric}\label{sec:p4-metric}
 
 P4 summarizes a binary classifier's performance on both classes. It is the harmonic mean of precision, recall, specificity, and negative predictive value (NPV). NPV is the proportion of negative predictions that are actually negative. By including specificity and NPV, P4 accounts for negative-class performance that F1 leaves out.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -1065,21 +1016,21 @@ P4 summarizes a binary classifier's performance on both classes. It is the harmo
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.36,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.48,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.77,0.18)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.39);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.36,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.48,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.77,0.18)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 P4 ranges from $0$ to $1$, with $1$ for perfect classification when both classes are present. With $95$ positives and five negatives, predicting everyone positive gives F1 $\approx0.974$ but P4 $=0$. Here specificity is zero; NPV is undefined because there are no negative predictions, but the displayed count formula still gives P4 $=0$.
 
 A zero TP or TN gives zero P4 when the denominator is nonzero. Zero FP or FN need not: eliminating either type of error can improve the score.
 
-\textbf{When to use P4-metric?}
+\metricheading{When to use}
 
 Use P4 when you want a summary that includes both classes. It can also compare candidate thresholds, since its counts change with the decisions. Judge the score against the task and a relevant baseline; there are no universal ``good'' or ``barely useful'' cutoffs.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item A low component rate pulls down the harmonic mean, making poor performance on either class visible.
     \item Swapping the positive and negative class names leaves P4 unchanged.
@@ -1092,30 +1043,29 @@ Use P4 when you want a summary that includes both classes. It can also compare c
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/P4_vs_F1.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/P4_vs_F1.png}
+\end{metricfigure}
 
-\textbf{Figure. P4-metric.} TP $=80$, FP $=20$, and FN $=20$ stay fixed while TN increases. Precision, recall, and F1 remain $0.8$, while specificity, NPV, and P4 rise. Adding true negatives also changes the dataset's size and class proportions; this is not a threshold sweep on one fixed test set.
+\metriccaption{Figure. P4-metric.}{TP $=80$, FP $=20$, and FN $=20$ stay fixed while TN increases. Precision, recall, and F1 remain $0.8$, while specificity, NPV, and P4 rise. Adding true negatives also changes the dataset's size and class proportions; this is not a threshold sweep on one fixed test set.}
 
 \orangebox{Did you know that...}
 {Mikołaj Sitarz proposed P4 in \textit{Extending F1 Metric, Probabilistic Approach}, first posted in 2022 and published in 2023. The four probabilities give the metric its name. Combining them extends F1's focus on precision and recall while making the score unchanged when the class names swap.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 P4 and MCC both include true negatives, but summarize the confusion matrix differently: P4 combines four rates, while MCC measures the association between predicted and actual labels. Neither replaces an explicit error-cost objective. F-beta is useful when the focus is the precision--recall trade-off for the positive class.
 
 % ---------- Cohen's Kappa ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{Cohen's Kappa}\label{sec:cohen-s-kappa}
-\subsection{Cohen's Kappa}
+\metricentry{Cohen's Kappa}{Cohen's Kappa}\label{sec:cohen-s-kappa}
 
 Cohen's Kappa measures agreement between two annotators after accounting for how often their label choices would match by chance. If both independently use two labels $80\%$ and $20\%$ of the time, their expected agreement is $0.8\times0.8+0.2\times0.2=0.68$. Kappa compares their observed agreement with that baseline, using each annotator's own label frequencies.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -1124,18 +1074,18 @@ Cohen's Kappa measures agreement between two annotators after accounting for how
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.10,-0.10)$) to[bend right=15] node[pos=1, left] {observed agreement} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.84,0.06)$) to[bend left=15] node[pos=1, left] {chance agreement} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.10,-0.10)$) to[bend right=15] node[pos=1, left] {observed agreement} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.84,0.06)$) to[bend left=15] node[pos=1, left] {chance agreement} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 The numerator subtracts expected agreement from observed agreement; the denominator scales that improvement by the room left for perfect agreement. Kappa ranges from $-1$ to $1$: $1$ indicates perfect agreement, $0$ matches the chance baseline, and negative values indicate less agreement than that baseline. There is no universal cutoff that makes labels suitable for training.
 
-\textbf{When to use Cohen's Kappa?}
+\metricheading{When to use}
 
 Use Cohen's Kappa to assess agreement between two annotators, for example when checking a labeling process before training. It can also compare a model with reference labels. For ordered categories where some disagreements matter more than others, consider weighted kappa.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item Accounts for agreement expected from the annotators' label frequencies, rather than reporting only how often they match.
     \item Applies to two annotators using any number of categories.
@@ -1148,30 +1098,29 @@ Use Cohen's Kappa to assess agreement between two annotators, for example when c
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/Cohens_Kappa_levels.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Cohens_Kappa_levels.png}
+\end{metricfigure}
 
-\textbf{Figure. Cohen's Kappa.} A theoretical example of two independent annotators using the same label proportions. As one label becomes more common, expected raw agreement rises toward $1$, but kappa remains $0$: all agreement is explained by the chance baseline. Finite samples would fluctuate around these values.
+\metriccaption{Figure. Cohen's Kappa.}{A theoretical example of two independent annotators using the same label proportions. As one label becomes more common, expected raw agreement rises toward $1$, but kappa remains $0$: all agreement is explained by the chance baseline. Finite samples would fluctuate around these values.}
 
 \orangebox{Did you know that...}
 {Jacob Cohen introduced kappa in 1960 in \textit{A Coefficient of Agreement for Nominal Scales}. In 1968, he introduced weighted kappa to allow different penalties for different disagreements. This is useful with ordered labels: confusing ``mild'' with ``severe'' can matter more than confusing ``mild'' with ``moderate.''}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Fleiss' Kappa extends agreement assessment to multiple annotators. MCC measures association between predicted and actual labels. A low kappa is a reason to examine disagreements and label frequencies; it does not identify their cause or prove that the labels are unusable.
 
 % ---------- MCC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{MCC}\label{sec:mcc}
-\subsection{Matthews Correlation Coefficient}
+\metricentry{MCC}{Matthews Correlation Coefficient (MCC)}\label{sec:mcc}
 
 The Matthews Correlation Coefficient (MCC) measures the association between predicted and actual binary labels. It is their Pearson correlation, calculated from all four confusion-matrix counts. A high positive score means the predictions closely follow the actual labels, accounting for both positive and negative cases.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\large] (a) {
             {
@@ -1180,16 +1129,16 @@ The Matthews Correlation Coefficient (MCC) measures the association between pred
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.34cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.76,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.17,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.44,0.17)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.55);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.76,-0.03)$) to[bend right=15] node[pos=1, left] {true positives} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.17,-0.03)$) to[bend left=15] node[pos=1, right] {true negatives} +(1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.44,0.17)$) to[bend left=15] node[pos=1, left] {misclassifications} +(-1.00,-0.55);
     }
-\end{center}
+\end{metricformula}
 
 MCC ranges from $-1$ for completely reversed labels to $+1$ for perfect agreement. A score of $0$ means no association between predictions and outcomes. If either set of labels is constant, the displayed formula has a zero denominator; scikit-learn returns $0$ by convention. An always-negative model therefore receives $0$ in that implementation, even if most cases are negative.
 
-\textbf{When to use MCC?}
+\metricheading{When to use}
 
 Use MCC as an overall summary when performance on both classes matters, including on imbalanced datasets. Choose additional measures for requirements it does not express, such as a minimum recall, reliable probabilities, or the cost of specific errors.
 
@@ -1204,29 +1153,28 @@ Use MCC as an overall summary when performance on both classes matters, includin
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MCC_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MCC_3d_surface.png}
+\end{metricfigure}
 
-\textbf{Figure. MCC.} TP and FP vary while FN $=20$ and TN $=80$ stay fixed. The score rises as true positives increase or false positives decrease. Negative values indicate an inverse association: positive predictions are less likely to be actual positives than negative predictions are.
+\metriccaption{Figure. MCC.}{TP and FP vary while FN $=20$ and TN $=80$ stay fixed. The score rises as true positives increase or false positives decrease. Negative values indicate an inverse association: positive predictions are less likely to be actual positives than negative predictions are.}
 
 \orangebox{Did you know that...}
 {In 2020, Davide Chicco and Giuseppe Jurman compared MCC with accuracy and F1 using six synthetic examples and a genomics case study. MCC exposed failures that the other two scores obscured, including on imbalanced data. They recommended favoring MCC over those measures; the study did not establish one best metric for every application.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MCC and F1 use different scales and summarize different aspects of a classifier. Similar values do not establish balanced performance across classes. Inspect precision, recall, specificity, and the confusion matrix to understand the results. ROC AUC adds a view of score ordering across thresholds.
 
 % ---------- EC ----------
 \clearpage
 \thispagestyle{classificationstyle}
-\section{EC}\label{sec:ec}
-\subsection{Expected Cost}
+\metricentry{EC}{Expected Cost (EC)}\label{sec:ec}
 
 Expected Cost (EC) measures the average assigned cost of a system's decisions. These costs can represent money or another agreed consequence. In our loan example, suppose approving a non-creditworthy applicant costs $\$80{,}000$, while rejecting a creditworthy applicant costs $\$40{,}000$. We assign zero cost to correct decisions and average the costs incurred across applications.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -1235,17 +1183,17 @@ EC = \frac{1}{{\color{nmlred}N}} \sum_{t=1}^{N} {\color{nmlpurple}C}({\color{nml
 $
 }
 };
-\path[room for labels] ([yshift=0.16cm]a.north) ([yshift=-0.73cm]a.south);
-\draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.63,0.34)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.49);
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.28,0.61)$) to[bend left=15] node[pos=1, left] {true class} +(-2.70,-1.38);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.67,-0.60)$) to[bend right=15] node[pos=1, left] {cost matrix} +(-1.00,0.78);
-\draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(1.94,0.61)$) to[bend right=15] node[pos=1, right] {decision} +(1.00,-0.31); 
+
+\draw[-latex,nmlred, semithick] ($(a.south)+(-0.63,0.34)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.49);
+\draw[-latex,nmlcyan, semithick] ($(a.south)+(1.28,0.61)$) to[bend left=15] node[pos=1, left] {true class} +(-2.70,-1.38);
+\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.67,-0.60)$) to[bend right=15] node[pos=1, left] {cost matrix} +(-1.00,0.78);
+\draw[-latex,nmlyellow, semithick] ($(a.south)+(1.94,0.61)$) to[bend right=15] node[pos=1, right] {decision} +(1.00,-0.31);
 }
-\end{center}
+\end{metricformula}
 
 The cost matrix assigns a value $C(h,d)$ to each true class $h$ and decision $d$. The formula averages those values over the test samples, so lower EC is better. Decisions can be actions such as approving, rejecting, or referring an application for review; they need not be the class labels themselves.
 
-\textbf{When to use EC?}
+\metricheading{When to use}
 
 Use EC when different decisions have consequences that you can specify. The average above reflects the test set's class proportions. If rare cases were deliberately oversampled, average costs within each class and weight those averages by the proportions expected in deployment, assuming the within-class error behavior remains relevant.
 
@@ -1261,54 +1209,52 @@ Use EC when different decisions have consequences that you can specify. The aver
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
-    \centering
-    \includegraphics[width=0.45\textwidth]{figures/EC_cost_matrix.png}
-\end{figure*}
 
-Consider a loan approval scenario with two true classes: $H_1$ (Creditworthy) and $H_2$ (Not Creditworthy), and two decisions: $D_1$ (Approve Loan) and $D_2$ (Reject Loan).
 
-All costs in the figure, tables, and calculation are in thousands of dollars. Under these assumptions, approving a non-creditworthy applicant costs twice as much as rejecting a creditworthy one.
+{\metricsecondary\setlength{\tabcolsep}{5pt}Consider a loan approval scenario with two true classes: $H_1$ (Creditworthy) and $H_2$ (Not creditworthy), and two decisions: $D_1$ (Approve) and $D_2$ (Reject).
 
-\begin{center}
+All costs in the tables and calculation are in thousands of dollars. Under these assumptions, approving a non-creditworthy applicant costs twice as much as rejecting a creditworthy one.
+
+\begin{metricfigure}
 \begin{tabular}{|c|c|c|}
 \hline
- & $D_1$ (Approve Loan) & $D_2$ (Reject Loan) \\
+ & $D_1$ (Approve) & $D_2$ (Reject) \\
 \hline
 $H_1$ (Creditworthy) & $c_{11} =  0$ & $c_{12} = 40$ \\
 \hline
-$H_2$ (Not Creditworthy) & $c_{21} = 80$ & $c_{22} =  0$ \\
+$H_2$ (Not creditworthy) & $c_{21} = 80$ & $c_{22} =  0$ \\
 \hline
 \end{tabular}
-\end{center}
+\end{metricfigure}
 
 For each of the three applications below, we look up the cost of the decision given the applicant's true class.
 
-\begin{center}
+\begin{metricfigure}
 \begin{tabular}{|c|c|c|c|}
 \hline
-Sample (t)& True Class (h) & Predicted Decision (d) & Cost Incurred \\
+Application & True class & Decision & Cost \\
 \hline
-1 & Creditworthy & Approve Loan & $C(h_1, d_1) = 0$ \\
+1 & Creditworthy & Approve & $0$ \\
 \hline
-2 & Not Creditworthy & Approve Loan & $C(h_2, d_2) = 80$ \\
+2 & Not creditworthy & Approve & $80$ \\
 \hline
-3 & Creditworthy & Reject Loan & $C(h_3, d_3) = 40$ \\
+3 & Creditworthy & Reject & $40$ \\
 \hline
 \end{tabular}
-\end{center}
+\end{metricfigure}
 
 The mean cost is $40$ thousand dollars per application:
 \[
 EC = \frac{0 + 80 + 40}{3} = 40
 \]
 
+}
 \orangebox{%
 Did you know that...}
 {
     NIST's speaker-verification evaluations use a Detection Cost Function: an application of EC that combines missed detections and false alarms, weighted by specified costs and the expected proportion of target-speaker trials. EC is also called expected loss; in decision theory, minimizing it maximizes expected utility when utility is defined as negative cost.
 }
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 F1 combines precision and recall, while ROC AUC evaluates score ordering across thresholds. Neither requires an explicit cost for each decision. EC lets those application costs determine the evaluation. If correct decisions cost $0$ and every error costs $1$, EC equals one minus accuracy.

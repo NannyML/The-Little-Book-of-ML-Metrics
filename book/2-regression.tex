@@ -42,13 +42,12 @@ This chapter explains these ways of measuring error and when each is useful. We 
 % ---------- MAE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MAE}\label{sec:mae}
-\subsection{Mean Absolute Error}
+\metricentry{MAE}{Mean Absolute Error (MAE)}\label{sec:mae}
 
 MAE is one of the most intuitive regression metrics: it tells you, on average, how far off your predictions are in the same units as your target. If you're predicting house prices and your MAE is $\$15{,}000$, your predictions are off by $\$15{,}000$ on average. This directness makes MAE a useful metric when you need to communicate model performance to non-technical stakeholders.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -57,15 +56,15 @@ MAE is one of the most intuitive regression metrics: it tells you, on average, h
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.4,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.3)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.5)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.4,0.2)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.3)$) to[bend left=15] node[pos=1, right] {forecast value} +(1,.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.2,0.5)$) to[bend right=15] node[pos=1, right] {actual value} +(1,-.5);
     }
-\end{center}
+\end{metricformula}
 
 MAE ranges from $0$ (perfect) to $+\infty$. To interpret it in context, compare it with the MAE of always predicting the training data's mean target value. A much lower MAE on the same test data means your model improves on that simple baseline; a similar MAE means it performs much the same.
 
-\textbf{When to use MAE?}
+\metricheading{When to use}
 
 Use MAE when each extra unit of error matters equally and overprediction has the same cost as an equally large underprediction. It can serve as both a training loss and an evaluation metric. If large misses deserve extra weight, consider squared error instead.
 
@@ -83,40 +82,33 @@ Use MAE when each extra unit of error matters equally and overprediction has the
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MAE_3d_surface.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MAE_3d_surface.png}
+\end{metricfigure}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt}
-    \includegraphics[width=0.45\textwidth]{figures/MAE_cross_section.png}
-    \vspace{-10pt}
-\end{wrapfigure}
 
-\textbf{Figure. MAE.} \underline{Top:} The contribution is zero when prediction and actual value match, and grows linearly as they move apart.
-\underline{Right:} The V-shape gives equal penalties to equally large positive and negative errors. Each extra unit of absolute error adds the same amount to the loss.
+
+\metriccaption{Figure. MAE.}{The contribution is zero when prediction and actual value match, and grows linearly as they move apart. Equally large positive and negative errors receive the same penalty; each extra unit of absolute error adds the same amount to the loss.}
 
 \orangebox{Did you know that...}
 {Minimizing MAE leads to predicting the \textbf{median}, while minimizing MSE leads to predicting the \textbf{mean}.
 This is why MAE is more robust to outliers --- the median is less affected by extreme values than the mean. If your target distribution
 is skewed (e.g., income, claim amounts), this distinction matters: MAE and MSE will favor different models.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 RMSE gives larger errors more weight. When MAE is nonzero, an RMSE/MAE ratio near $1$ means the absolute error sizes are similar; a larger ratio indicates more variation in their sizes. Percentage measures offer another perspective when the target has a meaningful zero.
 
 % ---------- MSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MSE}\label{sec:mse}
-\subsection{Mean Squared Error}
+\metricentry{MSE}{Mean Squared Error (MSE)}\label{sec:mse}
 
 Mean Squared Error (MSE) averages the squares of the prediction errors. Squaring gives large misses more weight: an error of $10$ contributes $100$ to the sum, while an error of $1$ contributes only $1$. Both overpredictions and underpredictions contribute positively, so they cannot cancel each other out.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -125,16 +117,16 @@ Mean Squared Error (MSE) averages the squares of the prediction errors. Squaring
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.70,0.25)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.05,-0.30)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.00,0.55)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.70,0.25)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.05,-0.30)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.00,0.55)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
     }
-\end{center}
+\end{metricformula}
 
 MSE ranges from 0 (perfect) to $+\infty$. The main interpretation challenge is that MSE is in squared units — if you're predicting
 revenue in dollars, MSE is in dollars-squared. Take the square root to get RMSE, which returns to interpretable units.
 
-\textbf{When to use MSE?}
+\metricheading{When to use}
 
 Use MSE when a few large misses should matter more than many small ones. It is also a common training loss. Before choosing it, consider whether extreme errors represent important failures or faulty data: the metric will give them substantial weight either way.
 
@@ -152,41 +144,33 @@ Use MSE when a few large misses should matter more than many small ones. It is a
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MSE_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MSE_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/MSE_cross_section.png} 
-    \vspace{-10pt} % Adjust vertical alignment if needed
-\end{wrapfigure}
+\end{metricfigure}
+
+
 
 % Left text with the image on the right
-\textbf{Figure. MSE.} \underline{Top:} The parabolic surface shows MSE's quadratic penalty — doubling the error quadruples the contribution.
-\underline{Right:} Compare this U-shape to MAE's V-shape: MSE's curve is flat near zero (tolerant of small errors) but steep far from zero
-(harsh on large errors). This is precisely why MSE favors models that avoid occasional big mistakes.
+\metriccaption{Figure. MSE.}{The parabolic surface shows the squared-error contribution of one prediction. Doubling the error quadruples its contribution. Equally large over- and under-predictions receive the same penalty, while large misses have much more influence than small ones.}
 
 \orangebox{Did you know that...}
 {Expected squared prediction error combines three sources: systematic error (squared bias), variation between models fitted on different training samples, and noise in the outcomes that the inputs cannot explain. Two learning methods can have the same expected MSE for different reasons. A single test score does not tell us how much each source contributes.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 RMSE is the square root of MSE, so it returns the score to the target's units. The two rank models identically on the same evaluation data. MAE gives less emphasis to large misses, while inspecting individual errors shows which predictions drive the difference.
 
 % ---------- MSLE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MSLE}\label{sec:msle}
-\subsection{Mean Squared Log Error}
+\metricentry{MSLE}{Mean Squared Log Error (MSLE)}\label{sec:msle}
 
 MSLE measures prediction errors on a logarithmic scale. We add one to each actual and predicted value, take their natural logarithms, then average the squared differences. Predicting $110$ instead of $100$ gives approximately the same penalty as predicting $1100$ instead of $1000$. Both are $10\%$ over-predictions; the added one makes their penalties slightly different.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -195,15 +179,15 @@ MSLE measures prediction errors on a logarithmic scale. We add one to each actua
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.40,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.05,-0.35)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.10,0.60)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.40,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.05,-0.35)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.10,0.60)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
         }
-\end{center}
+\end{metricformula}
 
 MSLE is $0$ for perfect predictions and has no upper bound. For a fixed actual value, it penalizes an under-prediction more than an equally large over-prediction. If the actual is $100$, predicting $50$ contributes more loss than predicting $150$.
 
-\textbf{When to use MSLE?}
+\metricheading{When to use}
 
 Use MSLE for nonnegative quantities spanning a wide range, such as website traffic or prices, when proportional differences matter more than differences in the original units. Its unequal penalties for under- and over-prediction do not automatically represent business costs; specify those costs separately when they matter.
 
@@ -221,41 +205,35 @@ Use MSLE for nonnegative quantities spanning a wide range, such as website traff
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MSLE_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MSLE_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt} 
-    \includegraphics[width=0.45\textwidth]{figures/MSLE_cross_section.png} 
-    \vspace{-10pt} % Adjust vertical alignment if needed
-\end{wrapfigure}
+\end{metricfigure}
+
+
 
 % Left text with the image on the right
-\textbf{Figure. MSLE.} \underline{Top:} Swapping actual and predicted values leaves the loss unchanged. \underline{Right:} Holding the actual at $10$ shows a different comparison: predictions of $5$ and $15$ miss by five in opposite directions, but contribute about $0.367$ and $0.140$. The under-prediction receives roughly $2.6$ times the penalty.
+\metriccaption{Figure. MSLE.}{Swapping actual and predicted values leaves the loss unchanged. Holding the actual fixed gives a different comparison: at $Y=10$, predictions of $5$ and $15$ contribute about $0.367$ and $0.140$. The equally large under-prediction receives roughly $2.6$ times the penalty.}
 
 
 
 \orangebox{Did you know that...}
 {MSLE is MSE applied to a specific transformation: $MSLE = MSE(\log(Y+1), \log(\hat{Y}+1))$. To train this way, use $\log(1+Y)$ as the target and MSE as the loss. Convert each predicted log value back by exponentiating it and subtracting one. Using $\log(Y)$ instead would optimize a different loss.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
-Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Squared Log Error (RMSLE). 
+Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Squared Log Error (RMSLE).
 
 % ---------- RMSE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{RMSE}\label{sec:rmse}
-\subsection{Root Mean Squared Error}
+\metricentry{RMSE}{Root Mean Squared Error (RMSE)}\label{sec:rmse}
 
 RMSE is the square root of the average squared prediction error. Taking the root returns the score to the target's units: for temperatures measured in °C, an RMSE of $2.3$ is also measured in °C. Large misses pull the score upward because we square the errors before averaging them.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -264,15 +242,15 @@ RMSE is the square root of the average squared prediction error. Taking the root
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.20,0.35)$) to[bend left=20] node[pos=1, left] {number of samples} +(-1.00,-0.70);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.50,0.70)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.50,-0.55)$) to[bend left=30] node[pos=1, right] {forecast value} +(1.00,0.20); 
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.20,0.35)$) to[bend left=20] node[pos=1, left] {number of samples} +(-1.00,-0.70);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.50,0.70)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.50,-0.55)$) to[bend left=30] node[pos=1, right] {forecast value} +(1.00,0.20);
     }
-\end{center}
+\end{metricformula}
 
 RMSE is nonnegative and is always at least MAE. They are equal when all errors have the same absolute size: errors of $-2$ and $+2$ give both scores of $2$. When MAE is positive, the ratio RMSE/MAE lies between $1$ and $\sqrt{n}$. A ratio near $1$ means similar error sizes; a larger ratio shows more variation relative to the average size. For perfect predictions, both scores are zero and the ratio is undefined.
 
-\textbf{When to use RMSE?}
+\metricheading{When to use}
 
 Use RMSE when large errors deserve extra weight but you want to report the result in the target's units. Compare models on the same evaluation data. Across targets with different scales, choose a normalization or baseline that makes sense for the task rather than comparing raw RMSE values.
 
@@ -290,45 +268,37 @@ Use RMSE when large errors deserve extra weight but you want to report the resul
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[htbp]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/RMSE_sensitivity_outliers_plot.png} 
-\end{figure*}
+    \includegraphics[width=1\textwidth]{figures/RMSE_sensitivity_outliers_plot.png}
+\end{metricfigure}
 
-\begin{wrapfigure}{r}{0.45\textwidth}
-    \centering
-    \vspace{-5pt} % Adjusted spacing to avoid overlap
-    \includegraphics[width=0.40\textwidth]{figures/RMSE_comparison_MSE.png} 
-    \vspace{-10pt} 
-\end{wrapfigure}
+
 
 \noindent
-\textbf{Figure. RMSE.} \underline{Top:} Changing one observation and refitting the line changes several predictions and increases RMSE from $1.17$ to $3.10$. \underline{Right:} For one observation, RMSE equals the absolute error while MSE squares it. For a dataset, the root comes after averaging; it restores the target's units without changing model rankings.
+\metriccaption{Figure. RMSE.}{Changing one observation and refitting the line changes several predictions and increases RMSE from $1.17$ to $3.10$. The root restores the target\textquotesingle s units, but the errors are still squared before averaging, giving large misses greater influence.}
 
-\vspace{10pt} 
 \orangebox{Did you know that...}
 {When errors are approximately normal and centered on zero, RMSE estimates their standard deviation. About $68\%$ then fall within $\pm 1$ RMSE and $95\%$ within $\pm 2$ RMSE of zero. Using these ranges for future predictions also requires a representative error scale for the forecast horizon; check the resulting interval coverage.}
 
-\vspace{10pt} % Added spacing for better layout
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 Metrics like Mean Absolute Error (MAE), Average Absolute Deviation (AAD), and Normalized Estimation Error Squared (NEES) are also used to evaluate model performance.
 
 % ---------- RMSLE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{RMSLE}\label{sec:rmsle}
-\subsection{Root Mean Squared Log Error}
+\metricentry{RMSLE}{Root Mean Squared Log Error (RMSLE)}\label{sec:rmsle}
 
 RMSLE measures prediction errors on a logarithmic scale, using the square root of MSLE. We add one to actual and predicted values, take their logarithms, and calculate RMSE from those transformed values. This emphasizes proportional differences while returning the score in log units rather than squared log units.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                RMSLE = \sqrt{\frac{1}{{\color{nmlred}n}} 
+                RMSLE = \sqrt{\frac{1}{{\color{nmlred}n}}
                         \sum_{t=1}^n
                         \left(
                             {log{({\color{nmlcyan}Y_t} + 1)}} -
@@ -337,15 +307,15 @@ RMSLE measures prediction errors on a logarithmic scale, using the square root o
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.90,0.45)$) to[bend right=15] node[pos=1, right] {number of samples} +(1.00,-0.80);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.60,0.70)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.50,-0.60)$) to[bend left=20] node[pos=1, right] {forecast value} +(0.40,0.90); 
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.90,0.45)$) to[bend right=15] node[pos=1, right] {number of samples} +(1.00,-0.80);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.60,0.70)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.50,-0.60)$) to[bend left=20] node[pos=1, right] {forecast value} +(0.40,0.90);
     }
-\end{center}
+\end{metricformula}
 
 RMSLE is $0$ for perfect predictions and has no upper bound. For one prediction, an absolute log difference of $0.1$ means the larger shifted value is about $1.105$ times the smaller. RMSLE summarizes many such differences, giving extra weight to large ones; it is not an average percentage error.
 
-\textbf{When to use RMSLE?}
+\metricheading{When to use}
 
 Use RMSLE for nonnegative prices or counts when proportional differences matter more than differences in the original units. The added one makes proportional comparisons approximate, particularly near zero. Use RMSE or MAE on the original scale when equally sized over- and under-predictions should receive equal penalties.
 
@@ -363,30 +333,29 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter 
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/RMSLE_comparison_MSLE.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/RMSLE_comparison_MSLE.png}
+
+\end{metricfigure}
 
 % Left text with the image on the right
-\textbf{Figure. RMSLE.} This one-observation example fixes the actual value at $10$ and varies the raw prediction error. MSLE squares the log difference, not the error on the horizontal axis; RMSLE takes its square root. The curves use different scales but order predictions identically. For a dataset, the root comes after averaging the squared log differences.
+\metriccaption{Figure. RMSLE.}{This one-observation example fixes the actual value at $10$ and varies the raw prediction error. MSLE squares the log difference, not the error on the horizontal axis; RMSLE takes its square root. The curves use different scales but order predictions identically. For a dataset, the root comes after averaging the squared log differences.}
 
 \orangebox{Did you know that...}
 {Kaggle's Mercari Price Suggestion Challenge in 2017--2018 and ASHRAE Great Energy Predictor III in 2019 both used RMSLE. The tasks involved predicting product prices and building energy consumption, respectively.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 MSLE gives the same model rankings without taking the root. RMSE evaluates errors in the original units, while MAPE expresses each absolute error as a percentage of its actual value and requires nonzero actuals.
 % ---------- MAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MAPE}\label{sec:mape}
-\subsection{Mean Absolute Percentage Error}
+\metricentry{MAPE}{Mean Absolute Percentage Error (MAPE)}\label{sec:mape}
 
 MAPE is the average absolute prediction error expressed as a percentage of each actual value. A MAPE of $5\%$ means predictions are $5\%$ off on average, without distinguishing over- from under-predictions. This makes errors easier to compare across quantities of different sizes, provided a percentage has a meaningful interpretation.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -395,15 +364,15 @@ MAPE is the average absolute prediction error expressed as a percentage of each 
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.95,0.30)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.65,-0.05)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.15,0.20)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.95,0.30)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.65,-0.05)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.15,0.20)$) to[bend right=15] node[pos=1, right] {actual value} +(1.00,-0.50);
     }
-\end{center}
+\end{metricformula}
 
 MAPE is $0\%$ for perfect predictions and has no upper bound. Judge it against a relevant baseline on the same task and forecast horizon. A score that is useful for one forecasting problem may be unacceptable for another.
 
-\textbf{When to use MAPE?}
+\metricheading{When to use}
 
 Use MAPE for quantities with a meaningful zero, such as positive sales volumes, when relative error is the quantity you want to report. With actual sales of $100$, predictions of $90$ and $110$ both contribute $10\%$. The weighting changes across actual values: the same absolute miss counts more when the actual is smaller.
 
@@ -421,42 +390,35 @@ Use MAPE for quantities with a meaningful zero, such as positive sales volumes, 
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MAPE_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MAPE_3d_surface.png}
+
+\end{metricfigure}
 
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/MAPE_cross_section.png} 
-    \vspace{-10pt} % Adjust vertical alignment if needed
-\end{wrapfigure}
+
 
 
 % Left text with the image on the right
-\textbf{Figure. MAPE.} \underline{Top:} The surface rises as actual values shrink relative to the prediction errors. \underline{Right:} The curves hold absolute error fixed at $1$, $5$, or $10$ while varying the actual value. The same miss becomes a larger percentage as the actual gets smaller.
+\metriccaption{Figure. MAPE.}{The percentage error rises as actual values shrink relative to the prediction errors. The same absolute miss becomes a larger percentage when the actual is smaller. At an actual value of zero, MAPE is undefined.}
 
 \orangebox{Did you know that...}
 {Adding the same constant to actuals and forecasts changes MAPE: $MAPE(Y + c, \hat{Y} + c) \neq MAPE(Y, \hat{Y})$ in general. Converting both from Celsius to Kelvin leaves their differences unchanged but changes the percentages. This is why percentage errors need a meaningful zero: a percentage error in Celsius has no stable interpretation.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 sMAPE uses both actual and predicted values in its denominator. wMAPE divides total absolute error by total absolute actuals, while MASE scales errors by a historical naive-forecast error. The latter two can handle individual zero actuals, provided their overall denominators are nonzero.
 
 % ---------- sMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{sMAPE}\label{sec:smape}
-\subsection{Symmetric Mean Absolute Percentage Error}
+\metricentry{sMAPE}{Symmetric Mean Absolute Percentage Error (sMAPE)}\label{sec:smape}
 
 sMAPE averages percentage errors using the sizes of both the actual and predicted values. It divides each absolute error by the average of those two absolute values. The name ``symmetric'' refers to swapping actual and prediction: doing so leaves the score unchanged.
 
 % formula
-\vspace{0.5em}
-\begin{center}
+\begin{metricformula}
 	\tikz{
 		\node[inner sep=2pt, font=\Large] (a) {
 			{
@@ -465,15 +427,15 @@ sMAPE averages percentage errors using the sizes of both the actual and predicte
 				$
 			}
 		};
-		\draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.35,0.30)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
-		\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.70,-0.10)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
-		\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.75,-0.10)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+		\draw[-latex,nmlred, semithick] ($(a.south)+(-1.35,0.30)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
+		\draw[-latex,nmlcyan, semithick] ($(a.north)+(0.70,-0.10)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
+		\draw[-latex,nmlpurple, semithick] ($(a.north)+(1.75,-0.10)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
 	}
-\end{center}
+\end{metricformula}
 
 The convention shown here ranges from $0\%$ to $200\%$, with $0\%$ for perfect predictions. Some implementations omit the factor of two and report half these values. Neither convention gives equal penalties to equally sized misses around a fixed actual: if the actual is $100$, predicting $90$ gives about $10.5\%$, while predicting $110$ gives about $9.5\%$ under this formula.
 
-\textbf{When to use sMAPE?}
+\metricheading{When to use}
 
 Use sMAPE when you want a bounded percentage measure that considers both actual and forecast size. It has been used in the M3 and M4 forecasting competitions. Check its behavior near zero before choosing it: a bounded score can still hide meaningful differences between forecasts.
 
@@ -491,21 +453,15 @@ Use sMAPE when you want a bounded percentage measure that considers both actual 
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/sMAPE_3d_surface.png}
-    
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/sMAPE_3d_surface.png}
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-    \centering
-    \vspace{-10pt} % Adjust vertical alignment if needed
-    \includegraphics[width=0.45\textwidth]{figures/sMAPE_cross_section.png} 
-    \vspace{-10pt} % Adjust vertical alignment if needed
-\end{wrapfigure}
+\end{metricfigure}
 
-\textbf{Figure. sMAPE.} \underline{Top:} Exchanging actual and predicted values leaves the surface unchanged. \underline{Right:} With the actual fixed at $100$, equally large over- and under-predictions receive different scores.
-\sloppy
+
+
+\metriccaption{Figure. sMAPE.}{Exchanging actual and predicted values leaves the surface unchanged. This symmetry does not give equal penalties to equally large over- and under-predictions of a fixed actual value: their denominators differ.}
 \orangebox{Did you know that...}
 {The geometric mean need not minimize sMAPE. For positive $x$, $y$ and $z$, consider this error sum without its constant scale factor:
 \[
@@ -517,19 +473,18 @@ z = \sqrt{x \cdot y}
 \]
 For $x=100$ and $y=400$, this gives $z=200$ and error $2/3$. Choosing $z=100$ gives $0.6$, so the geometric mean does not minimize this error.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MAPE and wMAPE scale errors by actual values; MASE uses a historical naive-forecast error.
 % ---------- wMAPE ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{wMAPE}\label{sec:wmape}
-\subsection{Weighted Mean Absolute Percentage Error}
+\metricentry{wMAPE}{Weighted Mean Absolute Percentage Error (wMAPE)}\label{sec:wmape}
 
 wMAPE measures total absolute prediction error as a percentage of the sum of absolute actual values. It adds the errors before dividing, so individual zero actuals do not make the score undefined. When forecasting sales revenue, for example, a larger channel contributes more than a smaller one if their percentage errors are the same.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -538,19 +493,19 @@ wMAPE measures total absolute prediction error as a percentage of the sum of abs
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan,semithick] ($(a.north)+(0.80,-0.15)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.85,0.00)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50); 
+        \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.80,-0.15)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.85,0.00)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
     }
-\end{center}
+\end{metricformula}
 
 wMAPE ranges from $0\%$ to $+\infty$ and is undefined when all actuals are zero. A score of $8\%$ means total absolute error is $8\%$ of the total absolute actuals; it does not mean every prediction misses by $8\%$.
 
-\textbf{When to use wMAPE?}
+\metricheading{When to use}
 
 Use wMAPE when you want a percentage summary that allows some actuals to be zero and gives more weight to larger actual values. This can suit sales or demand forecasts. The weights follow the target: revenue forecasts are weighted by revenue, but unit-demand forecasts do not account for prices or margins.
 
 % strength and weakness box
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item Individual zeros still contribute their absolute forecast errors to the numerator. Only a zero total in the denominator prevents calculation.
     \item On one dataset, wMAPE and MAE rank models identically. The percentage makes the total error easier to compare with the amount being forecast.
@@ -563,29 +518,27 @@ Use wMAPE when you want a percentage summary that allows some actuals to be zero
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/wMAPE_compare_MAPE.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. wMAPE.} Four sales channels of one forecast. \underline{Left:} MAPE per channel; every channel is about $10\%$ off and the mean is $9.9\%$. \underline{Right:} bar width shows each channel's contribution to wMAPE: its absolute error divided by total revenue. Retail accounts for $76\%$ of revenue, so its $10\%$ error contributes $7.6$ of the $9.9$ percentage points. This identifies the largest contribution to the score; deciding which error to fix also depends on the business costs.
+\metriccaption{Figure. wMAPE.}{Four sales channels of one forecast. \textit{Left:} MAPE per channel; every channel is about $10\%$ off and the mean is $9.9\%$. \textit{Right:} bar width shows each channel's contribution to wMAPE: its absolute error divided by total revenue. Retail accounts for $76\%$ of revenue, so its $10\%$ error contributes $7.6$ of the $9.9$ percentage points. This identifies the largest contribution to the score; deciding which error to fix also depends on the business costs.}
 
 \orangebox{Did you know that...}
 {wMAPE is also called WAPE. It equals MAE divided by the mean absolute actual value, multiplied by $100$. With no zero actuals, it is also a weighted average of percentage errors, with weights proportional to actual size. But zero rows must not be discarded: actuals $[100,0]$ and forecasts $[90,10]$ give $20\%$, because both errors enter the numerator.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MAPE weights each percentage error equally, while wMAPE gives larger actuals more weight. If MAPE is higher, small actuals may have larger percentage errors; inspect the individual contributions before drawing a conclusion. For time series, MASE instead scales errors by a naive forecast's error on the training history.
 
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MASE}\label{sec:mase}
-\subsection{Mean Absolute Scaled Error}
+\metricentry{MASE}{Mean Absolute Scaled Error (MASE)}\label{sec:mase}
 
 MASE measures forecast errors relative to the error of a simple forecast on the training history. For a nonseasonal series, that simple forecast repeats the previous value. We calculate its average absolute error on the historical data, then divide the model's evaluation MAE by that amount. This puts errors from series with different units on a common scale.
 
 % formula
-\vspace{0.5em}
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -594,16 +547,15 @@ MASE measures forecast errors relative to the error of a simple forecast on the 
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.50,0.25)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
-        \draw[overlay,-latex,nmlcyan,semithick] ($(a.north)+(1.25,-0.15)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.50,0.25)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+        \draw[-latex,nmlcyan,semithick] ($(a.north)+(1.25,-0.15)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
     }
-\end{center}
-\vspace{0.5em}
+\end{metricformula}
 
 The formula illustrates both averages on one series. For future forecasts, keep the denominator fixed from the training history. MASE $=0.6$ means the model's MAE is $40\%$ below that historical scale; it does not establish that the model beats a naive forecast on the same future period.
 
-\textbf{When to use MASE?}
+\metricheading{When to use}
 
 Use MASE to compare forecast errors across time series with different scales. It allows individual zero actuals, including periods with no demand, provided the historical scaling error is positive. For seasonal data, use a seasonal naive forecast that repeats the value from the previous season.
 
@@ -620,30 +572,28 @@ Use MASE to compare forecast errors across time series with different scales. It
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/MASE_naive_baseline.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. MASE.} \underline{Top:} forty days of demand, the model's forecast and the naive forecast that repeats yesterday's value. \underline{Bottom:} their absolute errors, with the means dashed. This illustrates scaling within one series: both averages use the same $39$ changes. The ratio $3.22/5.03=0.64$ means the model's error is $36\%$ smaller here. In a future evaluation, MASE instead uses the naive error from the earlier training history as its denominator.
+\metriccaption{Figure. MASE.}{\textit{Top:} forty days of demand, the model's forecast and the naive forecast that repeats yesterday's value. \textit{Bottom:} their absolute errors, with the means dashed. This illustrates scaling within one series: both averages use the same $39$ changes. The ratio $3.22/5.03=0.64$ means the model's error is $36\%$ smaller here. In a future evaluation, MASE instead uses the naive error from the earlier training history as its denominator.}
 
 \orangebox{Did you know that...}
 {Rob Hyndman and Anne Koehler introduced MASE in 2006 to compare forecast accuracy across time series with different scales. Scaling by historical naive errors also avoids MAPE's division by individual actual values. Their paper explicitly notes an exception: a constant history leaves MASE with a zero denominator.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MAPE and sMAPE express errors relative to actuals or predictions; MASE uses a historical forecast error instead. RMSE gives larger misses more influence than MAE. For direction rather than magnitude, consider MDA.
 
 % ---------- MDA ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MDA}\label{sec:mda}
-\subsection{Mean Directional Accuracy}
+\metricentry{MDA}{Mean Directional Accuracy (MDA)}\label{sec:mda}
 
 MDA measures how often a forecast gets the direction of a change right. A stock-price forecast can miss tomorrow's price but still correctly predict whether it will rise or fall. MDA compares the actual and forecast changes with the last observed value, counting how often their directions match.
 
 % formula
-\vspace{0.5em}
-\begin{center}
+\begin{metricformula}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -654,18 +604,17 @@ MDA measures how often a forecast gets the direction of a change right. A stock-
     };
 
     % Draw arrows for annotations
-    \draw[overlay,-latex, nmlred, semithick] ($(a.south)+(-2.05,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number \\ of samples} +(-1.00,-0.50);
-    \draw[overlay,-latex,nmlcyan,semithick] ($(a.north)+(0.70,-0.65)$) to[bend right=27] node[pos=1, left] {actual value} +(-0.60,0.85);
-    \draw[overlay,-latex, nmlpurple, semithick] ($(a.north)+(3.00,-0.70)$) to[bend left=15] node[pos=1, right,align=center] {forecast\\value} +(1.00,0.50);
-    \draw[overlay,-latex, nmlgreen, semithick] ($(a.west)+(3.65,-0.20)$) to[bend right=37] node[pos=1, right] {indicator} +(0.75,-0.60);
-    \draw[overlay,-latex, nmlyellow, semithick] ($(a.south)+(2.60,0.50)$) to[bend right=15] node[pos=1, right] {sign function} +(1.00,-0.50);
+    \draw[-latex, nmlred, semithick] ($(a.south)+(-2.05,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number \\ of samples} +(-1.00,-0.50);
+    \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.70,-0.65)$) to[bend right=27] node[pos=1, left] {actual value} +(-0.60,0.85);
+    \draw[-latex, nmlpurple, semithick] ($(a.north)+(3.00,-0.70)$) to[bend left=15] node[pos=1, right,align=center] {forecast\\value} +(1.00,0.50);
+    \draw[-latex, nmlgreen, semithick] ($(a.west)+(3.65,-0.20)$) to[bend right=37] node[pos=1, right] {indicator} +(0.75,-0.60);
+    \draw[-latex, nmlyellow, semithick] ($(a.south)+(2.60,0.50)$) to[bend right=15] node[pos=1, right] {sign function} +(1.00,-0.50);
     }
-\end{center}
-\vspace{0.5em}
+\end{metricformula}
 
 MDA ranges from $0$ to $1$: a score of $0.6$ means $60\%$ of directions were correct. A fair coin has expected accuracy $0.5$ on up-or-down outcomes, but this is not always a useful benchmark. If prices rose on $80\%$ of days, always predicting ``up'' would score $0.8$.
 
-\textbf{When to use MDA?}
+\metricheading{When to use}
 
 Use MDA when the direction of change matters, such as in stock or energy-price forecasting. Compare with a simple directional baseline on the same period. When the size of a change also matters, examine the errors or decision outcomes alongside the hit rate.
 
@@ -682,32 +631,31 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/MDA_direction.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. MDA.} \underline{Top:} twenty days of a price, with the forecast for each day made the day before. \underline{Bottom:}
+\metriccaption{Figure. MDA.}{\textit{Top:} twenty days of a price, with the forecast for each day made the day before. \textit{Bottom:}
 the direction of the actual move and of the forecast move, day by day. Green means they agree, red means they don't. MDA counts the
 green columns: $15$ of $19$ moves, so MDA $= 0.79$. The size of a miss never enters: day $13$ forecasts a jump of $+4.6$ against a
-fall of $1.9$, and it counts as one miss, just like day $12$, where the forecast missed a move of $0.2$.
+fall of $1.9$, and it counts as one miss, just like day $12$, where the forecast missed a move of $0.2$.}
 
 \orangebox{Did you know that...}
 {Oliver Blaskowitz and Helmut Herwartz examined the economic value of directional forecasts in 2011, including the size of the resulting gains and losses. A $55\%$ hit rate can be profitable or unprofitable: the answer also depends on those amounts, position sizes, and trading costs. Counting correct directions alone leaves that information out.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MAE and RMSE assess error magnitude, while MASE compares it with a historical error scale. These complement MDA when evaluating forecasts, but a trading strategy also needs evaluation of its actual gains, losses, and costs.
 
 % ---------- MPD ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MPD}\label{sec:mpd}
-\subsection{Mean Poisson Deviance}
+\metricentry{MPD}{Mean Poisson Deviance (MPD)}\label{sec:mpd}
 
 MPD measures errors in predictions of an expected count. For example, a model might predict an average of $12$ calls for days with similar conditions, while one such day receives $10$. MPD uses the observed and predicted counts in a loss derived from a Poisson probability model, then averages that loss across observations.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -716,15 +664,15 @@ MPD measures errors in predictions of an expected count. For example, a model mi
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.70,0.25)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.10,-0.10)$) to[bend left=15] node[pos=1, right] {actual value} +(1.00,0.50);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.10,0.15)$) to[bend right=15] node[pos=1, right] {predicted value} +(1.00,-0.50);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.70,0.25)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.10,-0.10)$) to[bend left=15] node[pos=1, right] {actual value} +(1.00,0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.10,0.15)$) to[bend right=15] node[pos=1, right] {predicted value} +(1.00,-0.50);
     }
-\end{center}
+\end{metricformula}
 
 MPD ranges from $0$ to $+\infty$, with lower values indicating smaller loss. Compare models with a suitable baseline on the same data, such as the training mean count. Zero actuals are valid: their contribution is twice the predicted count, using the standard limit for the logarithmic term.
 
-\textbf{When to use MPD?}
+\metricheading{When to use}
 
 Use MPD to assess predictions of mean counts or rates, such as calls per day or claims per year. A Poisson model assumes equal mean and variance among cases with the same inputs, but exact Poisson outcomes are not required to calculate the score. Many zero outcomes alone do not require a different loss.
 
@@ -741,30 +689,29 @@ Use MPD to assess predictions of mean counts or rates, such as calls per day or 
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MPD_cross_section.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MPD_cross_section.png}
+\end{metricfigure}
 
-\textbf{Figure. MPD.} The loss for one observation with $Y=10$, as the prediction changes. The smooth curve is asymmetric: predicting $5$ incurs more deviance than predicting $15$, although both miss by five. This describes the loss's behavior; whether underprediction is more costly depends on the application.
+\metriccaption{Figure. MPD.}{The loss for one observation with $Y=10$, as the prediction changes. The smooth curve is asymmetric: predicting $5$ incurs more deviance than predicting $15$, although both miss by five. This describes the loss's behavior; whether underprediction is more costly depends on the application.}
 
 \orangebox{Did you know that...}
 {A saturated Poisson model assigns each observation its own mean and fits every count exactly. MPD is twice its log-likelihood advantage over the fitted model, divided by the number of observations. Minimizing this loss therefore gives the unregularized Poisson maximum-likelihood fit. \texttt{PoissonRegressor} uses this data-fit loss but normally adds a regularization penalty.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MPD and MGD are members of the Tweedie deviance family. The compound Poisson--Gamma model, with $1<p<2$, describes a mix of zero and positive continuous amounts, such as total claim cost; it is not a general replacement for counts with many zeros. If MPD and MAE rank models differently, inspect the cases contributing most to each loss before deciding why.
 
 % ---------- MGD ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{MGD}\label{sec:mgd}
-\subsection{Mean Gamma Deviance}
+\metricentry{MGD}{Mean Gamma Deviance (MGD)}\label{sec:mgd}
 
 MGD measures errors in predictions of a positive mean, using the ratio between each observed and predicted value. A prediction that is half the actual value receives the same penalty whether the actual is $100$ or $1{,}000$. The loss comes from a Gamma probability model and is commonly used for positive amounts such as insurance claim severity.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
         {
@@ -773,16 +720,16 @@ MGD measures errors in predictions of a positive mean, using the ratio between e
             $
         }
     };
-    
-    \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.10,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
-    \draw[overlay,-latex, nmlcyan, semithick] ($(a.south)+(1.15,0.20)$) to[bend right=16] node[pos=1, right] {actual value} +(1.00,-0.50);
-    \draw[overlay,-latex, nmlpurple, semithick] ($(a.north)+(1.15,-0.10)$) to[bend left=16] node[pos=1, right] {predicted value} +(1.00,0.50);
+
+    \draw[-latex,nmlred, semithick] ($(a.south)+(-2.10,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number\\of samples} +(-1.00,-0.50);
+    \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.15,0.20)$) to[bend right=16] node[pos=1, right] {actual value} +(1.00,-0.50);
+    \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.15,-0.10)$) to[bend left=16] node[pos=1, right] {predicted value} +(1.00,0.50);
 }
-\end{center}
+\end{metricformula}
 
 MGD ranges from $0$ to $+\infty$, with $0$ when every prediction equals its actual value. Both actuals and predictions must be strictly positive. Compare models on the same observations and in the context of a suitable baseline.
 
-\textbf{When to use MGD?}
+\metricheading{When to use}
 
 Use MGD when proportional errors matter for positive quantities, such as claim sizes or repair costs. A Gamma model assumes variance proportional to the squared mean among cases with the same inputs. That can motivate the loss, but a skewed target histogram alone does not establish the assumption.
 
@@ -799,29 +746,28 @@ Use MGD when proportional errors matter for positive quantities, such as claim s
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/MGD_cross_section.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/MGD_cross_section.png}
+\end{metricfigure}
 
-\textbf{Figure. MGD.} The loss for one observation with $Y=10$, as the prediction changes. The minimum is at $\hat{Y}=10$. Predicting half the actual value ($\hat{Y}=5$) incurs about $1.6$ times the loss of predicting double ($\hat{Y}=20$). MGD depends on the ratio $\hat{Y}/Y$, so rescaling both values preserves these penalties.
+\metriccaption{Figure. MGD.}{The loss for one observation with $Y=10$, as the prediction changes. The minimum is at $\hat{Y}=10$. Predicting half the actual value ($\hat{Y}=5$) incurs about $1.6$ times the loss of predicting double ($\hat{Y}=20$). MGD depends on the ratio $\hat{Y}/Y$, so rescaling both values preserves these penalties.}
 
 \orangebox{Did you know that...}
 {MGD is scale-invariant: multiplying all actuals and existing predictions by a positive constant leaves the score unchanged. Converting dollars to cents therefore preserves MGD, while MAE, MSE, MPD, and RMSE all change. This makes it useful when the same relative miss should count equally across different-sized amounts.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MGD compares ratios, while RMSE gives more weight to large errors in the target's units. If they rank models differently, consider which errors matter for the prediction task. MPD instead scales with count size. Both losses can evaluate mean predictions, even when the full outcome distribution does not follow their namesake probability model exactly.
 
 % ---------- R-squared ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{R-squared}\label{sec:r-squared}
-\subsection{R-squared}
+\metricentry{R-squared}{R-squared}\label{sec:r-squared}
 
 R-squared measures how much a model reduces squared prediction error compared with always predicting the mean of the evaluated targets. An $R^2$ of $0.85$ means the model makes $85\%$ less squared error than that baseline. The remaining $15\%$ tells us how much error remains relative to the baseline, but not what caused it.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -830,20 +776,20 @@ R-squared measures how much a model reduces squared prediction error compared wi
                 $
             }
         };
-        
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.05,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50); 
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.00,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50); 
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.00,0.10)$) to[bend left=15] node[pos=1, left] {target value} +(-1.00,-0.50); 
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.05,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50);
+        \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.00,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.00,0.10)$) to[bend left=15] node[pos=1, left] {target value} +(-1.00,-0.50);
     }
-\end{center}
+\end{metricformula}
 
 For nonconstant targets, $R^2=1$ is perfect and $R^2=0$ matches the mean baseline. A negative score means the model has more squared error than that baseline on these data. It does not, by itself, show that performance has deteriorated over time.
 
-\textbf{When to use R-squared?}
+\metricheading{When to use}
 
 Use $R^2$ to express squared error relative to the variation in the targets. It has no units, but scores on different datasets depend on their target variation and difficulty. Pair it with RMSE or MAE to understand error sizes, and inspect large misses that an overall score may hide.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Changing units, such as meters to centimeters, leaves $R^2$ unchanged when both targets and predictions are rescaled.
     \item The baseline is explicit: $R^2=0$ matches the squared error of predicting the evaluated targets' mean. Using that mean to compute the score is not training leakage.
@@ -857,29 +803,28 @@ Use $R^2$ to express squared error relative to the variation in the targets. It 
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/R2_explained.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. R² as a ratio of squared-error areas.} On the left, each purple square has side length $|y_i-\hat{y}_i|$, so its area represents one squared prediction error. On the right, the red squares represent errors against the mean baseline. The labeled totals give $R^2=1-3.4/43.2\approx0.92$. If the model's total squared error exceeds the baseline's, $R^2$ is negative.
+\metriccaption{Figure. R² as a ratio of squared-error areas.}{On the left, each purple square has side length $|y_i-\hat{y}_i|$, so its area represents one squared prediction error. On the right, the red squares represent errors against the mean baseline. The labeled totals give $R^2=1-3.4/43.2\approx0.92$. If the model's total squared error exceeds the baseline's, $R^2$ is negative.}
 
 \orangebox{Did you know that...}
 {$R^2=1-MSE_{model}/MSE_{baseline}$, where the baseline predicts the evaluated targets' mean. On the same nonconstant targets, the baseline error stays fixed, so minimizing MSE and maximizing $R^2$ rank models identically. An increase of $0.01$ in $R^2$ corresponds to a decrease of $0.01\times MSE_{baseline}$ in MSE. This equivalence does not make scores from different datasets directly comparable.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Adjusted $R^2$ penalizes additional predictors in linear regression, but it does not replace evaluation on held-out data. A large training--test gap can prompt an investigation of overfitting or differences between datasets. D2 Absolute Score uses absolute errors and a median baseline instead.
 
 % ---------- D2 ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{D2}\label{sec:d2}
-\subsection{D2 Absolute Score}
+\metricentry{D2}{D2 Absolute Score}\label{sec:d2}
 
 D2 Absolute Score measures how much a model reduces absolute prediction error compared with always predicting the median of the evaluated targets. It gives each additional unit of error the same weight, whereas R-squared squares errors. A score of $0.46$ means $46\%$ less absolute error than the median baseline.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -888,16 +833,16 @@ D2 Absolute Score measures how much a model reduces absolute prediction error co
                 $
             }
         };
-        
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50); 
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.30,0.10)$) to[bend right=15] node[pos=1, right] {median of targets} +(1.00,-0.50);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.20,0.10)$) to[bend left=15] node[pos=1, left] {target value} +(-1.00,-0.50); 
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50);
+        \draw[-latex,teal!70!green, semithick] ($(a.south)+(2.30,0.10)$) to[bend right=15] node[pos=1, right] {median of targets} +(1.00,-0.50);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.20,0.10)$) to[bend left=15] node[pos=1, left] {target value} +(-1.00,-0.50);
     }
-\end{center}
+\end{metricformula}
 
 Here $\tilde{Y}$ is the median of the evaluated targets. With a nonzero baseline error, $D^2=1$ means perfect predictions and $D^2=0$ matches the error of always predicting that median. A negative score means the model makes more absolute error than this baseline.
 
-\textbf{When to use D2?}
+\metricheading{When to use}
 
 Use D2 when absolute error fits your task and you want to compare it with a constant baseline. It gives large misses less weight than R-squared does, but an extreme observation can still change both the model's error and the baseline's error substantially.
 
@@ -914,36 +859,35 @@ Use D2 when absolute error fits your task and you want to compare it with a cons
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/D2_abs_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. D2 as a ratio of absolute-error bar heights.} Purple bars measure absolute errors against the fitted line; red bars measure them against the median. Their totals are $10.5$ and $19.5$, giving $D^2\approx0.46$. The line was fitted to five points and kept fixed when the red outlier was added. Before that addition, $R^2\approx0.92$ and $D^2\approx0.72$; afterward, they are $0.30$ and $0.46$. D2 falls less in this example, but the outlier changes both scores and their baselines.
+\metriccaption{Figure. D2 as a ratio of absolute-error bar heights.}{Purple bars measure absolute errors against the fitted line; red bars measure them against the median. Their totals are $10.5$ and $19.5$, giving $D^2\approx0.46$. The line was fitted to five points and kept fixed when the red outlier was added. Before that addition, $R^2\approx0.92$ and $D^2\approx0.72$; afterward, they are $0.30$ and $0.46$. D2 falls less in this example, but the outlier changes both scores and their baselines.}
 
 \orangebox{Did you know that...}
 {The D-squared framework compares a model's loss with the loss of a constant baseline. For absolute error, that baseline is the median and the score is $1-MAE_{model}/MAE_{baseline}$. In scikit-learn, it is available as \texttt{d2\_absolute\_error\_score}.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 R-squared uses squared errors and a mean baseline, so it need not agree with D2 even without outliers. If they rank models differently, inspect the errors and decide which penalty fits the task. Both scores use baselines calculated from the evaluated targets by definition. Comparing with a historical training-set baseline is a different skill score.
 
 % ---------- Pinball Loss ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{Pinball Loss}\label{sec:pinball-loss}
-\subsection{Pinball Loss}
+\metricentry{Pinball Loss}{Pinball Loss}\label{sec:pinball-loss}
 
 Pinball Loss measures the error of a quantile prediction. For example, a predicted $90$th-percentile price of $\$60$ means we expect $90\%$ of prices under those conditions to be at or below $\$60$. This is still a single predicted value, but it targets an upper quantile rather than the mean. Pinball Loss gives under-predictions and over-predictions different weights to target that quantile.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
 		\node[inner sep=2pt, font=\Large] (a) {
 			{
 				$\displaystyle
-				L_{{\color{nmlred}q}}({\color{nmlcyan}Y}, {\color{nmlpurple}\hat{Y}}) = 
-                \begin{cases} 
+				L_{{\color{nmlred}q}}({\color{nmlcyan}Y}, {\color{nmlpurple}\hat{Y}}) =
+                \begin{cases}
                     {\color{nmlred}q} \cdot ({\color{nmlcyan}Y} - {\color{nmlpurple}\hat{Y}}), & \text{if } {\color{nmlcyan}Y} \geq {\color{nmlpurple}\hat{Y}}, \\[10pt]
                     (1 - {\color{nmlred}q}) \cdot ({\color{nmlpurple}\hat{Y}} - {\color{nmlcyan}Y}), & \text{if } {\color{nmlcyan}Y} < {\color{nmlpurple}\hat{Y}}
                 \end{cases}
@@ -951,15 +895,15 @@ Pinball Loss measures the error of a quantile prediction. For example, a predict
 			}
 		};
 		% Adjusted arrows
-		\draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-4.25,0.65)$) to[bend right=29] node[pos=1, right] {quantile} +(0.55,-0.80);
-		\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.80,-0.70)$) to[bend right=20] node[pos=1, left,align=center] {actual\\value} +(-0.75,0.50);
-		\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.50,0.20)$) to[bend right=29] node[pos=1, right] {predicted value} +(0.45,-0.35); 
+		\draw[-latex,nmlred, semithick] ($(a.south)+(-4.25,0.65)$) to[bend right=29] node[pos=1, right] {quantile} +(0.55,-0.80);
+		\draw[-latex,nmlcyan, semithick] ($(a.north)+(-3.80,-0.70)$) to[bend right=20] node[pos=1, left,align=center] {actual\\value} +(-0.75,0.50);
+		\draw[-latex,nmlpurple, semithick] ($(a.south)+(0.50,0.20)$) to[bend right=29] node[pos=1, right] {predicted value} +(0.45,-0.35);
 	}
-\end{center}
+\end{metricformula}
 
 The loss is nonnegative and has no upper bound. At $q=0.9$, an under-prediction receives nine times the penalty of an equally large over-prediction. At $q=0.5$, the penalties match; averaging this loss gives half the MAE and targets the median.
 
-\textbf{When to use Pinball Loss?}
+\metricheading{When to use}
 
 Use it when evaluating a chosen quantile, such as an upper demand forecast for inventory planning or a lower and upper bound for a prediction interval. Choose the quantile to match the question: estimating a $90$th percentile and estimating a mean are different tasks.
 
@@ -977,29 +921,28 @@ Use it when evaluating a chosen quantile, such as an upper demand forecast for i
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Pinball_Loss.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Pinball Loss.} Each curve shows the loss for one prediction against its residual, $Y-\hat{Y}$. Under-predictions lie on the right and incur $q$ per unit of error; over-predictions lie on the left and incur $1-q$ per unit of error. At $q=0.9$, the heavier penalty for under-prediction favors a higher forecast, targeting the $90$th percentile. This aims for about $10\%$ of outcomes above it, but does not guarantee that fraction in a finite test sample. At $q=0.5$, both sides equal half the absolute error.
+\metriccaption{Figure. Pinball Loss.}{Each curve shows the loss for one prediction against its residual, $Y-\hat{Y}$. Under-predictions lie on the right and incur $q$ per unit of error; over-predictions lie on the left and incur $1-q$ per unit of error. At $q=0.9$, the heavier penalty for under-prediction favors a higher forecast, targeting the $90$th percentile. This aims for about $10\%$ of outcomes above it, but does not guarantee that fraction in a finite test sample. At $q=0.5$, both sides equal half the absolute error.}
 
 \orangebox{Did you know that...}
 {Pinball Loss is also called Quantile Loss or Check Loss. Roger Koenker and Gilbert Bassett used this asymmetric absolute-error objective in their 1978 paper \textit{Regression Quantiles}, extending regression beyond the mean to different quantiles of an outcome.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 MAE targets the median, just as Pinball Loss does at $q=0.5$; MSE targets the mean. For a prediction interval, evaluate its lower and upper quantiles and check how often new outcomes fall inside it.
 
 % ---------- Explained Variance Score ----------
 \clearpage
 \thispagestyle{regressionstyle}
-\section{Explained Variance Score}\label{sec:explained-variance-score}
-\subsection{Explained Variance Score}
+\metricentry{Explained Variance Score}{Explained Variance Score}\label{sec:explained-variance-score}
 
 Explained Variance Score compares the variation in prediction errors with the variation in the targets, while ignoring the errors' average offset. For example, predictions $[8,9,10,11]$ for targets $[1,2,3,4]$ are always $7$ too high. Their errors have no variation, so EVS is $1$, even though $R^2=-38.2$. A perfect EVS therefore does not mean perfect predictions.
 
 % formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -1008,15 +951,15 @@ Explained Variance Score compares the variation in prediction errors with the va
                 $
             }
         };
-        
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.50,0.05)$) to[bend left=11] node[pos=1, left] {actual value} +(-1.10,-0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.20,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50); 
+
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.50,0.05)$) to[bend left=11] node[pos=1, left] {actual value} +(-1.10,-0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.20,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50);
     }
-\end{center}
+\end{metricformula}
 
 For nonconstant targets, EVS has a maximum of $1$ and no lower bound. It equals $R^2$ when the mean error is zero. Otherwise EVS is higher, with the gap reflecting the squared mean error relative to target variance.
 
-\textbf{When to use Explained Variance Score?}
+\metricheading{When to use}
 
 Use EVS alongside $R^2$ to check how much of the squared error comes from predictions being too high or too low on average. The gap between the scores measures this contribution relative to the variation in the targets. Inspect errors within groups too, since over-prediction in one group can cancel under-prediction in another.
 
@@ -1033,16 +976,16 @@ Use EVS alongside $R^2$ to check how much of the squared error comes from predic
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/EVS_vs_R2_three_models.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Explained Variance Score.} All three models predict the same targets; the diagonal marks perfect predictions. On the left, a small mean error makes EVS and $R^2$ both round to $0.96$. The center model has a similar spread of errors but predicts about $6.2$ too high on average: EVS still rounds to $0.96$, while $R^2$ is $-0.22$. On the right, larger error variation brings both scores to about $0.21$.
+\metriccaption{Figure. Explained Variance Score.}{All three models predict the same targets; the diagonal marks perfect predictions. On the left, a small mean error makes EVS and $R^2$ both round to $0.96$. The center model has a similar spread of errors but predicts about $6.2$ too high on average: EVS still rounds to $0.96$, while $R^2$ is $-0.22$. On the right, larger error variation brings both scores to about $0.21$.}
 
 \orangebox{Did you know that...}
 {We can remove the average offset in a set of predictions by adding the mean error, $\operatorname{mean}(Y-\hat{Y})$, to each one. If predictions are $7$ too high on average, this subtracts $7$. EVS stays the same, while $R^2$ rises to match it on those data. The relationship is $EVS=R^2+\operatorname{mean}(Y-\hat{Y})^2/\operatorname{Var}(Y)$ for nonconstant targets.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 To test whether an offset correction helps on new data, estimate it from one labeled dataset and evaluate the corrected predictions on another. Report $R^2$ with MAE or RMSE so readers can see both the relative improvement and the remaining error in the target's units. Check individual groups as well, because the same correction may help some and hurt others.

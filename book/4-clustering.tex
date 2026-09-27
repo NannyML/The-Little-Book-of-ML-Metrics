@@ -34,13 +34,12 @@ Without topic labels, we can still examine how close the documents in each clust
 % ---------- Mutual Info Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Mutual Info Score}\label{sec:mutual-info-score}
-\subsection{Mutual Info Score}
+\metricentry{Mutual Info Score}{Mutual Info Score}\label{sec:mutual-info-score}
 
 Mutual Information (MI) measures how much one labeling tells us about another. In clustering, it asks how much knowing the cluster reduces uncertainty about the reference class. If the data contain $90\%$ class A and $10\%$ class B, and every cluster repeats those proportions, the cluster label adds no information: MI is zero.
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -49,19 +48,19 @@ Mutual Information (MI) measures how much one labeling tells us about another. I
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.67,-0.10)$) to[bend right=15] node[pos=1, left] {true labels} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.84,-0.10)$) to[bend left=15] node[pos=1, right] {predicted labels} +(1.00,0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.60,0.42)$) to[bend left=15] node[pos=1, left] {total samples} +(-1.00,-0.51);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-1.67,-0.10)$) to[bend right=15] node[pos=1, left] {true labels} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-0.84,-0.10)$) to[bend left=15] node[pos=1, right] {predicted labels} +(1.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(0.60,0.42)$) to[bend left=15] node[pos=1, left] {total samples} +(-1.00,-0.51);
     }
-\end{center}
+\end{metricformula}
 
 Entropy measures uncertainty in a labeling. MI is at least zero and cannot exceed the smaller of the two label entropies. For three balanced classes, the class entropy is $\log 3 \approx 1.099$ nats with natural logarithms. The ceiling varies with the labelings, so raw MI has no universal upper bound.
 
-\textbf{When to use Mutual Info Score?}
+\metricheading{When to use}
 
 Use MI to compare clusters with reference classes, or two clustering runs on the same observations. A larger value means the labelings share more information. When comparing results with different numbers of clusters, consider the normalized and chance-adjusted versions described below.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Renaming clusters leaves MI unchanged. Labels $[0,0,1]$ and $[1,1,0]$ keep the first two points together and the third separate.
     \item Symmetric in its inputs, so either clustering can serve as the reference for an agreement comparison.
@@ -74,17 +73,17 @@ Use MI to compare clusters with reference classes, or two clustering runs on the
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/MI_contingency_contributions.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Mutual Info Score.} Each cell gives a count and its contribution to MI. A nonempty cell contributes positively when its share exceeds what independent class and cluster labels would imply, and negatively when it falls below that expectation. Empty cells contribute zero. The left table totals $1.099$ nats, the entropy of three balanced classes; the right totals $0.724$. Cluster names are arbitrary, so a cell's position on the diagonal does not determine its contribution.
+\metriccaption{Figure. Mutual Info Score.}{Each cell gives a count and its contribution to MI. A nonempty cell contributes positively when its share exceeds what independent class and cluster labels would imply, and negatively when it falls below that expectation. Empty cells contribute zero. The left table totals $1.099$ nats, the entropy of three balanced classes; the right totals $0.724$. Cluster names are arbitrary, so a cell's position on the diagonal does not determine its contribution.}
 
 \orangebox{Did you know that...}
 {MI is the Kullback-Leibler divergence between the joint distribution of two labelings and the product of their marginals. If clusters and classes were statistically independent, MI would be exactly $0$ --- so MI literally measures how far the two labelings are from being independent. This is also why MI shows up in feature selection: the same formula measures how much a feature tells you about a target.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Normalized Mutual Information (NMI) rescales MI to $[0,1]$ using the uncertainty in the two labelings. Several normalizations exist, so use the same version when comparing results. NMI still counts information shared by chance, which can be substantial when there are many clusters for few observations.
 
@@ -93,12 +92,11 @@ Adjusted Mutual Information (AMI) accounts for this by subtracting the MI expect
 % ---------- rand index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Rand Index}\label{sec:rand-index}
-\subsection{Rand Index}
+\metricentry{Rand Index}{Rand Index}\label{sec:rand-index}
 
 The Rand Index (RI) measures how often two groupings agree about a pair of points. They agree if both put the pair together or both separate it. RI divides the number of agreeing pairs by all pairs. Because some agreement occurs by chance, the Adjusted Rand Index (ARI) compares the observed agreement with a random-labeling baseline.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -107,15 +105,15 @@ The Rand Index (RI) measures how often two groupings agree about a pair of point
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.21cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.07,-0.03)$) to[bend right=15] node[pos=1, left] {agreeing pairs} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.31,0.09)$) to[bend left=15] node[pos=1, left] {disagreeing pairs} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.07,-0.03)$) to[bend right=15] node[pos=1, left] {agreeing pairs} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.31,0.09)$) to[bend left=15] node[pos=1, left] {disagreeing pairs} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 RI ranges from $0$ to $1$. Independent, roughly balanced assignments to three groups give RI near $0.56$, not zero. The baseline depends on both sets of group sizes. ARI subtracts that expected agreement and rescales what remains: $0$ means agreement at the baseline, $1$ means matching groupings, and negative values indicate less agreement than expected.
 
-\textbf{When to use Rand Index?}
+\metricheading{When to use}
 
 Use RI to describe pairwise agreement and ARI when comparing against chance. Both can compare two clustering runs without designating either as truth. Large groups contribute many more pairs than small ones, so inspect small reference classes in the contingency table rather than relying only on the aggregate.
 
@@ -131,29 +129,28 @@ Use RI to describe pairwise agreement and ARI when comparing against chance. Bot
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Rand_Index_separation.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Rand Index.} Three clusterings of $300$ points in three balanced reference classes. RI is $1.00$ for the matching grouping, $0.90$ with partial overlap and $0.56$ for random assignments. In this example, many pairs are separated by both labelings even under random assignment. ARI accounts for that baseline, giving a value near zero in the random case.
+\metriccaption{Figure. Rand Index.}{Three clusterings of $300$ points in three balanced reference classes. RI is $1.00$ for the matching grouping, $0.90$ with partial overlap and $0.56$ for random assignments. In this example, many pairs are separated by both labelings even under random assignment. ARI accounts for that baseline, giving a value near zero in the random case.}
 
 \orangebox{Did you know that...}
 {RI is the accuracy of a pairwise decision: together or apart. Group sizes influence how many such decisions each class contributes. A class of $100$ points contains $4{,}950$ within-class pairs; one of ten contains just $45$. That difference helps explain why good overall pairwise agreement can hide poor recovery of a small class.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 RI and MI summarize agreement differently, while ARI and AMI also use chance baselines. A disagreement between their scores does not by itself identify a cause. The Pair Confusion Matrix separates the two kinds of pairwise error; the Contingency Matrix shows which classes and clusters overlap.
 
 % ---------- calinski harabasz index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{CH Index}\label{sec:ch-index}
-\subsection{Calinski-Harabasz Index}
+\metricentry{CH Index}{Calinski-Harabasz Index (CH Index)}\label{sec:ch-index}
 
 The Calinski-Harabasz (CH) Index compares how spread out cluster centers are with how spread out points are inside their clusters. A higher score favors compact groups whose centers are well separated. We can calculate it without reference labels, using the points and their assigned clusters.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -162,19 +159,19 @@ The Calinski-Harabasz (CH) Index compares how spread out cluster centers are wit
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.19,-0.04)$) to[bend right=15] node[pos=1, left] {between-cluster sum} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(-0.83,0.16)$) to[bend left=15] node[pos=1, left] {within-cluster sum} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.18,0.16)$) to node[pos=1, below] {clusters and samples} +(0.00,-0.39);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.19,-0.04)$) to[bend right=15] node[pos=1, left] {between-cluster sum} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-0.83,0.16)$) to[bend left=15] node[pos=1, left] {within-cluster sum} +(-1.00,-0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(2.18,0.16)$) to node[pos=1, below] {clusters and samples} +(0.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 The within-cluster sum of squares ($WCSS$) adds the squared distances from points to their own cluster centers. The between-cluster sum of squares ($BCSS$) adds the squared distances from each cluster center to the overall center, weighted by cluster size. The factors $k-1$ and $N-k$ adjust the ratio for the number of clusters $k$ and observations $N$.
 
-\textbf{When to use CH Index?}
+\metricheading{When to use}
 
 Use CH to compare clusterings of the same data, including different choices of cluster count. Keep the features and their scaling fixed so that the scores describe the same distances. The highest score identifies the grouping CH favors among those tested.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Fast for a fitted clustering: it uses cluster centers and point-to-center distances rather than all point pairs.
     \item Adjusts for cluster count, allowing candidate values of $k$ to be compared on the same data.
@@ -187,29 +184,28 @@ Use CH to compare clusterings of the same data, including different choices of c
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.75\textwidth]{figures/Calinski_Harabasz_elbow.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Calinski_Harabasz_elbow.png}
+\end{metricfigure}
 
-\textbf{Figure. CH Index.} These are k-means fits to the same simulated data with four groups. Among the tested cluster counts, CH reaches its maximum at $k=4$ and falls as the groups are split further. Here the criterion agrees with the generating setup; a score maximum does not generally establish a true number of clusters.
+\metriccaption{Figure. CH Index.}{These are k-means fits to the same simulated data with four groups. Among the tested cluster counts, CH reaches its maximum at $k=4$ and falls as the groups are split further. Here the criterion agrees with the generating setup; a score maximum does not generally establish a true number of clusters.}
 
 \orangebox{Did you know that...}
 {Caliński and Harabasz introduced this variance-ratio criterion in 1974. It resembles the F-statistic from one-way ANOVA and is often called a pseudo-F statistic. But clustering has already used the data to form separated groups, so the usual ANOVA significance interpretation does not follow. A high CH score is not a p-value.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Davies-Bouldin also compares spread with separation, but lower values are preferred. Silhouette compares each point's average distances within and outside its cluster. The criteria can favor different clusterings; inspect the candidate groups to understand what each score rewards.
 
 % ---------- contingency matrix ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Contingency Matrix}\label{sec:contingency-matrix}
-\subsection{Contingency Matrix}
+\metricentry{Contingency Matrix}{Contingency Matrix}\label{sec:contingency-matrix}
 
 The Contingency Matrix is the clustering analog of a confusion matrix: rows are true classes, columns are predicted clusters, and cell $(i, j)$ counts the points that belong to class $i$ and ended up in cluster $j$. Unlike a confusion matrix, the row and column index sets do not have to match --- $5$ true classes and $7$ predicted clusters give a $5 \times 7$ matrix, not a square one.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -218,14 +214,14 @@ The Contingency Matrix is the clustering analog of a confusion matrix: rows are 
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-4.33,-0.06)$) to node[pos=1, above] {cell at row $i$, col $j$} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.98,-0.04)$) to node[pos=1, above] {points in class $i$ and cluster $j$} +(0.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-4.33,-0.06)$) to node[pos=1, above] {cell at row $i$, col $j$} +(0.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.98,-0.04)$) to node[pos=1, above] {points in class $i$ and cluster $j$} +(0.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 Cluster numbers need not match class numbers: renaming clusters just reorders the columns. Read across a row to see whether a class was split, and down a column to see whether a cluster mixes classes. Diagonal agreement is meaningful only after aligning the labels. Row and column totals give class and cluster sizes.
 
-\textbf{When to use Contingency Matrix?}
+\metricheading{When to use}
 
 Use the matrix when you have reference labels and need to see which groups split or mix. A single NMI or ARI value hides those details. For large tables, reorder or inspect selected rows and columns to make the pattern easier to follow, then use a summary metric for overall comparison.
 
@@ -241,25 +237,24 @@ Use the matrix when you have reference labels and need to see which groups split
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.5\textwidth]{figures/Contingency_Matrix_heatmap.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Contingency_Matrix_heatmap.png}
+\end{metricfigure}
 
-\textbf{Figure. Contingency Matrix.} This example has three classes of $100$ points each. The columns have been reordered to align clusters with classes, so the diagonal shows $100$, $95$ and $99$ matching points. Class $1$ has four points assigned to cluster $0$ and one to cluster $2$. Without that alignment, large off-diagonal counts would not necessarily indicate mistakes.
+\metriccaption{Figure. Contingency Matrix.}{This example has three classes of $100$ points each. The columns have been reordered to align clusters with classes, so the diagonal shows $100$, $95$ and $99$ matching points. Class $1$ has four points assigned to cluster $0$ and one to cluster $2$. Without that alignment, large off-diagonal counts would not necessarily indicate mistakes.}
 
 \orangebox{Did you know that...}
 {The external scores covered here can all be calculated from this table. Its cells preserve which classes and clusters overlap, while the margins give their sizes. Pair-counting metrics summarize which points stay together; information-based metrics summarize how much one labeling tells us about the other. The same table therefore supports several different questions.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ table by counting \emph{pairs} of points instead of individual points, which is what powers the pair-counting family (RI, ARI, FMI). When $k \neq C$, the Pair Confusion Matrix still works, but the class-vs-cluster diagnostic detail is gone --- you trade granularity for a tidy summary.
 
 % ---------- pair confusion matrix ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Pair Confusion Matrix}\label{sec:pair-confusion-matrix}
-\subsection{Pair Confusion Matrix}
+\metricentry{Pair Confusion Matrix}{Pair Confusion Matrix}\label{sec:pair-confusion-matrix}
 
 The Pair Confusion Matrix is a $2 \times 2$ table that summarizes, for every pair of points, whether two clusterings agree on keeping the pair together or separating it. It collapses arbitrary clusterings (any $k$, any $C$) into the same four-entry summary, which is the structure that powers RI, ARI, and the Fowlkes-Mallows Index.
 
@@ -274,7 +269,7 @@ The Pair Confusion Matrix is a $2 \times 2$ table that summarizes, for every pai
 
 $C_{00}$ counts pairs both clusterings separated, $C_{11}$ counts pairs both kept together, and $C_{01}, C_{10}$ are the two kinds of disagreement. The four entries together cover every pair, so the matrix is a complete partition of the pairwise decisions.
 
-\textbf{When to use Pair Confusion Matrix?}
+\metricheading{When to use}
 
 Use the matrix to distinguish splitting from merging. A large $C_{10}$ counts same-class pairs placed apart; a large $C_{01}$ counts different-class pairs placed together. There are $N(N-1)/2$ unordered pairs, but implementations can calculate the totals from contingency counts without examining every pair.
 
@@ -291,31 +286,30 @@ Use the matrix to distinguish splitting from merging. A large $C_{10}$ counts sa
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.45\textwidth]{figures/Pair_Confusion_Matrix.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Pair_Confusion_Matrix.png}
+\end{metricfigure}
 
-\textbf{Figure. Pair Confusion Matrix.} This $300$-point example uses scikit-learn's ordered-pair convention: both $(a,b)$ and $(b,a)$ count, but self-pairs do not. The entries total $300 \times 299 = 89{,}700$, twice the unordered count. Only about $1{,}200$ pairs disagree in each direction, giving $RI \approx 0.974$ and $ARI \approx 0.941$. This is strong agreement, even after chance correction.
+\metriccaption{Figure. Pair Confusion Matrix.}{This $300$-point example uses scikit-learn's ordered-pair convention: both $(a,b)$ and $(b,a)$ count, but self-pairs do not. The entries total $300 \times 299 = 89{,}700$, twice the unordered count. Only about $1{,}200$ pairs disagree in each direction, giving $RI \approx 0.974$ and $ARI \approx 0.941$. This is strong agreement, even after chance correction.}
 
 The larger ``both apart'' count reflects the number of different-class pairs, but the small off-diagonal counts show that this grouping also preserves most within-class pairs. Dividing every entry by two would use unordered pairs instead and leave RI, ARI and FMI unchanged.
 
 \orangebox{Did you know that...}
 {This matrix is the source for every pair-counting metric. $RI$ is the fraction of pairs on the diagonal; ARI rescales the same quantity for chance; the Fowlkes-Mallows Index takes a geometric mean of pairwise precision and recall computed from the same four entries; the Jaccard variant drops $C_{00}$ to avoid inflation from the typically dominant ``both apart'' count.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 FMI gives a symmetric summary of pairwise precision and recall. If merging and splitting have different consequences, keep those two rates or the off-diagonal counts separate. Use the Contingency Matrix to identify which classes are affected.
 
 % ---------- Completeness Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Completeness Score}\label{sec:completeness-score}
-\subsection{Completeness Score}
+\metricentry{Completeness Score}{Completeness Score}\label{sec:completeness-score}
 
 The Completeness Score measures whether members of each reference class stay together in one cluster. It does not require that cluster to contain only that class. Putting every point into one large cluster therefore gives completeness $1$, even though the classes are mixed. Homogeneity checks that other part of the result.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -324,19 +318,19 @@ The Completeness Score measures whether members of each reference class stay tog
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.25cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.78,-0.06)$) to[bend right=15] node[pos=1, left] {cond. entropy of clusters} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.27,0.04)$) to[bend left=15] node[pos=1, left] {entropy of clusters} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.78,-0.06)$) to[bend right=15] node[pos=1, left] {cond. entropy of clusters} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.27,0.04)$) to[bend left=15] node[pos=1, left] {entropy of clusters} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Let $C$ be the reference class and $K$ the assigned cluster. $H(K)$ is uncertainty about the cluster before we know the class; $H(K \mid C)$ is what remains afterward. Their ratio compares remaining uncertainty with its starting level. Completeness is $1$ when no class is split and $0$ when the class gives no information about the cluster. With only one cluster, both entropies are zero; completeness is defined as $1$.
 
-\textbf{When to use Completeness Score?}
+\metricheading{When to use}
 
 When the task requires that all members of a class stay together: topic modeling where one topic shouldn't be split, customer cohort discovery where a cohort shouldn't fragment. Always pair with Homogeneity (or use V-Measure); Completeness alone is gameable by merging everything.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Diagnoses class fragmentation directly. If Completeness drops while Homogeneity stays high, the algorithm is over-clustering --- splitting real classes into too many pieces.
     \item Clean interpretation in $[0, 1]$: $1$ means every class lives in one cluster, $0$ means class membership conveys nothing about cluster assignment.
@@ -350,29 +344,28 @@ When the task requires that all members of a class stay together: topic modeling
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Completeness_Score_tradeoff.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Completeness Score.} Three clusterings of the same $3$-class data. With $k=3$, both scores hit $1$. Collapsing into one big cluster keeps Completeness at $1$ (every class is fully contained somewhere) but sends Homogeneity to $0$ --- the inflation that makes Completeness misleading on its own. Over-splitting into $k=9$ does the opposite: every cluster is pure, but each class spreads across multiple clusters and Completeness falls to $0.50$.
+\metriccaption{Figure. Completeness Score.}{Three clusterings of the same $3$-class data. With $k=3$, both scores hit $1$. Collapsing into one big cluster keeps Completeness at $1$ (every class is fully contained somewhere) but sends Homogeneity to $0$ --- the inflation that makes Completeness misleading on its own. Over-splitting into $k=9$ does the opposite: every cluster is pure, but each class spreads across multiple clusters and Completeness falls to $0.50$.}
 
 \orangebox{Did you know that...}
 {Completeness and Homogeneity are the same formula with the arguments swapped: $\text{Homogeneity} = 1 - H(C \mid K)/H(C)$ and $\text{Completeness} = 1 - H(K \mid C)/H(K)$. So Completeness on (true, predicted) equals Homogeneity on (predicted, true). This is why V-Measure --- the harmonic mean of the two --- is symmetric in its arguments when $\beta=1$, giving the two components equal weight.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Completeness and Homogeneity always need to be read together; one without the other is incomplete. If Completeness is high and Homogeneity is low, you're over-merging; the opposite signals over-splitting. V-Measure gives the harmonic-mean summary, and AMI provides the chance-corrected version of the same intuition.
 
 % ---------- Homogeneity Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Homogeneity Score}\label{sec:homogeneity-score}
-\subsection{Homogeneity Score}
+\metricentry{Homogeneity Score}{Homogeneity Score}\label{sec:homogeneity-score}
 
 The Homogeneity Score measures whether each cluster contains points from only one reference class. A pure cluster has no class mixing, but purity alone does not tell us whether a class was split. Giving every point its own cluster produces homogeneity $1$, which is why it helps to read this score alongside completeness.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -381,18 +374,18 @@ The Homogeneity Score measures whether each cluster contains points from only on
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.63,-0.04)$) to[bend right=15] node[pos=1, left] {cond. entropy of classes} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.18,0.04)$) to[bend left=15] node[pos=1, left] {entropy of classes} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.63,-0.04)$) to[bend right=15] node[pos=1, left] {cond. entropy of classes} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.18,0.04)$) to[bend left=15] node[pos=1, left] {entropy of classes} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Here $H(C)$ is class uncertainty before we know the cluster. $H(C \mid K)$ is the uncertainty left within clusters, weighted by their sizes. In the next page's mixed example, about $0.37$ nats remain from $1.10$, giving homogeneity about $0.66$. The score ranges from $0$ to $1$, with $1$ for pure clusters. If there is only one reference class, $H(C)=0$ and homogeneity is defined as $1$.
 
-\textbf{When to use Homogeneity Score?}
+\metricheading{When to use}
 
 When the task requires each cluster to be class-pure: customer segmentation where one segment shouldn't mix profiles, document clustering where one cluster shouldn't span topics. Always pair with Completeness (or use V-Measure); Homogeneity alone is gameable by over-splitting --- in the limit, $k = n$ gives Homogeneity $= 1$ trivially.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Surfaces over-merging directly. If Homogeneity drops while Completeness stays high, the algorithm has merged distinct classes into the same cluster --- the exact failure mode the score is designed to detect.
     \item Clean $[0, 1]$ interpretation: $1$ means every cluster holds a single class, $0$ means clusters mirror the class distribution and say nothing.
@@ -407,32 +400,31 @@ When the task requires each cluster to be class-pure: customer segmentation wher
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Homogeneity_cluster_composition.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Homogeneity Score.} The class composition of every cluster for three clusterings, with each cluster's class entropy
+\metriccaption{Figure. Homogeneity Score.}{The class composition of every cluster for three clusterings, with each cluster's class entropy
 $H$ above it. Homogeneity is $1 - H(\text{class} \mid \text{cluster}) / H(\text{class})$. Pure clusters have zero entropy and score $1$;
 overlapping clusters mix classes and score $0.66$; one cluster holding everything keeps the full class entropy inside it and scores $0$,
-the failure Completeness alone would never report.
+the failure Completeness alone would never report.}
 
 \orangebox{Did you know that...}
 {Giving every point its own cluster guarantees homogeneity $1$, but does not guarantee low completeness or V-Measure. For $100$ points in $50$ two-point classes, singleton clusters have completeness about $0.85$ and V-Measure about $0.92$. Combining purity and class preservation is useful, but it does not remove chance effects or always give over-splitting a low score.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Homogeneity and Completeness mirror each other: if Homogeneity is high but Completeness is low, the algorithm is over-splitting; the opposite signals over-merging. V-Measure summarizes the pair as a harmonic mean; AMI provides the chance-corrected information-theoretic version of the same intuition.
 
 % ---------- V Measure ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{V-Measure}\label{sec:v-measure}
-\subsection{V-Measure}
+\metricentry{V-Measure}{V-Measure}\label{sec:v-measure}
 
 V-Measure combines cluster purity and class preservation in one score. With equal weight, it is the harmonic mean of homogeneity and completeness, so it is pulled toward the weaker component. Homogeneity $1$ and completeness $0.5$, for example, give $V \approx 0.67$ rather than their arithmetic mean of $0.75$.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -441,20 +433,20 @@ V-Measure combines cluster purity and class preservation in one score. With equa
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.24cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.18,-0.06)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.79,-0.19)$) to[bend left=15] node[pos=1, right] {completeness} +(1.00,0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.16,0.06)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.18,-0.06)$) to[bend right=15] node[pos=1, left] {homogeneity} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.79,-0.19)$) to[bend left=15] node[pos=1, right] {completeness} +(1.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.16,0.06)$) to[bend left=15] node[pos=1, left] {weighting parameter} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 At $\beta = 1$, $V = 2hc/(h+c)$ gives both components equal weight. For positive $\beta$, values above $1$ emphasize completeness and values below $1$ emphasize homogeneity. The score ranges from $0$ to $1$; reaching $1$ requires both components to equal $1$. If both are zero, V-Measure is defined as zero.
 
-\textbf{When to use V-Measure?}
+\metricheading{When to use}
 
 Use V-Measure when both pure clusters and intact reference classes matter. Choose and report the same positive $\beta$ when comparing models: $\beta=0.5$, for example, would give purity more weight. Also consider AMI when agreement by chance matters; V-Measure itself is not chance-adjusted.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Combines two complementary criteria. A weak component lowers the score, though over-splitting can still receive a high value.
     \item Tunable via $\beta$: when the application explicitly weights purity over class preservation (or vice versa), V-Measure adjusts continuously, no need to swap metrics.
@@ -468,29 +460,28 @@ Use V-Measure when both pure clusters and intact reference classes matter. Choos
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/V_Measure_plane.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/V_Measure_plane.png}
+\end{metricfigure}
 
-\textbf{Figure. V-Measure.} The curves join equal values of V-Measure at $\beta=1$. In this three-class example, six pure clusters give $h=1$, $c=0.62$ and $V=0.76$. Merging everything gives $c=1$ but $h=0$, so $V=0$. The combined score reflects both purity and class preservation; these outcomes depend on the reference classes and how they are split or merged.
+\metriccaption{Figure. V-Measure.}{The curves join equal values of V-Measure at $\beta=1$. In this three-class example, six pure clusters give $h=1$, $c=0.62$ and $V=0.76$. Merging everything gives $c=1$ but $h=0$, so $V=0$. The combined score reflects both purity and class preservation; these outcomes depend on the reference classes and how they are split or merged.}
 
 \orangebox{Did you know that...}
 {At $\beta = 1$, V-Measure on (true, predicted) equals V-Measure on (predicted, true) --- it is symmetric in its arguments, because Completeness on (true, predicted) equals Homogeneity on (predicted, true) and the harmonic mean is symmetric in $h$ and $c$. So the same metric works for evaluating against ground truth and for comparing two clusterings to each other --- no need to designate one as the reference.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 At $\beta=1$, V-Measure equals NMI using the arithmetic mean of the label entropies. AMI adds chance correction; ARI uses pairwise agreement with its own chance baseline. Differences between these scores can reflect their weighting as well as chance agreement. Inspect the contingency table before attributing them to a particular kind of split or merge.
 
 % ---------- Davis Bouldin Index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Davies-Bouldin Index}\label{sec:davies-bouldin-index}
-\subsection{Davies-Bouldin Index}
+\metricentry{Davies-Bouldin Index}{Davies-Bouldin Index}\label{sec:davies-bouldin-index}
 
 The Davies-Bouldin (DB) Index compares the spread inside clusters with the distance between their centers. For each pair, it divides their combined spread by the distance between their centers. It keeps the largest ratio for each cluster, then averages those values across clusters. Lower scores favor compact, well-separated groups.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
     {
@@ -500,19 +491,19 @@ The Davies-Bouldin (DB) Index compares the spread inside clusters with the dista
     $
     }
     };
-    \path[room for labels] ([yshift=0.13cm]a.north) ([yshift=-0.21cm]a.south);
-    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.14,-0.46)$) to[bend right=15] node[pos=1, left] {within-cluster spread} +(-1.00,0.58);
-    \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.04,0.55)$) to[bend left=15] node[pos=1, left] {centroid distance} +(-1.00,-0.80);
+
+    \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.14,-0.46)$) to[bend right=15] node[pos=1, left] {within-cluster spread} +(-1.00,0.58);
+    \draw[-latex,nmlcyan, semithick] ($(a.south)+(2.04,0.55)$) to[bend left=15] node[pos=1, left] {centroid distance} +(-1.00,-0.80);
     }
-\end{center}
+\end{metricformula}
 
 Here $s_i$ is the average distance from points in cluster $i$ to its center, $d_{ij}$ is the distance between two centers, and $k$ is the number of clusters. If two clusters each have spread $1$ and their centers are $4$ apart, their ratio is $(1+1)/4=0.5$. DB averages the largest ratio for each cluster, giving a nonnegative score.
 
-\textbf{When to use Davies-Bouldin Index?}
+\metricheading{When to use}
 
 Use DB to compare clusterings with compact groups around centers, such as k-means results with different cluster counts. Evaluate them on the same observations and features. The lowest score identifies the grouping DB favors among those tested.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
     \item Fast when there are relatively few clusters: it uses point-to-center and center-to-center distances, not all point pairs.
     \item Checks each cluster against the one with the largest ratio of combined spread to separation, so a poorly separated pair can raise the overall score.
@@ -525,29 +516,28 @@ Use DB to compare clusterings with compact groups around centers, such as k-mean
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.75\textwidth]{figures/Davies_Bouldin_elbow.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Davies_Bouldin_elbow.png}
+\end{metricfigure}
 
-\textbf{Figure. Davies-Bouldin Index.} K-means fits to the same simulated four-group dataset give a minimum DB of about $0.24$ at $k=4$. Smaller or larger cluster counts score worse in this example. The minimum agrees with the generating setup, but $0.24$ is not a universal threshold for a good clustering.
+\metriccaption{Figure. Davies-Bouldin Index.}{K-means fits to the same simulated four-group dataset give a minimum DB of about $0.24$ at $k=4$. Smaller or larger cluster counts score worse in this example. The minimum agrees with the generating setup, but $0.24$ is not a universal threshold for a good clustering.}
 
 \orangebox{Did you know that...}
 {DB gives each cluster one contribution to the average, regardless of its size. The mean silhouette instead gives each point one contribution, so larger clusters contribute more points. CH pools squared distances. These different ways of summarizing a grouping help explain why the indices need not favor the same result.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CH adds up squared distances across the data, while DB gives each cluster equal weight in its average. Silhouette instead evaluates each point against its own cluster and the nearest alternative. Its plot can help locate points that fit poorly, even when the overall clustering score looks good.
 
 % ---------- Fowlkes-Mallows Index ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{FMI}\label{sec:fmi}
-\subsection{Fowlkes-Mallows Index}
+\metricentry{FMI}{Fowlkes-Mallows Index (FMI)}\label{sec:fmi}
 
 The Fowlkes-Mallows Index (FMI) combines pairwise precision and recall. Precision asks what fraction of pairs placed together belong to the same reference class; recall asks what fraction of same-class pairs remain together. FMI takes the square root of their product, giving a geometric mean that falls when either component is weak.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -556,22 +546,22 @@ The Fowlkes-Mallows Index (FMI) combines pairwise precision and recall. Precisio
                 $
             }
         };
-        \path[room for labels] ([yshift=0.21cm]a.north) ([yshift=-0.18cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.16,-0.16)$) to[bend right=15] node[pos=1, left] {correctly paired} +(-1.00,0.36);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.53,0.10)$) to[bend left=15] node[pos=1, left] {incorrectly paired} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.16,-0.16)$) to[bend right=15] node[pos=1, left] {correctly paired} +(-1.00,0.36);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.53,0.10)$) to[bend left=15] node[pos=1, left] {incorrectly paired} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 FMI lies between its precision and recall inputs, within $[0,1]$. It is not chance-adjusted: two independent, roughly balanced groupings with $k$ groups each have FMI near $1/k$. If either grouping contains only singletons, there are no together-pairs for one denominator; scikit-learn returns zero, even when both singleton groupings match.
 
-\textbf{When to use FMI?}
+\metricheading{When to use}
 
-When you want a balanced pair-counting score and chance correction is not essential. Useful for hierarchical clustering evaluation where partial structure matters. Avoid FMI alone for chance-sensitive comparisons; use ARI as the chance-corrected pair-counting alternative.
+Use FMI for balanced pair-counting comparisons, including hierarchical clustering, when partial structure matters and chance correction is not essential. Use ARI when chance correction matters.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
-    \item Geometric mean penalizes imbalance. Pair-wise precision $= 0.9$ and recall $= 0.5$ gives FMI $= 0.67$, not the arithmetic mean $0.7$ --- one-sided clusterings cannot hide behind a strong precision or recall alone.
-    \item Bounded in $[0, 1]$ with a clear interpretation: $1$ means every pair agreement is exact, $0$ means no pair that one clustering grouped together was also grouped by the other.
+    \item Penalizes imbalance: pairwise precision $0.9$ and recall $0.5$ give FMI $0.67$, below their arithmetic mean $0.7$. A strong component cannot hide a weak one.
+    \item Bounded in $[0, 1]$: $1$ means exact pair agreement; $0$ means no pair grouped together in one clustering is also grouped in the other.
 }
 {
     \item Not chance-adjusted. Random clusterings can produce non-trivial FMI values; use ARI when chance correction matters.
@@ -583,17 +573,17 @@ When you want a balanced pair-counting score and chance correction is not essent
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/FMI_plane.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/FMI_plane.png}
+\end{metricfigure}
 
-\textbf{Figure. FMI.} The examples use $300$ points in three equal reference classes; the curves join equal FMI values. Splitting each class into roughly two pure groups preserves precision at $1$ but loses about half the together-pairs, giving FMI about $0.71$. One cluster recovers every reference pair but also merges all three classes: recall is $1$, precision about $0.33$ and FMI about $0.58$. ARI scores that one-cluster result zero.
+\metriccaption{Figure. FMI.}{The examples use $300$ points in three equal reference classes; the curves join equal FMI values. Splitting each class into roughly two pure groups preserves precision at $1$ but loses about half the together-pairs, giving FMI about $0.71$. One cluster recovers every reference pair but also merges all three classes: recall is $1$, precision about $0.33$ and FMI about $0.58$. ARI scores that one-cluster result zero.}
 
 \orangebox{Did you know that...}
 {Fowlkes and Mallows introduced their index in 1983 to compare hierarchical clusterings at successive cuts. For the same pairwise precision and recall, their geometric mean is at least as large as the harmonic mean used by pairwise F1, and no larger than the arithmetic mean. All three coincide when precision and recall match.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 ARI adjusts pairwise agreement for chance, whereas FMI combines pairwise precision and recall without that adjustment. A positive ARI indicates agreement above its baseline, even if numerically lower than FMI. An ARI near zero, as in the one-cluster example, indicates agreement close to that baseline. The Contingency Matrix shows which groups are responsible for the agreement or disagreement.
 
@@ -601,12 +591,11 @@ ARI adjusts pairwise agreement for chance, whereas FMI combines pairwise precisi
 % ---------- Silhouette Score ----------
 \clearpage
 \thispagestyle{clusteringstyle}
-\section{Silhouette Score}\label{sec:silhouette-score}
-\subsection{Silhouette Score}
+\metricentry{Silhouette Score}{Silhouette Score}\label{sec:silhouette-score}
 
 The Silhouette Score measures how well each point fits its assigned cluster compared with an alternative cluster. It compares average distances, then averages the resulting scores across points. A high value means points are closer to their own groups under the chosen distance. Low or negative values suggest assignments worth inspecting, rather than proving that they are wrong.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -619,19 +608,19 @@ s(i) =
 $
 }
 };
-\path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.00cm]a.south);
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.19,-0.03)$) to[bend right=15] node[pos=1, left] {separation} +(-1.00,0.30);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.04)$) to[bend left=15] node[pos=1, right] {cohesion} +(1.00,0.30);
+
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(-1.19,-0.03)$) to[bend right=15] node[pos=1, left] {separation} +(-1.00,0.30);
+\draw[-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.04)$) to[bend left=15] node[pos=1, right] {cohesion} +(1.00,0.30);
 }
-\end{center}
+\end{metricformula}
 
 For point $i$, $a(i)$ averages distances to the other points in its cluster. To get $b(i)$, average its distances to each other cluster separately and take the smallest average. If $a(i)=2$ and $b(i)=6$, its silhouette is $(6-2)/6 \approx 0.67$. Here $|C_I|$ is the size of its assigned cluster; a singleton receives zero.
 
-\textbf{When to use Silhouette Score?}
+\metricheading{When to use}
 
 Use silhouette for point-level diagnostics with a distance appropriate to the task. Scores range from $-1$ to $1$: near zero, the two average distances are similar; below zero, another cluster is closer on average. It can compare candidate groupings without labels, but is not a general solution for curved or density-based clusters.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
     \item Per-point detail. A silhouette plot shows which points and clusters deserve closer inspection.
     \item Supports suitable pairwise dissimilarities, including cosine and edit distance, without requiring cluster centers.
@@ -644,16 +633,16 @@ Use silhouette for point-level diagnostics with a distance appropriate to the ta
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Silhouette_Score_comparison.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Silhouette Score.} Two simulated datasets illustrate the silhouette plot. Each bar is one point's score, sorted within its cluster. The left example has mean $S=0.88$; the right has mean $S=0.63$. Shorter bars toward zero indicate similar average distances to the point's own cluster and the nearest alternative. The dashed line gives the overall mean, while the cluster shapes show variation that it hides.
+\metriccaption{Figure. Silhouette Score.}{Two simulated datasets illustrate the silhouette plot. Each bar is one point's score, sorted within its cluster. The left example has mean $S=0.88$; the right has mean $S=0.63$. Shorter bars toward zero indicate similar average distances to the point's own cluster and the nearest alternative. The dashed line gives the overall mean, while the cluster shapes show variation that it hides.}
 
 \orangebox{Did you know that...}
 {Peter Rousseeuw introduced silhouettes in 1987 as both a numerical and a graphical way to assess clustering. The plot lets us see whether low values occur in one group or throughout the data. That can guide inspection of the assignments, features and distance; the average alone cannot identify which of those choices needs attention.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CH and Davies-Bouldin are faster options when distances to Euclidean centers suit the task. Silhouette allows other dissimilarities and shows individual point scores, but it can favor compact, separated groups too. The methods need not choose the same cluster count; compare what each one measures with the structure you want to recover.

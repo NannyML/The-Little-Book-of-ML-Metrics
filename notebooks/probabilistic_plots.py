@@ -1,10 +1,16 @@
 """Generate figures for the Probabilistic chapter (ECE, CBPE, PAPE, DLE, RCD).
 
-Every number printed in a figure is computed by running the estimation
-procedure exactly as described in the NannyML documentation on a seeded
-synthetic dataset: a reference period with labels, then production chunks
-whose inputs drift (covariate shift) and, in the last chunks, whose
-input-label relationship changes (concept drift).  Nothing is typed in by hand.
+Seeded educational implementations of the documented estimation principles,
+not executions or parity tests of the NannyML package. The monitored model is
+trained on data independent of reference data; unseen production labels are
+used only to evaluate estimates. ECE also separates calibration from evaluation.
+
+Intentional simplifications: isotonic calibration is always fitted; PAPE uses
+a scikit-learn domain classifier; DLE uses a linear loss predictor clipped at
+zero; RCD uses polynomial logistic regression. CBPE's shaded band illustrates
+reference variation, not a validated interval or an alert threshold. All
+plotted values and captions are derived from the seeded experiments. See
+verify_probabilistic_plots.py and design/probabilistic-verification/ for checks.
 
 Run from notebooks/:  uv run python probabilistic_plots.py
 """
@@ -14,11 +20,11 @@ sys.path.insert(0, '.')
 import matplotlib
 matplotlib.use('Agg')
 from style import *
-from scipy.special import expit, logit
+from scipy.special import expit
 from scipy.optimize import minimize_scalar
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.isotonic import IsotonicRegression
-from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import roc_auc_score
 
 GREY = '#c9c9c9'
@@ -40,7 +46,7 @@ def despine(ax, keep=('left', 'bottom')):
 
 
 # ---------------------------------------------------------------------------
-# Estimators, written the way the documentation describes them
+# Educational estimators: documented core equations, explicit simplifications
 # ---------------------------------------------------------------------------
 def ece_score(conf, correct, n_bins=10, lo=0.5):
     """Top-label ECE: equal-width bins on confidence in [lo, 1]."""
@@ -78,14 +84,9 @@ def fit_calibrator(scores, y, weights=None):
     return iso
 
 
-def density_ratio_weights(X_ref, X_prod):
-    """PAPE step 1-3: classifier reference (z=0) vs production (z=1) -> weights on reference."""
-    X = np.concatenate([X_ref, X_prod])
-    z = np.r_[np.zeros(len(X_ref)), np.ones(len(X_prod))]
-    Xf = np.column_stack([X, X ** 2])          # let the classifier see a quadratic in x
-    dre = LogisticRegression(C=10.0, max_iter=1000).fit(Xf, z)
-    p = np.clip(dre.predict_proba(np.column_stack([X_ref, X_ref ** 2]))[:, 1], 1e-4, 1 - 1e-4)
-    return (len(X_ref) / len(X_prod)) * p / (1 - p)
+def nonnegative_loss(model, x, predictions):
+    """Use the same nonnegative loss prediction for chart envelopes and MAE."""
+    return np.maximum(0.0, model.predict(np.column_stack([x, predictions])))
 
 
 # ===========================================================================
@@ -113,7 +114,7 @@ def fig_ece():
 
     T = minimize_scalar(nll, bounds=(0.2, 10), method='bounded').x
     panels = []
-    for name, zz in [('over-confident model', z_over[ev]), (f'after temperature scaling (T = {T:.1f})', z_over[ev] / T)]:
+    for name, zz in [('Before scaling', z_over[ev]), (f'After scaling: T = {T:.1f}', z_over[ev] / T)]:
         p = expit(zz)
         conf = np.maximum(p, 1 - p)
         correct = ((p >= 0.5).astype(int) == y_te[ev]).astype(float)
@@ -121,7 +122,7 @@ def fig_ece():
         panels.append((name, ece, rows))
     auc = roc_auc_score(y_te[ev], z_over[ev])
 
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.4), gridspec_kw={'wspace': 0.18})
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'wspace': 0.18})
     for ax, (name, ece, rows) in zip(axes, panels):
         ax.plot([0.5, 1], [0.5, 1], color=GREY_LINE, lw=1.2, ls=(0, (4, 3)), zorder=1)
         for lo, hi, share, acc, cf in rows:
@@ -131,28 +132,25 @@ def fig_ece():
             # bar: observed accuracy; width by bin edges, opacity by share, gap shaded in red
             ax.bar((lo + hi) / 2, acc, width=w, color=start_color, alpha=0.25 + 0.75 * min(share / 0.25, 1), zorder=3)
             ax.plot([cf, cf], [min(acc, cf), max(acc, cf)], color=end_color, lw=3.2, solid_capstyle='round', zorder=4)
-            ax.text((lo + hi) / 2, 0.51, f'{100 * share:.0f}%', ha='center', va='bottom', fontsize=9.5, color='white'
-                    if share > 0.06 else MID, zorder=5)
+            ax.text((lo + hi) / 2, 0.025, f'{100 * share:.0f}', ha='center', va='bottom', fontsize=11, color=DARK, zorder=5)
         ax.set_xlim(0.5, 1.0)
-        ax.set_ylim(0.5, 1.0)
+        ax.set_ylim(0, 1.02)
         ax.set_xticks([0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-        ax.set_yticks([0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-        ax.tick_params(labelsize=11.5)
-        ax.set_xlabel('confidence (predicted probability of the chosen class)', fontsize=12)
+        ax.set_yticks([0, 0.5, 1.0])
+        ax.tick_params(labelsize=11)
+        ax.set_xlabel('Confidence bin', fontsize=11)
         despine(ax)
-        ax.set_title(f'ECE = {ece:.3f}', fontsize=16, pad=26, color=DARK)
-        ax.text(0.5, 1.03, name, ha='center', va='bottom', fontsize=12.5, color=MID, transform=ax.transAxes)
-    axes[0].set_ylabel('observed accuracy in the bin', fontsize=12)
-    axes[0].text(0.52, 0.94, 'red bar = gap |acc − conf|\nbar shade = share of predictions', ha='left', va='top', fontsize=11,
-                 color=DARK, linespacing=1.4)
-    axes[1].text(0.52, 0.94, f'same ranking: ROC AUC = {auc:.3f}\nbefore and after', ha='left', va='top', fontsize=11,
-                 color=DARK, linespacing=1.4)
-    fig.subplots_adjust(left=0.07, right=0.98, top=0.85, bottom=0.13)
+        ax.set_title(f'ECE = {ece:.3f}', fontsize=12, pad=22, color=DARK)
+        ax.text(0.5, 1.02, name, ha='center', va='bottom', fontsize=11, color=MID, transform=ax.transAxes)
+    axes[0].set_ylabel('Observed accuracy', fontsize=11)
+    # Counts and gap meanings belong in the shared caption, not over the data.
+    fig.subplots_adjust(left=0.09, right=0.98, top=0.80, bottom=0.17, wspace=0.28)
     save_figure(fig, 'ECE_reliability')
     plt.close()
     top = panels[0][2][-1]
     print(f'1. ECE: over-confident {panels[0][1]:.3f} -> temperature {T:.2f} gives {panels[1][1]:.3f}; AUC {auc:.3f}; '
           f'top bin share {top[2]:.3f} acc {top[3]:.3f} conf {top[4]:.3f}')
+    return locals()
 
 
 # ===========================================================================
@@ -167,24 +165,26 @@ def true_prob(x, concept=0.0):
     return expit(base - concept * 3.0)
 
 
-def sample_world(n, centre, spread, concept=0.0):
-    x = RNG.normal(centre, spread, n)
-    y = (RNG.random(n) < true_prob(x, concept)).astype(int)
+def sample_world(n, centre, spread, concept=0.0, rng=None):
+    rng = RNG if rng is None else rng
+    x = rng.normal(centre, spread, n)
+    y = (rng.random(n) < true_prob(x, concept)).astype(int)
     return x, y
 
 
 def fig_cbpe():
     fresh(2)
-    # reference period: 20,000 labeled rows = ten chunks of 2,000
+    # Independent child training; reference labels fit the calibrator only.
+    x_train, y_train = sample_world(20000, 0.0, 1.0, rng=np.random.default_rng(2002))
     x_ref, y_ref = sample_world(20000, 0.0, 1.0)
-    model = LogisticRegression().fit(x_ref[:, None], y_ref)
+    model = LogisticRegression().fit(x_train[:, None], y_train)
     s_ref = model.predict_proba(x_ref[:, None])[:, 1]
     cal = fit_calibrator(s_ref, y_ref)
     thr = 0.5
-    # NannyML-style band: ±3 std of the realized accuracy across reference chunks
+    # Illustrative reference variation only: neither uncertainty nor alert limits
     ref_chunk_acc = [((s_ref[i:i + 2000] >= thr).astype(int) == y_ref[i:i + 2000]).mean() for i in range(0, 20000, 2000)]
     band = 3 * np.std(ref_chunk_acc, ddof=1)
-    # production: 12 chunks; chunks 1-7 drift toward the boundary (harder inputs),
+    # production: 12 chunks; chunks 1-7 shift away from the boundary (easier inputs),
     # chunks 8-12 add concept drift on top
     chunks = []
     centres = np.linspace(0.0, 0.9, 7).tolist() + [0.9] * 5
@@ -200,38 +200,38 @@ def fig_cbpe():
     est = np.array([c[1] for c in chunks])
     ref_acc = ((s_ref >= thr).astype(int) == y_ref).mean()
 
-    # mechanism panel: 12 production predictions from a chunk like chunk 4
-    # (one draw; re-drawn until the realized accuracy sits within 0.06 of the expectation,
-    #  so the panel shows the typical case rather than a sampling-noise outlier)
-    for _ in range(200):
-        x, y = sample_world(12, 0.5, 0.6)
-        s = model.predict_proba(x[:, None])[:, 1]
-        c = cal.predict(s)
-        yhat = (s >= thr).astype(int)
-        p_correct = np.where(yhat == 1, c, 1 - c)
-        if abs(p_correct.mean() - (yhat == y).mean()) < 0.06 and (yhat == 0).sum() >= 2:
-            break
+    # First draw from a fixed independent stream. Never condition on its outcomes.
+    x, y = sample_world(12, 0.5, 0.6, rng=np.random.default_rng(2004))
+    s = model.predict_proba(x[:, None])[:, 1]
+    c = cal.predict(s)
+    yhat = (s >= thr).astype(int)
+    p_correct = np.where(yhat == 1, c, 1 - c)
+    x_val, y_val = sample_world(5000, 0.0, 1.0, rng=np.random.default_rng(2003))
+    s_val = model.predict_proba(x_val[:, None])[:, 1]
+    validation = dict(realized=float(np.mean((s_val >= thr) == y_val)),
+                      estimated=float(cbpe_accuracy(cal.predict(s_val), s_val >= thr)))
     order = np.argsort(-c)
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.6), gridspec_kw={'width_ratios': [0.9, 1.25], 'wspace': 0.28})
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 4.0), gridspec_kw={'width_ratios': [0.9, 1.25], 'wspace': 0.28})
     ys = np.arange(len(order))[::-1]
     for row, j in zip(ys, order):
         axL.barh(row, p_correct[j], color=start_color, height=0.62, zorder=3)
         axL.barh(row, 1 - p_correct[j], left=p_correct[j], color=GREY, height=0.62, zorder=3)
-        axL.text(-0.03, row, f'ŷ = {yhat[j]}   c = {c[j]:.2f}', ha='right', va='center', fontsize=11, color=DARK)
+        axL.text(-0.03, row, f'{yhat[j]} · {c[j]:.2f}', ha='right', va='center', fontsize=11, color=DARK)
         mark = '✓' if yhat[j] == y[j] else '✗'
-        axL.text(1.04, row, mark, ha='left', va='center', fontsize=12.5, color=start_color if mark == '✓' else end_color)
+        axL.text(1.04, row, mark, ha='left', va='center', fontsize=11, color=start_color if mark == '✓' else end_color)
     axL.set_xlim(0, 1.0)
-    axL.set_ylim(-1.9, len(order) - 0.3)
+    axL.set_ylim(-2.6, len(order) - 0.3)
     axL.set_xticks([0, 0.5, 1])
     axL.tick_params(axis='x', labelsize=11)
     axL.set_yticks([])
     despine(axL, keep=('bottom',))
-    axL.set_xlabel('probability the prediction is right', fontsize=12)
-    axL.text(0.5, len(order) + 0.15, 'twelve predictions, labels unknown', ha='center', va='bottom', fontsize=12.5, color=DARK)
-    axL.text(1.04, len(order) - 0.15, 'label\n(later)', ha='left', va='bottom', fontsize=9.5, color=MID)
-    axL.text(0.0, -1.0, f'expected accuracy = mean = {p_correct.mean():.2f}', ha='left', va='center', fontsize=12, color=start_color)
-    axL.text(0.0, -1.7, f'realized, once the labels arrive: {(yhat == y).mean():.2f}', ha='left', va='center', fontsize=12, color=MID)
+    axL.set_xlabel('Chance of being right', fontsize=11)
+    axL.text(0.5, len(order) + 0.4, 'Twelve predictions', ha='center', va='bottom', fontsize=11, color=DARK)
+    axL.text(-0.03, len(order)-0.25, 'ŷ · c', ha='right', va='bottom', fontsize=11, color=MID)
+    axL.text(1.04, len(order) - 0.15, 'Later', ha='left', va='bottom', fontsize=11, color=MID)
+    axL.text(0.0, -1.15, f'Expected: {p_correct.mean():.2f}', ha='left', va='center', fontsize=12, color=start_color)
+    axL.text(0.0, -1.95, f'Realized: {(yhat == y).mean():.2f}', ha='left', va='center', fontsize=12, color=MID)
 
     k = np.arange(1, len(chunks) + 1)
     axR.axvspan(7.5, 12.5, color=end_color, alpha=0.07, zorder=0)
@@ -239,33 +239,33 @@ def fig_cbpe():
     axR.plot(k, realized, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
     axR.plot(k, est, color=start_color, lw=3.2, marker='o', ms=6, solid_capstyle='round', zorder=4)
     axR.axhline(ref_acc, color=GREY_LINE, lw=1, ls=(0, (4, 3)), zorder=1)
-    axR.text(12.4, ref_acc + 0.006, f'reference accuracy {ref_acc:.2f}', fontsize=10.5, color=MID, va='bottom', ha='right')
-    axR.text(7.0, est[6] + 0.02, 'CBPE estimate ± 3σ of reference chunks', color=start_color, fontsize=12.5, ha='right', va='bottom')
-    axR.text(2.0, realized[1] - 0.03, 'realized accuracy', color=MID, fontsize=12.5, ha='left', va='top')
-    axR.text(4.0, min(realized[:7].min(), est.min()) - 0.045, 'covariate shift only:\nestimate tracks reality', ha='center',
+    axR.text(1.0, ref_acc + 0.006, f'Reference: {ref_acc:.2f}', fontsize=11, color=MID, va='bottom', ha='left')
+    axR.text(10.0, est[6] + 0.035, 'CBPE estimate', color=start_color, fontsize=11, ha='center', va='bottom')
+    axR.text(1.0, 0.87, 'Realized accuracy', color=MID, fontsize=11, ha='left', va='top')
+    axR.text(4.0, 0.56, 'Input mix\nchanges', ha='center',
              va='top', fontsize=11, color=DARK, linespacing=1.3)
-    axR.text(10.0, min(realized[:7].min(), est.min()) - 0.045, 'concept drift added:\nprobabilities do not move,\nreality does',
+    axR.text(10.0, 0.56, 'Concept drift\nadded',
              ha='center', va='top', fontsize=11, color=end_color, linespacing=1.3)
-    axR.set_xticks(k)
+    axR.set_xticks(k[::2])
     axR.set_xlim(0.5, 12.5)
     lo = min(realized.min(), est.min()) - 0.13
     axR.set_ylim(lo, max(realized.max(), est.max()) + 0.04)
     axR.tick_params(labelsize=11)
-    axR.set_xlabel('production chunk (2,000 predictions each)', fontsize=12)
-    axR.set_ylabel('accuracy', fontsize=12)
+    axR.set_xlabel('Production chunk', fontsize=11)
+    axR.set_title('Accuracy', fontsize=11, loc='left', pad=12)
     despine(axR)
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.93, bottom=0.12)
+    fig.subplots_adjust(left=0.13, right=0.98, top=0.87, bottom=0.19, wspace=0.48)
     save_figure(fig, 'CBPE_estimation')
     plt.close()
     print('2. CBPE: ref acc %.3f | band ±%.3f | chunks realized %s | est %s | left panel expected %.3f realized %.3f' %
           (ref_acc, band, np.round(realized, 3), np.round(est, 3), p_correct.mean(), (yhat == y).mean()))
-    return dict(model=model, cal=cal, x_ref=x_ref, y_ref=y_ref, s_ref=s_ref, thr=thr)
+    return locals()
 
 
 # ===========================================================================
 # 3. PAPE — density-ratio weights and the re-weighted calibrator
 # ===========================================================================
-def fig_pape(world=None):
+def fig_pape():
     fresh(3)
     """Two inputs; the true concept has an interaction the logistic model cannot
     represent, so the calibration of a given score depends on x2.  Production
@@ -273,13 +273,15 @@ def fig_pape(world=None):
     def true_logit(X):
         return 2.2 * X[:, 0] * (1 + 0.7 * X[:, 1])
 
-    def sample(n, c2):
-        X = np.column_stack([RNG.normal(0, 1, n), RNG.normal(c2, 0.5 if c2 else 1.0, n)])
-        y = (RNG.random(n) < expit(true_logit(X))).astype(int)
+    def sample(n, c2, rng=None):
+        rng = RNG if rng is None else rng
+        X = np.column_stack([rng.normal(0, 1, n), rng.normal(c2, 0.5 if c2 else 1.0, n)])
+        y = (rng.random(n) < expit(true_logit(X))).astype(int)
         return X, y
 
+    X_train, y_train = sample(8000, 0.0, rng=np.random.default_rng(3003))
     X_ref, y_ref = sample(8000, 0.0)
-    model = LogisticRegression().fit(X_ref, y_ref)
+    model = LogisticRegression().fit(X_train, y_train)
     s_ref = model.predict_proba(X_ref)[:, 1]
     cal = fit_calibrator(s_ref, y_ref)
     thr = 0.5
@@ -301,8 +303,18 @@ def fig_pape(world=None):
         est_pape = cbpe_accuracy(cal_w.predict(s), yhat)
         rows.append((c2, realized, est_cbpe, est_pape, X, w))
     c2, realized_last, _, _, X_last, w_last = rows[-1]
+    # Evaluate the final fitted calibrators on an additional unseen batch.
+    X_val, y_val = sample(5000, c2, rng=np.random.default_rng(3004))
+    s_val = model.predict_proba(X_val)[:, 1]
+    validation = dict(realized=float(np.mean((s_val >= thr) == y_val)),
+                      cbpe=float(cbpe_accuracy(cal.predict(s_val), s_val >= thr)),
+                      pape=float(cbpe_accuracy(cal_w.predict(s_val), s_val >= thr)))
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.4), gridspec_kw={'width_ratios': [1, 1.2], 'wspace': 0.3})
+    fig = plt.figure(figsize=(7.2, 4.0))
+    grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.2], hspace=.22, wspace=.43)
+    axL = fig.add_subplot(grid[0, 0])
+    ax2 = fig.add_subplot(grid[1, 0], sharex=axL)
+    axR = fig.add_subplot(grid[:, 1])
     bins = np.linspace(-3.2, 3.8, 36)
     axL.hist(X_ref[:, 1], bins=bins, color=GREY, density=True, zorder=2)
     axL.hist(X_last[:, 1], bins=bins, histtype='step', color=middle_color, lw=2.2, density=True, zorder=3)
@@ -311,22 +323,26 @@ def fig_pape(world=None):
     centers = (bins[:-1] + bins[1:]) / 2
     idx = np.clip(np.digitize(X_ref[:, 1], bins) - 1, 0, len(bins) - 2)
     wbin = np.array([w_last[idx == b].mean() if np.any(idx == b) else np.nan for b in range(len(bins) - 1)])
-    ax2 = axL.twinx()
     ax2.plot(centers, wbin, color=start_color, lw=3, solid_capstyle='round', zorder=4)
     ax2.set_ylim(0, np.nanmax(wbin) * 1.15)
     ax2.tick_params(axis='y', labelsize=11, colors=start_color)
-    ax2.spines['right'].set_color(start_color)
-    for sp in ('top', 'left', 'bottom'):
+    ax2.spines['left'].set_color(start_color)
+    for sp in ('top', 'right'):
         ax2.spines[sp].set_visible(False)
-    top = axL.get_ylim()[1]
-    axL.text(-3.1, top * 0.97, 'reference inputs', color=MID, fontsize=12, va='top')
-    axL.text(-3.1, top * 0.88, 'production inputs, last chunk', color=middle_color, fontsize=12, va='top')
-    axL.text(-3.1, top * 0.79, 'weight ŵ(x) given to each\nreference point (right axis)', color=start_color, fontsize=12, va='top',
-             linespacing=1.3)
-    axL.set_yticks([])
-    axL.set_xlabel('input $x_2$', fontsize=12)
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    axL.legend(handles=[Patch(facecolor=GREY, label='Reference'),
+                        Line2D([], [], color=middle_color, lw=2, label='Production')],
+               loc='upper left', frameon=False, fontsize=11, handlelength=1.0)
+    axL.set_ylabel('Density', fontsize=11, labelpad=8)
+    axL.tick_params(axis='y', labelsize=11)
+    ax2.set_ylabel('Mean weight', fontsize=11, color=start_color, labelpad=8)
+    ax2.set_xlabel('Input $x_2$', fontsize=11)
+    axL.tick_params(axis='x', labelbottom=False)
+    ax2.tick_params(axis='x', labelsize=11)
+    ax2.set_xticks([-3, 0, 3])
     axL.set_xlim(-3.2, 3.8)
-    despine(axL, keep=('bottom',))
+    despine(axL)
     ax2.set_xlim(-3.2, 3.8)
 
     k = np.arange(1, len(rows) + 1)
@@ -336,22 +352,24 @@ def fig_pape(world=None):
     axR.plot(k, r, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
     axR.plot(k, ec, color=middle_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=4)
     axR.plot(k, ep, color=start_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=5)
-    axR.text(k[-1] + 0.2, r[-1], 'realized', color=MID, fontsize=12, va='center')
+    axR.text(k[-1] + 0.2, r[-1] - 0.005, 'Realized', color=MID, fontsize=12, va='center')
     axR.text(k[-1] + 0.2, ec[-1], 'CBPE', color=middle_color, fontsize=12, va='center')
-    axR.text(k[-1] + 0.2, ep[-1], 'PAPE', color=start_color, fontsize=12, va='center')
-    axR.set_xticks(k)
-    axR.set_xlim(0.5, len(rows) + 1.8)
+    axR.text(k[-1] + 0.2, ep[-1] + 0.006, 'PAPE', color=start_color, fontsize=12, va='center')
+    axR.set_xticks(k[::2])
+    axR.set_xlim(0.5, len(rows) + 2.5)
+    axR.set_yticks([.75,.80,.85,.90])
     axR.tick_params(labelsize=11)
-    axR.set_xlabel('production chunk, drifting further along $x_2$ →', fontsize=12)
+    axR.set_xlabel('Production chunk', fontsize=11)
     axR.set_ylabel('accuracy', fontsize=12)
     despine(axR)
-    fig.subplots_adjust(left=0.04, right=0.98, top=0.95, bottom=0.13)
+    fig.subplots_adjust(left=0.10, right=0.97, top=0.95, bottom=0.17)
     save_figure(fig, 'PAPE_reweighting')
     plt.close()
     mae_c = np.mean(np.abs(ec - r))
     mae_p = np.mean(np.abs(ep - r))
     print('3. PAPE: realized %s\n   CBPE %s\n   PAPE %s\n   mean abs error CBPE %.3f PAPE %.3f | last chunk gap CBPE %.3f PAPE %.3f | weight curve peak %.1f, raw max %.1f' %
           (np.round(r, 3), np.round(ec, 3), np.round(ep, 3), mae_c, mae_p, ec[-1] - r[-1], ep[-1] - r[-1], np.nanmax(wbin), w_last.max()))
+    return locals()
 
 
 # ===========================================================================
@@ -360,12 +378,15 @@ def fig_pape(world=None):
 def fig_dle():
     fresh(4)
     n = 6000
+    train_rng = np.random.default_rng(4004)
+    x_train = train_rng.uniform(0, 1, n)
+    y_train = 2 * x_train + train_rng.normal(0, 1, n) * x_train
     x_ref = RNG.uniform(0, 1, n)
     y_ref = 2 * x_ref + RNG.normal(0, 1, n) * x_ref          # noise grows with x
-    child = LinearRegression().fit(x_ref[:, None], y_ref)
+    child = LinearRegression().fit(x_train[:, None], y_train)
     f_ref = child.predict(x_ref[:, None])
     ae_ref = np.abs(y_ref - f_ref)
-    nanny = LinearRegression().fit(np.column_stack([x_ref, f_ref]), ae_ref)   # same class as the child, as in the docs' example
+    nanny = LinearRegression().fit(np.column_stack([x_ref, f_ref]), ae_ref)
     # production chunks drifting from the easy region to the hard one
     centres = np.linspace(0.15, 0.85, 8)
     rows = []
@@ -374,55 +395,65 @@ def fig_dle():
         y = 2 * x + RNG.normal(0, 1, len(x)) * x
         f = child.predict(x[:, None])
         realized = np.mean(np.abs(y - f))
-        est = nanny.predict(np.column_stack([x, f])).mean()
+        est = nonnegative_loss(nanny, x, f).mean()
         rows.append((realized, est))
     r = np.array([a for a, _ in rows])
     e = np.array([b for _, b in rows])
+    val_rng = np.random.default_rng(4005)
+    x_val = val_rng.uniform(0, 1, 5000)
+    y_val = 2 * x_val + val_rng.normal(0, 1, len(x_val)) * x_val
+    f_val = child.predict(x_val[:, None])
+    validation = dict(realized=float(np.mean(np.abs(y_val-f_val))),
+                      estimated=float(nonnegative_loss(nanny, x_val, f_val).mean()))
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.4), gridspec_kw={'width_ratios': [1.15, 1], 'wspace': 0.28})
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'width_ratios': [1.15, 1], 'wspace': 0.28})
     sub = RNG.choice(n, 900, replace=False)
     axL.scatter(x_ref[sub], y_ref[sub], s=9, color=GREY, zorder=2, linewidths=0)
     xs = np.linspace(0, 1, 200)
     fs = child.predict(xs[:, None])
-    hs = nanny.predict(np.column_stack([xs, fs]))
+    hs = nonnegative_loss(nanny, xs, fs)
     axL.plot(xs, fs, color=DARK, lw=2.2, zorder=4)
     axL.fill_between(xs, fs - hs, fs + hs, color=start_color, alpha=0.22, zorder=3, linewidth=0)
     axL.plot(xs, fs + hs, color=start_color, lw=2, zorder=4)
     axL.plot(xs, fs - hs, color=start_color, lw=2, zorder=4)
-    axL.text(0.985, fs[-1] + hs[-1] + 0.12, 'f(x) ± nanny h(x)', color=start_color, fontsize=12, ha='right', va='bottom')
-    axL.text(0.52, child.predict([[0.52]])[0] - 0.55, 'monitored model f', color=DARK, fontsize=12, ha='left', va='top')
+    axL.text(0.985, fs[-1] + hs[-1] + 0.12, 'f(x) ± h(x)', color=start_color, fontsize=12, ha='right', va='bottom')
+    axL.text(0.52, child.predict([[0.52]])[0] - 0.55, 'Model f', color=DARK, fontsize=12, ha='left', va='top')
     # the nanny's training target: |y - f(x)| for two example points
     for xi in (0.25, 0.8):
         j = sub[np.argmin(np.abs(x_ref[sub] - xi) + 0.05 * (np.abs(y_ref[sub] - child.predict([[xi]])[0]) < 0.3))]
         axL.plot([x_ref[j], x_ref[j]], [f_ref[j], y_ref[j]], color=end_color, lw=2, zorder=5)
         axL.scatter([x_ref[j]], [y_ref[j]], s=30, color=end_color, zorder=6)
-        axL.text(x_ref[j] - 0.02, y_ref[j], f'|y − f(x)| = {ae_ref[j]:.2f}', color=end_color, fontsize=10.5, va='center',
-                 ha='right' if xi > 0.5 else 'left', clip_on=False) if xi > 0.5 else \
-            axL.text(x_ref[j] + 0.02, y_ref[j], f'|y − f(x)| = {ae_ref[j]:.2f}', color=end_color, fontsize=10.5, va='center')
+        axL.annotate(f'|error| = {ae_ref[j]:.2f}',
+                     xy=(x_ref[j], y_ref[j]),
+                     xytext=(.02 if xi < .5 else .48, -.65 if xi < .5 else -.95),
+                     fontsize=11, color=end_color, ha='left', va='top',
+                     arrowprops=dict(arrowstyle='-', color=end_color, lw=.9),
+                     bbox=dict(facecolor='white', edgecolor='none', alpha=.85, pad=1.5))
     axL.set_xlabel('input $x$', fontsize=12)
     axL.set_ylabel('target $y$', fontsize=12)
     axL.set_xlim(0, 1)
     axL.set_xticks([0, 0.5, 1])
     axL.tick_params(labelsize=11)
     despine(axL)
-    axL.text(0.02, axL.get_ylim()[1] - 0.15, 'reference data: noise grows with $x$', fontsize=12, color=MID, va='top')
+    axL.text(0.02, axL.get_ylim()[1] - 0.15, 'Reference data', fontsize=12, color=MID, va='top')
 
     k = np.arange(1, len(rows) + 1)
     axR.plot(k, r, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
     axR.plot(k, e, color=start_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=4)
-    axR.text(k[-1] + 0.15, r[-1] - 0.012, 'realized MAE', color=MID, fontsize=12, va='top')
-    axR.text(k[-1] + 0.15, e[-1] + 0.012, 'DLE estimate', color=start_color, fontsize=12, va='bottom')
-    axR.set_xticks(k)
-    axR.set_xticklabels([f'{c:.2f}' for c in centres], fontsize=10.5)
-    axR.set_xlim(0.5, len(rows) + 2.2)
+    axR.text(.04, .87, 'Measured MAE', color=MID, fontsize=11, va='top', transform=axR.transAxes)
+    axR.text(.04, .96, 'DLE estimate', color=start_color, fontsize=11, va='top', transform=axR.transAxes)
+    axR.set_xticks(k[::2])
+    axR.set_xticklabels([f'{c:.2f}' for c in centres[::2]], fontsize=11)
+    axR.set_xlim(0.5, len(rows) + .4)
     axR.tick_params(axis='y', labelsize=11)
-    axR.set_xlabel('production chunk, by mean input $x$ →', fontsize=12)
+    axR.set_xlabel('Chunk centre $x$', fontsize=12)
     axR.set_ylabel('MAE', fontsize=12)
     despine(axR)
-    fig.subplots_adjust(left=0.06, right=0.98, top=0.95, bottom=0.13)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.94, bottom=0.20, wspace=0.40)
     save_figure(fig, 'DLE_nanny')
     plt.close()
     print('4. DLE: realized %s\n   estimate %s\n   max gap %.3f' % (np.round(r, 3), np.round(e, 3), np.max(np.abs(r - e))))
+    return locals()
 
 
 # ===========================================================================
@@ -438,9 +469,12 @@ def fig_rcd():
         a = np.array([np.cos(np.pi / 4 + rot), -np.sin(np.pi / 4 + rot)])
         return expit(3.0 * (X @ a))
 
+    train_rng = np.random.default_rng(5005)
+    X_train = train_rng.normal(0, 1, (n, 2))
+    y_train = (train_rng.random(n) < concept(X_train, 0.0)).astype(int)
     X_ref = RNG.normal(0, 1, (n, 2))
     y_ref = (RNG.random(n) < concept(X_ref, 0.0)).astype(int)
-    model = LogisticRegression().fit(X_ref, y_ref)
+    model = LogisticRegression().fit(X_train, y_train)
     yhat_ref = model.predict(X_ref)
     acc_ref = (yhat_ref == y_ref).mean()
     # monitored period: covariate shift + concept drift
@@ -461,18 +495,24 @@ def fig_rcd():
     est_under_new = cbpe_accuracy(p_new, yhat_ref)          # expected accuracy on reference under the new concept
     impact = est_under_new - acc_ref                          # PIE
     magnitude = np.mean(np.abs(p_new - g_ref.predict_proba(X_ref)[:, 1]))   # ME
+    val_rng = np.random.default_rng(5006)
+    X_val = val_rng.normal(0, 1, (5000, 2)) + shift
+    y_val = (val_rng.random(5000) < concept(X_val, rot)).astype(int)
+    p_val = g.predict_proba(X_val)[:, 1]
+    validation = dict(concept_accuracy=float(np.mean((p_val >= .5) == y_val)),
+                      probability_mae_to_oracle=float(np.mean(np.abs(p_val-concept(X_val, rot)))))
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.4), gridspec_kw={'width_ratios': [1, 1.15], 'wspace': 0.3})
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'width_ratios': [1, 1.35], 'wspace': 0.3})
     sub = RNG.choice(n, 700, replace=False)
     axL.scatter(X_ref[sub, 0], X_ref[sub, 1], s=10, c=np.where(y_ref[sub] == 1, start_color, GREY), zorder=2, linewidths=0)
     gx, gy = np.meshgrid(np.linspace(-3.2, 3.2, 200), np.linspace(-3.2, 3.2, 200))
     G = np.column_stack([gx.ravel(), gy.ravel()])
     axL.contour(gx, gy, model.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[DARK], linewidths=2.2, zorder=4)
     axL.contour(gx, gy, g.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[end_color], linewidths=2.6, zorder=5)
-    axL.text(2.2, 2.9, 'model boundary\n(reference concept)', color=DARK, fontsize=11, ha='right', va='top', linespacing=1.3)
-    axL.text(3.0, -2.2, 'new concept g,\nlearned from\nmonitored labels', color=end_color, fontsize=11, ha='right', va='top',
+    axL.text(-2.9, -2.25, 'Model f', color=DARK, fontsize=11, ha='left', va='bottom', bbox=dict(facecolor='white', edgecolor='none', alpha=.8, pad=1))
+    axL.text(3.0, -2.2, 'New concept g', color=end_color, fontsize=11, ha='right', va='top',
              linespacing=1.3)
-    axL.text(-3.0, 2.9, 'reference inputs\n(cyan: y = 1)', color=MID, fontsize=11, ha='left', va='top', linespacing=1.3)
+    axL.text(-3.0, 2.9, 'Reference inputs\nCyan: y = 1', color=MID, fontsize=11, ha='left', va='top', linespacing=1.3)
     axL.set_xlim(-3.2, 3.2)
     axL.set_ylim(-3.2, 3.2)
     axL.set_xticks([])
@@ -481,57 +521,52 @@ def fig_rcd():
     axL.set_ylabel('$x_2$', fontsize=12)
     despine(axL)
 
-    # waterfall: reference -> covariate shift -> concept drift -> monitored
-    steps = [('reference\naccuracy', acc_ref, None),
-             ('covariate\nshift', acc_cov - acc_ref, 'inputs moved,\nold concept'),
-             ('concept drift\n(RCD impact)', impact, 'new concept,\nold inputs'),
-             ('realized on\nmonitored data', acc_mon, None)]
-    x0 = 0
-    level = 0
-    for i, (name, val, note) in enumerate(steps):
-        if i == 0:
-            axR.bar(i, val, color=GREY, width=0.6, zorder=3)
-            axR.text(i, val + 0.006, f'{val:.3f}', ha='center', va='bottom', fontsize=12, color=DARK)
-            level = val
-        elif i == len(steps) - 1:
-            axR.bar(i, val, color=DARK, width=0.6, zorder=3)
-            axR.text(i, val + 0.006, f'{val:.3f}', ha='center', va='bottom', fontsize=12, color=DARK)
-            axR.plot([i - 1.3, i - 0.3], [level, level], color=GREY_LINE, lw=1, ls=(0, (3, 2)), zorder=2)
+    # This is a counterfactual accounting, not an additive causal decomposition.
+    # Show the remainder as its own step, not as an unexplained gap.
+    resid = acc_mon - (acc_cov + impact)
+    steps = [('Reference', acc_ref, None),
+             ('Input mix', acc_cov-acc_ref, middle_color),
+             ('RCD impact', impact, end_color),
+             ('Residual', resid, GREY_LINE),
+             ('Observed', acc_mon, None)]
+    level = acc_ref
+    for i, (name, val, col) in enumerate(steps):
+        if col is None:
+            # A horizontal level mark has no implied zero-based bar length.
+            axR.plot([i-.28, i+.28], [val, val], color=DARK, lw=3, zorder=4)
+            axR.text(i, val+.009, f'{val:.3f}', ha='center', va='bottom', fontsize=11, color=DARK)
         else:
-            col = middle_color if i == 1 else end_color
-            axR.bar(i, val, bottom=level, color=col, width=0.6, zorder=3)
-            axR.plot([i - 1.3, i - 0.3], [level, level], color=GREY_LINE, lw=1, ls=(0, (3, 2)), zorder=2)
-            top_y = max(level, level + val)
-            axR.text(i, top_y + 0.004, f'{val:+.3f}', ha='center', va='bottom', fontsize=12, color=col)
-            axR.text(i, top_y + 0.016, note, ha='center', va='bottom', fontsize=10, color=col, linespacing=1.25)
+            axR.plot([i-.72, i-.28], [level, level], color=GREY_LINE, lw=1, ls=(0,(3,2)), zorder=2)
+            axR.bar(i, val, bottom=level, color=col, width=.56, zorder=3)
+            axR.text(i, max(level,level+val)+.009, f'{val:+.3f}', ha='center', va='bottom', fontsize=11, color=col)
             level += val
-    resid = acc_mon - level
-    axR.text(2.35, (level + acc_mon) / 2, f'residual {resid:+.3f}', ha='right', va='center', fontsize=10.5, color=MID)
+    axR.plot([3.28,3.72],[acc_mon,acc_mon],color=GREY_LINE,lw=1,ls=(0,(3,2)))
     axR.set_xticks(range(len(steps)))
-    axR.set_xticklabels([s[0] for s in steps], fontsize=11)
-    lo = min(acc_mon, level) - 0.08
-    axR.set_ylim(lo, max(acc_ref, acc_cov) + 0.045)
-    axR.set_yticks(np.round(np.arange(np.ceil(lo * 20) / 20, acc_ref + 0.03, 0.05), 2))
+    axR.set_xticklabels(['Ref.', 'Input\nmix', 'RCD\nimpact', 'Resid.', 'New\ndata'], fontsize=11)
+    axR.set_xlim(-.5,4.5)
+    lo = min(acc_mon, acc_cov+impact)-.035
+    axR.set_ylim(lo,max(acc_ref,acc_cov)+.055)
+    axR.set_yticks(np.round(np.arange(np.ceil(lo*20)/20, max(acc_ref,acc_cov)+.05,.05),2))
     axR.tick_params(axis='y', labelsize=11)
     axR.set_ylabel('accuracy', fontsize=12)
     despine(axR)
     axR.tick_params(axis='x', length=0)
-    fig.subplots_adjust(left=0.05, right=0.98, top=0.95, bottom=0.16)
+    fig.subplots_adjust(left=0.06, right=0.99, top=0.94, bottom=0.22, wspace=0.30)
     save_figure(fig, 'RCD_decomposition')
     plt.close()
     print(f'5. RCD: ref acc {acc_ref:.3f}, cov-only {acc_cov:.3f} ({acc_cov - acc_ref:+.3f}), '
           f'RCD impact {impact:+.3f} (est under new {est_under_new:.3f}), monitored {acc_mon:.3f}, '
           f'residual {resid:+.3f}, magnitude {magnitude:.3f}, g acc on monitored {(g.predict(X_mon) == y_mon).mean():.3f}')
+    return locals()
 
 
 if __name__ == '__main__':
     which = sys.argv[1:] or ['ece', 'cbpe', 'pape', 'dle', 'rcd']
-    world = None
     for w in which:
         if w == 'ece':
             fig_ece()
         elif w == 'cbpe':
-            world = fig_cbpe()
+            fig_cbpe()
         elif w == 'pape':
             fig_pape()
         elif w == 'dle':

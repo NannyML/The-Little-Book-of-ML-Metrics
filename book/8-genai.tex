@@ -45,8 +45,7 @@ and how they changed as models improved.}{In this chapter}
 % ---------- Perplexity ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{Perplexity}\label{sec:perplexity}
-\subsection{Perplexity}
+\metricentry{Perplexity}{Perplexity}\label{sec:perplexity}
 
 % reference:
 % https://aclanthology.org/2021.deelio-1.5.pdf
@@ -60,7 +59,7 @@ next tokens, which can be words or word pieces. We check the probabilities it gi
 the higher those probabilities, the lower the perplexity.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -69,23 +68,23 @@ the higher those probabilities, the lower the perplexity.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.54,0.34)$) to[bend left=15] node[pos=1, left] {sequence length} +(-1.00,-0.45);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.55,-0.74)$) to node[pos=1, above] {model probability} +(0.00,0.85);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.08,0.63)$) to node[pos=1, below] {token at position $i$} +(0.00,-0.33);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.54,0.34)$) to[bend left=15] node[pos=1, left] {sequence length} +(-1.00,-0.45);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.55,-0.74)$) to node[pos=1, above] {model probability} +(0.00,0.85);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.08,0.63)$) to node[pos=1, below] {token at position $i$} +(0.00,-0.33);
     }
-\end{center}
+\end{metricformula}
 
 It runs from $1$ (certain) to the vocabulary size (uniform guessing) and beyond. The average sits inside the exponential, so it is a
 geometric mean of $1/p$: one token at $p = 10^{-6}$ costs $13.8$ nats, as much as a dozen ordinary tokens at $p \approx 0.3$.
 
-\textbf{When to use Perplexity?}
+\metricheading{When to use}
 
 Use it to compare checkpoints or data mixes when the tokenizer and evaluation text stay fixed, and to flag distribution shift when the
 perplexity of incoming text jumps. Avoid it for judging generated samples (use MAUVE or human ratings) and for masked models like BERT.
 To compare tokenizers or vocabularies, use bits per byte so the unit stays fixed.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Cheap and label-free: one forward pass over held-out text, and lower is strictly a better fit to that text.
 \item Fine-grained. A drop from $20$ to $19$ is about a $5\%$ rise in the geometric-mean token probability, so it can reveal changes a
@@ -102,14 +101,14 @@ text does not guarantee better generations.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Perplexity_surprisal.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Perplexity.} GPT-2's surprisal $-\log p$ per token; the dashed line is the mean and perplexity is its exponential.
+\metriccaption{Figure. Perplexity.}{GPT-2's surprisal $-\log p$ per token; the dashed line is the mean and perplexity is its exponential.
 Expected tokens (``el'', ``Tower'') cost nothing, and ``Eiffel'' is three tokens because the tokenizer has no single piece for it.
 Swapping one word costs $10.1$ nats for ``Ohio'' ($p = 0.00004$), makes ``France'' a surprise too, and nearly triples the perplexity,
-from $8.3$ to $23.1$.
+from $8.3$ to $23.1$.}
 
 \orangebox{Did you know that...}
 {Holtzman et al. (2020) gave GPT-2 a prompt and compared the likelihood of its beam-search continuation with the real continuation. The
@@ -118,7 +117,7 @@ fixed collection of human text, but it exposes a related problem: always choosin
 clichés because human writing includes less predictable choices. Predictive fit and generated-text quality can therefore move
 differently.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 BLEU and ROUGE (NLP chapter) measure overlap with a reference; MAUVE compares generated and human-text distributions. If held-out
 perplexity falls while MAUVE stays flat, predictive fit improved but this MAUVE evaluation found no corresponding distributional
@@ -128,8 +127,7 @@ pseudo-perplexity scores each token while masking it in turn.
 % ---------- BERTScore ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{BERTScore}\label{sec:bertscore}
-\subsection{BERTScore}
+\metricentry{BERTScore}{BERTScore}\label{sec:bertscore}
 
 % reference:
 % https://arxiv.org/pdf/1904.09675
@@ -140,7 +138,7 @@ in context, so different wording can still receive a high score. For example, ``
 doctor delayed the surgery'' describe the same event with different words.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -149,25 +147,25 @@ doctor delayed the surgery'' describe the same event with different words.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.45cm]a.north) ([yshift=-0.50cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.63,0.27)$) to[bend left=15] node[pos=1, left] {reference length} +(-1.00,-0.55);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.90,-0.49)$) to node[pos=1, above] {reference token embedding} +(0.00,0.55);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.60,0.59)$) to node[pos=1, below] {candidate token embedding} +(0.00,-0.65);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.63,0.27)$) to[bend left=15] node[pos=1, left] {reference length} +(-1.00,-0.55);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.90,-0.49)$) to node[pos=1, above] {reference token embedding} +(0.00,0.55);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.60,0.59)$) to node[pos=1, below] {candidate token embedding} +(0.00,-0.65);
     }
-\end{center}
+\end{metricformula}
 
 $R_{\text{BERT}}$ is recall: each reference token finds its best candidate token (embeddings are unit-normalized, so the dot product is
 a cosine). Precision runs the matching from the candidate side and $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the
 top of the scale; the reference implementation can optionally rescale them against a random-pair baseline. The figure uses raw scores,
 so $0.88$ is a similarity value, not $88\%$ correct.
 
-\textbf{When to use BERTScore?}
+\metricheading{When to use}
 
 Use it for summarization, translation and paraphrase evaluation, where a good output can be worded very differently from its reference.
 When numbers, names or code must be exact, check those values directly instead of trusting an aggregate similarity or overlap score. If
 there is no matched reference, compare collections with MAUVE or use a model judge.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Rewards paraphrase: the example scores $F_{\text{BERT}} = 0.88$ despite changing every content word; unigram precision is
 $0.40$ and BLEU is zero (figure).
@@ -183,16 +181,14 @@ barely moves (figure).
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/BERTScore_matching.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. BERTScore.} \underline{Left:} raw cosine similarities between reference tokens (rows) and candidate tokens (columns) from
+\metriccaption{Figure. BERTScore.}{Raw cosine similarities between reference tokens (rows) and candidate tokens (columns) from
 layer $9$ of bert-base-uncased, without baseline rescaling or IDF weighting. Each row's maximum (boxed) is that token's best match and
 their mean is recall; column maxima (dots) give precision. ``Doctor'' finds ``physician'' at $0.82$, so raw
-$F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.
-\underline{Right:} the paraphrase scores high and the unrelated sentence low, but swapping who called whom scores $0.90$, above the
-paraphrase, and negation still scores $0.84$.
+$F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.}
 
 \orangebox{Did you know that...}
 {The embeddings BERTScore uses do not come from the model's last layer. The authors tuned the layer choice against human judgments and
@@ -201,7 +197,7 @@ roberta-large uses layer $17$ of $24$ by default and bert-base-uncased layer $9$
 different models or layers are reporting different metrics, which is why the reference implementation prints a hash of the full
 configuration next to every score.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 BLEU, METEOR and ROUGE (NLP chapter) count surface overlap; BERTScore compares contextual token similarity. Low BLEU with high BERTScore
 can be consistent with a good paraphrase, but it can also hide a role swap or negation, so inspect whether the wording changed or the
@@ -211,8 +207,7 @@ collection, but no matched reference for each sample.
 % ---------- MAUVE ----------
 \clearpage
 \thispagestyle{genaistyle}
-\section{MAUVE}\label{sec:mauve}
-\subsection{MAUVE}
+\metricentry{MAUVE}{MAUVE}\label{sec:mauve}
 
 % reference:
 % https://arxiv.org/pdf/2212.14578
@@ -224,7 +219,7 @@ features from a language model, then compares how common each group is in the tw
 unusual outputs without requiring a matching reference for each generated text.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -238,24 +233,24 @@ unusual outputs without requiring a matching reference for each generated text.
               {\color{nmlcyan}y_\lambda} = e^{-c\,\text{KL}({\color{nmlcyan}P}\,\|\,{\color{nmlred}R_\lambda})}, \quad
               {\color{nmlred}R_\lambda} = \lambda\,{\color{nmlcyan}P} + (1-\lambda)\,{\color{nmlpurple}Q}$
         };
-        \path[room for labels] ([yshift=0.32cm]a.north) ([yshift=-0.34cm]b.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(b.north)+(-2.98,-0.05)$) to[bend right=15] node[pos=1, left] {model text} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.50,-0.40)$) to node[pos=1, above] {human text} +(0.00,0.42);
-        \draw[overlay,-latex,nmlred, semithick] ($(b.south)+(1.80,0.09)$) to[bend left=15] node[pos=1, left] {mixture of the two} +(-1.00,-0.30);
+
+        \draw[-latex,nmlpurple, semithick] ($(b.north)+(-2.98,-0.05)$) to[bend right=15] node[pos=1, left] {model text} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.50,-0.40)$) to node[pos=1, above] {human text} +(0.00,0.42);
+        \draw[-latex,nmlred, semithick] ($(b.south)+(1.80,0.09)$) to[bend left=15] node[pos=1, left] {mixture of the two} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Each $\lambda$ mixes the distributions and produces one point on the divergence curve. The reference implementation adds $(0,1)$ and
 $(1,0)$ before calculating the area; the sweep itself need not reach them. Identical histograms score $1$. The horizontal coordinate
 falls for model-only mass, while the vertical coordinate falls when the model misses human-text mass.
 
-\textbf{When to use MAUVE?}
+\metricheading{When to use}
 
 Use it to compare open-ended generation under the same human corpus, sample count, feature model and settings. Aim for at least
 $1{,}000$ texts per side, preferably a few thousand; repeat smaller evaluations and report their variation. For short outputs with
 matched references, use BERTScore or BLEU.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Sees quality and diversity together. In Pillutla et al.'s $2021$ GPT-2 web-text experiment, greedy decoding scored about $0.012$
 and nucleus sampling $0.936$ under the same setup.
@@ -271,15 +266,15 @@ side and uses $5{,}000$.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/MAUVE_frontier.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. MAUVE.} \underline{Left:} human text $P$ (gray) and three model distributions $Q$ over eight embedding clusters.
-\underline{Right:} the curve produced as $\lambda$ changes, completed with the two boundary points used for integration; MAUVE is the
+\metriccaption{Figure. MAUVE.}{\textit{Left:} human text $P$ (gray) and three model distributions $Q$ over eight embedding clusters.
+\textit{Right:} the curve produced as $\lambda$ changes, completed with the two boundary points used for integration; MAUVE is the
 shaded area with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
 human text falls in loses area along the horizontal axis; one that writes only the three commonest kinds of text loses it along the
-vertical axis.
+vertical axis.}
 
 \orangebox{Did you know that...}
 {MAUVE is built like ROC AUC. A plain KL divergence between the two histograms is infinite whenever the model puts mass in a bucket
@@ -288,7 +283,7 @@ finite divergences at each step, one per kind of error. The curve is a trade-off
 other, and the area under it summarizes both, as ROC AUC summarizes false positives and negatives across thresholds. The shape of the
 curve says which way a model fails.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Perplexity measures how well the model predicts human text; MAUVE how well its samples resemble it, so one can improve while the other
 stagnates. BERTScore compares one output to one reference. For images the same distribution-level idea is FID, which compares Gaussian
@@ -297,8 +292,7 @@ fits in feature space rather than histograms.
 % ---------- Inception Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{IS}\label{sec:is}
-\subsection{Inception Score}
+\metricentry{IS}{Inception Score (IS)}\label{sec:is}
 
 % reference:
 % https://arxiv.org/abs/1606.03498 (Salimans et al., Improved Techniques for Training GANs)
@@ -309,7 +303,7 @@ Inception-v3 supplies the class probabilities for each image, $p(y|x)$, and we a
 require confident predictions spread across many classes.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -318,23 +312,23 @@ require confident predictions spread across many classes.
                 $
             }
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.39,0.18)$) to[bend left=15] node[pos=1, left] {generated image} +(-1.00,-0.64);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.13,-0.06)$) to[bend right=15] node[pos=1, left] {KL divergence} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.39,0.18)$) to[bend left=15] node[pos=1, left] {generated image} +(-1.00,-0.64);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.13,-0.06)$) to[bend right=15] node[pos=1, left] {KL divergence} +(-1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 The score runs from $1$, when every image receives the same full class-probability vector, to the number of classifier classes
 ($1{,}000$ for ImageNet). Historical reports commonly split a fixed sample into ten groups and report the mean and standard deviation of
 their scores. Each split estimates its own $p(y)$, so keep the sample count, split count and classifier setup fixed; that standard
 deviation is not a confidence interval for image quality.
 
-\textbf{When to use IS?}
+\metricheading{When to use}
 
 Use it to track classifier confidence and class coverage on ImageNet-like generations when no real reference set is available. It does
 not measure blur or fidelity. With real samples, FID adds a distribution comparison but still needs task-specific and human checks; far
 from ImageNet, choose a domain-relevant evaluator.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Needs only generated images and a classifier. If every image receives the same probability vector, it equals $p(y)$ and the
 score is exactly $1$ (figure).
@@ -351,14 +345,14 @@ settings must match before comparing scores.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/IS_mechanism.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Inception Score.} Each row is one generated image's class distribution $p(y|x)$; the bottom row is their average, the
+\metriccaption{Figure. Inception Score.}{Each row is one generated image's class distribution $p(y|x)$; the bottom row is their average, the
 marginal $p(y)$. IS is the exponential of the mean KL divergence between rows and marginal, so it is high only when the rows are peaked
 \emph{and} the marginal is flat: confident, diverse predictions reach $2.98$ of a possible $4$. Four equally confident predictions of
-one class give $\text{IS} = 1$; diffuse predictions score $1.06$ however many classes they cover.
+one class give $\text{IS} = 1$; diffuse predictions score $1.06$ however many classes they cover.}
 
 \orangebox{Did you know that...}
 {The Inception Score is $\exp$ of a mutual information, $I(x;y) = H(y) - H(y|x)$: the label entropy across samples minus the average
@@ -367,7 +361,7 @@ $\text{IS} \leq 1{,}000$), the loophole (one memorized image per class saturates
 CIFAR-10 images score about $11$ with the original TensorFlow weights and about a point and a half lower with the torchvision port,
 a gap larger than many claimed improvements between GANs.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 IS and FID often move together during training. If IS rises while FID stalls, sharper predictions without broader coverage are one
 possible explanation; inspect class coverage and repeated images before calling it collapse. For similarity of one image to one target,
@@ -376,8 +370,7 @@ use LPIPS.
 % ---------- Fréchet Inception Distance ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{FID}\label{sec:fid}
-\subsection{Fréchet Inception Distance}
+\metricentry{FID}{Fréchet Inception Distance (FID)}\label{sec:fid}
 
 % reference:
 % https://papers.nips.cc/paper_files/paper/2017/file/8a1d694707eb0fefe65871369074926d-Paper.pdf
@@ -390,7 +383,7 @@ from each image, then compares their averages and variation. This helps detect d
 generator that keeps producing similar expressions.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -399,24 +392,24 @@ generator that keeps producing similar expressions.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.26cm]a.north) ([yshift=-0.24cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.33,0.29)$) to node[pos=1, below] {real distribution} +(0.00,-0.24);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.53,-0.27)$) to node[pos=1, above] {generated distribution} +(0.00,0.24);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.33,0.29)$) to node[pos=1, below] {real distribution} +(0.00,-0.24);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.53,-0.27)$) to node[pos=1, above] {generated distribution} +(0.00,0.24);
     }
-\end{center}
+\end{metricformula}
 
 The first term compares feature means; the trace term compares covariances and grows when the generated set covers less of the space.
 FID is $0$ when the fitted moments match and is unbounded. Finite-sample estimates have model-dependent bias: equal counts help
 comparability but do not remove it. Use the same reference set and preprocessing, report both counts and check close rankings as $N$
 grows.
 
-\textbf{When to use FID?}
+\metricheading{When to use}
 
 Use FID to compare generated and reference sets under one protocol, especially for historical GAN or diffusion results. For modern
 text-to-image models, pair it with prompt-alignment and human evaluation: distribution match is a different question. Small samples make
 rankings less stable; there is no universal cutoff. For one image, use LPIPS or SSIM.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Sensitive to variety: a generator that matches the real mean but collapses to a few modes keeps the first term at zero and pays
 through the covariance term (figure).
@@ -433,15 +426,15 @@ resize and JPEG settings shift the score by points.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/FID_mechanism.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. FID.} A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
+\metriccaption{Figure. FID.}{A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
 samples (gray) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
 term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third
 population was constructed with the same mean and covariance as the reference but a different shape. Its $500$ sampled points have
-slightly different fitted moments, giving $0.02$; exactly matching fitted moments would give zero.
+slightly different fitted moments, giving $0.02$; exactly matching fitted moments would give zero.}
 
 \orangebox{Did you know that...}
 {FID depends on how you shrink the images. Inception expects $299 \times 299$ inputs and the resize step is not part of the metric's
@@ -451,7 +444,7 @@ again. The same generator can rank first or third depending on the evaluation co
 clean-fid. The distance itself is Fréchet's 1957 metric between distributions, in the closed form for Gaussians derived by Dowson and
 Landau in 1982.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 IS and FID can disagree, which is a reason to inspect class coverage and repetition. LPIPS compares image pairs rather than sets. With
 limited samples, Kernel Inception Distance (KID) has an unbiased standard estimator.
@@ -460,17 +453,14 @@ limited samples, Kernel Inception Distance (KID) has an unbiased standard estima
 % ---------- Learned Perceptual Image Patch Similarity ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{LPIPS}\label{sec:lpips}
-\subsection{Learned Perceptual Image Patch Similarity}
+\metricentry{LPIPS}{Learned Perceptual Image Patch Similarity (LPIPS)}\label{sec:lpips}
 
 % references: https://arxiv.org/pdf/1801.03924
 
-LPIPS estimates how different two images look to a person. It compares visual features from a pretrained neural network, using weights
-learned from human judgments. This helps distinguish changes that pixel error treats alike: a blurred photograph and a noisy one can
-have the same mean squared error but look quite different.
+LPIPS estimates how different two images look to a person. It compares features from a pretrained neural network, weighted using human judgments. A blurred photograph and a noisy one can have the same mean squared error but look quite different.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -479,23 +469,23 @@ have the same mean squared error but look quite different.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.20cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.22,-0.22)$) to[bend right=15] node[pos=1, left] {features of image $x$} +(-1.30,0.35);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.54,-0.25)$) to node[pos=1, above] {features of image $y$} +(0.00,0.25);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.84,0.71)$) to node[pos=1, below] {learned weights} +(0.00,-0.62);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.22,-0.22)$) to[bend right=15] node[pos=1, left] {features of image $x$} +(-1.30,0.35);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.54,-0.25)$) to node[pos=1, above] {features of image $y$} +(0.00,0.25);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(0.84,0.71)$) to node[pos=1, below] {learned weights} +(0.00,-0.62);
     }
-\end{center}
+\end{metricformula}
 
 At each position, LPIPS normalizes the feature vector across channels, compares the two vectors and weights each channel by $w_l$ before
 averaging over space and layers. Identical images score $0$; otherwise, lower means more similar under that setup. Report the backbone
 and weights, and validate any pass/fail cutoff on the application's images.
 
-\textbf{When to use LPIPS?}
+\metricheading{When to use}
 
 Use it for super-resolution, image-to-image translation, compression and diffusion reconstructions with a ground-truth image, or for
 sample diversity via mean pairwise LPIPS. Avoid it when exact pixel fidelity matters, and for unpaired image sets (use FID).
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Matches human two-alternative choices better than SSIM and PSNR: about $69\%$ agreement on the paper's benchmark against the low
 sixties, near the $74\%$ ceiling set by human disagreement.
@@ -513,14 +503,14 @@ pair.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/LPIPS_equal_mse.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. LPIPS.} Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so MSE rates them equally.
+\metriccaption{Figure. LPIPS.}{Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so MSE rates them equally.
 LPIPS with the AlexNet backbone gives the four-pixel shift and brightness change scores of $0.07$ and $0.03$, while noise and blur
 score $0.69$ and $0.82$. It distinguishes these distortions even though their MSEs match. The low score for this shift does not mean
-LPIPS always tolerates misalignment: even tiny shifts can change which image it rates as closer to the original.
+LPIPS always tolerates misalignment: even tiny shifts can change which image it rates as closer to the original.}
 
 \orangebox{Did you know that...}
 {Zhang et al. found that features from a network with random weights already match SSIM at predicting which of two distorted images
@@ -529,7 +519,7 @@ feature losses, often built from VGG activations, are used to train super-resolu
 the same calculation as LPIPS. The evaluation becomes most circular when a model is trained directly against the same LPIPS variant and
 checkpoint used to score it. In that case, add an independent metric and a human comparison.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PSNR and SSIM (Computer Vision chapter) measure pixel fidelity, while LPIPS compares deep features. High PSNR with poor LPIPS can be
 consistent with blur, because blur preserves broad pixel values while removing texture. The reverse can occur when detail is sharp but
@@ -538,8 +528,7 @@ slightly displaced. These patterns are clues to inspect the images, not diagnose
 % ---------- CLIPScore ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{CLIP Score}\label{sec:clip-score}
-\subsection{CLIP Score}
+\metricentry{CLIP Score}{CLIP Score}\label{sec:clip-score}
 
 % reference:
 % https://arxiv.org/pdf/2104.08718 (Hessel et al., CLIPScore, EMNLP 2021)
@@ -550,7 +539,7 @@ associate images with text, to compare their content. For example, we can score 
 sunglasses on a beach''.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -559,23 +548,23 @@ sunglasses on a beach''.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.66cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.92,-0.19)$) to[bend right=15] node[pos=1, left] {text embedding} +(-2.70,0.82);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.39,-0.18)$) to node[pos=1, above] {image embedding} +(0.00,0.40);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.02,-0.18)$) to[bend right=15] node[pos=1, left] {scaling weight} +(-1.00,0.40);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.92,-0.19)$) to[bend right=15] node[pos=1, left] {text embedding} +(-2.70,0.82);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.39,-0.18)$) to node[pos=1, above] {image embedding} +(0.00,0.40);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-1.02,-0.18)$) to[bend right=15] node[pos=1, left] {scaling weight} +(-1.00,0.40);
     }
-\end{center}
+\end{metricformula}
 
 With CLIP ViT-B/32 in the original experiments, matching pairs often had raw cosines around $0.25$--$0.35$. The authors used $w=2.5$;
 some libraries use $100$. The scaled score can exceed $1$ and is not a probability. Compare systems with the same checkpoint, scaling,
 prompts and preprocessing.
 
-\textbf{When to use CLIP Score?}
+\metricheading{When to use}
 
 Use it to rank prompt adherence, evaluate captioning without references and filter training pairs at scale. Avoid it when counts,
 relations, negation or attribute binding matter (use VQAScore or DSG), and for image quality (use FID).
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Reference-free and cheap: one CLIP forward pass per image and prompt, so it scales to millions of pairs and to prompts no human
 has captioned.
@@ -593,15 +582,15 @@ different scales. Whether a small average gap is meaningful depends on the paire
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/CLIP_Score_matrix.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. CLIP Score.} Four images against six captions, scored with CLIP ViT-B/32; each cell is $2.5$ times the cosine between
+\metriccaption{Figure. CLIP Score.}{Four images against six captions, scored with CLIP ViT-B/32; each cell is $2.5$ times the cosine between
 the caption and image embeddings. The caption written for each image (boxed) beats every caption written for another image, so
 ranking across subjects works. But the raw cosines span only $0.06$--$0.35$, and for the first image the two probe captions (dashed)
 show the limit: with ``flag'' and ``woman'' swapped the score rises to $0.82$ against $0.79$ for the correct caption, and the negated
-caption keeps $0.69$. In this example and checkpoint, the score responds more to which words are present than to how they are arranged.
+caption keeps $0.69$. In this example and checkpoint, the score responds more to which words are present than to how they are arranged.}
 
 \orangebox{Did you know that...}
 {A model can learn to exploit the judge when it is optimized directly against the same CLIP checkpoint used for evaluation. Images
@@ -609,7 +598,7 @@ optimized this way can develop text-like marks or textures that raise the score 
 CLIP encoder somewhere in a system does not create the same problem: the risk depends on whether the evaluation score or a close proxy
 was part of the objective. For a strong claim, add an independent evaluator and human judgments.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CLIP Score gives a broad measure of image--text alignment; VQAScore and DSG probe composition more directly. High CLIP Score with poor
 FID can suggest that prompt alignment improved while the generated set moved away from the chosen reference distribution. Good FID with
@@ -619,8 +608,7 @@ photographs, and all three metrics inherit their evaluators' blind spots.
 % ---------- Davidsonian Scene Graph ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{DSG}\label{sec:dsg}
-\subsection{Davidsonian Scene Graph}
+\metricentry{DSG}{Davidsonian Scene Graph (DSG)}\label{sec:dsg}
 
 % reference:
 % https://arxiv.org/pdf/2310.18235 (Cho et al., ICLR 2024)
@@ -630,7 +618,7 @@ into yes/no questions for a visual question-answering (VQA) model. For ``a red b
 there is a bicycle, whether it is red and whether the wall is blue.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -639,25 +627,20 @@ there is a bicycle, whether it is red and whether the wall is blue.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-2.98,0.34)$) to node[pos=1, below] {number of questions} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-0.99,-0.49)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1.00,0.77);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(1.76,0.10)$) to node[pos=1, below] {parent questions of $q$} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlgreen, semithick] ($(a.north)+(2.50,-0.37)$) to node[pos=1, above] {indicator function} +(0.00,0.62);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.98,0.34)$) to node[pos=1, below] {number of questions} +(0.00,-0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-0.99,-0.49)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1.00,0.77);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(1.76,0.10)$) to node[pos=1, below] {parent questions of $q$} +(0.00,-0.30);
+        \draw[-latex,nmlgreen, semithick] ($(a.north)+(2.50,-0.37)$) to node[pos=1, above] {indicator function} +(0.00,0.62);
     }
-\end{center}
+\end{metricformula}
 
-$a_q$ is the VQA model's answer to question $q$ and $\text{pa}(q)$ the questions it depends on: if ``is there a bicycle?'' comes back
-no, ``is the bicycle red?'' counts as no whatever the model says. The score is the share of the prompt's atomic facts the image gets
-right; a language model generates the questions once per prompt.
+$a_q$ is the VQA model's answer and $\text{pa}(q)$ the questions it depends on. If ``is there a bicycle?'' gets a no, ``is the bicycle red?'' counts as no whatever the model says. A language model generates these questions once per prompt; DSG scores the share of atomic facts the image gets right.
 
-\textbf{When to use DSG?}
+\metricheading{When to use}
 
-Use it to evaluate text-to-image models on prompts with several objects, attributes and relations, and to find which part of a prompt
-failed. Avoid it when one alignment number suffices at scale (CLIP Score is far cheaper). Style and aesthetic prompts can be turned into
-questions, but a question such as ``is this in the style of Hokusai?'' is more subjective and depends heavily on the question generator
-and VQA model.
+Use DSG for text-to-image prompts with several objects, attributes and relations, or to find which detail failed. For one alignment score at scale, CLIP Score is cheaper. Style questions such as ``is this in the style of Hokusai?'' are more subjective and depend heavily on the question generator and VQA model.
 
-\enlargethispage{\baselineskip}
 \coloredboxes{
 \item Diagnostic: a score of $3/5$ comes with the two failed questions, so ``the wall is red instead of blue'' is read off directly
 (figure).
@@ -675,15 +658,15 @@ calls per image.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/DSG_question_graph.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. DSG.} A constructed walkthrough of the question graph for one prompt and hypothetical VQA answers for two images. Edges are
+\metriccaption{Figure. DSG.}{A constructed walkthrough of the question graph for one prompt and hypothetical VQA answers for two images. Edges are
 dependencies: a question only counts if its parents were answered yes. Image A has the right objects in the wrong colors, so the two
 attribute questions fail and it scores $3/5$. Image B has no bicycle, so the questions about the bicycle's color and position are
 skipped; the assumed yes answers illustrate the hallucination that dependency edges are meant to block. The wall's two questions carry
-the score to $2/5$.
+the score to $2/5$.}
 
 \orangebox{Did you know that...}
 {The name comes from Donald Davidson's semantics of events: a sentence like ``the bicycle leans against the wall'' is a small logical form
@@ -692,7 +675,7 @@ propositions whose edges encode presupposition --- ``is the bicycle red?'' has n
 VQA models answer such questions ``yes'' often enough to inflate scores, so an image of an empty street could earn credit for the
 color of a bicycle it does not contain. The dependency edges close that hole.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CLIP Score gives one embedding similarity; VQAScore asks one question about the whole prompt; DSG asks many smaller questions and shows
 which ones failed. A disagreement between VQAScore and DSG tells us that the evaluators read the image or prompt differently. A missed
@@ -701,8 +684,7 @@ detail in the single question and a faulty decomposition are two possibilities t
 % ---------- Visual Question Answering Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{VQAScore}\label{sec:vqascore}
-\subsection{Visual Question Answering Score}
+\metricentry{VQAScore}{Visual Question Answering Score (VQAScore)}\label{sec:vqascore}
 
 % reference:
 % https://arxiv.org/pdf/2404.01291 (Lin et al., ECCV 2024)
@@ -713,7 +695,7 @@ it turns ``a horse riding an astronaut'' into a yes/no question about whether th
 answering ``Yes'' becomes the score.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -722,25 +704,22 @@ answering ``Yes'' becomes the score.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.46cm]a.north) ([yshift=-0.42cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.40,-0.04)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1.00,0.26);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.37,0.07)$) to node[pos=1, below] {generated image} +(0.00,-0.22);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(3.38,-0.04)$) to node[pos=1, above] {prompt as a question} +(0.00,0.22);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.40,-0.04)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1.00,0.26);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.37,0.07)$) to node[pos=1, below] {generated image} +(0.00,-0.22);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(3.38,-0.04)$) to node[pos=1, above] {prompt as a question} +(0.00,0.22);
     }
-\end{center}
+\end{metricformula}
 
-The score is the evaluator's probability of producing the token ``Yes'' after that image and question. It is useful for ranking, but it
-is not a calibrated probability that the prompt is correct: $0.8$ does not mean that eight out of ten such images are faithful. The
-paper's strongest version uses CLIP-FlanT5, a generative model trained for question answering. Other VQA models can be used, but their
-scores and failure modes need not match.
+The score is the evaluator's probability of answering ``Yes'', not a calibrated probability that the image matches the prompt: $0.8$ does not mean eight in ten images are faithful. The paper's strongest version uses CLIP-FlanT5, a generative question-answering model. Other VQA models can be used, but their scores and failure modes may differ.
 
-\textbf{When to use VQAScore?}
+\metricheading{When to use}
 
 Use it to rank text-to-image and text-to-video outputs on compositional prompts --- counts, spatial relations, attribute binding,
 negation --- and as a reward when generating several candidates per prompt. Avoid it when you need to know which part of a prompt
 failed (use DSG), for realism (use FID), and as a filter over millions of pairs (use CLIP Score).
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Compositional: on Winoground-style pairs, where two images and two captions differ only in word order, CLIP is near chance while
 VQAScore with CLIP-FlanT5 was the strongest automatic metric in the paper.
@@ -757,24 +736,20 @@ offer more detail.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/VQAScore_vs_CLIP.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. VQAScore.} One image, four captions, two metrics: CLIP-S (gray) and VQAScore computed as $P(\text{``Yes''})$ from a
+\metriccaption{Figure. VQAScore.}{One image, four captions, two metrics: CLIP-S (gray) and VQAScore computed as $P(\text{``Yes''})$ from a
 small generative VQA model (BLIP-base) asked whether the figure shows the caption. Both rank the wrong object last, VQAScore at $0.46$
 and CLIP-S at $0.14$, and neither handles the negated caption well ($0.66$ and $0.69$). But CLIP scores the word-swapped caption
 \emph{above} the correct one, $0.82$ against $0.79$, while VQAScore reads the sentence in order and ranks them the right way round,
-$0.93$ against $0.82$. The paper's much larger CLIP-FlanT5 model pushes mismatched captions further down; the mechanism is the same.
+$0.93$ against $0.82$. The paper's much larger CLIP-FlanT5 model pushes mismatched captions further down; the mechanism is the same.}
 
 \orangebox{Did you know that...}
-{VQAScore is a next-token probability. The vision--language model is a language model conditioned on an image and a question, and the
-score is the probability it gives the token ``Yes'' as the first word of its reply --- the quantity perplexity aggregates over a whole
-sequence, read off for one token. That is why the metric is continuous and rankable where a yes/no answer would not be, and why the
-wording of the template changes it: the estimate depends on every conditioning token. Lin et al. (2024) also asked the same model for
-a $1$--$5$ rating instead and found the ratings clustered near the top of the scale, far less informative than the probability.}
+{VQAScore reads one next-token probability from a vision--language model: the chance of ``Yes'' given an image and question. Perplexity aggregates the same kind of probability over a sequence. Using the probability gives a continuous score where a yes/no answer would not, but the template still matters because every conditioning token can change it. Lin et al. (2024) also asked the model for a $1$--$5$ rating; those ratings clustered near the top of the scale and were much less informative.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CLIP Score is faster and coarser; DSG is slower and more diagnostic; VQAScore sits between them. Agreement raises confidence only when
 the evaluators make sufficiently different errors. A high CLIP Score and low VQAScore can point to a compositional mistake, such as the
@@ -783,8 +758,7 @@ right objects in the wrong arrangement, but inspecting the image is still necess
 % ---------- Mean Opinion Score ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{MOS}\label{sec:mos}
-\subsection{Mean Opinion Score}
+\metricentry{MOS}{Mean Opinion Score (MOS)}\label{sec:mos}
 
 % reference:
 % https://arxiv.org/pdf/2204.02249
@@ -795,7 +769,7 @@ Those ratings depend on who listens, what they hear and the instructions they re
 conditions.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -804,21 +778,21 @@ conditions.
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.23,0.34)$) to[bend left=15] node[pos=1, left] {number of ratings} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.54,0.63)$) to[bend right=15] node[pos=1, right] {listener rating (1--5)} +(1.00,-0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(0.23,0.34)$) to[bend left=15] node[pos=1, left] {number of ratings} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.54,0.63)$) to[bend right=15] node[pos=1, right] {listener rating (1--5)} +(1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 Ratings often follow ITU-T's absolute category scale. Report the listeners, stimuli, sampling unit and whether the design is paired. For
 illustration, $20$ independent ratings with $\sigma=0.8$ give a $95\%$ interval of roughly $\pm0.35$ around one mean. Comparing two
 systems instead depends on their paired differences.
 
-\textbf{When to use MOS?}
+\metricheading{When to use}
 
 Use it for the final evaluation of text-to-speech, voice conversion, codecs or enhancement, and to validate an automatic metric. It is
 too costly for tracking many training runs. For close systems, a paired comparison with the same listeners has more power.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item PESQ, POLQA and learned quality predictors are fitted to MOS data, so a well-run listening test settles disagreements between
 them.
@@ -836,15 +810,15 @@ depends on the paired design, variability and power; repeated ratings are not in
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/MOS_same_mean.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. MOS.} Twenty listeners rate each of three systems and all three land on $\text{MOS} = 3.0$ with a median of $3$. The
+\metriccaption{Figure. MOS.}{Twenty listeners rate each of three systems and all three land on $\text{MOS} = 3.0$ with a median of $3$. The
 consensus system is one everyone finds mediocre; the polarized one half the panel likes and half cannot stand; the skewed one leans
 toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but their rating distributions do. The intervals shown
 are illustrative summaries of these constructed samples; the zero width for the consensus system follows from giving every listener the
-same rating. Report the distribution and uncertainty with the mean, and compare systems under the same protocol.
+same rating. Report the distribution and uncertainty with the mean, and compare systems under the same protocol.}
 
 \orangebox{Did you know that...}
 {A MOS does not have a fixed natural-speech ceiling. Clean recordings often score below $5$, but their mean changes with the recordings,
@@ -853,7 +827,7 @@ recordings in the same test and report uncertainty. A non-significant difference
 a margin chosen in advance. The scale is also ordinal --- the step from $2$ to $3$ need not equal the step from $4$ to $5$ --- so the
 mean is a useful convention rather than a physical unit.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PESQ predicts perceived speech quality from a reference signal, while STOI predicts intelligibility. A disagreement with a well-designed
 listening test shows that the automatic metric does not capture this case; inspect the audio and protocol before assigning the cause.
@@ -863,19 +837,16 @@ systems.
 % ---------- Perceptual Evaluation of Speech Quality ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{PESQ}\label{sec:pesq}
-\subsection{Perceptual Evaluation of Speech Quality}
+\metricentry{PESQ}{Perceptual Evaluation of\\ Speech Quality (PESQ)}\label{sec:pesq}
 
 % reference:
 % ITU-T P.862 (2001), P.862.1 (MOS-LQO mapping), P.862.2 (wideband)
 % https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html
 
-PESQ predicts perceived speech quality by comparing a processed recording with its clean original. It first aligns their timing and
-adjusts their levels, then measures differences using a model of human hearing. This helps evaluate changes such as compression or
-noise reduction without running a listening test each time.
+PESQ predicts perceived speech quality by comparing a processed recording with its clean original. It aligns timing and levels, then uses a model of human hearing to assess changes such as compression or noise reduction, without a listening test.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -884,23 +855,23 @@ noise reduction without running a listening test each time.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.27cm]a.north) ([yshift=-0.28cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.55,-0.34)$) to node[pos=1, above] {predicted MOS} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.91,0.22)$) to[bend left=15] node[pos=1, left] {raw P.862 score} +(-1.00,-0.55);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-3.55,-0.34)$) to node[pos=1, above] {predicted MOS} +(0.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.91,0.22)$) to[bend left=15] node[pos=1, left] {raw P.862 score} +(-1.00,-0.55);
     }
-\end{center}
+\end{metricformula}
 
 The raw P.862 score runs from $-0.5$ to $4.5$; P.862.1 maps narrowband scores to a MOS-like $1.02$--$4.55$ scale. Wideband PESQ
 (P.862.2, $16$ kHz) uses another mapping. Compare the same mode, implementation and material; ``transparent'' and ``poor'' have no
 universal cutoffs.
 
-\textbf{When to use PESQ?}
+\metricheading{When to use}
 
 Use it to reproduce speech-codec, telephony and enhancement experiments with the same setup and a clean reference. ITU-T withdrew P.862
 in January $2024$ and points new work to P.863 (POLQA), so justify PESQ in a new evaluation. Avoid it for intelligibility (use STOI),
 music, unsupported sampling modes or cases without a reference.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Aligns before it compares: a $20$ ms delay or a $6$ dB gain change leaves PESQ at its maximum while waveform SNR collapses
 (figure).
@@ -908,25 +879,23 @@ music, unsupported sampling modes or cases without a reference.
 still move results, so report them.
 }
 {
-\item Intrusive and narrow: needs the clean signal, works only at $8$ or $16$ kHz, and was validated on codec distortions, so it can
-favor a denoiser that removes speech detail.
-\item Not differentiable and licensed: training needs an approximation, and implementations may require rights from patent or software
-licensors. ITU publishes the recommendation; it is not the software licensor.
+\item Needs a clean reference at $8$ or $16$ kHz. Validated on codec distortions, it can favor denoisers that remove speech detail.
+\item Not differentiable: training needs an approximation. Implementations may require patent or software licences; ITU publishes the recommendation, not the software licence.
 }
 
 \clearpage
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/PESQ_alignment.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. PESQ.} The same eight-second sentence under eight conditions. Waveform SNR (left) compares samples directly: a $20$ ms
+\metriccaption{Figure. PESQ.}{The same eight-second sentence under eight conditions. Waveform SNR (left) compares samples directly: a $20$ ms
 delay or a $6$ dB gain change makes the signals disagree sample by sample and the SNR falls to $-3.4$ and $6.0$ dB, numbers that
 would suggest heavy damage. PESQ (right; narrowband P.862 mapped to MOS-LQO) aligns and level-equalizes first and returns its maximum
 of $4.55$ for both, and $4.33$ for telephone band-limiting. Added white noise, which is audible, moves it from $3.76$ at $40$ dB SNR
-down to $1.45$ at $10$ dB.
+down to $1.45$ at $10$ dB.}
 
 \orangebox{Did you know that...}
 {PESQ treats added sound and missing sound differently. After aligning the signals and converting them to loudness on a perceptual
@@ -935,7 +904,7 @@ components present in the degraded signal but absent from the reference far more
 consonant more than one that adds a whistle, and the metric encodes that. It is also why PESQ can favor a denoiser that suppresses
 speech along with the noise: removed speech counts as a mild loss, while the noise it would have left counts as an addition.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 STOI predicts intelligibility, while PESQ predicts perceived quality. If one rises while the other falls, the two objectives may be
 trading off, or one metric may be outside the conditions where it works well. Listen to the audio and run the relevant listening test
@@ -945,8 +914,7 @@ the degraded signal alone.
 % ---------- Short-Time Objective Intelligibility ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{STOI}\label{sec:stoi}
-\subsection{Short-Time Objective Intelligibility}
+\metricentry{STOI}{Short-Time Objective Intelligibility (STOI)}\label{sec:stoi}
 
 % reference:
 % Taal, Hendriks, Heusdens, Jensen (2011), IEEE TASLP — An Algorithm for Intelligibility Prediction of Time-Frequency Weighted Noisy Speech
@@ -958,7 +926,7 @@ STOI estimates how easy speech is to understand by comparing a noisy or processe
 energy envelopes, the patterns of rising and falling sound energy, over short intervals in different frequency bands.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -967,23 +935,23 @@ energy envelopes, the patterns of rising and falling sound energy, over short in
                 $
             }
         };
-        \path[room for labels] ([yshift=0.24cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.69,0.42)$) to[bend left=15] node[pos=1, left] {bands $\times$ segments} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.88,-0.75)$) to[bend right=15] node[pos=1, left] {clean envelope} +(-1.00,0.99);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(3.21,0.63)$) to node[pos=1, below] {processed envelope} +(0.00,-0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.69,0.42)$) to[bend left=15] node[pos=1, left] {bands $\times$ segments} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.88,-0.75)$) to[bend right=15] node[pos=1, left] {clean envelope} +(-1.00,0.99);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(3.21,0.63)$) to node[pos=1, below] {processed envelope} +(0.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 $x_{j,m}$ is the clean envelope in band $j$, segment $m$; $\tilde{y}_{j,m}$ is the processed one. STOI normalizes level differences,
 then clips large deviations so a few samples do not dominate the correlation. Higher is better predicted intelligibility, but there is
 no universal conversion to a percentage of words understood.
 
-\textbf{When to use STOI?}
+\metricheading{When to use}
 
 Use it for speech enhancement, noise suppression and hearing aids when the goal is understanding noisy speech. Avoid it for clean
 speech, where it saturates and says little about quality. With strongly modulated maskers such as competing talkers, consider ESTOI.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item In the original experiments, STOI correlated strongly with intelligibility across several noisy-speech conditions and could
 move differently from quality metrics.
@@ -1000,15 +968,15 @@ listening test supports a percentage of words understood.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/STOI_envelopes.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. STOI.} \underline{Top:} the energy envelope of one band ($952$ Hz) for clean speech and the same speech in white
+\metriccaption{Figure. STOI.}{\textit{Top:} the energy envelope of one band ($952$ Hz) for clean speech and the same speech in white
 noise at $0$ dB SNR over three $384$ ms segments. Noise fills the valleys between syllables; the clean--noisy correlation is $0.98$
-in the segment with a strong syllable onset and $0.73$ in the quieter one. \underline{Bottom:} the correlation for all $15$ bands and
+in the segment with a strong syllable onset and $0.73$ in the quieter one. \textit{Bottom:} the correlation for all $15$ bands and
 every segment. STOI is their mean, $0.76$ here ($0.77$ with the reference implementation's sliding segments), $0.91$ at $10$ dB SNR
-and $0.70$ at $-5$ dB.
+and $0.70$ at $-5$ dB.}
 
 \orangebox{Did you know that...}
 {STOI ignores almost everything about a sound except the slow rise and fall of energy in each frequency band, and that is the point.
@@ -1017,7 +985,7 @@ envelopes of a handful of bands are preserved, an insight that also informed coc
 intelligibility, so processing that preserves the envelopes can score well despite changes in timbre, pitch or phase. Its clipping step
 does not simply remove all extra energy; it limits how much large local deviations influence each correlation.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PESQ estimates quality, while STOI estimates intelligibility; both need the clean reference and both were validated against listening
 tests. When PESQ improves and STOI falls, the scores flag a possible tradeoff rather than proving its cause. Listen to the audio and test
@@ -1027,8 +995,11 @@ for human intelligibility.
 % ---------- Benchmarks ---------
 \clearpage
 \thispagestyle{genaistyle}
-\section{Benchmarks}\label{sec:benchmarks}
-\subsection{Benchmarks}
+\metricentry{Benchmarks}{Benchmarks}\label{sec:benchmarks}
+\begingroup
+\setlength{\metricheadingbefore}{6pt}
+\setlength{\metricheadingafter}{-1.5pt}
+
 
 Checking a model on a handful of examples can reveal obvious failures, but it cannot tell us how reliably the model performs. A benchmark
 makes the test repeatable by fixing the tasks, test data and scoring rules. When models face the same test under the same conditions, we
@@ -1039,7 +1010,7 @@ influential benchmarks: what each introduced, why it mattered and how long it re
 score ceiling, we name the model, year and evaluation setup. That setup matters because prompts, tool access, attempts and compute can all
 change a score. Test questions seen during training and results near the ceiling also weaken the comparison.
 
-\textbf{GLUE --- General Language Understanding Evaluation}
+\metricheading{GLUE --- General Language Understanding Evaluation}
 % reference:
 % https://arxiv.org/pdf/1804.07461
 % https://arxiv.org/pdf/1905.00537
@@ -1051,8 +1022,7 @@ sentiment classification, paraphrase detection and natural language inference. B
 baseline, leaving little room to tell stronger systems apart. Its creators responded with SuperGLUE, a harder set of tasks. In January
 $2021$, a $1.5$-billion-parameter DeBERTa became the first single model to pass SuperGLUE's human macro-average: $89.9$ versus $89.8$.
 
-\textbf{IFEval --- Instruction-Following Eval}
-
+\metricheading{IFEval --- Instruction-Following Eval}
 % reference:
 % https://arxiv.org/pdf/2311.07911
 
@@ -1063,8 +1033,7 @@ can accept some formatting differences. These scores test whether selected instr
 correct or useful. The original was English-only; M-IFEval extended the idea to French, Japanese and Spanish in $2025$.
 
 \newpage
-\textbf{BBH --- BIG-Bench Hard}
-
+\metricheading{BBH --- BIG-Bench Hard}
 % reference:
 % https://arxiv.org/pdf/2206.04615
 % https://arxiv.org/pdf/2210.09261
@@ -1076,8 +1045,7 @@ prompting, however, PaLM and Codex exceeded that baseline on $10$ and $17$ tasks
 and prompts. BBEH ($2025$) later replaced each task with a harder one in a similar reasoning domain. Its authors tuned task difficulty
 against two reference models, so ``extra hard'' describes that model context rather than a permanent threshold.
 
-\textbf{MATH}
-
+\metricheading{MATH}
 % reference:
 % https://arxiv.org/pdf/2103.03874
 
@@ -1086,8 +1054,7 @@ The original paper reported low scores from the models it tested. In September $
 separating frontier models; o1-2024-12-17 scored $96.4\%$ pass@1 that December. Later reports also use subsets: DeepSeek-R1, for example, reported
 $97.3\%$ pass@1 on MATH-500 in $2025$. That is not the full test set, so comparisons must name the split and scoring protocol.
 
-\textbf{GPQA --- Graduate-Level Google-Proof Q\&A}
-
+\metricheading{GPQA --- Graduate-Level Google-Proof Q\&A}
 % reference:
 % https://arxiv.org/pdf/2311.12022
 
@@ -1097,8 +1064,7 @@ non-expert difficulty; the stricter $198$-question Diamond subset requires agree
 non-experts. In September $2024$, OpenAI reported o1 as the first model to outperform the PhD experts it recruited for Diamond, with
 $77.3\%$ pass@1. That milestone applies to this subset and study, not to scientific expertise in general.
 
-\textbf{MuSR --- Multistep Soft Reasoning}
-
+\metricheading{MuSR --- Multistep Soft Reasoning}
 % reference:
 % https://arxiv.org/pdf/2310.16049
 
@@ -1108,8 +1074,7 @@ story, so answers require combining information across the narrative. Accuracy s
 whether it followed that tree. Fresh instances can reduce exposure risk; the published dataset can still leak like any public benchmark.
 
 \newpage
-\textbf{MMLU-Pro}
-
+\metricheading{MMLU-Pro}
 % references:
 % https://arxiv.org/pdf/2406.01574
 % https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro
@@ -1119,8 +1084,7 @@ areas, ten answer options instead of four and a stronger emphasis on reasoning. 
 more than four of eight specified models answered correctly; that filter does not change as models improve. In the paper's experiment,
 chain-of-thought prompting raised GPT-4o from $53.5\%$ to $72.6\%$, so even the prompt changed the result by $19.1$ points.
 
-\textbf{SQuAD}
-
+\metricheading{SQuAD}
 % reference:
 % https://arxiv.org/pdf/1806.03822
 % https://rajpurkar.github.io/SQuAD-explorer/
@@ -1130,8 +1094,7 @@ $2.0$ ($2018$) added over $50{,}000$ unanswerable questions, so a model must als
 $93.2$ test F1 on SQuAD $1.1$ and $83.1$ on SQuAD $2.0$, both new state-of-the-art results. The versions test different tasks, so their
 scores are not interchangeable.
 
-\textbf{ARC-AGI}
-
+\metricheading{ARC-AGI}
 % reference:
 % https://arxiv.org/pdf/1911.01547
 % https://arcprize.org/arc-agi
@@ -1143,3 +1106,5 @@ name the version, split and compute allowance.
 
 ARC-AGI-$3$, introduced for the $2026$ competition, changed the task. Agents act in unfamiliar environments, receive feedback and are
 scored on success and efficiency relative to people. Its results are not interchangeable with the static grid puzzles.
+
+\endgroup

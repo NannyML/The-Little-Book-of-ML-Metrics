@@ -50,13 +50,12 @@ In the plots, gray bands show the expected ranges learned from earlier measureme
 % ---------- Expected Range ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Expected Range}\label{sec:expected-range}
-\subsection{Comparing a Metric with Its History}
+\monitorentry{Expected Range}{Comparing a Metric with Its History}\label{sec:expected-range}
 
 An expected range uses past measurements to show where a metric usually falls. Values outside that range are flagged for review. In the rule below, $\mu_t$ is the expected value for the day and $\sigma_t$ describes the usual variation around it.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -65,35 +64,38 @@ An expected range uses past measurements to show where a metric usually falls. V
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.2,-0.2)$) to[bend right=15] node[pos=1, left] {today's measurement} +(-1,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.4,-0.2)$) to[bend left=15] node[pos=1, right] {baseline from history} +(0.8,.5);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.0,0.25)$) to[bend right=15] node[pos=1, left] {sensitivity} +(-0.8,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.75,0.25)$) to[bend left=15] node[pos=1, right] {spread of history} +(0.4,-.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.2,-0.2)$) to[bend right=15] node[pos=1, left] (obsannotation1) {today's measurement} +(-1,.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.4,-0.2)$) to[bend left=15] node[pos=1, right] (obsannotation2) {baseline from history} +(0.8,.5);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.0,0.25)$) to[bend right=15] node[pos=1, left] (obsannotation3) {sensitivity} +(-0.8,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.75,0.25)$) to[bend left=15] node[pos=1, right] (obsannotation4) {spread of history} +(0.4,-.5);
+
+
+
+
     }
-\end{center}
+\end{metricformula}
 
-The setting $z$ determines how wide the range is. Lowering it makes the monitor more sensitive to small changes, while raising it allows more variation before triggering an alert. A common starting point for this rule is $z=3$, though tools may use different settings. Human feedback can also help: marking an alert as expected can help a monitor learn legitimate patterns, while confirming an incident can help keep bad data out of its baseline.
+Lowering $z$ narrows the range and increases sensitivity; raising it allows more variation before an alert. A common starting point is $z=3$, though tools differ. Marking an alert as expected can help a monitor learn legitimate patterns; confirming an incident can help keep bad data out of its baseline.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_expected_range.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Expected Range.} Daily counts for a simulated orders table. \underline{Left:} three weeks of data establish an average for each weekday, with a range of about $600$ rows above and below it. \underline{Right:} no load arrives on day $26$, and only part of the load arrives on day $31$. Both counts fall below the range. Lower weekend counts stay within their expected range.
+\metriccaption{Figure. Expected Range.}{Daily counts for a simulated orders table. \textit{Left:} three weeks establish weekday averages with ranges of about $\pm 600$ rows. \textit{Right:} a missing load on day $26$ and a partial load on day $31$ fall below the range. Lower weekend counts stay within it.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use a historical range when normal values change over time, such as between weekdays and weekends, and adjust sensitivity to balance missed problems against false alerts. If you already know the requirement, such as zero duplicate keys, use a fixed limit instead. In either case, an alert is a reason to investigate, not proof of an error.
 
 % ---------- Row Count ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Row Count}\label{sec:row-count}
-\subsection{Volume}
+\monitorentry{Row Count}{Volume}\label{sec:row-count}
 
 Row count tells you how many rows are in a table or a selected part of it, helping you detect missing, incomplete or repeated loads. Here, we count the rows that arrive each day, a group called a daily partition.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -102,33 +104,34 @@ Row count tells you how many rows are in a table or a selected part of it, helpi
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(0.9,0.3)$) to[bend left=15] node[pos=1, left] {row's partition value} +(-1,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.7,-0.2)$) to[bend left=15] node[pos=1, right] {the partition being scanned} +(0.6,.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.9,0.3)$) to[bend left=15] node[pos=1, left] (obsannotation1) {row's partition value} +(-1,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.7,-0.2)$) to[bend left=15] node[pos=1, right] (obsannotation2) {the partition being scanned} +(0.6,.5);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The formula counts rows whose partition date $p(r)$ matches the day $t$ being checked. In SQL, this is \texttt{COUNT(*)} with a date filter. Some databases also provide a row count in their metadata, but it may be approximate or out of date.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_row_count.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Row Count.} Daily row counts for an orders table. Day $26$ has no rows and day $31$ has only $2{,}600$; both are below the expected range. On day $36$, some rows are loaded twice, bringing the count to $5{,}358$. That is still inside the range, so row count alone misses the repeated rows.
+\metriccaption{Figure. Row Count.}{Daily row counts for an orders table. Day $26$ has no rows and day $31$ has only $2{,}600$; both are below the expected range. On day $36$, some rows are loaded twice, bringing the count to $5{,}358$. That is still inside the range, so row count alone misses the repeated rows.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it to check whether a scheduled load delivered the expected amount of data, allowing for patterns such as quieter weekends. If rows can arrive late, recheck earlier days too. Even when the count looks normal, you still need other checks to know whether the rows are correct or unique.
 
 % ---------- Freshness ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Freshness}\label{sec:freshness}
-\subsection{Most Recent Timestamp}
+\monitorentry{Freshness}{Most Recent Timestamp}\label{sec:freshness}
 
 Freshness tells you how long it has been since the latest timestamp in a column. What that tells you depends on the timestamp you choose: an arrival timestamp tracks when data last reached the table, while an event timestamp tracks when the latest recorded event happened.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -137,34 +140,35 @@ Freshness tells you how long it has been since the latest timestamp in a column.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.57cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.19,-0.09)$) to[bend right=15] node[pos=1, left] {time of the scan} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.76,-0.03)$) to node[pos=1, above] {newest timestamp} +(0.00,0.30);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.19,-0.09)$) to[bend right=15] node[pos=1, left] (obsannotation1) {time of the scan} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.76,-0.03)$) to node[pos=1, above] (obsannotation2) {newest timestamp} +(0.00,0.30);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The formula subtracts the newest timestamp from the scan time, ignoring nulls. If the latest arrival is at 01:30 and the scan is at 06:00, freshness is $4.5$ hours. Some databases also let you check when a table was last updated without reading its rows, though an update does not prove that newer data arrived.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_freshness.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Freshness.} The orders table is scanned at 06:00, usually $4.5$ hours after its latest arrival. Nothing arrives on day $26$, so freshness reaches $28.5$ hours. The load stops early on day $31$, leaving the newest row $5.6$ hours old. Both days are flagged.
+\metriccaption{Figure. Freshness.}{The orders table is scanned at 06:00, usually $4.5$ hours after its latest arrival. Nothing arrives on day $26$, so freshness reaches $28.5$ hours. The load stops early on day $31$, leaving the newest row $5.6$ hours old. Both days are flagged.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it when data must arrive before a deadline, choosing a timestamp that matches what you need to check and allowing for the loading schedule and time zone. It helps to check row count alongside freshness, since one recent row can make an incomplete load look fresh. Without a valid timestamp, freshness cannot be calculated.
 
 % ---------- Schema Changes ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Schema Changes}\label{sec:schema-changes}
-\subsection{Columns and Types}
+\monitorentry{Schema Changes}{Columns and Types}\label{sec:schema-changes}
 
 Schema monitoring tells you when columns are added, removed or given a different name or type. Even if the data still loads successfully, these changes may break queries or alter how values are stored.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -173,34 +177,35 @@ Schema monitoring tells you when columns are added, removed or given a different
                 $
             }
         };
-        \path[room for labels] ([yshift=0.50cm]a.north) ([yshift=-0.47cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-3.34,-0.03)$) to node[pos=1, above] {columns and types now} +(0.00,0.22);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(-1.69,0.07)$) to node[pos=1, below] {at the previous scan} +(0.00,-0.22);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-3.34,-0.03)$) to node[pos=1, above] (obsannotation1) {columns and types now} +(0.00,0.22);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-1.69,0.07)$) to node[pos=1, below] (obsannotation2) {at the previous scan} +(0.00,-0.22);
+
+
     }
-\end{center}
+\end{metricformula}
 
 Each $S$ lists the column names and types at one scan, and $\triangle$ keeps only the differences between the two lists. A renamed column therefore appears as one removal and one addition. The check flags these changes for review so you can distinguish intended updates from problems.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_schema.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Schema Changes.} \underline{Left:} the table grows from six columns to seven on day $34$. \underline{Right:} \texttt{discount\_pct} is added and \texttt{amount} changes from \texttt{DECIMAL(10,2)} to \texttt{FLOAT}. The column count shows the addition, but only comparing the types reveals the second change.
+\metriccaption{Figure. Schema Changes.}{\textit{Left:} the table grows from six columns to seven on day $34$. \textit{Right:} \texttt{discount\_pct} is added and \texttt{amount} changes from \texttt{DECIMAL(10,2)} to \texttt{FLOAT}. The column count shows the addition, but only comparing the types reveals the second change.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it on tables that other queries, applications or models depend on, and check how a schema change affects them before accepting it. You still need to monitor the values themselves: storing cents instead of dollars may leave the column name and type unchanged.
 
 % ---------- Missing Values ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Missing Values}\label{sec:missing-values}
-\subsection{Completeness}
+\monitorentry{Missing Values}{Completeness}\label{sec:missing-values}
 
 Missing values percentage tells you what share of a column's values are null within the partition being checked, helping you check whether the information you need is present. A rise in missing country codes, for example, may indicate that a source field is no longer being loaded correctly.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -209,34 +214,35 @@ Missing values percentage tells you what share of a column's values are null wit
                 $
             }
         };
-        \path[room for labels] ([yshift=0.24cm]a.north) ([yshift=-0.19cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.37,-0.04)$) to[bend right=15] node[pos=1, left] {non-null values in the column} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.29,0.10)$) to[bend left=15] node[pos=1, left] {rows in the partition} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.37,-0.04)$) to[bend right=15] node[pos=1, left] (obsannotation1) {non-null values in the column} +(-1.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(2.29,0.10)$) to[bend left=15] node[pos=1, left] (obsannotation2) {rows in the partition} +(-1.00,-0.30);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The formula compares the number of filled rows, $\text{count}(c)$, with the total number of rows, $\text{count}(*)$. If $80$ of $100$ rows are filled, the missing percentage is $20\%$. This check counts nulls; blank text and placeholders such as \texttt{N/A} may need separate rules.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_missing.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Missing Values.} About $2\%$ of country values are normally null. On day $29$, a source-field rename leaves $41\%$ missing, so the monitor flags the increase. The hollow point on day $26$ marks a day with no rows: there is no percentage to calculate.
+\metriccaption{Figure. Missing Values.}{About $2\%$ of country values are normally null. On day $29$, a source-field rename leaves $41\%$ missing, so the monitor flags the increase. The hollow point on day $26$ marks a day with no rows: there is no percentage to calculate.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it on fields needed for joins, reports or model inputs, with an acceptable level that reflects how the field is used. An optional field may legitimately contain nulls. Replacing missing values with a placeholder such as \texttt{unknown} can make the percentage fall without improving the data.
 
 % ---------- Duplicates ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Duplicates}\label{sec:duplicates}
-\subsection{Uniqueness}
+\monitorentry{Duplicates}{Uniqueness}\label{sec:duplicates}
 
 Duplicate percentage shows what share of rows in a partition have a repeated key, such as an order ID used to identify a record. Here, we count every copy of a repeated key as a duplicate and leave out rows whose keys are null.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -245,33 +251,34 @@ Duplicate percentage shows what share of rows in a partition have a repeated key
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.29,0.25)$) to node[pos=1, below] {records with a non-null value} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.10,-0.33)$) to node[pos=1, above] {how often record $r$'s value occurs} +(0.00,0.33);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.29,0.25)$) to node[pos=1, below] (obsannotation1) {records with a non-null value} +(0.00,-0.30);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(2.10,-0.33)$) to node[pos=1, above] (obsannotation2) {how often record $r$'s value occurs} +(0.00,0.33);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The set $R$ contains rows with a key, and $n(v_r)$ counts how often each key appears. For keys $[101,101,205,\text{null},\text{null}]$, three rows have a key and two share $101$. The duplicate percentage is therefore $2/3 \approx 66.7\%$. Some tools count only the extra copies, so check their definition.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_duplicates.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Duplicates.} Order IDs are unique except on day $36$, when $6\%$ of a load is inserted twice. For every $100$ original rows, six extra copies bring the total to $106$. The six originals and their copies make $12$ rows with repeated IDs: about $11.3\%$. The monitor flags this increase.
+\metriccaption{Figure. Duplicates.}{Order IDs are unique except on day $36$, when $6\%$ of a load is inserted twice. For every $100$ original rows, six extra copies bring the total to $106$. The six originals and their copies make $12$ rows with repeated IDs: about $11.3\%$. The monitor flags this increase.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it on fields, or combinations of fields, that should identify rows uniquely, with a fixed limit of zero if any duplicate is an error. Since null keys are excluded, check for missing keys separately. Also consider where uniqueness matters: checking only the latest day's rows will miss keys repeated across different days.
 
 % ---------- Unique Count ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Unique Count}\label{sec:unique-count}
-\subsection{Cardinality}
+\monitorentry{Unique Count}{Cardinality}\label{sec:unique-count}
 
 Unique count tells you how many different values appear in a column within a partition. It leaves out nulls and counts each value once, even if it appears in many rows. In our daily partitions, counting unique customer IDs tells you how many different customers appear in that day's load.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -280,33 +287,33 @@ Unique count tells you how many different values appear in a column within a par
                 $
             }
         };
-        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.02,-0.09)$) to node[pos=1, above] {value of the column in row $r$} +(0.00,0.33);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-1.02,-0.09)$) to node[pos=1, above] (obsannotation1) {value of the column in row $r$} +(0.00,0.33);
+
     }
-\end{center}
+\end{metricformula}
 
 Here, $P_t$ is the group of rows being checked and $c(r)$ is the value in each row. For example, customer IDs $[101,101,205,\text{null}]$ give a unique count of $2$: only $101$ and $205$ are counted.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Unique Count.} Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays, but the drop on day $31$ comes from an incomplete load. On day $38$, IDs are shortened to their last three digits, making different IDs identical and leaving only $995$ unique values despite a normal load size. The hollow point marks day $26$, when no rows arrived and the check was skipped.
+\metriccaption{Figure. Unique Count.}{Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays, but the drop on day $31$ comes from an incomplete load. On day $38$, IDs are shortened to their last three digits, making different IDs identical and leaving only $995$ unique values despite a normal load size. The hollow point marks day $26$, when no rows arrived and the check was skipped.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it to monitor customer IDs, product codes or categories such as countries. If unique count falls, check whether fewer rows arrived before investigating the values. It counts different values but does not tell you what they are: replacing one country code with another can leave the count unchanged.
 
 % ---------- Average ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Average}\label{sec:average}
-\subsection{Mean}
+\monitorentry{Average}{Mean}\label{sec:average}
 
 The average, or mean, is calculated within each partition: it adds up a column's non-null values and divides by how many there are. Here, it gives the average order amount for each day. Tracking the average can reveal a change in prices, quantities or other numeric data even when the row count stays the same.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -315,33 +322,34 @@ The average, or mean, is calculated within each partition: it adds up a column's
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.40,0.33)$) to node[pos=1, below] {non-null values in the partition} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.30,-0.33)$) to[bend right=15] node[pos=1, left] {numeric value in row $r$} +(-1.00,0.61);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.40,0.33)$) to node[pos=1, below] (obsannotation1) {non-null values in the partition} +(0.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.30,-0.33)$) to[bend right=15] node[pos=1, left] (obsannotation2) {numeric value in row $r$} +(-1.00,0.61);
+
+
     }
-\end{center}
+\end{metricformula}
 
 Here, $n_t$ counts the values used in the calculation. For $[10,20,30]$, we divide the total of $60$ by three to get an average of $20$. A few very large values can raise the average sharply, while increases and decreases can cancel each other out. The same average can therefore describe very different data.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_average.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Average.} Daily mean order amount. On day $23$, about $5\%$ of amounts arrive in cents instead of currency units. The mean rises from about $44$ to $252$, above the plotted scale. Negative refunds on day $32$ and discounts on amounts below $30$ on day $40$ lower the mean. All three changes are flagged.
+\metriccaption{Figure. Average.}{Daily mean order amount. On day $23$, about $5\%$ of amounts arrive in cents instead of currency units. The mean rises from about $44$ to $252$, above the plotted scale. Negative refunds on day $32$ and discounts on amounts below $30$ on day $40$ lower the mean. All three changes are flagged.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it to track the overall level of a numeric column, then look at quartiles and spread to understand what changed. The median can help here because it is less affected by a few extreme values. Keep the context in mind too: a promotion may legitimately change the average.
 
 % ---------- Sum ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Sum}\label{sec:sum}
-\subsection{Total}
+\monitorentry{Sum}{Total}\label{sec:sum}
 
 The sum adds up the non-null values in a numeric column within each partition. In our example, it gives the total order amount for each day. A change in the total may come from a different number of rows, different values, or both.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -350,34 +358,36 @@ The sum adds up the non-null values in a numeric column within each partition. I
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.2,-0.2)$) to[bend right=15] node[pos=1, left] {numeric value in row $r$} +(-0.8,.5);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(1.4,0.3)$) to[bend left=15] node[pos=1, left] {rows} +(-0.4,-.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.2)$) to[bend left=15] node[pos=1, right] {mean} +(0.6,.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.2,-0.2)$) to[bend right=15] node[pos=1, left] (obsannotation1) {numeric value in row $r$} +(-0.8,.5);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(1.4,0.3)$) to[bend left=15] node[pos=1, left] (obsannotation2) {rows} +(-0.4,-.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.2,-0.2)$) to[bend left=15] node[pos=1, right] (obsannotation3) {mean} +(0.6,.5);
+
+
+
     }
-\end{center}
+\end{metricformula}
 
 The sum also equals the number of non-null values $n_t$ times their average $\bar{x}_t$. For $[10,20,30]$, the total is $60$: three values with an average of $20$. SQL \texttt{SUM} returns null when there are no values to add.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_sum.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Sum.} Daily total order amount. On day $23$, about $5\%$ of amounts are stored in cents, making the total roughly six times larger. The incomplete load on day $31$ roughly halves it. Discounts on day $40$ do not push the total outside its expected range: daily changes in volume make this smaller change harder to detect.
+\metriccaption{Figure. Sum.}{Daily total order amount. On day $23$, about $5\%$ of amounts are stored in cents, making the total roughly six times larger. The incomplete load on day $31$ roughly halves it. Discounts on day $40$ do not push the total outside its expected range: daily changes in volume make this smaller change harder to detect.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it when a report depends on a total, and check both the number of non-null values and their average when investigating an alert. These can offset each other: fewer rows with larger values, or more rows with smaller ones, may leave the total looking normal.
 
 % ---------- Standard Deviation ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Standard Deviation}\label{sec:standard-deviation}
-\subsection{Spread}
+\monitorentry{Standard Deviation}{Spread}\label{sec:standard-deviation}
 
 Standard deviation measures how much numeric values vary around their average within a partition. Here, it tells us how widely order amounts vary within each day. A larger value means they are more spread out; zero means they are all the same. It is expressed in the same units as the original values.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -386,34 +396,36 @@ Standard deviation measures how much numeric values vary around their average wi
                 $
             }
         };
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.9,0.3)$) to[bend left=15] node[pos=1, left] {non-null values} +(-0.6,-.5);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.2)$) to[bend right=15] node[pos=1, left] {value in row $r$} +(-0.8,.5);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.2)$) to[bend left=15] node[pos=1, right] {partition mean} +(0.6,.5);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.9,0.3)$) to[bend left=15] node[pos=1, left] (obsannotation1) {non-null values} +(-0.6,-.5);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.0,-0.2)$) to[bend right=15] node[pos=1, left] (obsannotation2) {value in row $r$} +(-0.8,.5);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.3,-0.2)$) to[bend left=15] node[pos=1, right] (obsannotation3) {partition mean} +(0.6,.5);
+
+
+
     }
-\end{center}
+\end{metricformula}
 
 For example, $[20,20,20]$ and $[10,20,30]$ both average $20$, but only the second set has any spread. The formula above gives the sample standard deviation, which needs at least two non-null values. Check which version your tool uses: the population version divides by $n_t$ rather than $n_t-1$.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_stddev.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Standard Deviation.} Daily spread of order amounts. On day $23$, about $5\%$ of amounts arrive in cents, increasing the spread about fortyfold, above the plotted scale. Negative refunds on day $32$ and discounts on amounts below $30$ on day $40$ also increase the spread. All three days are flagged.
+\metriccaption{Figure. Standard Deviation.}{Daily spread of order amounts. On day $23$, about $5\%$ of amounts arrive in cents, increasing the spread about fortyfold, above the plotted scale. Negative refunds on day $32$ and discounts on amounts below $30$ on day $40$ also increase the spread. All three days are flagged.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it alongside the average to check how widely values vary. A few extreme values can strongly affect it, so inspect them before treating an alert as an error. Quartiles are less affected by those extremes and help show whether most values have changed.
 
 % ---------- Min / Max ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Min and Max}\label{sec:min-and-max}
-\subsection{Range}
+\monitorentry{Min and Max}{Range}\label{sec:min-and-max}
 
 Minimum and maximum are the smallest and largest non-null values in a column within a partition. Here, they give the smallest and largest order amounts for each day. They can reveal extremes that an average hides: a single negative quantity changes the minimum even if thousands of other quantities are valid.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -422,33 +434,34 @@ Minimum and maximum are the smallest and largest non-null values in a column wit
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-1.17,-0.04)$) to node[pos=1, above] {smallest non-null value} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.74,-0.04)$) to node[pos=1, above] {largest non-null value} +(0.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-1.17,-0.04)$) to node[pos=1, above] (obsannotation1) {smallest non-null value} +(0.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.74,-0.04)$) to node[pos=1, above] (obsannotation2) {largest non-null value} +(0.00,0.30);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The formula takes both values from the rows in $P_t$, the partition being checked. Because a single row determines each result, these checks can pick up individual errors as well as legitimate extremes, such as an unusually large order.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_min_max.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Min and Max.} Daily order amounts. \underline{Left:} refunds on day $32$ produce a minimum of $-121$; discounts on day $40$ lower the minimum to $1.86$. \underline{Right:} amounts stored in cents on day $23$ raise the maximum to $22{,}410$, above the scale. Day $29$ also triggers an alert, but its $487$ order is valid.
+\metriccaption{Figure. Min and Max.}{Daily order amounts. \textit{Left:} refunds on day $32$ produce a minimum of $-121$; discounts on day $40$ lower the minimum to $1.86$. \textit{Right:} amounts stored in cents on day $23$ raise the maximum to $22{,}410$, above the scale. Day $29$ also triggers an alert, but its $487$ order is valid.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use fixed limits for known requirements, such as non-negative quantities, or historical ranges to spot values that are unusually large or small. Min and Max show the extremes, not how many rows are affected; count invalid rows separately if that matters.
 
 % ---------- Quartiles ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Quartiles}\label{sec:quartiles}
-\subsection{Q1, Median, Q3}
+\monitorentry{Quartiles}{Q1, Median, Q3}\label{sec:quartiles}
 
 Quartiles summarize the values within each partition, helping show where most lie without being dominated by a few extremes. Here, we calculate them separately for each day's order amounts. If you sort those values, Q1 marks one-quarter of the way through, the median marks halfway, and Q3 marks three-quarters of the way through.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -457,33 +470,34 @@ Quartiles summarize the values within each partition, helping show where most li
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.76,0.15)$) to node[pos=1, below] {share of values at or below $x$} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(-0.21,0.13)$) to[bend right=15] node[pos=1, right] {the quantile level} +(1.00,-0.33);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-1.76,0.15)$) to node[pos=1, below] (obsannotation1) {share of values at or below $x$} +(0.00,-0.30);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(-0.21,0.13)$) to[bend right=15] node[pos=1, right] (obsannotation2) {the quantile level} +(1.00,-0.33);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The function $F_t(x)$ gives the share of values at or below $x$, ignoring nulls. For Q1, the formula finds where that share first reaches $25\%$; the median and Q3 use $50\%$ and $75\%$. Software may estimate positions between observed values; these figures use linear interpolation.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_quartiles.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Quartiles.} Daily order-amount quartiles, with the mean dashed. On day $23$, about $5\%$ of amounts arrive in cents, pushing the mean above the scale. Q3 rises much less but is still flagged. Halving prices below $30$ on day $40$ has a different effect: Q1 drops from about $25$ to $12$, while that day's median and Q3 are unaffected.
+\metriccaption{Figure. Quartiles.}{Daily order-amount quartiles, with the mean dashed. On day $23$, about $5\%$ of amounts arrive in cents, pushing the mean above the scale. Q3 rises much less but is still flagged. Halving prices below $30$ on day $40$ has a different effect: Q1 drops from about $25$ to $12$, while that day's median and Q3 are unaffected.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use quartiles to track typical values and spread when a few large or small values make the mean hard to interpret. The gap between Q1 and Q3 shows the spread of the middle half of the data. Check Min and Max too if extreme values matter.
 
 % ---------- Text Length ----------
 \clearpage
 \thispagestyle{observabilitystyle}
-\section{Text Length}\label{sec:text-length}
-\subsection{Format}
+\monitorentry{Text Length}{Format}\label{sec:text-length}
 
 Text length counts the characters in a value. Summarizing these lengths within each partition can reveal cut-off text, missing prefixes or changes in code format. Here, we track the average phone-value length for each day. Nulls are excluded, but an empty string has length zero.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -492,20 +506,22 @@ Text length counts the characters in a value. Summarizing these lengths within e
                 $
             }
         };
-        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.99,0.33)$) to[bend left=15] node[pos=1, left] {non-null strings} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.56,-0.34)$) to[bend right=15] node[pos=1, left] {characters in the string} +(-1.00,0.62);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.99,0.33)$) to[bend left=15] node[pos=1, left] (obsannotation1) {non-null strings} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.56,-0.34)$) to[bend right=15] node[pos=1, left] (obsannotation2) {characters in the string} +(-1.00,0.62);
+
+
     }
-\end{center}
+\end{metricformula}
 
 The formula averages the lengths of the non-null strings, so lengths of $[4,4,7]$ give an average of $5$. Here, $n_t$ is the number of strings included. Make sure to count characters rather than bytes, since some characters occupy more than one byte.
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/Observability_text_length.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. Text Length.} Daily average length of phone values. They normally contain eleven characters, including punctuation. On day $28$, about $60\%$ arrive as seven-character values, reducing the average to $8.7$. The values are still text and none is null, so type and missing-value checks would not catch the change.
+\metriccaption{Figure. Text Length.}{Daily average length of phone values. They normally contain eleven characters, including punctuation. On day $28$, about $60\%$ arrive as seven-character values, reducing the average to $8.7$. The values are still text and none is null, so type and missing-value checks would not catch the change.}
 
-\textbf{When to use it?}
+\metricheading{When to use}
 
 Use it on fields with a predictable format, such as product codes and phone numbers. Length alone cannot tell you whether the content is correct: two different values can have the same length. For free text, allow for normal variation before interpreting a change as an error.

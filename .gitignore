@@ -29,5 +29,8 @@ __pycache__/
 # review notes and recordings are never committed (the reviewer app lives in its own repo)
 review/
 
+# Local design studies, feedback, audits, and comparison artifacts
+/design/
+
 # formula tuner backups
 *.tex.bak

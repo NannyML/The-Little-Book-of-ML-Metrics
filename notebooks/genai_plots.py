@@ -363,7 +363,7 @@ def fig_lpips():
         v = l['variants'][k]
         ax.imshow(plt.imread(DATA / f'lpips_{k}.png'))
         ax.set_title(v['label'], fontsize=13, pad=8, color=DARK)
-        ax.text(0.5, -0.08, f'MSE {v["mse"]:.3f}  (PSNR {v["psnr"]:.1f} dB)', ha='center', va='top', fontsize=11,
+        ax.text(0.5, -0.08, f'MSE {v["mse"]:.3f}\nPSNR {v["psnr"]:.1f} dB', ha='center', va='top', fontsize=11,
                 color=MID, transform=ax.transAxes)
         c = nml_cmap(min(v['lpips'] / 0.9, 1.0))
         ax.text(0.5, -0.24, f'LPIPS {v["lpips"]:.2f}', ha='center', va='top', fontsize=15, color=c,
@@ -438,16 +438,16 @@ def fig_clip():
 def fig_dsg():
     prompt = 'a red bicycle leaning against a blue wall'
     Q = {
-        'q1': ('Is there a bicycle?', []),
-        'q2': ('Is the bicycle red?', ['q1']),
-        'q3': ('Is there a wall?', []),
-        'q4': ('Is the wall blue?', ['q3']),
-        'q5': ('Is the bicycle leaning\nagainst the wall?', ['q1', 'q3']),
+        'q1': ('Is there a\nbicycle?', []),
+        'q2': ('Is the bicycle\nred?', ['q1']),
+        'q3': ('Is there\na wall?', []),
+        'q4': ('Is the wall\nblue?', ['q3']),
+        'q5': ('Bicycle leaning\non the wall?', ['q1', 'q3']),
     }
     pos = {'q1': (0.17, 0.80), 'q3': (0.83, 0.80), 'q2': (0.17, 0.34), 'q4': (0.83, 0.34), 'q5': (0.50, 0.34)}
     images = [
-        ('image A: a blue bicycle leaning on a red wall', {'q1': 'yes', 'q2': 'no', 'q3': 'yes', 'q4': 'no', 'q5': 'yes'}),
-        ('image B: a blue wall, no bicycle', {'q1': 'no', 'q2': 'yes', 'q3': 'yes', 'q4': 'yes', 'q5': 'yes'}),
+        ('Image A: wrong colors', {'q1': 'yes', 'q2': 'no', 'q3': 'yes', 'q4': 'no', 'q5': 'yes'}),
+        ('Image B: no bicycle', {'q1': 'no', 'q2': 'yes', 'q3': 'yes', 'q4': 'yes', 'q5': 'yes'}),
     ]
 
     def dsg_score(ans):
@@ -472,22 +472,22 @@ def fig_dsg():
                 x0, y0 = pos[p]
                 x1, y1 = pos[q]
                 col = GREY_LINE if q in skipped else DARK
-                ax.add_patch(FancyArrowPatch((x0, y0 - 0.075), (x1, y1 + 0.075), arrowstyle='-|>', mutation_scale=14,
+                ax.add_patch(FancyArrowPatch((x0, y0 - 0.11), (x1, y1 + 0.11), arrowstyle='-|>', mutation_scale=14,
                                              color=col, lw=1.3, shrinkA=0, shrinkB=0, zorder=2,
                                              connectionstyle='arc3,rad=0.0'))
         for q, (text, parents) in Q.items():
             x, y = pos[q]
             state = 'skip' if q in skipped else ans[q]
             face, edge = fills[state]
-            ax.add_patch(FancyBboxPatch((x - 0.15, y - 0.075), 0.30, 0.15, boxstyle='round,pad=0.01,rounding_size=0.03',
+            ax.add_patch(FancyBboxPatch((x - 0.15, y - 0.11), 0.30, 0.22, boxstyle='round,pad=0.01,rounding_size=0.03',
                                         facecolor=face, edgecolor=edge, lw=2, zorder=3,
                                         linestyle='--' if state == 'skip' else '-'))
-            ax.text(x, y + 0.012, text, ha='center', va='center', fontsize=11.5, color=DARK, zorder=4)
+            ax.text(x, y + 0.035, text, ha='center', va='center', fontsize=11.5, color=DARK, zorder=4)
             if state == 'skip':
-                lab = f'skipped (VQA said “{ans[q]}”)'
+                lab = f'skipped\n(VQA: {ans[q]})'
             else:
                 lab = f'VQA: {ans[q]}'
-            ax.text(x, y - 0.052, lab, ha='center', va='center', fontsize=10, color=edge, zorder=4, style='italic')
+            ax.text(x, y - 0.060, lab, ha='center', va='center', fontsize=10, color=edge, zorder=4, style='italic')
         ax.set_title(title, fontsize=13, pad=6, color=DARK)
         ax.text(0.5, 0.985, 'prompt: “' + prompt + '”', ha='center', va='top', fontsize=11.5, color=MID)
         ax.text(0.5, 0.12, f'DSG = {got} / {tot} = {got / tot:.2f}', ha='center', va='top', fontsize=15, color=DARK,

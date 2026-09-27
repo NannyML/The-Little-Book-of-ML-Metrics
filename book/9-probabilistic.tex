@@ -36,8 +36,7 @@ Drift (RCD) helps us estimate its effect on performance.}{In this chapter}
 % ---------- Expected Calibration Error ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{ECE}\label{sec:ece}
-\subsection{Expected Calibration Error}
+\metricentry{ECE}{Expected Calibration Error (ECE)}\label{sec:ece}
 
 % reference:
 % Naeini, Cooper, Hauskrecht (2015) — Obtaining Well Calibrated Probabilities Using Bayesian Binning
@@ -50,7 +49,7 @@ only $70\%$ of the time, the model is overconfident in that range. ECE groups pr
 gaps, giving more weight to bins with more predictions.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -59,23 +58,23 @@ gaps, giving more weight to bins with more predictions.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.12cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-1.28,0.36)$) to[bend left=15] node[pos=1, left] {share of bin $b$} +(-1.00,-0.51);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.09,-0.69)$) to[bend right=15] node[pos=1, left] {observed accuracy} +(-1.00,0.95);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.44,-0.58)$) to node[pos=1, above] {mean confidence} +(0.00,0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.28,0.36)$) to[bend left=15] node[pos=1, left] {share of bin $b$} +(-1.00,-0.51);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.09,-0.69)$) to[bend right=15] node[pos=1, left] {observed accuracy} +(-1.00,0.95);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.44,-0.58)$) to node[pos=1, above] {mean confidence} +(0.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 ECE ranges from $0$ to $1$: $0.08$ means an average gap of eight percentage points across the bins. There is no universal cutoff
 for good calibration; the result depends on the bin boundaries, sample size, and which predictions are grouped together.
 
-\textbf{When to use ECE?}
+\metricheading{When to use}
 
 Use ECE on held-out labeled data when confidence affects decisions or to compare calibration methods. For a loan's repayment
 probability, or for CBPE, check positive-class calibration too: group by the probability of repayment and compare it with the fraction who repay.
 The confidence-based ECE shown here can hide differences between classes.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Summarizes calibration in probability units, so comparisons using the same data and bins are easy to interpret.
 \item A reliability diagram shows which confidence ranges are overconfident or underconfident, helping explain the overall score.
@@ -89,16 +88,17 @@ The confidence-based ECE shown here can hide differences between classes.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/ECE_reliability.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. ECE.} Reliability diagrams for a simulated binary classifier before and after temperature scaling, which adjusts
-confidence by dividing the model's raw scores (logits) by a positive value $T$. Each bar is a confidence bin: its
-height is the observed accuracy, its shade the share of predictions, and the red segment the gap to the diagonal.
-\underline{Left:} the model puts $55\%$ of its predictions in the top bin at a mean confidence of $0.99$ and is right $90\%$ of
-the time there; the weighted gaps sum to $\text{ECE} = 0.110$. \underline{Right:} with $T = 2.5$, the bars move closer to the
-diagonal and ECE falls to $0.007$. ROC AUC stays at $0.867$ because the ranking is unchanged in this binary example.
+\metriccaption{Figure. ECE.}{Reliability diagrams for a simulated binary classifier before and after temperature scaling, which divides
+its raw scores (logits) by a positive value $T$. Bar height shows observed accuracy, shade and the numbers inside the bars show
+the percentage of predictions in each bin, and red segments show calibration gaps.
+\textit{Left:} the top bin contains $55\%$ of predictions, with mean confidence $0.99$ and
+accuracy $0.90$; the weighted gaps sum to ECE $=0.110$.
+\textit{Right:} with $T=2.5$, ECE falls to $0.007$. ROC AUC stays at $0.867$ because
+ranking is unchanged in this binary example.}
 
 \orangebox{Did you know that...}
 {DeGroot and Fienberg ($1983$) separated the Brier score into calibration and refinement terms. Calibration describes whether
@@ -107,7 +107,7 @@ A model that gives everyone the overall event rate can be calibrated while offer
 illustrates another distinction: it preserves the predicted class in both binary and multiclass classification, but only in the
 binary case does it necessarily preserve the ranking of probabilities across examples, and hence ROC AUC.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Brier score and log loss evaluate the probabilities as a whole, while ROC AUC measures ranking. Log loss can improve without
 changing either ROC AUC or binned ECE, so read them together before explaining a change. Calibration within Groups
@@ -116,8 +116,7 @@ changing either ROC AUC or binned ECE, so read them together before explaining a
 % ---------- CBPE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{CBPE}\label{sec:cbpe}
-\subsection{Confidence-Based Performance Estimation}
+\metricentry{CBPE}{Confidence-Based Performance Estimation (CBPE)}\label{sec:cbpe}
 
 % reference:
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#confidence-based-performance-estimation-cbpe
@@ -129,7 +128,7 @@ A transaction flagged as fraud with $c_j=0.9$ contributes $0.9$ to expected
 true positives and $0.1$ to expected false positives.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -145,22 +144,23 @@ true positives and $0.1$ to expected false positives.
             \widehat{\text{TN}} = \sum_{j} (1 - {\color{nmlpurple}c_j})\, \mathds{1}[{\color{nmlpurple}\hat{y}_j} = 0]
             $
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-2.50,-0.22)$) to node[pos=1, above] {calibrated probability} +(0.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(3.27,-0.36)$) to node[pos=1, above] {predicted label} +(0.00,0.43);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.30,-0.35)$) to[bend right=15] node[pos=1,left] {calibrated probability} +(-1.0,0.65);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(4.40,-0.20)$) to[bend left=15] node[pos=1,above] {predicted label} +(0.0,0.65);
     }
-\end{center}
+\end{metricformula}
 
 The indicator $\mathds{1}$ selects the predictions with the stated label, and each sum runs over one production batch. An
 unflagged transaction contributes $c_j$ to expected false negatives and $1-c_j$ to expected true negatives. Substituting these
 counts into metric formulas gives expected accuracy and precision, and approximations for recall and F1.
 
-\textbf{When to use CBPE?}
+\metricheading{When to use}
 
 Use CBPE when labels are delayed and calibration is expected to hold in production. Fit the calibrator on labeled reference
 predictions and validate the estimates on separate data. If a changing input mix disrupts calibration, consider PAPE; neither
 method can reliably estimate performance for inputs absent from the reference data.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Estimates several metrics from one expected confusion matrix, without waiting for production labels.
 \item Can follow performance changes caused by a new input mix when calibration still holds.
@@ -173,18 +173,18 @@ method can reliably estimate performance for inputs absent from the reference da
 \clearpage
 
 \thispagestyle{customstyle}
-\enlargethispage{\baselineskip}
 
-\begin{center}
+
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/CBPE_estimation.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. CBPE.} \underline{Left:} twelve production predictions with calibrated probabilities and no labels. Each bar is the
-probability the prediction is right, $c$ for $\hat{y}=1$ and $1-c$ for $\hat{y}=0$; their mean, $0.77$, is the expected accuracy. The
-labels that arrive later make nine of twelve right, $0.75$. \underline{Right:} twelve simulated chunks of $2{,}000$ predictions.
-Accuracy rises as the input mix changes in chunks $1$--$7$. From chunk $8$, the input--outcome relationship changes too: accuracy
-falls to $0.60$, while the estimate stays near $0.86$. The illustrative band follows the estimate at $\pm 3$ standard deviations
-of reference-chunk accuracy; it is neither a validated uncertainty interval nor a fixed alert threshold.
+\metriccaption{Figure. CBPE.}{\textit{Left:} the first seeded draw of twelve production predictions, with no selection using their outcomes.
+Each bar gives the chance of being right: $c$ for $\hat{y}=1$, or $1-c$ for $\hat{y}=0$. Their mean is $0.82$;
+the labels that arrive later make all twelve correct, an accuracy of $1.00$.
+\textit{Right:} twelve simulated chunks of $2{,}000$ predictions. Accuracy rises as the input mix changes; from chunk $8$,
+concept drift lowers accuracy to $0.60$ while the estimate stays near $0.86$.
+The illustrative band is $\pm 3$ reference-chunk standard deviations around the estimate, not a validated uncertainty interval or fixed alert threshold.}
 
 \orangebox{Did you know that...}
 {Even a sound estimate need not equal the accuracy measured when labels arrive. For $2{,}000$ independent predictions, each with
@@ -192,7 +192,7 @@ an $80\%$ chance of being correct, the standard error of accuracy is $\sqrt{0.8(
 point. Uncertainty intervals account for variation around an estimate, while historical alert thresholds flag changes from past
 performance. To judge a gap, consider both sampling variation and estimation error.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Low reference ECE does not bound production error. PAPE adjusts calibration for a changed input mix, but its estimates also need
 validation. When labels arrive, investigate gaps between estimated and measured performance; RCD can help assess concept drift,
@@ -201,8 +201,7 @@ while estimator error and sampling variation may also contribute.
 % ---------- PAPE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{PAPE}\label{sec:pape}
-\subsection{Probabilistic Adaptive Performance Estimation}
+\metricentry{PAPE}{Probabilistic Adaptive Performance Estimation (PAPE)}\label{sec:pape}
 
 % reference:
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/probabilistic-adaptive-performance-estimation-pape
@@ -214,7 +213,7 @@ rate is $80\%$, so calibration looks right. If the first group becomes more comm
 group's behavior changed. PAPE gives reference examples from that group more weight when refitting the calibrator.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -223,23 +222,23 @@ group's behavior changed. PAPE gives reference examples from that group more wei
                 $
             }
         };
-        \path[room for labels] ([yshift=0.13cm]a.north) ([yshift=-0.18cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-0.60,-0.18)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.48,0.09)$) to[bend left=15] node[pos=1, left] {domain classifier} +(-1.00,-0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-0.60,-0.18)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.48,0.09)$) to[bend left=15] node[pos=1, left] {domain classifier} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 $\hat{w}(x)$ estimates the density ratio $p_{\text{prod}}(x)/p_{\text{ref}}(x)$ from a classifier trained to tell production
 ($z=1$) from reference ($z=0$): inputs twice as common get weight $2$. The calibrator is fit on reference labels with these weights,
 applied to production scores, and the confusion matrix is built as in CBPE.
 
-\textbf{When to use PAPE?}
+\metricheading{When to use}
 
 Use PAPE when a changed customer mix may have disrupted calibration, provided the reference data covers the inputs seen in
 production. Check that enough reference examples support the new mix. Weighting cannot supply missing examples or reveal
 concept drift without new labels.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Uses production inputs to adjust reference calibration, so it can follow changes that a fixed calibrator misses.
 \item Recomputes weights for each chunk, allowing the calibration adjustment to change as the customer mix changes.
@@ -253,15 +252,15 @@ concept drift without new labels.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/PAPE_reweighting.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. PAPE.} A simulated classifier whose calibration varies with an artificial input, $x_2$.
-\underline{Left:} the reference (gray) and final production chunk (purple) have different input distributions. The curve shows
-the mean weight assigned to reference points at each $x_2$, about $18$ near the production region and close to zero elsewhere.
-\underline{Right:} CBPE uses the fixed reference calibration and stays near $0.75$ while realized accuracy climbs to
-$0.89$; PAPE follows it with a mean absolute error of $0.009$ against CBPE's $0.089$.
+\metriccaption{Figure. PAPE.}{A simulated classifier whose calibration varies with input $x_2$.
+\textit{Left:} reference and final-production densities are shown above the mean reference weight in each $x_2$ bin. The
+weight peaks near $18$ in the production region.
+\textit{Right:} fixed reference calibration keeps CBPE near $0.75$ as realized accuracy reaches
+$0.89$. PAPE follows it, with a mean absolute error of $0.009$ versus CBPE's $0.089$.}
 
 \orangebox{Did you know that...}
 {Importance weighting can estimate performance directly by giving more weight to errors on reference examples that resemble
@@ -270,7 +269,7 @@ In Białek and colleagues' $2025$ benchmark, covering $959$ evaluation cases and
 PAPE had the lowest aggregate error for accuracy, F1, and ROC AUC among eight evaluated methods. That result supports the approach
 in those experiments; it does not guarantee that weighting improves every estimate.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 If CBPE and PAPE disagree, check whether production inputs are covered by the reference data and whether a few examples dominate
 the weights. Compare both estimates with measured performance on labeled periods with similar shifts before choosing between them.
@@ -279,8 +278,7 @@ DLE estimates regression loss; RCD uses new labels to assess the effect of a cha
 % ---------- DLE ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{DLE}\label{sec:dle}
-\subsection{Direct Loss Estimation}
+\metricentry{DLE}{Direct Loss Estimation (DLE)}\label{sec:dle}
 
 % reference:
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#direct-loss-estimation-dle
@@ -291,7 +289,7 @@ reference errors, then averages its predicted losses over each production batch.
 the \emph{nanny}, and the monitored model is the \emph{child}.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -300,25 +298,25 @@ the \emph{nanny}, and the monitored model is the \emph{child}.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.19cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.93,0.42)$) to[bend left=15] node[pos=1, left] {production size} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.52)$) to[bend right=15] node[pos=1, left] {nanny model} +(-1.00,0.72);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.05,0.63)$) to[bend right=15] node[pos=1, right] {input} +(1.00,-0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.45,-0.51)$) to node[pos=1, above] {child's prediction} +(0.00,0.33);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.93,0.42)$) to[bend left=15] node[pos=1, left] {production size} +(-1.00,-0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.52)$) to[bend right=15] node[pos=1, left] {nanny model} +(-1.00,0.72);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.05,0.63)$) to[bend right=15] node[pos=1, right] {input} +(1.00,-0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.45,-0.51)$) to node[pos=1, above] {child's prediction} +(0.00,0.33);
     }
-\end{center}
+\end{metricformula}
 
 For MAE, train $h$ to predict $|y-f(x)|$ from the inputs and the monitored model's prediction $f(x)$. These errors must come from
 data that $f$ did not train on. For MSE, predict squared errors instead; for RMSE, take the square root after averaging them.
 Validate $h$'s estimates on separate labeled data before using them for monitoring.
 
-\textbf{When to use DLE?}
+\metricheading{When to use}
 
 Use DLE when regression targets arrive late and the input mix changes. It is useful when expected loss varies predictably across
 inputs, whether because of noise or systematic model errors. It cannot reliably handle a changed input--outcome relationship
 or inputs outside the reference data.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Estimates familiar regression metrics directly from losses, without having to model the full distribution of possible outcomes.
 \item Error size can be easier to predict than the outcome itself: a promotion may have uncertain demand but consistently larger errors.
@@ -332,15 +330,15 @@ or inputs outside the reference data.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/DLE_nanny.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. DLE.} \underline{Left:} simulated data whose noise grows with the input, a linear prediction model $f$, and a
-linear loss model $h$. The shaded band shows $f(x)\pm h(x)$: the prediction plus or minus the estimated mean absolute error.
-It illustrates error size, with no stated coverage probability. Two absolute errors used to train $h$ are marked in red.
-\underline{Right:} eight production chunks move toward the noisier region. Measured MAE rises from $0.13$ to $0.67$, and DLE
-tracks it to within $0.01$ in this example.
+\metriccaption{Figure. DLE.}{\textit{Left:} simulated reference data with noise that grows with the input, a linear model $f$, and a loss
+predictor $h$ whose outputs are constrained to be nonnegative. The band $f(x)\pm h(x)$ illustrates estimated absolute-error size;
+it has no stated coverage probability. Two absolute errors used to train $h$ are marked in red.
+\textit{Right:} eight unseen production chunks move toward noisier inputs. Measured MAE rises from $0.13$ to
+$0.67$; the maximum gap from DLE is $0.009$ in this example.}
 
 \orangebox{Did you know that...}
 {NannyML explored Bayesian models and conformalized quantile regression before adopting DLE. One attempt converted two predicted
@@ -349,7 +347,7 @@ Predicting the loss directly removed those intermediate steps. The normality ass
 conformal prediction itself does not require normally distributed noise. Its usual coverage guarantee instead depends on
 calibration and future examples being exchangeable, as they are under independent sampling from the same distribution.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CBPE and PAPE estimate classification performance; DLE learns the loss directly. When measured and estimated loss disagree,
 check input changes, recent labeled errors, and the loss model's validation results. The gap may reflect concept drift, poor
@@ -358,8 +356,7 @@ estimation, or sampling variation, and input monitoring alone cannot distinguish
 % ---------- RCD ----------
 \clearpage
 \thispagestyle{probabilisticstyle}
-\section{RCD}\label{sec:rcd}
-\subsection{Reverse Concept Drift}
+\metricentry{RCD}{Reverse Concept Drift (RCD)}\label{sec:rcd}
 
 % reference:
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/reverse-concept-drift-rcd
@@ -370,7 +367,7 @@ would be under today's repayment behavior. A separate model $g$ learns that beha
 recent labeled data.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -382,23 +379,23 @@ recent labeled data.
         \node[below=0.1cm of a, inner sep=2pt, font=\normalsize] (b) {
             $\mathbb{E}_{\,y \sim {\color{nmlpurple}g}(x)}[m(\hat{y}, y)] = {\color{nmlpurple}g}(x)\, m(\hat{y}, 1) + \big(1 - {\color{nmlpurple}g}(x)\big)\, m(\hat{y}, 0)$
         };
-        \draw[overlay,-latex,nmlpurple, semithick] ($(b.south)+(-0.55,0.1)$) to[bend left=15] node[pos=1, left] {new concept} +(-0.5,-.45);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.9,-0.3)$) to[bend left=15] node[pos=1, right] {reference performance} +(0.2,.5);
+        \draw[-latex,nmlpurple, semithick] ($(b.south)+(-0.55,0.1)$) to[bend left=15] node[pos=1, left] {new concept} +(-0.5,-.45);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.9,-0.3)$) to[bend left=15] node[pos=1, right] {reference performance} +(0.2,.5);
     }
-\end{center}
+\end{metricformula}
 
 The equation shows binary accuracy: $g(x)$ is the estimated probability of class $1$ under the new concept, $m(\hat{y},y)$ is
 $1$ for a correct prediction and $0$ otherwise, and $m_{\text{ref}}$ is measured reference accuracy. Averaging over the same
 reference inputs holds their mix fixed, so $\Delta$ estimates the accuracy change due to the new concept. F1 and ROC AUC need
 different metric calculations.
 
-\textbf{When to use RCD?}
+\metricheading{When to use}
 
 Use RCD after labels arrive to investigate whether changed outcomes for comparable inputs could explain a performance change.
 A negative accuracy impact is a reason to evaluate retraining, not a guarantee it will help. Recent labeled data must be sufficient
 to learn the new concept across the reference inputs.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Evaluates a changed concept on a fixed population, avoiding confusion with changes in how common different inputs are.
 \item Uses the metric's own units: an accuracy impact of $-0.04$ estimates a four-percentage-point drop on the reference population.
@@ -412,15 +409,16 @@ to learn the new concept across the reference inputs.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/RCD_decomposition.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. RCD.} \underline{Left:} simulated reference inputs, the monitored model's decision boundary (black), and the new
-concept model's boundary (red). Between them, the models predict different classes. \underline{Right:} measured accuracy falls
-from $0.832$ to $0.746$. Changing the input mix while keeping the old concept gives an estimated effect of $+0.010$; applying
-the new concept to the reference inputs gives $-0.065$. These reach $0.777$, leaving a residual of $-0.031$. Interaction between
-the shifts, concept-model error, and sampling variation can all contribute to that remainder.
+\metriccaption{Figure. RCD.}{\textit{Left:} simulated reference inputs, the monitored model's boundary (black), and the new concept model's
+boundary (red). \textit{Right:} accuracy falls from $0.829$ to $0.750$.
+Moving the inputs under the old concept gives $+0.011$; applying the new concept to reference inputs gives
+$-0.062$. Together these reach $0.779$. The explicit residual step, $-0.029$,
+accounts for the remaining difference. Interaction between shifts, concept-model error and sampling variation can all contribute;
+these effects need not add independently.}
 
 \orangebox{Did you know that...}
 {A large concept change can leave overall accuracy unchanged. Suppose a model predicts repayment for everyone in two equally
@@ -428,7 +426,7 @@ sized groups. Both groups initially repay $80\%$ of the time; later, one repays 
 by twenty percentage points, but average accuracy is still $80\%$: the improvement in one group cancels the deterioration in
 the other. A small overall impact can therefore hide a substantial change for particular groups.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CBPE, PAPE, and DLE assume the input--outcome relationship is stable; RCD helps investigate that assumption once labels arrive.
 RCD also reports a \emph{magnitude}, $\frac{1}{n}\sum_j |g(x_j)-g_{\text{ref}}(x_j)|$, where $g_{\text{ref}}$ models the old concept

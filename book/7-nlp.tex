@@ -33,8 +33,7 @@ account for the context in which words appear.}{In this chapter}
 % ---------- Bilingual Evaluation Understudy ----------
 \clearpage
 \thispagestyle{nlpstyle}
-\section{BLEU}\label{sec:bleu}
-\subsection{Bilingual Evaluation Understudy}
+\metricentry{BLEU}{Bilingual Evaluation Understudy (BLEU)}\label{sec:bleu}
 % references:
 % https://aclanthology.org/P02-1040.pdf
 
@@ -46,7 +45,7 @@ word, a bigram is a pair, and so on. The usual BLEU-4 score combines matches of 
 so it rewards shared phrases as well as individual words.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -55,12 +54,12 @@ so it rewards shared phrases as well as individual words.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.21cm]a.north) ([yshift=-0.48cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-1.35,-0.61)$) to[bend right=15] node[pos=1, left] {brevity penalty} +(-1.00,0.80);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(3.22,0.60)$) to node[pos=1, below] {n-gram precision} +(0.00,-0.79);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.75,0.69)$) to[bend left=15] node[pos=1, left] {n-gram weights} +(-1.00,-0.88);
+
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-1.35,-0.61)$) to[bend right=15] node[pos=1, left] {brevity penalty} +(-1.00,0.80);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(3.22,0.60)$) to node[pos=1, below] {n-gram precision} +(0.00,-0.79);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.75,0.69)$) to[bend left=15] node[pos=1, left] {n-gram weights} +(-1.00,-0.88);
     }
-\end{center}
+\end{metricformula}
 
 Each $p_n$ is the fraction of the output's $n$-grams that match a reference. Repeating a
 phrase earns credit only up to its largest count in any one reference. For a whole test set, BLEU pools
@@ -68,13 +67,13 @@ these counts before combining the four precisions with equal weights. It then ap
 penalty $BP$ if the total output is too short relative to the references. The score ranges from $0$ to $1$, often
 reported on a $0$--$100$ scale; higher means more overlap.
 
-\textbf{When to use BLEU?}
+\metricheading{When to use}
 
 Use BLEU to compare translation systems on the same test set and references. Compute it over the
 whole set, rather than averaging sentence scores. Individual sentences often have too few long
 phrase matches for a useful unsmoothed score.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Fast to compute: it counts shared words and phrases without running another model.
 \item Gives a repeatable comparison across model versions when the evaluation data and settings stay fixed.
@@ -89,15 +88,15 @@ which records its version and settings.
 
 \thispagestyle{customstyle}
 
-\begin{center}
-    \includegraphics[width=0.62\textwidth]{figures/BLEU_ngram_precision.png}
-\end{center}
+\begin{metricfigure}
+    \includegraphics[width=.82\textwidth]{figures/BLEU_ngram_precision.png}
+\end{metricfigure}
 
-\textbf{Figure. BLEU.} Replacing \textit{fox} with \textit{cat} and \textit{lazy} with \textit{tired}
+\metriccaption{Figure. BLEU.}{Replacing \textit{fox} with \textit{cat} and \textit{lazy} with \textit{tired}
 breaks every four-word match. In this unsmoothed BLEU-4 example, $p_4=0$ makes the geometric mean
 $0$, even though $78\%$ of individual words still match. An arithmetic mean of the four precisions
 would be $0.39$, but BLEU does not combine them that way. Smoothing can give a nonzero score when
-an $n$-gram order has no matches.
+an $n$-gram order has no matches.}
 
 \orangebox{Did you know that...}
 {Papineni and colleagues at IBM introduced BLEU in 2002 to make translation evaluation faster and
@@ -106,7 +105,7 @@ sentences, not one translation at a time. That distinction still matters: BLEU's
 combines the precisions calculated from pooled counts, so averaging separate sentence scores gives
 a different result.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 METEOR can recognize stems and synonyms that BLEU misses; BERTScore compares learned representations
 of words in context. TER gives another view by counting edits, including phrase moves. If these scores
@@ -119,8 +118,7 @@ errors.
 
 \clearpage
 \thispagestyle{nlpstyle}
-\section{METEOR}\label{sec:meteor}
-\subsection{Metric for Evaluation of Translation with Explicit ORdering}
+\metricentry{METEOR}{Metric for Evaluation of Translation with Explicit ORdering (METEOR)}\label{sec:meteor}
 
 METEOR measures how well the words in a translation match a reference, allowing some differences in
 wording. Alongside exact matches, it can recognize shared stems (\textit{run}/\textit{running}) and
@@ -128,7 +126,7 @@ synonyms (\textit{quick}/\textit{fast}). It combines how much of each text match
 score when those matches are scattered rather than forming phrases in the same order.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -137,11 +135,11 @@ score when those matches are scattered rather than forming phrases in the same o
                 $
             }
         };
-        \path[room for labels] ([yshift=0.22cm]a.north) ([yshift=-0.21cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.91,-0.13)$) to[bend right=15] node[pos=1, left] {harmonic mean} +(-1.00,0.37);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.45,0.09)$) to[bend left=15] node[pos=1, left] {fragmentation penalty} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.91,-0.13)$) to[bend right=15] node[pos=1, left] {harmonic mean} +(-1.00,0.37);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.45,0.09)$) to[bend left=15] node[pos=1, left] {fragmentation penalty} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 $F_{mean}$ combines word-match precision and recall. The fragmentation term
 $frag$ is the number of contiguous matched groups divided by the number of matched
@@ -149,13 +147,13 @@ words; a group must stay adjacent and in order in both texts. $\gamma$ and $\bet
 control the penalty. The example uses the original settings, $\gamma=0.5$ and $\beta=3$.
 Scores lie between $0$ and $1$; higher means closer agreement under these matching rules.
 
-\textbf{When to use METEOR?}
+\metricheading{When to use}
 
 Use METEOR for translation or captioning when you want to credit supported word forms and synonyms.
 Check which matching resources exist for the language, and report the implementation, enabled
 matching modules and parameter settings so others can reproduce the score.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Recognizes some word changes that exact overlap misses, while still accounting for word order.
 \item Can score individual sentences, combining how many output words match with how much of the reference
@@ -172,16 +170,16 @@ what (see figure).
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/METEOR_vs_BLEU.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. METEOR.} This illustration uses hand-chosen word pairs to show how matching works,
+\metriccaption{Figure. METEOR.}{This illustration uses hand-chosen word pairs to show how matching works,
 rather than a full METEOR implementation. The middle row retains some one- and two-word matches but
 loses every three- and four-word match, making unsmoothed BLEU-4 zero. The last row changes who jumps
 over whom, so it is not an equivalent paraphrase despite the label. It also drops \textit{brown}; its
 lower METEOR score reflects both missing matches and fragmentation. The displayed $1.00$ scores are
-rounded.
+rounded.}
 
 \orangebox{Did you know that...}
 {Banerjee and Lavie introduced METEOR at Carnegie Mellon in 2005, partly to address BLEU's lack of an
@@ -190,7 +188,7 @@ used $\alpha=0.9$, giving recall nine times the weight of precision. Missing a r
 matters more than adding an unmatched word. This is a parameter choice, also used in the figure,
 not a fixed property of every METEOR configuration.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 A high METEOR score alongside low BLEU can reflect stems or synonyms that BLEU does not match.
 It is a reason to inspect the wording, not evidence that the translation is correct. TER counts edits;
@@ -203,8 +201,7 @@ BERTScore, in the GenAI chapter, compares learned representations of words in co
 
 \clearpage
 \thispagestyle{nlpstyle}
-\section{ROUGE}\label{sec:rouge}
-\subsection{Recall-Oriented Understudy for Gisting Evaluation}
+\metricentry{ROUGE}{Recall-Oriented Understudy for Gisting Evaluation (ROUGE)}\label{sec:rouge}
 
 ROUGE is a family of metrics that compares a summary's wording with a reference summary. ROUGE-1
 counts shared words, and ROUGE-2 counts shared pairs of adjacent words. ROUGE-L looks for the longest
@@ -212,7 +209,7 @@ sequence of words that appears in the same order in both texts, allowing gaps. T
 be reported as precision, recall or an F-score that combines the two.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -221,24 +218,24 @@ be reported as precision, recall or an F-score that combines the two.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.22cm]a.north) ([yshift=-0.16cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.34,-0.09)$) to[bend right=15] node[pos=1, left] {matching n-grams} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.62,0.26)$) to[bend left=15] node[pos=1, left] {total reference n-grams} +(-1.00,-0.42);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.34,-0.09)$) to[bend right=15] node[pos=1, left] {matching n-grams} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(2.62,0.26)$) to[bend left=15] node[pos=1, left] {total reference n-grams} +(-1.00,-0.42);
     }
-\end{center}
+\end{metricformula}
 
 The formula shows ROUGE-N \textit{recall}: matching $n$-grams divided by the number in the references.
 Precision instead divides by the number in the model's summary. Scores range from $0$ to $1$, with
 higher values indicating more overlap. State both the matching rule and the reported quantity, such
 as ROUGE-1 recall or ROUGE-L F1, because they answer different questions.
 
-\textbf{When to use ROUGE?}
+\metricheading{When to use}
 
 Use ROUGE to compare summaries or headlines against references under the same evaluation settings.
 Recall shows how much reference wording is recovered; precision helps reveal extra, unmatched text.
 Report an F-score when both matter, and inspect factual accuracy separately.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Computes word and phrase overlap without running another language model.
 \item Offers complementary comparisons: shared words, adjacent pairs and words appearing in the same order.
@@ -254,15 +251,15 @@ credit when their wording differs.
 
 \thispagestyle{customstyle}
 
-\begin{center}
-    \includegraphics[width=0.6\textwidth]{figures/ROUGE_variants.png}
-\end{center}
+\begin{metricfigure}
+    \includegraphics[width=.82\textwidth]{figures/ROUGE_variants.png}
+\end{metricfigure}
 
-\textbf{Figure. ROUGE.} The reference is \textit{the central bank raised interest rates to curb inflation}.
+\metriccaption{Figure. ROUGE.}{The reference is \textit{the central bank raised interest rates to curb inflation}.
 The shorter summary, \textit{the bank raised rates to curb inflation}, matches seven of its nine words,
 giving recall $7/9\approx0.78$. Appending filler keeps those seven matches while increasing the summary
 to $24$ words: recall stays fixed and precision falls from $7/7=1$ to $7/24\approx0.29$.
-The red curve is ROUGE-1 precision; the plot's claim that ROUGE does not report it is incorrect.
+The red curve is ROUGE-1 precision; the plot's claim that ROUGE does not report it is incorrect.}
 
 \orangebox{Did you know that...}
 {Chin-Yew Lin introduced ROUGE in 2004 for summary evaluation. Its name emphasizes recall, but the
@@ -271,7 +268,7 @@ copying an entire source document can recover all the reference's wording \texti
 appears in the source}, while producing a poor summary. Recall alone misses the excess; precision
 and an F-score help account for it.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 High ROUGE-1 with lower ROUGE-2 or ROUGE-L means that fewer shared words also match as adjacent pairs
 or in sequence. This can help locate examples worth reading, but it does not tell us whether their
@@ -282,8 +279,7 @@ beyond exact wording.
 % reference: https://aclanthology.org/2006.amta-papers.25.pdf
 \clearpage
 \thispagestyle{nlpstyle}
-\section{TER}\label{sec:ter}
-\subsection{Translation Edit Rate}
+\metricentry{TER}{Translation Edit Rate (TER)}\label{sec:ter}
 
 TER measures how many edits turn a machine translation into a reference, relative to the reference's
 length. It counts inserted, deleted and replaced words, as well as \textit{shifts}, where a whole phrase
@@ -291,7 +287,7 @@ moves to a new position. A TER of $0.2$ means one edit per five reference words;
 fewer edits to reach the reference.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -300,23 +296,23 @@ fewer edits to reach the reference.
                 $
             }
         };
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.51,-0.04)$) to[bend right=15] node[pos=1, left] {word-level edits} +(-1.00,0.55);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(5.63,-0.03)$) to[bend right=15] node[pos=1, left] {sequence shifts} +(-1.00,0.35);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.11,0.04)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.51,-0.04)$) to[bend right=15] node[pos=1, left] {word-level edits} +(-1.00,0.55);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(5.63,-0.03)$) to[bend right=15] node[pos=1, left] {sequence shifts} +(-1.00,0.35);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(2.11,0.04)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 TER starts at $0$ for an exact match and can exceed $1$ when the edit count is larger than the number
 of reference words. Some counted edits may replace wording that was already acceptable. Human-targeted
 TER (HTER) addresses this by using a reference made by correcting the model's own output.
 
-\textbf{When to use TER?}
+\metricheading{When to use}
 
 Use TER when an edit count helps explain differences between translations, especially when phrases
 move. For a benchmark, follow its evaluation protocol. If the question is how long editing will take,
 measure that time directly: TER does not count the effort of reading and deciding what to change.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item A score of $0.3$ means three counted edits per ten reference words.
 \item Treats an allowed phrase move as one edit, so reordering need not cost a separate edit for every word.
@@ -331,14 +327,14 @@ possible, or to match a human's editing process.
 
 \thispagestyle{customstyle}
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/TER_edit_breakdown.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. TER.} The model output moves \textit{on monday morning} to the front. With only word
+\metriccaption{Figure. TER.}{The model output moves \textit{on monday morning} to the front. With only word
 insertions, deletions and substitutions, the minimum edit count is six: three deletions and three
 insertions achieve it. That gives a WER-style rate of $6/7\approx0.86$, incorrectly labeled TER in
-the gray annotation. Allowing one phrase shift gives TER $=1/7\approx0.14$.
+the gray annotation. Allowing one phrase shift gives TER $=1/7\approx0.14$.}
 
 \orangebox{Did you know that...}
 {Snover and colleagues introduced TER in 2006 with phrase shifts alongside the usual word edits.
@@ -347,7 +343,7 @@ a move that reduces the remaining edit count. WER has no shift operation, but it
 reinsert every word of a moved phrase. Moving a shorter neighboring phrase, or substituting words,
 may produce a cheaper alignment.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 WER uses the same word-edit operations without phrase shifts. TER can therefore give a much lower
 edit count when a shift resolves a reordering, as in the figure. BLEU measures phrase overlap, while
@@ -358,8 +354,7 @@ indicate more agreement with their references.
 % reference: https://nlp.stanford.edu/pubs/rajpurkar2016squad.pdf
 \clearpage
 \thispagestyle{nlpstyle}
-\section{EM}\label{sec:em}
-\subsection{Exact Match}
+\metricentry{EM}{Exact Match (EM)}\label{sec:em}
 
 Exact Match measures the fraction of predictions that match an accepted reference answer in full.
 Each prediction receives $1$ for a match and $0$ otherwise, under the task's comparison rules.
@@ -367,7 +362,7 @@ For example, if the only accepted answer is \textit{Martin Luther King}, adding 
 $0$ even though the answer may refer to the same person. EM gives no partial credit for shared words.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -376,25 +371,25 @@ $0$ even though the answer may refer to the same person. EM gives no partial cre
                 $
             }
         };
-        \path[room for labels] ([yshift=0.38cm]a.north) ([yshift=-0.26cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-0.71,0.34)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.45);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.11,-0.61)$) to[bend right=15] node[pos=1, left] {predicted text} +(-1.00,0.85);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(2.16,0.60)$) to[bend right=15] node[pos=1, right] {reference text} +(1.00,-0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.71,0.34)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.45);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.11,-0.61)$) to[bend right=15] node[pos=1, left] {predicted text} +(-1.00,0.85);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(2.16,0.60)$) to[bend right=15] node[pos=1, right] {reference text} +(1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 EM ranges from $0$ to $1$, with higher scores meaning more full matches. The rules may normalize text
 before comparing it: SQuAD lowercases answers and removes punctuation, articles and extra whitespace.
 Other tasks may require those details to match. When several reference answers are accepted, matching
 any one can earn full credit.
 
-\textbf{When to use EM?}
+\metricheading{When to use}
 
 Use EM for short answers or labels when full agreement with an accepted answer matters. For JSON,
 SQL or API arguments, also check the parsed structure or execution: different strings can behave the
 same way, and removing punctuation can erase a meaningful difference.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Easy to interpret: each prediction either matches an accepted answer or does not.
 \item Directly measures full agreement, without giving partial credit to answers that only share words.
@@ -407,14 +402,14 @@ validate the reference's correctness.
 
 \clearpage
 
-\begin{center}
-    \includegraphics[width=0.95\textwidth]{figures/EM_vs_F1.png}
-\end{center}
+\begin{metricfigure}
+    \includegraphics[width=1\textwidth]{figures/EM_vs_F1.png}
+\end{metricfigure}
 
-\textbf{Figure. EM.} Four predictions against the single accepted answer \textit{Martin Luther King}. Only the exact
+\metriccaption{Figure. EM.}{Four predictions against the single accepted answer \textit{Martin Luther King}. Only the exact
 match scores EM $=1$; adding \textit{Jr.}, abbreviating to \textit{Dr.\ King}, or answering
 \textit{Malcolm X} all score EM $=0$. Token-level F1 instead grades the overlap --- $0.86$, $0.40$,
-$0.00$ --- giving the partial credit EM withholds.
+$0.00$ --- giving the partial credit EM withholds.}
 
 \orangebox{Did you know that...}
 {The Stanford Question Answering Dataset (SQuAD), introduced by Rajpurkar and colleagues in 2016,
@@ -423,7 +418,7 @@ reports EM alongside token-level F1. F1 combines word-match precision and recall
 $\approx0.86$. SQuAD also allows multiple accepted answers and takes the best match for each
 prediction, so a valid alternative need not score zero if it appears in the reference set.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 A large token-F1--EM gap means that many answers share words without matching in full. Some may have
 extra words or different answer boundaries; others may contain a wrong date or a negation that changes
@@ -433,8 +428,7 @@ measures word and sequence overlap, while BERTScore compares words in context.
 % ---------- Word Error Rate ----------
 \clearpage
 \thispagestyle{nlpstyle}
-\section{WER}\label{sec:wer}
-\subsection{Word Error Rate}
+\metricentry{WER}{Word Error Rate (WER)}\label{sec:wer}
 
 WER measures how many word edits separate a speech recognizer's transcript from a reference transcript.
 It finds the alignment with the fewest substitutions, deletions and insertions, then divides that edit
@@ -442,7 +436,7 @@ count by the number of reference words. A WER of $0.1$ means one edit per ten re
 edit could correct a wrong word, restore a missing one or remove an extra one.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -451,24 +445,24 @@ edit could correct a wrong word, restore a missing one or remove an extra one.
                 $
             }
         };
-        \path[room for labels] ([yshift=0.30cm]a.north) ([yshift=-0.22cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.05,-0.01)$) to[bend right=15] node[pos=1, left] {edit operations} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(0.99,0.05)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.05,-0.01)$) to[bend right=15] node[pos=1, left] {edit operations} +(-1.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(0.99,0.05)$) to[bend left=15] node[pos=1, left] {words in reference} +(-1.00,-0.30);
     }
-\end{center}
+\end{metricformula}
 
 WER starts at $0$ and can exceed $1$ ($100\%$) when the edit count exceeds the reference length.
 For a test set, add the edit counts across recordings and divide by their total reference-word count;
 do not average recording-level percentages equally. Report substitutions, deletions and insertions
 separately when you need to see what kinds of differences dominate.
 
-\textbf{When to use WER?}
+\metricheading{When to use}
 
 Use WER for speech recognition, voice assistants and dictation. Compare systems on the same recordings,
 references and text-processing rules. For languages such as Chinese, where written words are not
 separated by spaces, Character Error Rate (CER) can avoid dependence on how text is split into words.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Gives an edit count with a clear denominator: the number of words in the reference transcripts.
 \item Separates extra, missing and replaced words, helping you choose examples to inspect.
@@ -482,14 +476,14 @@ such as \textit{can't}/\textit{cannot} before scoring.
 
 \clearpage
 
-\begin{center}
+\begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/WER_vs_errors.png}
-\end{center}
+\end{metricfigure}
 
-\textbf{Figure. WER.} The best alignment between reference and hypothesis splits the errors into one
+\metriccaption{Figure. WER.}{The best alignment between reference and hypothesis splits the errors into one
 substitution (\textit{fox}\,$\rightarrow$\,\textit{box}), one deletion (\textit{dog}), and one insertion
 (\textit{very}). WER sums them over the reference length: $(1+1+1)/9 = 0.33$. That same alignment is what
-lets WER report \textit{which} kind of error dominates, not merely how many.
+lets WER report \textit{which} kind of error dominates, not merely how many.}
 
 \orangebox{Did you know that...}
 {WER is the Levenshtein (edit) distance computed over words instead of characters, normalized by the
@@ -498,7 +492,7 @@ alignment, found by dynamic programming --- so the split into error types is the
 the differences, not the only one. Run the identical computation per character and you get Character
 Error Rate (CER). The distance was introduced by Levenshtein in 1965.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 CER applies the edit-distance calculation to characters rather than words. The choice concerns the
 written units and word boundaries, not whether a spoken language uses tones. TER adds phrase shifts

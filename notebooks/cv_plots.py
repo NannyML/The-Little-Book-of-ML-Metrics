@@ -75,51 +75,31 @@ def load_div2k(gray=False, width=520):
 #    the fat background bar; mPA (equal-weighted) is dragged down by the thin
 #    minority bars.
 # ===========================================================================
-fig, ax = plt.subplots(figsize=(12.5, 5.8))
+fig, ax = plt.subplots(figsize=(7.2, 4.6))
 names = ['Background', 'Class 1', 'Class 2']
-shares = ['85% of pixels', '10% of pixels', '5% of pixels']
 freq = np.array([0.85, 0.10, 0.05])
 acc = np.array([0.98, 0.45, 0.20])
-bar_colors = ['#d4d4d4', start_color, middle_color]
-
-pa = float(np.sum(freq * acc))   # frequency-weighted average  == Pixel Accuracy
-mpa = float(np.mean(acc))        # equal-weighted average      == Mean Pixel Accuracy
-
-edges = np.concatenate([[0.0], np.cumsum(freq)])
-for i in range(len(freq)):
-    left, w, h = edges[i], freq[i], acc[i]
-    ax.bar(left, h, width=w, align='edge', color=bar_colors[i],
-           edgecolor='white', linewidth=2.5, zorder=2)
-    ax.text(left + w / 2, h + 0.022, f'{h:.0%}', ha='center', va='bottom',
-            fontsize=14, fontweight='bold', color='#6f6f6f' if i == 0 else bar_colors[i])
-
-# aggregation lines
-ax.axhline(pa, color=NML_DARK_RED, lw=2.5, zorder=3)
-ax.axhline(mpa, color=NML_PURPLE, lw=2.5, ls=(0, (5, 3)), zorder=3)
-ax.text(1.015, pa, f'Pixel Accuracy = {pa:.0%}', va='center', ha='left',
-        color=NML_DARK_RED, fontsize=12.5, fontweight='bold')
-ax.text(1.015, mpa, f'Mean Pixel\nAccuracy = {mpa:.0%}', va='center', ha='left',
-        color=NML_PURPLE, fontsize=12.5, fontweight='bold')
-
-ax.set_xlim(0, 1.0)
-ax.set_ylim(0, 1.05)
-ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
-ax.set_yticklabels(['0%', '25%', '50%', '75%', '100%'])
-ax.set_ylabel('per-class accuracy')
-ax.set_xticks([])
-ax.margins(x=0)
-despine(ax, keep=('left',))
-ax.annotate('bar width = share of pixels   ·   area = contribution to Pixel Accuracy',
-            xy=(0.5, 1.04), xycoords='axes fraction', ha='center', va='bottom',
-            fontsize=11, color='#7a7a7a')
-legend_handles = [matplotlib.patches.Patch(facecolor=bar_colors[i], edgecolor='#bbbbbb',
-                  label=f'{names[i]} — {shares[i]}') for i in range(3)]
-ax.legend(handles=legend_handles, loc='upper center', bbox_to_anchor=(0.5, -0.03),
-          ncol=3, frameon=False, fontsize=11.5)
-fig.subplots_adjust(left=0.085, right=0.79, top=0.88, bottom=0.13)
-save_figure(fig, 'Pixel_Accuracy_imbalance')
+bar_colors = ['#CFECEF', start_color, middle_color]
+pa, mpa = float(freq @ acc), float(acc.mean())
+edges = np.r_[0., np.cumsum(freq)]
+for i, (left, w, h) in enumerate(zip(edges[:-1], freq, acc)):
+    ax.bar(left, h, width=w, align='edge', color=bar_colors[i], edgecolor='white', linewidth=1.5)
+    ax.text(left+w/2, h+.025, f'{h:.0%}', ha='center', va='bottom', fontsize=12, color='#25262A')
+ax.axhline(pa, color=NML_RED, lw=1.6)
+ax.axhline(mpa, color=NML_PURPLE, lw=1.6, ls=(0,(4,3)))
+ax.text(.025, pa-.025, f'Pixel accuracy  {pa:.1%}', va='top', fontsize=12, color=NML_RED)
+ax.text(.025, mpa-.025, f'Mean pixel accuracy  {mpa:.1%}', va='top', fontsize=12, color=NML_PURPLE)
+ax.set(xlim=(0,1),ylim=(0,1.08),xticks=[],yticks=[0,.25,.5,.75,1])
+ax.set_yticklabels(['0%', '25%', '50%', '75%', '100%'],fontsize=12)
+ax.set_ylabel('Recall within each class',fontsize=12,labelpad=8)
+despine(ax,keep=('left',))
+from matplotlib.patches import Patch
+ax.legend(handles=[Patch(facecolor=c,label=f'{n}: {f:.0%} of pixels') for c,n,f in zip(bar_colors,names,freq)],
+          loc='upper left',bbox_to_anchor=(0,-.025),frameon=False,ncol=1,fontsize=12,handlelength=1)
+fig.subplots_adjust(left=.13,right=.99,top=.96,bottom=.23)
+save_figure(fig,'Pixel_Accuracy_imbalance')
 plt.close()
-print(f"1. Pixel Accuracy: PA={pa:.3f}  mPA={mpa:.3f}")
+print(f'1. Pixel Accuracy: PA={pa:.6f} mPA={mpa:.6f}')
 
 
 # ===========================================================================
@@ -188,7 +168,7 @@ for ax, off_frac, title in [
     disp[pred & ~gt] = c_pred
     disp[inter] = c_inter
     ax.imshow(disp, interpolation='nearest')
-    ax.set_title(f'{title}\nDice = {dice:.2f}   ·   IoU = {iou:.2f}',
+    ax.set_title(f'{title}\nDice {dice:.2f}\nIoU {iou:.2f}',
                  fontsize=15, pad=10)
     ax.set_xticks([])
     ax.set_yticks([])
@@ -225,9 +205,9 @@ ax.clabel(cs, fmt='PQ = %.1f', fontsize=10.5, inline_spacing=8)
 
 # labels extend toward the open interior, away from the plot edges
 models = [
-    ('A — good all round', 0.90, 0.85, (0.87, 0.85), 'right', 'center'),
-    ('B — segments well,\nmisses objects', 0.50, 0.90, (0.47, 0.88), 'right', 'center'),
-    ('C — finds objects,\nsloppy masks', 0.85, 0.55, (0.82, 0.55), 'right', 'center'),
+    ('A: good all round', 0.90, 0.85, (0.98, 0.77), 'right', 'top'),
+    ('B: good masks,\nmissed objects', 0.50, 0.90, (0.03, 0.98), 'left', 'top'),
+    ('C: found objects,\nsloppy masks', 0.85, 0.55, (0.80, 0.53), 'right', 'top'),
     ('D — poor', 0.40, 0.50, (0.43, 0.45), 'left', 'top'),
 ]
 for label, rqv, sqv, (tx, ty), ha, va in models:
@@ -236,8 +216,8 @@ for label, rqv, sqv, (tx, ty), ha, va in models:
     ax.annotate(f'{label}\nPQ = {rqv * sqv:.2f}', (rqv, sqv), xytext=(tx, ty),
                 ha=ha, va=va, fontsize=11, fontweight='bold', zorder=6)
 
-ax.set_xlabel('Recognition Quality  (RQ — were the objects found?)')
-ax.set_ylabel('Segmentation Quality  (SQ — how well are they outlined?)')
+ax.set_xlabel('Recognition Quality (RQ)')
+ax.set_ylabel('Segmentation Quality (SQ)')
 ax.set_xlim(0, 1)
 ax.set_ylim(0, 1)
 despine(ax)
@@ -291,9 +271,9 @@ fig, axs = plt.subplots(1, 4, figsize=(16, 5.2))
 for ax, (name, img) in zip(axs, panels):
     ax.imshow(img, cmap='gray', vmin=0, vmax=255)
     if name == 'Original':
-        sub = 'PSNR = ∞   ·   SSIM = 1.00'
+        sub = 'PSNR = ∞\nSSIM = 1.00'
     else:
-        sub = f'PSNR = {psnr(img, ref):.1f} dB   ·   SSIM = {ssim(img, ref):.2f}'
+        sub = f'{psnr(img, ref):.0f} dB\nSSIM = {ssim(img, ref):.2f}'
     ax.set_title(f'{name}\n{sub}', fontsize=13.5, pad=8)
     ax.set_xticks([])
     ax.set_yticks([])
@@ -317,43 +297,21 @@ img = load_div2k(gray=False, width=420)
 _unit = RNG.normal(0, 1, img.shape)
 sigmas = [0, 12, 28, 60]
 
-fig = plt.figure(figsize=(13, 6.4))
-gs = fig.add_gridspec(2, 4, height_ratios=[1.45, 1], hspace=0.4, wspace=0.06)
-
+fig, axes = plt.subplots(1, 4, figsize=(7.2, 1.9))
 pts = []
-for i, sg in enumerate(sigmas):
+for ax, sg in zip(axes,sigmas):
     noisy = np.clip(img + sg * _unit, 0, 255) if sg else img
-    p = psnr(noisy, img)
-    ax = fig.add_subplot(gs[0, i])
+    p = psnr(noisy,img)
     ax.imshow(noisy.astype(np.uint8))
-    ax.set_title('Original' if sg == 0 else f'{p:.0f} dB', fontsize=14,
-                 pad=6, fontweight='bold' if sg == 0 else 'normal')
+    ax.set_title('Original' if sg == 0 else f'{p:.1f} dB',fontsize=12,pad=7)
     ax.axis('off')
-    if sg:
-        pts.append((np.mean((noisy - img) ** 2), p))
-
-# bottom (full width): PSNR is linear in log(MSE) — a straight line
-axc = fig.add_subplot(gs[1, :])
-mse_grid = np.logspace(0.3, 4, 200)
-axc.plot(mse_grid, 10 * np.log10(255.0 ** 2 / mse_grid), color=middle_color, lw=3,
-         solid_capstyle='round', zorder=2)
-mse_pts, p_pts = zip(*pts)
-axc.scatter(mse_pts, p_pts, s=95, color=NML_DARK_RED, edgecolor='white',
-            linewidth=1.5, zorder=4)
-for anchor, txt in [(30, 'clean'), (20, 'artifacts visible')]:
-    axc.axhline(anchor, color='#9a9a9a', lw=1, ls=(0, (4, 3)), zorder=1)
-    axc.text(2.4, anchor + 0.8, f'{anchor} dB — {txt}', ha='left', va='bottom',
-             fontsize=11, color='#7a7a7a')
-axc.set_xscale('log')
-axc.set_xlabel('mean squared error  (log scale)')
-axc.set_ylabel('PSNR (dB)')
-axc.set_xlim(2, 1e4)
-axc.set_ylim(8, 46)
-despine(axc)
-axc.grid(alpha=0.15)
-fig.subplots_adjust(left=0.07, right=0.97, top=0.93, bottom=0.11)
-save_figure(fig, 'PSNR_plot')
+    if sg: pts.append((float(np.mean((noisy-img)**2)),p))
+fig.subplots_adjust(left=0,right=1,top=.88,bottom=0,wspace=.045)
+save_figure(fig,'PSNR_plot')
 plt.close()
+assert np.allclose([v[1] for v in pts],[26.649529,19.474619,13.536302],atol=1e-5)
+import json
+print('PSNR evidence:',json.dumps(pts))
 print("6. PSNR: done")
 
 print("\nAll CV figures regenerated.")

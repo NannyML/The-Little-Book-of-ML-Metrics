@@ -28,13 +28,12 @@ To assess fairness in this example, we first need to decide what should be equal
 % ---------- Demographic Parity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Demographic Parity}\label{sec:demographic-parity}
-\subsection{Demographic Parity}
+\metricentry{Demographic Parity}{Demographic Parity}\label{sec:demographic-parity}
 
 Demographic parity requires the same proportion of positive predictions in every group. In hiring, for example, if a model advances $30\%$ of male applicants to an interview, it should also advance $30\%$ of female applicants. This comparison does not consider who is qualified, so matching the rates alone does not tell us whether the model chose suitable candidates.
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -43,19 +42,19 @@ Demographic parity requires the same proportion of positive predictions in every
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.48cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.03)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-2.34,0.18)$) to node[pos=1, below] {protected attribute} +(0.00,-0.39);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.03)$) to[bend right=15] node[pos=1, left] {predicted outcome} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-2.34,0.18)$) to node[pos=1, below] {protected attribute} +(0.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 The formula compares the positive prediction rate for groups $a$ and $b$, identified by the attribute $A$. This is the independence criterion: knowing someone's group does not change their probability of receiving a positive prediction. In practice, compare group rates using a difference or a ratio.
 
-\textbf{When to use Demographic Parity?}
+\metricheading{When to use}
 
 Use it when equal selection rates are the goal, such as access to an outreach program. It can also help when historical labels are unreliable. If the priority is recognizing qualified people equally often, use Equality of Opportunity; if it is the correctness of positive predictions, use Predictive Parity.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Needs only predictions and group labels, so you can compare selection rates before actual outcomes become available.
 \item A rate difference shows the gap directly: selection rates of $30\%$ and $20\%$ differ by ten percentage points.
@@ -69,32 +68,31 @@ Use it when equal selection rates are the goal, such as access to an outreach pr
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Demographic_Parity.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Demographic Parity.} Each square represents one person in a simulated screening task; each group has $100$ people. The black outline contains everyone selected by the model: blue squares are qualified people and red squares are unqualified people. With the original threshold, it selects $54$ people from Group A and $32$ from Group B, so demographic parity fails.
+\metriccaption{Figure. Demographic Parity.}{Each square represents one person in a simulated screening task; each group has $100$ people. The black outline contains everyone selected by the model: blue squares are qualified people and red squares are unqualified people. With the original threshold, it selects $54$ people from Group A and $32$ from Group B, so demographic parity fails.}
 
 The right-hand panel lowers Group B's threshold until it also selects $54$ people. The selection rates now match, but $25$ of B's selected people are unqualified, compared with four in A. Parity checks the size of the selected share, not whether those selections are correct.
 
 \orangebox{Did you know that...}
 {A model can satisfy demographic parity without learning who is qualified. If it selects everyone with a $40\%$ probability, both groups have a $40\%$ selection rate in expectation, with some variation in finite samples. There is also a less obvious problem: a model could select the strongest applicants from one group and the weakest from another while keeping the selection rates equal. Demographic parity would not distinguish that model from one that selects equally well in both groups.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Demographic Parity compares selection rates across whole groups. Equality of Opportunity instead compares selection among qualified people, while Predictive Parity compares how many selected people are qualified. A model can select equal shares of two groups while selecting their qualified members at different rates.
 
 % ---------- Equality of Opportunity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Equality of Opportunity}\label{sec:equality-of-opportunity}
-\subsection{Equality of Opportunity}
+\metricentry{Equality of Opportunity}{Equality of Opportunity}\label{sec:equality-of-opportunity}
 
 Equality of opportunity requires qualified people to be selected at the same rate across groups. For a loan model, we compare only applicants who would repay: if it approves $80\%$ of the men who would repay, it should also approve $80\%$ of the women who would repay. This is the true positive rate. Demographic parity instead calculates approval rates using all applicants, including those who would not repay. Those overall approval rates can differ even when equality of opportunity holds.
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -103,20 +101,20 @@ Equality of opportunity requires qualified people to be selected at the same rat
                 $
             }
         };
-        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-5.01,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-5.01,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
-\end{center}
+\end{metricformula}
 
 The formula compares positive predictions only among people with $Y=1$. It is one part of separation: Equality of Opportunity checks the positive class, while Equality of Odds checks both classes. The groups can therefore have matching TPRs but different false-positive rates.
 
-\textbf{When to use Equality of Opportunity?}
+\metricheading{When to use}
 
 Use it when missed positives are the main concern, such as overlooking qualified applicants for interviews or admissions. Check Equality of Odds as well when false positives cause harm. Both criteria need reliable labels. In lending, repayment is usually observed only for approved applicants, so those records alone cannot establish equality of opportunity across all applicants.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Compares how often qualified people are recognized without requiring equal selection rates across the whole population.
 \item Can be improved by adjusting group-specific thresholds without retraining, although exact matching may require randomized decisions.
@@ -130,32 +128,31 @@ Use it when missed positives are the main concern, such as overlooking qualified
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.76\textwidth]{figures/Equality_of_Opportunity.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Equality_of_Opportunity.png}
+\end{metricfigure}
 
-\textbf{Figure. Equality of Opportunity.} Each square represents one person in a simulated screening task. The outlined area contains the qualified people: $60$ in Group A and $30$ in Group B. Filled blue squares are selected; empty blue squares are missed. The model selects $50$ of $60$ in A and $25$ of $30$ in B, giving both a TPR of about $83\%$.
+\metriccaption{Figure. Equality of Opportunity.}{Each square represents one person in a simulated screening task. The outlined area contains the qualified people: $60$ in Group A and $30$ in Group B. Filled blue squares are selected; empty blue squares are missed. The model selects $50$ of $60$ in A and $25$ of $30$ in B, giving both a TPR of about $83\%$.}
 
 Equality of opportunity holds because these proportions match, even though the counts differ. The faded squares represent unqualified people, whose predictions do not enter this calculation.
 
 \orangebox{Did you know that...}
 {Hardt, Price, and Srebro introduced this formulation of equality of opportunity in $2016$ to focus on access for people who qualify for a beneficial decision. One useful property is that a perfect classifier always satisfies it: every qualified person is selected in every group. Demographic parity can reject that same classifier. If $60\%$ of one group and $30\%$ of another qualify, selecting all and only qualified people gives different selection rates. The criteria disagree even though the model makes no prediction errors.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
-Equality of Odds adds a check on false-positive rates. If Equality of Opportunity holds but Equality of Odds fails, the remaining difference is in how often negative cases are incorrectly selected. Demographic Parity compares overall selection rates, so it can disagree with either criterion when the groups contain different proportions of qualified people.
+Equality of Odds also requires equal false-positive rates. If opportunity holds but odds fails, false-positive rates differ. Demographic Parity compares overall selection rates, which can differ when groups have different proportions of qualified people.
 
 % ---------- Equality of Odds ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Equality of Odds}\label{sec:equality-of-odds}
-\subsection{Equality of Odds}
+\metricentry{Equality of Odds}{Equality of Odds}\label{sec:equality-of-odds}
 
 Equality of odds, also called equalized odds, requires both the true positive rate and the false positive rate to match across groups. In hiring, the model should select the same proportion of qualified men as qualified women. It should also mistakenly select the same proportion of unqualified men as unqualified women. Equality of Opportunity checks only the first of these conditions.
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -165,20 +162,20 @@ Equality of odds, also called equalized odds, requires both the true positive ra
             }
         };
         \node[below=0.1cm of a, font=\normalsize] {$\forall\, y \in \{0, 1\},\; \forall\, a, b$};
-        \path[room for labels] ([yshift=0.48cm]a.north) ([yshift=-0.35cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-5.02,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-5.02,-0.02)$) to[bend left=15] node[pos=1, right] {predicted outcome} +(0.70,0.35);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(2.82,-0.16)$) to node[pos=1, above] {actual outcome} +(0.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
-\end{center}
+\end{metricformula}
 
 The formula applies separately to $Y=1$ and $Y=0$, which gives the separation criterion. On an ROC plot, a point records a model's FPR and TPR at a chosen threshold. Groups with equalized odds have the same pair of rates, although they may need different thresholds to reach it.
 
-\textbf{When to use Equality of Odds?}
+\metricheading{When to use}
 
 Use it when both missed positives and false alarms matter, as in fraud detection. If only missed positives are the concern, Equality of Opportunity is a narrower check. If the priority is equally reliable positive predictions, examine Predictive Parity too; matching error rates does not guarantee matching precision.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Checks both positive and negative cases, so equal recall cannot hide a difference in false-positive rates.
 \item Uses familiar confusion-matrix rates, making it possible to identify which type of error differs between groups.
@@ -192,32 +189,31 @@ Use it when both missed positives and false alarms matter, as in fraud detection
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.76\textwidth]{figures/Equality_of_Odds.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Equality_of_Odds.png}
+\end{metricfigure}
 
-\textbf{Figure. Equality of Odds.} Each square represents one person in a simulated screening task, with qualified people in the upper outlined block and unqualified people below. Among qualified people, the model selects $50$ of $60$ in Group A and $25$ of $30$ in Group B: about $83\%$ in each. Among unqualified people, it selects four of $40$ in A and seven of $70$ in B: $10\%$ in each.
+\metriccaption{Figure. Equality of Odds.}{Each square is one person in a simulated screening task. Qualified people occupy the upper outlined block; unqualified people are below. The model selects $50$ of $60$ qualified people in Group A and $25$ of $30$ in B: about $83\%$ each. It selects four of $40$ unqualified people in A and seven of $70$ in B: $10\%$ each.}
 
 Both TPR and FPR match, so equality of odds holds. There are still more false positives in B: the same $10\%$ rate applies to $70$ unqualified people there, compared with $40$ in A.
 
 \orangebox{Did you know that...}
 {Equalized odds can sometimes be achieved by changing decisions after a model has been trained. Hardt, Price, and Srebro's $2016$ method uses each group's scores and labels to find decision rules that match both error rates while minimizing prediction loss. This can involve using different thresholds for different groups, or randomly choosing between thresholds. A shared numerical cutoff is therefore not required, and matching the rates may cost accuracy. The adjustment changes how the model's scores are used; it leaves the underlying scores unchanged.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Equality of Odds includes Equality of Opportunity because it requires equal TPR as well as equal FPR. Predictive Parity checks precision instead, so compare it separately. Demographic Parity checks overall selection rates, which can differ even when both error rates match.
 
 % ---------- Predictive Parity ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Predictive Parity}\label{sec:predictive-parity}
-\subsection{Predictive Parity}
+\metricentry{Predictive Parity}{Predictive Parity}\label{sec:predictive-parity}
 
 Predictive parity requires positive predictions to be correct equally often across groups. For a loan model, we look at the applicants it approves: if $80\%$ of approved men repay, $80\%$ of approved women should repay too. Here we start with the approved applicants, rather than everyone who would repay. The proportion who repay is the model's precision, also called positive predictive value (PPV).
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -226,20 +222,20 @@ Predictive parity requires positive predictions to be correct equally often acro
                 $
             }
         };
-        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.35cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(-5.01,-0.16)$) to[bend left=15] node[pos=1, right] {actual outcome} +(0.70,0.35);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.82,-0.03)$) to node[pos=1, above] {predicted outcome} +(0.00,0.25);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
+
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-5.01,-0.16)$) to[bend left=15] node[pos=1, right] {actual outcome} +(0.70,0.35);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.82,-0.03)$) to node[pos=1, above] {predicted outcome} +(0.00,0.25);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-1.56,0.18)$) to[bend left=15] node[pos=1, left] {protected attribute} +(-1.00,-0.36);
     }
-\end{center}
+\end{metricformula}
 
 The formula considers only people who receive a positive prediction ($\hat{Y}=1$). If positive predictions are correct equally often, they are also wrong equally often: the false discovery rate is $FDR=1-PPV$. Predictive parity checks one part of sufficiency. For binary decisions, full sufficiency also requires negative predictions to be correct equally often across groups.
 
-\textbf{When to use Predictive Parity?}
+\metricheading{When to use}
 
 Use it when the correctness of positive predictions matters across groups, such as approvals or alerts that lead to further action. Check Equality of Opportunity to see who the model misses. If both error rates matter, also check Equality of Odds rather than assuming equal precision covers them.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Gives a direct comparison of positive predictions: a PPV of $0.8$ means $80\%$ are correct in each group.
 \item Can be calculated from each group’s true-positive and false-positive counts without access to prediction scores.
@@ -253,32 +249,31 @@ Use it when the correctness of positive predictions matters across groups, such 
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/Predictive_Parity.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/Predictive_Parity.png}
+\end{metricfigure}
 
-\textbf{Figure. Predictive Parity.} Each square represents one person in a simulated screening task. The black outline contains the people the model selects; blue squares are qualified and red squares are not. In Group A, $50$ of the $54$ selected people are qualified, giving a PPV of about $93\%$. In Group B, $25$ of $32$ are qualified, giving about $78\%$. Predictive parity fails, with a gap of about $14.5$ percentage points.
+\metriccaption{Figure. Predictive Parity.}{Each square represents one person in a simulated screening task. The black outline contains the people the model selects; blue squares are qualified and red squares are not. In Group A, $50$ of the $54$ selected people are qualified, giving a PPV of about $93\%$. In Group B, $25$ of $32$ are qualified, giving about $78\%$. Predictive parity fails, with a gap of about $14.5$ percentage points.}
 
 Both groups have the same TPR and FPR, but B has fewer qualified people. False positives therefore make up more of its selections.
 
 \orangebox{Did you know that...}
 {COMPAS is a tool used in criminal justice to estimate the risk that a person will reoffend. In $2016$, ProPublica reported higher false-positive rates for Black defendants than for white defendants. Its developer, Northpointe, responded that people classified as high risk had similar reoffending rates across racial groups. Those findings concern different criteria: error rates and predictive parity. Alexandra Chouldechova's $2017$ analysis explained why these criteria can conflict when base rates differ. The mathematical conflict did not settle whether the tool or its use was fair.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Predictive Parity compares precision, while Equality of Opportunity compares recall and Equality of Odds also checks false-positive rates. Calibration within Groups checks probability scores; those scores can be calibrated even when precision differs after thresholding.
 
 % ---------- Calibration within Groups ----------
 \clearpage
 \thispagestyle{biasfairnesstyle}
-\section{Calibration within Groups}\label{sec:calibration-within-groups}
-\subsection{Calibration within Groups}
+\metricentry{Calibration within Groups}{Calibration within Groups}\label{sec:calibration-within-groups}
 
 Calibration within groups means that predicted probabilities match observed outcome rates in each group. Suppose a loan model gives some borrowers a $30\%$ probability of repaying. Among men given that score, about $30$ out of $100$ should repay; the same should hold for women given that score. Matching the two groups is not enough: if $50\%$ repay in both, the $30\%$ prediction is wrong for both.
 
 % Formula
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -287,20 +282,20 @@ Calibration within groups means that predicted probabilities match observed outc
                 $
             }
         };
-        \path[room for labels] ([yshift=0.55cm]a.north) ([yshift=-0.45cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(-3.23,0.17)$) to node[pos=1, below] {actual outcome} +(0.00,-0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(-1.46,-0.04)$) to node[pos=1, above] {predicted score} +(0.00,0.28);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.14,-0.04)$) to[bend left=15] node[pos=1, right] {protected attribute} +(1.00,0.30);
+
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-3.23,0.17)$) to node[pos=1, below] {actual outcome} +(0.00,-0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-1.46,-0.04)$) to node[pos=1, above] {predicted score} +(0.00,0.28);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.14,-0.04)$) to[bend left=15] node[pos=1, right] {protected attribute} +(1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 In the loan example, $S=s$ is the predicted probability of repayment, and $Y=1$ means the borrower repaid. For $s=0.3$, the formula requires an outcome rate of $30\%$ in every group. In practice, we usually group nearby scores into bins and compare their average predicted probability with the observed rate.
 
-\textbf{When to use Calibration within Groups?}
+\metricheading{When to use}
 
 Use it when decisions depend on estimated probabilities, such as the chance of repaying a loan. Check each group separately: overestimating that chance in one group and underestimating it in another can cancel out in the overall result. When a threshold turns scores into yes/no decisions, check the resulting error rates too.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Makes probabilities comparable across groups: a score of $0.3$ should correspond to a $30\%$ outcome rate in each.
 \item Checks scores across their range, rather than assessing decisions at just one chosen threshold.
@@ -314,18 +309,18 @@ Use it when decisions depend on estimated probabilities, such as the chance of r
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.95\textwidth]{figures/Calibration_within_Groups.png}
-\end{figure*}
+    \includegraphics[width=1\textwidth]{figures/Calibration_within_Groups.png}
+\end{metricfigure}
 
-\textbf{Figure. Calibration within Groups.} The plot groups predicted probabilities of being qualified into ranges along the bottom. Each range has a blue column for Group A and a purple column for Group B. The filled squares show the observed proportion of qualified people, rounded to tenths; the numbers above give percentages. The black line marks the score range's midpoint as an approximate calibration reference.
+\metriccaption{Figure. Calibration within Groups.}{Predicted probabilities of being qualified are grouped into score ranges. Group A is blue and Group B purple. Filled squares show observed qualified proportions rounded to tenths; labels give percentages. The black line marks each range's midpoint as an approximate calibration reference.}
 
 For scores between $0.5$ and $0.6$, about $77\%$ of Group A is qualified, compared with $48\%$ of Group B. The model therefore understates the probability for A and overstates it for B in this range. The scores are not calibrated within these groups.
 
 \orangebox{Did you know that...}
 {Kleinberg, Mullainathan, and Raghavan showed in $2017$ that group calibration can conflict with two other requirements: equal average scores among actual positive cases across groups, and equal average scores among actual negative cases. All three can hold together only with equal base rates or perfect prediction. This result concerns the scores themselves. Even with calibrated probabilities, an imperfect model can therefore assign different average scores to the groups' positive or negative cases.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Calibration within Groups implies score-level sufficiency: among people with the same score, outcome rates do not depend on group. Predictive Parity instead pools everyone above a decision threshold, where groups may have different mixes of scores. Use Equality of Odds to assess the resulting error rates, and group-level calibration plots alongside the Brier Score to assess probability predictions.

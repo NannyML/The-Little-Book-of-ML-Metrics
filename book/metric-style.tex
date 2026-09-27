@@ -1,0 +1,143 @@
+% Approved book design: Inter labels, Libertine reading text, shared captions.
+\usepackage{ragged2e}
+\usepackage{needspace}
+\setmainfont{LinLibertine}[Extension=.otf,UprightFont=*_R,
+ BoldFont=*_RB,ItalicFont=*_RI,BoldItalicFont=*_RBI]
+\IfFileExists{fonts/Inter/Inter-Regular.otf}{%
+ \setsansfont{Inter}[Path=fonts/Inter/,Extension=.otf,UprightFont=*-Regular,
+ BoldFont=*-SemiBold,ItalicFont=*-Italic,BoldItalicFont=*-SemiBoldItalic]
+}{%
+ \setsansfont{Inter}[Extension=.otf,UprightFont=*-Regular,
+ BoldFont=*-SemiBold,ItalicFont=*-Italic,BoldItalicFont=*-SemiBoldItalic]}
+\newfontfamily\metricasidefont{PlayfairDisplay}[Path=fonts/PlayFairFont/,
+ Extension=.ttf,UprightFont=*-Regular,ItalicFont=*-Italic]
+\newcommand{\metricbody}{\normalfont\fontsize{11}{13.5}\selectfont}
+\newcommand{\metricsecondary}{\normalfont\fontsize{10}{12}\selectfont}
+\newcommand{\metriclabel}{\sffamily\fontsize{10}{12}\selectfont\bfseries\color{black}}
+\AtBeginDocument{\metricbody\raggedbottom}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlength{\emergencystretch}{3em}
+\widowpenalty=10000\clubpenalty=10000
+\newcommand{\bookpagestyle}[1]{\fancypagestyle{#1}{%
+ \fancyhf{}\fancyfoot[R]{\normalfont\fontsize{9}{11}\selectfont\thepage}
+ \renewcommand{\headrulewidth}{0pt}\renewcommand{\footrulewidth}{0pt}}}
+\forcsvlist{\bookpagestyle}{plain,customstyle,regressionstyle,classificationstyle,clusteringstyle,rankingstyle,cvstyle,nlpstyle,genaistyle,probabilisticstyle,biasfairnesstyle,observabilitystyle,mapstyle}
+\newif\ifmetricentrypage
+\newcommand{\metricband}{cyanlight}
+\newcommand{\setmetricband}{%
+ \renewcommand{\metricband}{cyanlight}%
+ \ifcase\value{chapter}\or\or
+ \or\renewcommand{\metricband}{purplelight}%
+ \or\renewcommand{\metricband}{orangelight}%
+ \or\renewcommand{\metricband}{corallight}%
+ \or\renewcommand{\metricband}{mintlight}%
+ \or\renewcommand{\metricband}{cyanhard}%
+ \or\renewcommand{\metricband}{purplehard}%
+ \or\renewcommand{\metricband}{orangehard}%
+ \or\renewcommand{\metricband}{coralhard}%
+ \or\renewcommand{\metricband}{minthard}\fi}
+\AddToHook{shipout/background}{%
+ \ifmetricentrypage
+ \begin{tikzpicture}[remember picture,overlay]
+ \ifodd\value{page}
+  \fill[\metricband] ([xshift=-5mm]current page.north east) rectangle (current page.south east);
+  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
+   at ([xshift=-2.5mm,yshift=-7mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
+ \else
+  \fill[\metricband] (current page.north west) rectangle ([xshift=5mm]current page.south west);
+  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
+   at ([xshift=2.5mm,yshift=-7mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
+ \fi
+ \end{tikzpicture}
+ \global\metricentrypagefalse
+ \fi}
+\newcommand{\metricentry}[2]{%
+ \metricbody\setmetricband\global\metricentrypagetrue
+ \refstepcounter{section}\renewcommand{\sectiontitle}{#1}%
+ \addcontentsline{toc}{section}{#1}\markboth{#1}{#1}%
+ {\setlength{\parskip}{0pt}\sffamily\fontsize{15.5}{20}\selectfont\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000\strut #2\par}
+ \nobreak\vspace{6pt}\nobreak}
+\newcommand{\monitorentry}[2]{%
+ \metricentry{#1}{#1}%
+ {\sffamily\fontsize{9}{11}\selectfont\color{black!65}#2\par}
+ \nobreak\vspace{3pt}\nobreak}
+\newlength{\metricheadingbefore}
+\newlength{\metricheadingafter}
+\setlength{\metricheadingbefore}{12pt}
+\setlength{\metricheadingafter}{1.5pt}
+\newcommand{\metricheading}[1]{%
+ \par\addvspace{\metricheadingbefore}\Needspace{3\baselineskip}
+ {\setlength{\parskip}{0pt}\metriclabel #1\par}
+ \nobreak\vspace{\metricheadingafter}\nobreak}
+% Measure the complete diagram, including annotation text and arrow curves.
+\newsavebox{\metricformulabox}
+\NewDocumentEnvironment{metricformula}{+b}{%
+ \par\begingroup\sffamily\fontsize{10}{12}\selectfont
+ \setlength{\parskip}{0pt}%
+ \sbox{\metricformulabox}{\ignorespaces#1\unskip}%
+ \vspace{9pt}\nointerlineskip
+ \noindent\makebox[\linewidth][c]{%
+  \ifdim\wd\metricformulabox>1.05\linewidth
+   \resizebox{\linewidth}{!}{\usebox{\metricformulabox}}%
+  \else\scalebox{.95}{\usebox{\metricformulabox}}\fi}%
+ \par\nointerlineskip\vspace{9pt}\endgroup
+}{}
+\newenvironment{metricfigure}{%
+ \par\addvspace{4.5pt}\begingroup\setlength{\parskip}{0pt}\centering
+}{\par\endgroup}
+\newcommand{\metriccaption}[2]{%
+ \par\nobreak\vspace{4pt}{\metricsecondary\raggedright\itshape
+ \hyphenpenalty=10000\exhyphenpenalty=10000
+ {\upshape\bfseries\color{black}#1}\ #2\par}}
+\newlength{\metricpanelwidth}
+\newlength{\metricpanelheight}
+\newsavebox{\metricleftpanel}
+\newsavebox{\metricrightpanel}
+\newcommand{\metricpaneltext}{\normalfont\fontsize{10}{12.5}\selectfont}
+\newcommand{\metriccolumn}[2]{%
+ \begin{minipage}[t]{\metricpanelwidth}
+ \setlength{\parskip}{0pt}\metricpaneltext\RaggedRight\hyphenpenalty=500
+ {\metriclabel #1\par}\vspace{8pt}
+ \begin{itemize}[leftmargin=8pt,labelsep=4pt,itemsep=6pt,
+  topsep=0pt,parsep=0pt,partopsep=0pt,label={\raisebox{.15ex}{\tiny\textbullet}}]
+ #2\end{itemize}
+ \end{minipage}}
+\renewcommand{\coloredboxes}[2]{%
+ \par\addvspace{12pt}\begingroup\setlength{\parskip}{0pt}
+ \setlength{\metricpanelwidth}{\dimexpr.5\textwidth-17pt\relax}
+ \sbox{\metricleftpanel}{\metriccolumn{Strengths}{#1}}
+ \sbox{\metricrightpanel}{\metriccolumn{Weaknesses}{#2}}
+ \setlength{\metricpanelheight}{\dimexpr\ht\metricleftpanel+\dp\metricleftpanel\relax}
+ \ifdim\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax>\metricpanelheight
+  \setlength{\metricpanelheight}{\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax}\fi
+ \noindent\makebox[\textwidth][c]{\begin{tikzpicture}
+ \node[anchor=north west,inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=mygreen] (left) at (0,0) {%
+  \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricleftpanel}\end{minipage}};
+ \node[anchor=north west,inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=myred] at ([xshift=12pt]left.north east) {%
+  \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricrightpanel}\end{minipage}};
+ \end{tikzpicture}}\par\endgroup}
+\definecolor{metricnotefill}{HTML}{FFF5D7}
+\definecolor{metricnoteink}{HTML}{604819}
+\renewcommand{\orangebox}[2]{%
+ \par\addvspace{12pt}\noindent\makebox[\textwidth][c]{\tikz{%
+  \node[inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=metricnotefill]{%
+   \begin{minipage}{\textwidth}\setlength{\parskip}{0pt}
+   {\metricasidefont\fontsize{10}{12}\selectfont\mdseries\itshape\color{metricnoteink}#1\par}
+   \nobreak\vspace{8pt}{\metricpaneltext\looseness=-1 #2\par}
+   \end{minipage}};}}\par\addvspace{12pt}}
+% Non-metric pages inherit the selected families pending dedicated designs.
+\renewcommand{\section}[1]{%
+ \refstepcounter{section}\addcontentsline{toc}{section}{#1}%
+ \renewcommand{\sectiontitle}{#1}\par\addvspace{6pt}
+ {\sffamily\fontsize{13}{16}\selectfont\bfseries #1\par}\nobreak}
+\renewcommand{\cfttoctitlefont}{\sffamily\fontsize{24}{28}\selectfont\bfseries}
+\renewcommand{\cftchapfont}{\sffamily\fontsize{11}{14}\selectfont\bfseries}
+\renewcommand{\cftchappagefont}{\sffamily\fontsize{11}{14}\selectfont\bfseries}
+\renewcommand{\cftsecfont}{\normalfont\fontsize{10}{12}\selectfont}
+\renewcommand{\cftsecpagefont}{\normalfont\fontsize{10}{12}\selectfont}
+\pretocmd{\chapteropener}{\metricbody}{}{}
+\patchcmd{\chapteropener}{\Huge\bfseries}{\sffamily\Huge\bfseries}{}{}
+\patchcmd{\chapteropener}{\fontsize{58}{58}}{\sffamily\fontsize{58}{58}}{}{}
+\patchcmd{\chapteropener}{\large\bfseries}{\sffamily\large\bfseries}{}{}
+\forestset{dmap/.append style={for tree={font=\sffamily\footnotesize\nohyph}},large/.append style={for tree={font=\sffamily\small\nohyph}}}

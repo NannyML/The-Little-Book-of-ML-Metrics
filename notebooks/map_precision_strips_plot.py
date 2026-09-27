@@ -66,12 +66,12 @@ def main():
         terms = " + ".join(f"{p:.2f}" for _, p in prec_pairs)
         ax.text(
             K + 0.6, y + 0.15,
-            f"AP = mean({terms})",
+            f"AP = {ap:.2f}",
             ha="left", va="center", fontsize=11, color="dimgray",
         )
         ax.text(
             K + 0.6, y - 0.18,
-            f"    = {ap:.2f}",
+            "",
             ha="left", va="center", fontsize=13,
         )
 
@@ -100,7 +100,7 @@ def main():
             va="center", fontsize=11, color="dimgray", style="italic")
 
     # Strip axis chartjunk
-    ax.set_xlim(-1.8, K + 5.5)
+    ax.set_xlim(-1.8, K + 3.0)
     ax.set_ylim(-1.4, 2.1)
     ax.set_xticks([])
     ax.set_yticks([])

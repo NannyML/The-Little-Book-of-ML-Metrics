@@ -29,13 +29,12 @@ This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice c
 % ---------- Pixel Accuracy ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{Pixel Accuracy}\label{sec:pixel-accuracy}
-\subsection{Pixel Accuracy}
+\metricentry{Pixel Accuracy}{Pixel Accuracy}\label{sec:pixel-accuracy}
 
 
 Pixel Accuracy reports the fraction of pixels that a segmentation model labels correctly. It works like classification accuracy, with one prediction per pixel. If most of an image is background, getting that class right can produce a high score even when the model misses the objects we care about.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
 \node[inner sep=2pt, font=\Large] (a) {
 {
@@ -44,22 +43,22 @@ Pixel Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\
 $
 }
 };
-\path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.21cm]a.south);
-\draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(2.42,-0.30)$) to[bend right=15] node[pos=1, left] {correct pixels} +(-1.00,0.54);
-\draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(2.68,0.12)$) to[bend left=15] node[pos=1, left] {total pixels} +(-1.00,-0.34);
+
+\draw[-latex,nmlcyan, semithick] ($(a.north)+(2.42,-0.30)$) to[bend right=15] node[pos=1, left] {correct pixels} +(-1.00,0.54);
+\draw[-latex,nmlpurple, semithick] ($(a.south)+(2.68,0.12)$) to[bend left=15] node[pos=1, left] {total pixels} +(-1.00,-0.34);
 }
-\end{center}
+\end{metricformula}
 
 For each of the $k$ classes, $n_{jj}$ counts correctly labeled pixels and $t_j$ counts ground-truth pixels of that class. These counts can cover one image or be pooled across a test set; pixels the evaluation marks as ignored are left out.
 
 $PA$ runs from $0$ to $1$. If background covers $85\%$ of the evaluated pixels, labeling every pixel ``background'' already scores $0.85$. Read the result against that baseline as well as the per-class scores.
 
 
-\textbf{When to use Pixel Accuracy?}
+\metricheading{When to use}
 
 Use Pixel Accuracy to check the overall share of correct labels. When one class dominates, as with a small lesion against a large background, also report per-class results and an average that gives each class equal weight, such as Mean Pixel Accuracy or mean IoU.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Easy to calculate from pixel counts, without matching objects or measuring their outlines.
 \item Directly interpretable: $PA = 0.95$ means $95\%$ of evaluated pixels have the right label, regardless of class balance.
@@ -71,65 +70,19 @@ Use Pixel Accuracy to check the overall share of correct labels. When one class 
 
 \clearpage
 
-The left grid shows the ground truth and the right grid the prediction at the same pixel locations. The model gets six of nine pixels right, but never predicts class $2$.
+In this example, background fills $85\%$ of the image. Its high recall dominates the pixel average, while two small classes are much harder to find.
 
-
-\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
-
-\renewcommand{\arraystretch}{1.5}
-
-
-
- \begin{minipage}{0.5\linewidth}
-    \setcounter{table}{0}
-  \centering
-  \begin{tabular}{|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
-\hline
-\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 \\
-\hline
-\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{ffde59} 1 \\
-\hline
-\cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{95e8ed}  2 & \cellcolor[HTML]{95e8ed} 2 \\
-\hline
-\end{tabular}
- \end{minipage}%
-%
- \begin{minipage}{0.5\linewidth}
-    \setcounter{table}{0}
-  \centering
-  \begin{tabular}{|C{1.5cm}|C{1.5cm}|C{1.5cm}|}
-\hline
-\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 \\
-\hline
-\cellcolor[HTML]{d8beff} 0 & \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{d8beff} 0 \\
-\hline
-\cellcolor[HTML]{ffde59} 1 &  \cellcolor[HTML]{ffde59} 1 & \cellcolor[HTML]{ffde59} 1 \\
-\hline
-\end{tabular}
- \end{minipage}%
-
-
-Despite this,
-
-\[
-\text{Pixel Accuracy} = \frac{\text{Correctly predicted pixels}}{\text{Total number of pixels}} = \frac{6}{9} \approx 66\%
-\]
-
-Mean Pixel Accuracy (MPA) makes the missing class visible by averaging the fraction of correct pixels within each class. Here those fractions are $3/3$, $3/4$ and $0/2$, giving MPA $\approx 58\%$. Each class gets equal weight, however many pixels it occupies.
-
-The chart below uses a separate example with a much larger background class to show how the two averages differ.
-
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Pixel_Accuracy_imbalance.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. Pixel Accuracy.} Bar width shows each class's share of pixels; height shows the fraction correctly labeled within that class. Background occupies $85\%$ of the image, with $98\%$ of its pixels correct. The two smaller classes score $45\%$ and $20\%$. Weighting by pixel count gives PA $\approx 89\%$; averaging the three class scores equally gives MPA $\approx 54\%$.
+\metriccaption{Figure. Pixel Accuracy.}{Bar width shows each class's share of pixels; height shows the fraction correctly labeled within that class. Background occupies $85\%$ of the image, with $98\%$ of its pixels correct. The two smaller classes score $45\%$ and $20\%$. Weighting by pixel count gives PA $\approx 89\%$; averaging the three class scores equally gives MPA $\approx 54\%$.}
 
 \orangebox{Did you know that...}
 {Mean Pixel Accuracy is a \textbf{macro-average of class recall}: for each class, we ask what fraction of its ground-truth pixels the model found. Pixel Accuracy pools those counts, giving common classes more influence. A high PA alongside a low MPA can therefore reveal that the model does well on common classes and poorly on rare ones.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 IoU includes both missed and extra pixels in its denominator. Mean IoU weights classes equally, while Frequency Weighted IoU weights them by their ground-truth pixel counts. MPA averages class recall; it does not count the correctly rejected pixels of other classes as additional successes.
 
@@ -138,32 +91,31 @@ IoU includes both missed and extra pixels in its denominator. Mean IoU weights c
 % ---------- PCK ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{PCK}\label{sec:pck}
-\subsection{Percentage of Correct Keypoints}
+\metricentry{PCK}{Percentage of Correct Keypoints (PCK)}\label{sec:pck}
 
 PCK measures how often a model places a landmark close enough to its annotated location. These landmarks, called keypoints, can be elbows, knees or corners of an eye. A prediction counts as correct if its distance from the annotation falls within a chosen fraction of a reference length, such as the person's head size.
 
-\begin{center}
+\begin{metricformula}
 \tikz{
     \node[inner sep=2pt, font=\Large] (a) {
         $\displaystyle
         PCK(\alpha) = \frac{1}{\textcolor{nmlgreen}{N}} \sum_{i=1}^{N} 1\!\left(\textcolor{nmlpurple}{d_i} \le \textcolor{nmlyellow}{\alpha L}\right)
         $
     };
-    \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.70,0.69)$) to node[pos=1, below] {threshold Radius} +(0.00,-0.37); 
-    \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-0.33,0.34)$) to[bend left=15] node[pos=1, left] {Num. keypoints} +(-1.00,-0.55);
-    \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.45,-0.61)$) to[bend right=15] node[pos=1, left] {Euclidean distance} +(-1.00,0.79); 
+    \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.70,0.69)$) to node[pos=1, below] {threshold Radius} +(0.00,-0.37);
+    \draw[-latex,nmlgreen, semithick] ($(a.south)+(-0.33,0.34)$) to[bend left=15] node[pos=1, left] {Num. keypoints} +(-1.00,-0.55);
+    \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.45,-0.61)$) to[bend right=15] node[pos=1, left] {Euclidean distance} +(-1.00,0.79);
 }
-\end{center}
+\end{metricformula}
 
 Here $d_i$ is the distance error, $L$ the reference length and $N$ the number of evaluated keypoints. With $\alpha = 0.2$, lengths of $20$ and $200$ pixels give tolerances of $4$ and $40$ pixels. A $10$-pixel error fails for the smaller person but passes for the larger one. The formula gives a fraction from $0$ to $1$, often reported as a percentage.
 
 
-\textbf{When to use PCK?}
+\metricheading{When to use}
 
 Use PCK for pose estimation or landmark detection when a distance tolerance captures what counts as a useful prediction. To compare models, match the threshold, reference length, included keypoints and averaging rule. PCK@$0.2$ specifies the fraction, but does not by itself say how to measure $L$.
 
-\enlargethispage{\baselineskip}
+
 \coloredboxes{
 \item Adjusts the tolerance to object size, so an error is judged relative to the person or landmark being measured.
 \item Simple to interpret: a score of $90\%$ means nine in ten evaluated keypoints fall within the stated tolerance.
@@ -174,12 +126,12 @@ Use PCK for pose estimation or landmark detection when a distance tolerance capt
 }
 \clearpage
 
-\begin{figure}[htbp]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/PCK_threshold_visual.png}
-\end{figure}
+\end{metricfigure}
 
-\textbf{Figure. PCK.} Increasing $\alpha$ lets more distant predictions count as correct. To apply the rule, measure the reference length $L$ and use a tolerance radius of $\alpha L$ around each ground-truth joint. The drawn circles do not match that radius at the scale shown.
+\metriccaption{Figure. PCK.}{The same $14$ constructed predictions are evaluated at two tolerances. Here $L$ is the neck-to-pelvis length, and each purple circle has radius $\alpha L$; circles are shown for three joints. Increasing $\alpha$ from $0.2$ to $0.5$ changes the count from $11$ to $13$ correct. The coordinates and circles share the same scale.}
 
 For a benchmark, use its specified tolerance. For a new application, choose a tolerance that reflects the precision you need, and report how the reference length is measured.
 
@@ -187,19 +139,18 @@ For a benchmark, use its specified tolerance. For a new application, choose a to
 \orangebox{Did you know that...}
 {The reference length has changed across benchmarks. Yang and Ramanan's $2013$ PCK evaluation used the larger dimension of the person's bounding box. The MPII benchmark introduced \textbf{PCKh}, which uses head size, with the main result reported at a tolerance of half that length. These scores need their normalization rule to be meaningful.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Object Keypoint Similarity (OKS) rewards smaller distance errors continuously and uses a separate tolerance for each type of keypoint. A PCK curve instead shows the fraction of correct predictions over a range of thresholds.
 
 % ---------- OKS ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{OKS}\label{sec:oks}
-\subsection{Object Keypoint Similarity}
+\metricentry{OKS}{Object Keypoint Similarity (OKS)}\label{sec:oks}
 
 Object Keypoint Similarity measures how closely predicted landmarks match their annotated positions. Each keypoint receives a score that falls smoothly as its distance error grows. The tolerance depends on the object's size and the type of keypoint, so OKS can allow more uncertainty for a hip than for an eye.
 
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -208,16 +159,16 @@ Object Keypoint Similarity measures how closely predicted landmarks match their 
                 $
             }
         };
-        \path[room for labels] ([yshift=0.19cm]a.north) ([yshift=-0.48cm]a.south);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.02,-0.09)$) to[bend right=15] node[pos=1, left] {distance error} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.89,0.18)$) to[bend left=15] node[pos=1, left] {object scale} +(-1.00,-0.39);
-        \draw[overlay,-latex,nmlyellow, semithick] ($(a.south)+(2.42,0.10)$) to node[pos=1, below] {keypoint tolerance} +(0.00,-0.31);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.02,-0.09)$) to[bend right=15] node[pos=1, left] {distance error} +(-1.00,0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.89,0.18)$) to[bend left=15] node[pos=1, left] {object scale} +(-1.00,-0.39);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.42,0.10)$) to node[pos=1, below] {keypoint tolerance} +(0.00,-0.31);
     }
-\end{center}
+\end{metricformula}
 
 Here $d_i$ is the distance error in pixels, $s$ is the square root of the ground-truth object's area, and $k_i$ sets the tolerance for that keypoint. Each score is $1$ for an exact match and falls toward $0$ as the error grows. COCO averages over all labeled keypoints, including those marked as occluded; it excludes only keypoints without a ground-truth location.
 
-\textbf{When to use OKS?}
+\metricheading{When to use}
 
 Use OKS for COCO-style pose evaluation, where both object size and annotation uncertainty matter. For another dataset, choose and report suitable keypoint tolerances. If the useful result is simply the fraction within a stated distance, PCK gives a more direct interpretation.
 
@@ -234,30 +185,29 @@ Use OKS for COCO-style pose evaluation, where both object size and annotation un
 \clearpage
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/OKS_gaussian_falloff.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/OKS_gaussian_falloff.png}
+\end{metricfigure}
 
-\textbf{Figure. OKS.} Larger values of $k$ let the score fall more slowly as the error grows. The three curves illustrate this effect; their body-part labels do not reproduce COCO's exact tolerances. In the formula shown here, COCO uses $k = 0.05$ for eyes, $0.158$ for shoulders and $0.214$ for hips. The gray step illustrates a hard cutoff using the same normalized distance.
+\metriccaption{Figure. OKS.}{Larger values of $k$ let the score fall more slowly as the error grows. The three curves illustrate this effect; their body-part labels do not reproduce COCO's exact tolerances. In the formula shown here, COCO uses $k = 0.05$ for eyes, $0.158$ for shoulders and $0.214$ for hips. The gray step illustrates a hard cutoff using the same normalized distance.}
 
 \orangebox{Did you know that...}
 {COCO's headline keypoint score is Average Precision, not the mean OKS of all poses. It uses OKS thresholds from $0.50$ to $0.95$ to decide whether a predicted pose matches a person, then averages the resulting AP values. A model must therefore locate joints well and find the people in the image.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PCK counts keypoints within a distance threshold. OKS gives partial credit according to distance, scale and keypoint tolerance. For comparing regions rather than landmarks, see IoU or Dice.
 
 % ---------- PSNR ----------
 \clearpage
 \thispagestyle{cvstyle}
-\section{PSNR}\label{sec:psnr}
-\subsection{Peak Signal-to-Noise Ratio}
+\metricentry{PSNR}{Peak Signal-to-Noise Ratio (PSNR)}\label{sec:psnr}
 
 PSNR measures how closely a reconstructed image matches the original's pixel values. It converts the mean squared error into a score in decibels: higher PSNR means less pixel error. Compression and restoration methods use it to measure how much their output differs from the original.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\large] (a) {
             {
@@ -266,18 +216,17 @@ PSNR measures how closely a reconstructed image matches the original's pixel val
                 $
             }
         };
-        \path[room for labels] ([yshift=0.28cm]a.north) ([yshift=-0.20cm]a.south);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(1.76,-0.03)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(1.79,0.16)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-1.00,-0.37);
+
+        \draw[-latex,nmlred, semithick] ($(a.north)+(1.76,-0.03)$) to[bend right=15] node[pos=1, left] {maximum possible pixel} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.79,0.16)$) to[bend left=15] node[pos=1, left] {mean squared error} +(-1.00,-0.37);
     }
-\end{center}
+\end{metricformula}
 
 For a single image channel, $O$ is the original and $R$ the reconstruction, each with height $h$ and width $w$:
 
-\vspace{4pt}
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\large] (a) {
             {
@@ -287,22 +236,22 @@ For a single image channel, $O$ is the original and $R$ the reconstruction, each
                 $
             }
         };
-        \draw[overlay,-latex,nmlgreen, semithick] ($(a.south)+(-1.93,0.34)$) to[bend left=15] node[pos=1, left] {height} +(-1.00,-0.30);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(-1.36,0.34)$) to[bend right=15] node[pos=1, right] {width} +(1.00,-0.51);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(0.73,-0.49)$) to[bend right=15] node[pos=1, left] {original pixel value} +(-1.00,0.60);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.41,-0.51)$) to node[pos=1, above] {reconstructed pixel value} +(0.00,0.31);
+        \draw[-latex,nmlgreen, semithick] ($(a.south)+(-1.93,0.34)$) to[bend left=15] node[pos=1, left] {height} +(-1.00,-0.30);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-1.36,0.34)$) to[bend right=15] node[pos=1, right] {width} +(1.00,-0.51);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(0.73,-0.49)$) to[bend right=15] node[pos=1, left] {original pixel value} +(-1.00,0.60);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.41,-0.51)$) to node[pos=1, above] {reconstructed pixel value} +(0.00,0.31);
     }
-\end{center}
+\end{metricformula}
 
 With the same pixel range, a $10$ dB increase means ten times less MSE; an exact match gives infinite PSNR. There is no universal cutoff for a clean-looking image: the content and kind of distortion matter too.
 
 
 
-\textbf{When to use PSNR?}
+\metricheading{When to use}
 
 Use PSNR when corresponding pixels should match. Compare methods on the same test images, with consistent color channels, pixel range, cropping and averaging. Inspect the images alongside complementary measures such as SSIM.
 
-\enlargethispage{3\baselineskip}
+
 \coloredboxes{
 \item Fast to compute from pixel differences, with no model to train or run.
 \item Gives a familiar baseline for comparing methods under the same evaluation conditions.
@@ -317,43 +266,39 @@ Use PSNR when corresponding pixels should match. Compare methods on the same tes
 \thispagestyle{customstyle}
 
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/PSNR_plot.png}
-    
+
     \label{PSNR plot}
-\end{figure*}
+\end{metricfigure}
 
 
-\textbf{Figure. PSNR.} An original image and three increasingly noisy versions. Here MSE averages squared errors over all RGB channels, with $MAX = 255$. As noise increases, PSNR falls; losing $10$ dB means ten times the MSE. The $20$ and $30$ dB lines in the chart are reference values, not general boundaries for visible image quality. Image from \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K}.
-\vspace{-12pt} 
+\metriccaption{Figure. PSNR.}{An original image and three increasingly noisy versions. Here MSE averages squared errors over all RGB channels, with $MAX = 255$. As noise increases, PSNR falls; losing $10$ dB means ten times the MSE. These scores describe pixel error, not universal boundaries for visible image quality. Image from \href{https://data.vision.ee.ethz.ch/cvl/DIV2K/}{DIV2K}.}
 
 \orangebox{Did you know that...}
 {The ``peak'' refers to the maximum permitted pixel value, not the brightest pixel in the photograph. If you divide both images and $MAX$ by $255$ to work on a $0$--$1$ scale, PSNR stays the same: both the numerator and MSE shrink by $255^2$. Changing the numeric scale alone does not change image quality.}
 
-\vspace{-5pt} 
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
-\vspace{-5pt} 
 
 SSIM and LPIPS compare image pairs, but neither automatically fixes misalignment. FID and Inception Score address a different question: they evaluate sets of generated images rather than the reconstruction of a particular reference. See the GenAI chapter for those comparisons.
 
 
 % ---------- Sørensen–Dice Coefficient ----------
-% references: 
+% references:
 % https://rosettacode.org/wiki/Sorensen%E2%80%93Dice_coefficient
 % https://distancia.readthedocs.io/en/latest/SorensenDice.html
 \clearpage
 \thispagestyle{cvstyle}
-\section{S{\o}rensen–Dice Coefficient}\label{sec:sorensen-dice-coefficient}
-\subsection{S{\o}rensen–Dice Coefficient}
+\metricentry{S{\o}rensen–Dice Coefficient}{S{\o}rensen–Dice Coefficient}\label{sec:sorensen-dice-coefficient}
 
 
 The Dice coefficient measures the overlap between a predicted region and its ground-truth mask. For an organ outline, for example, it compares the pixels the model labels as the organ with those in the annotation. It counts their shared area twice and divides by the total size of both masks, giving $1$ for a perfect match and $0$ for no overlap.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -362,19 +307,19 @@ The Dice coefficient measures the overlap between a predicted region and its gro
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.59,-0.06)$) to[bend right=15] node[pos=1, left] {predicted set} +(-1.00,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(1.50,-0.06)$) to[bend left=15] node[pos=1, right] {ground truth set} +(1.00,0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.59,-0.06)$) to[bend right=15] node[pos=1, left] {predicted set} +(-1.00,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.50,-0.06)$) to[bend left=15] node[pos=1, right] {ground truth set} +(1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 Here $A$ contains predicted-positive pixels and $B$ ground-truth-positive pixels. Extra or missed pixels lower the score, while correctly excluded background earns no credit. If both masks are empty, the formula is $0/0$; the evaluation must specify whether to skip that comparison or count it as a match.
 
-\textbf{When to use S{\o}rensen–Dice Coefficient?}
+\metricheading{When to use}
 
 Use Dice when overlap matters, especially for small foreground regions against a large background. State whether you average scores across images or classes, or pool pixel counts first, and whether background is included as a class. If precise outlines matter, also measure boundary error.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Foreground Dice ignores correctly excluded background, so a large empty region cannot inflate the score.
 \item Equals F1 for the same binary pixel labels, combining precision and recall in one overlap measure.
@@ -388,34 +333,33 @@ Use Dice when overlap matters, especially for small foreground regions against a
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/Dice_overlap_examples.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. S{\o}rensen–Dice Coefficient.} As these similar-sized masks move apart, their shared area shrinks while their total area stays roughly the same, so Dice falls from $0.85$ to $0.25$. Pixels outside the overlap still count in the denominator. IoU gives smaller numbers for partial overlaps, but ranks these mask comparisons in the same order.
+\metriccaption{Figure. S{\o}rensen–Dice Coefficient.}{As these similar-sized masks move apart, their shared area shrinks while their total area stays roughly the same, so Dice falls from $0.85$ to $0.25$. Pixels outside the overlap still count in the denominator. IoU gives smaller numbers for partial overlaps, but ranks these mask comparisons in the same order.}
 
 \orangebox{Did you know that...}
 {Dice and S{\o}rensen introduced this overlap coefficient independently in $1940$s ecology. It later became useful for training segmentation models: Milletari and colleagues used a differentiable Dice-based objective in V-Net ($2016$). Such ``soft Dice'' losses use probabilities during training; they are related to, but not identical to, the score computed from final binary masks.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 The Dice coefficient is mathematically equivalent to the F1-score and closely related to the Jaccard Index (IoU):
 $Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Panoptic Quality (PQ).
 
 % ---------- Panoptic Quality ----------
-% references: 
+% references:
 % https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf
 % https://www.nature.com/articles/s41598-023-35605-7
 \clearpage
 \thispagestyle{cvstyle}
-\section{PQ}\label{sec:pq}
-\subsection{Panoptic Quality}
+\metricentry{PQ}{Panoptic Quality (PQ)}\label{sec:pq}
 
 Panoptic Quality measures how well a model labels image regions and separates individual objects. In a street scene, that means identifying road and sky while distinguishing car $1$ from car $2$. A predicted region matches an annotated one only if they have the same class and IoU exceeds $0.5$. Unmatched predictions count as false positives; unmatched annotations count as false negatives.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -424,21 +368,21 @@ Panoptic Quality measures how well a model labels image regions and separates in
                 $
             }
         };
-        \path[room for labels] ([yshift=0.25cm]a.north) ([yshift=-0.46cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(0.41,-0.31)$) to[bend right=15] node[pos=1, left] {matched segment pairs} +(-1.00,0.55);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.south)+(0.67,0.22)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.43);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.south)+(2.61,0.22)$) to node[pos=1, below] {false negatives} +(0.00,-0.39);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.41,-0.31)$) to[bend right=15] node[pos=1, left] {matched segment pairs} +(-1.00,0.55);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.67,0.22)$) to[bend left=15] node[pos=1, left] {false positives} +(-1.00,-0.43);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(2.61,0.22)$) to node[pos=1, below] {false negatives} +(0.00,-0.39);
     }
-\end{center}
+\end{metricformula}
 
 This formula gives PQ for one class, pooling matches and errors across the evaluated images. Overall PQ averages these class scores. For each class, $PQ = SQ \times RQ$: Segmentation Quality averages IoU over matched pairs, while Recognition Quality is their matching F1-score. Both help explain the result, but a poor outline can also prevent a match and lower RQ.
 
-\textbf{When to use PQ?}
+\metricheading{When to use}
 
 Use PQ for panoptic segmentation, where every pixel needs a class label and individual objects must be told apart. If you only need class labels, mean IoU is a simpler fit. For ranked predictions of individual objects, use the task's box or mask Average Precision protocol.
 
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Evaluates continuous regions such as road and separate objects such as cars within one framework.
 \item Counts unmatched regions as errors while also rewarding better overlap among accepted matches.
@@ -452,35 +396,34 @@ Use PQ for panoptic segmentation, where every pixel needs a class label and indi
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
-    \includegraphics[width=0.6\textwidth]{figures/PQ_decomposition.png}
-\end{figure*}
+    \includegraphics[width=.82\textwidth]{figures/PQ_decomposition.png}
+\end{metricfigure}
 
-\textbf{Figure. PQ.} For one class, multiplying SQ by RQ gives PQ. B and C have different component scores but similar PQ ($0.45$ and about $0.47$). RQ alone does not reveal whether a region was missed or failed the class or overlap test. Point D is not valid under the usual matching rule: whenever matches exist, their average IoU, SQ, must be strictly above $0.5$.
+\metriccaption{Figure. PQ.}{For one class, multiplying SQ by RQ gives PQ. B and C have different component scores but similar PQ ($0.45$ and about $0.47$). RQ alone does not reveal whether a region was missed or failed the class or overlap test. Point D is not valid under the usual matching rule: whenever matches exist, their average IoU, SQ, must be strictly above $0.5$.}
 
 \orangebox{Did you know that...}
 {The IoU $> 0.5$ rule makes matching unique because panoptic regions do not overlap within either segmentation. No predicted region can match two ground-truth regions, or vice versa. Kirillov and colleagues used this property to avoid a separate assignment algorithm when they introduced PQ.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 Inspect SQ and RQ alongside PQ, remembering that SQ describes only the accepted matches. The standard evaluator assigns SQ zero when a class has no matches. It averages each metric over classes separately, so multiplying the reported overall SQ and RQ need not recover overall PQ.
 
 % ---------- Structural Similarity Index ----------
-% references: 
+% references:
 % https://www.cns.nyu.edu/pub/lcv/wang03-preprint.pdf
 % https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html (has a good visual)
 % https://espace2.etsmtl.ca/id/eprint/12070/1/Noumeir%20R.%202015%2012070%20Limitations%20of%20the%20SSIM%20quality%20metric.pdf?utm_source=chatgpt.com
 
 \clearpage
 \thispagestyle{cvstyle}
-\section{SSIM}\label{sec:ssim}
-\subsection{Structural Similarity Index}
+\metricentry{SSIM}{Structural Similarity Index (SSIM)}\label{sec:ssim}
 
 SSIM measures similarity between two images by comparing brightness, contrast and structure in small corresponding patches. It checks each patch's average brightness, how much its pixel values vary, and whether light and dark patterns line up. This can distinguish a brightness change from lost detail even when both changes produce the same pixel error.
 
 % equation
-\begin{center}
+\begin{metricformula}
     \tikz{
         \node[inner sep=2pt, font=\Large] (a) {
             {
@@ -489,20 +432,20 @@ SSIM measures similarity between two images by comparing brightness, contrast an
                 $
             }
         };
-        \path[room for labels] ([yshift=0.50cm]a.north) ([yshift=-0.00cm]a.south);
-        \draw[overlay,-latex,nmlcyan, semithick] ($(a.north)+(-0.25,-0.18)$) to[bend right=15] node[pos=1, left] {statistics of image $x$} +(-1.80,0.30);
-        \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.18)$) to node[pos=1, above] {statistics of image $y$} +(0.00,0.30);
-        \draw[overlay,-latex,nmlred, semithick] ($(a.north)+(2.37,-0.19)$) to[bend left=15] node[pos=1, right] {cross-covariance} +(1.00,0.30);
+
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.25,-0.18)$) to[bend right=15] node[pos=1, left] {statistics of image $x$} +(-1.80,0.30);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.30,-0.18)$) to node[pos=1, above] {statistics of image $y$} +(0.00,0.30);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(2.37,-0.19)$) to[bend left=15] node[pos=1, right] {cross-covariance} +(1.00,0.30);
     }
-\end{center}
+\end{metricformula}
 
 For each patch, $\mu$ is the mean, $\sigma^2$ the variance and $\sigma_{xy}$ the covariance between the two images. Constants $c_1$ and $c_2$ depend on the pixel range and keep the calculation stable in nearly uniform patches. Averaging the patch scores gives the image score: higher is more similar, $1$ means identical pixel values, and negative values are possible.
 
-\textbf{When to use SSIM?}
+\metricheading{When to use}
 
 Use SSIM alongside PSNR and visual inspection for compression or image restoration. Keep the images aligned and the window, channel and pixel-range settings consistent. There is no universal score for acceptable quality; a cutoff needs validation for the images and viewing task at hand.
 
-\enlargethispage{2\baselineskip}
+
 \coloredboxes{
 \item Responds to local image patterns, allowing it to distinguish distortions that MSE rates equally.
 \item Produces a map of local similarity scores, which helps locate changes hidden by the image average.
@@ -516,16 +459,16 @@ Use SSIM alongside PSNR and visual inspection for compression or image restorati
 
 \thispagestyle{customstyle}
 
-\begin{figure*}[ht!]
+\begin{metricfigure}
     \centering
     \includegraphics[width=\textwidth]{figures/SSIM_vs_PSNR.png}
-\end{figure*}
+\end{metricfigure}
 
-\textbf{Figure. SSIM.} Three distortions of the same grayscale image, each tuned to PSNR $24$ dB. Here SSIM scores the brightness shift at $0.99$, blur at $0.76$ and noise at $0.55$, using $11 \times 11$ Gaussian-weighted windows. These results show how equal pixel error can produce different local similarities; they do not establish a universal ordering of blur and noise, or a human quality rating.
+\metriccaption{Figure. SSIM.}{Three distortions of the same grayscale image, each tuned to PSNR $24$ dB. Here SSIM scores the brightness shift at $0.99$, blur at $0.76$ and noise at $0.55$, using $11 \times 11$ Gaussian-weighted windows. These results show how equal pixel error can produce different local similarities; they do not establish a universal ordering of blur and noise, or a human quality rating.}
 
 \orangebox{Did you know that...}
 {SSIM reached beyond research papers. In $2015$, the Television Academy awarded a Primetime Engineering Emmy to Zhou Wang, Alan Bovik, Hamid Sheikh and Eero Simoncelli for developing it. The award recognized its use in assessing video quality across the television industry.}
 
-\textbf{Other related metrics}
+\metricheading{Related metrics}\metricsecondary
 
 PSNR measures pixel error, while MS-SSIM compares structure at several image scales. LPIPS uses learned image features; see the GenAI chapter. Like SSIM, standard LPIPS can react strongly to small spatial shifts, so it does not remove the need for alignment.

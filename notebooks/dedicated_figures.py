@@ -205,13 +205,13 @@ def fig_fmi():
     cs = ax.contour(P, R, F, levels=levels, colors=[GREY_LINE], linewidths=1.0)
     # label each iso-curve where it crosses p = 0.8 (r = f^2 / p), the 0.9 curve at p = 0.95
     # label each iso-curve where it crosses p = 0.8 (r = f^2 / p); the two upper ones at p = 0.95, clear of the points
-    ax.clabel(cs, fmt=lambda v: f'FMI = {v:g}', fontsize=10.5, colors=MID, inline=True,
+    ax.clabel(cs, fmt=lambda v: f'{v:g}', fontsize=10.5, colors=MID, inline=True,
               manual=[(0.8, v * v / 0.8) if v < 0.8 else (0.95, v * v / 0.95) for v in levels])
     F1 = 2 * P * R / (P + R)
     cs2 = ax.contour(P, R, F1, levels=[0.5], colors=[end_color], linewidths=0.9, linestyles='dashed', alpha=0.8)
-    # label where the dashed curve crosses r = 0.85: p = f r / (2r - f)
-    ax.clabel(cs2, fmt=lambda v: f'pairwise F1 = {v:g}', fontsize=10, colors=end_color, inline=True,
-              manual=[(0.5 * 0.85 / (1.7 - 0.5), 0.85)])
+    # Label the dashed pairwise-F1 contour away from the example points.
+    ax.clabel(cs2, fmt=lambda v: f'F1 = {v:g}', fontsize=10, colors=end_color, inline=True,
+              manual=[(0.55, 0.5 * 0.55 / (2 * 0.55 - 0.5))])
     pts = {}
     for name, color in zip(CLUST, [start_color, middle_color, end_color, DARK]):
         pred = CLUST[name]

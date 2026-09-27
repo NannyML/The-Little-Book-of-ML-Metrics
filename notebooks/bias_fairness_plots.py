@@ -330,7 +330,7 @@ def fig_cal():
     for b in range(10):
         xb = b * bin_w
         for j, (g, color) in enumerate([('A', start_color), ('B', middle_color)]):
-            x = xb + j * (col_step + 0.15)
+            x = xb + j * (col_step + 0.45)
             k = int(round(10 * frac[g][b]))
             for i in range(10):
                 filled = i < k
@@ -342,7 +342,7 @@ def fig_cal():
         # where a calibrated score would put the fill: the bin's midpoint
         mid_s = (bins[b] + bins[b + 1]) / 2
         yline = mid_s * 10 * col_step - gap / 2
-        ax.plot([xb - 0.25, xb + 2 * col_step + 0.15 + 0.1], [yline, yline], color=DARK, lw=1.3, zorder=3)
+        ax.plot([xb - 0.25, xb + 2 * col_step + 0.45 + 0.1], [yline, yline], color=DARK, lw=1.3, zorder=3)
         ax.text(xb + col_step + 0.05, -0.7, f'{bins[b]:.1f}–{bins[b + 1]:.1f}', ha='center', va='top', fontsize=10.5,
                 color=MID)
     ax.set_xlim(-0.8, 10 * bin_w - 0.8)
