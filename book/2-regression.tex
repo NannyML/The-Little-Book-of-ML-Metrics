@@ -1,7 +1,9 @@
 \chapteropener{Regression}{cyanlight}{cyanaccent}{%
-Regression models predict a quantity, such as tomorrow's demand, a house price or a delivery time. To evaluate a prediction, we subtract it from the actual value. This difference is the prediction error: its sign tells us whether the prediction was too high or too low, and its size tells us how far off it was.
+Regression models predict numerical values, such as a house price or a delivery time. To evaluate them, we compare each prediction with the actual value. If a delivery takes $40$ minutes after the model predicted $30$, the prediction was $10$ minutes too low. To judge the model over many deliveries, we need a way to summarize these individual errors.
 
-The metrics in this chapter summarize those errors in different ways. Absolute errors measure the size of each miss; squared errors give larger misses more weight; percentage errors express the miss relative to the actual value. We also look at measures that compare performance with a simple baseline, assess changes in direction, or suit particular kinds of predictions, such as counts. The choice depends on which mistakes matter for your task and how you want to interpret the result.}{In this chapter}
+How we combine the errors changes what the score tells us. Averaging their absolute sizes gives us an error in minutes, while squaring them before averaging gives large misses more weight. We can also express errors as percentages to understand their size relative to the values we are predicting.
+
+This chapter explains these ways of measuring error and when each is useful. We also look at how to compare a model with a simple baseline, such as always predicting the average delivery time from past data, and at measures for tasks such as predicting counts or the direction of change.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}

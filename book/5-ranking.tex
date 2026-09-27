@@ -1,9 +1,9 @@
 \chapteropener{Ranking}{corallight}{coralaccent}{%
-Ranking models decide which items to show first. A search engine ranks web pages for a query, while a movie recommender ranks films for a viewer. In either case, a relevant result in first place is easier to find than the same result in tenth place.
+Ranking models put items in an order, aiming to show the most useful ones first. A search engine ranks web pages according to how well they answer a query; a recommendation system ranks items according to how well they suit a user. In both cases, the position matters because people usually see the first few results before anything further down the list.
 
-To evaluate a ranking, we need judgments of which items are relevant. These can be yes-or-no labels or grades that distinguish a very helpful result from a partly useful one. Some metrics check how soon the first useful result appears; others consider several relevant items and their positions in the list. We can also evaluate just the first $K$ results when that is the part of the list that matters.
+To evaluate that order, we need to know which items are useful for the query or user. We call this their \textit{relevance}, and we can record it as a yes-or-no label or a grade. The metrics in this chapter use those judgments to assess different parts of a ranking: how early the first relevant result appears, how many relevant items make it into the first few positions, or how well the list orders items with different grades.
 
-For a movie recommender, a list of relevant films may still be repetitive. We might also want it to offer variety or help a viewer discover something unfamiliar they would enjoy. The final pages introduce metrics for these qualities and for catalog coverage: the share of available items recommended across users.}{In this chapter}
+For recommendations, we also look beyond relevance. A movie list might suit a viewer's interests but offer little variety or nothing they have not seen before. The final pages introduce ways to measure variety, discovery and how much of the available catalog a system recommends across its users.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{corallight}{coralaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}

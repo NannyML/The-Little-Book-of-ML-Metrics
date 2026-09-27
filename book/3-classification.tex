@@ -1,9 +1,9 @@
 \chapteropener{Classification}{purplelight}{purpleaccent}{%
-Classification assigns examples to categories, such as spam or legitimate email. Its metrics help us understand which predictions are wrong and whether those mistakes are acceptable for the task.
+Classification models predict which category an example belongs to. A spam filter, for example, predicts whether an email is spam or legitimate. Counting correct predictions tells us how often it gets the label right, but we also need to understand its mistakes. Letting spam into the inbox and sending a legitimate message to the spam folder have different consequences.
 
-Most pages here focus on two categories. The one we want to detect is the \emph{positive class}: spam, for example. A model can flag an email when its spam probability exceeds a cutoff called a \emph{threshold}. Moving that cutoff changes which emails we flag and which mistakes we make.
+We begin with the confusion matrix, a table that counts correct predictions and each type of mistake. From these counts, we can measure how much of the spam the filter catches and how often a message it flags really is spam. Most of this chapter uses problems with two categories to explain these comparisons.
 
-We can evaluate these decisions, the ranking of examples, or the probabilities themselves. Decision metrics such as precision and recall describe predictions at one threshold. Ranking metrics assess whether positives receive higher scores than negatives. Probability metrics also consider how confident the model was. We begin with the confusion matrix, which counts correct and incorrect decisions, then explain the metrics for each of these questions.}{In this chapter}
+Many classifiers also predict probabilities, which give us more information than the final labels alone. A filter may flag an email once its spam probability exceeds a chosen cutoff. Alongside metrics for those decisions, this chapter introduces ways to check whether spam receives higher scores than legitimate email and how much probability the model assigns to the categories that turn out to be correct.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}

@@ -1,11 +1,9 @@
 \chapteropener{Clustering}{orangelight}{orangeaccent}{%
-Clustering groups observations by patterns in their data. An algorithm might group documents by topic or customers by their behavior without using class labels to decide who belongs together. Evaluating the result helps us check whether those groups reflect the distinctions we care about.
+Clustering groups similar observations without requiring predefined categories. For a collection of documents, the aim might be to find groups of texts about similar topics. We represent each document through numerical features, and a clustering algorithm uses those features to decide which documents belong together.
 
-There are two main ways to do this. If we have known categories, we can compare the clusters with those reference labels: did members of one category stay together, and did different categories get mixed? We can also compare the groupings produced by two algorithms on the same observations. These are external evaluations because they use a second labeling for comparison.
+If the documents already have topic labels, we can use them to evaluate the groups the algorithm found. We check whether documents about the same topic stayed together and whether different topics got mixed into one cluster. These comparisons are called \textit{external} evaluations because they judge the clusters against another grouping. The labels serve as a reference for evaluation; the algorithm did not use them to form the clusters.
 
-Internal evaluations instead use the observations themselves. They ask how close points are within a cluster compared with points in other clusters, using the chosen features and distance. We can apply them even when we have no reference labels.
-
-The two approaches provide different evidence, and neither guarantees useful groups. A high internal score depends on the geometry we chose; agreement with a reference depends on whether that reference suits the task. The following pages explain what each score can tell us and how to inspect what a single number leaves out.}{In this chapter}
+Without topic labels, we can still examine how close the documents in each cluster are to one another and how far apart the clusters are. These \textit{internal} evaluations use the numerical features and a measure of distance to assess the grouping. This chapter covers both approaches, explaining what we can learn from each when comparing clustering results.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
