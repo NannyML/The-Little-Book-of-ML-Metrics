@@ -1,0 +1,6 @@
+interface:
+  display_name: "Santiago Writing"
+  short_description: "Write and edit in Santiago's natural, direct voice"
+  default_prompt: "Use $santiago-writing to write or edit this text in my voice, following the requested edit depth."
+policy:
+  allow_implicit_invocation: true
