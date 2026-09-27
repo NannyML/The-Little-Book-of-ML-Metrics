@@ -218,9 +218,9 @@ collection, but no matched reference for each sample.
 % https://arxiv.org/pdf/2102.01454
 % https://krishnap25.github.io/mauve/
 
-MAUVE compares generated articles with human articles from the same setting. It asks whether the model covers the same kinds of text in
-similar proportions, without pairing individual articles. MAUVE embeds the texts, clusters them and counts each collection's share in
-every cluster. The score falls when the model fills clusters the human collection does not, or misses clusters it does.
+MAUVE measures how closely a collection of generated texts resembles human writing from the same setting. It groups texts using
+features from a language model, then compares how common each group is in the two collections. This can reveal missing variety or
+unusual outputs without requiring a matching reference for each generated text.
 
 % equation
 \begin{center}
@@ -303,9 +303,9 @@ fits in feature space rather than histograms.
 % https://arxiv.org/abs/1606.03498 (Salimans et al., Improved Techniques for Training GANs)
 % https://arxiv.org/abs/1801.01973 (Barratt & Sharma, A Note on the Inception Score)
 
-A generator trained on ImageNet should produce images a classifier recognizes confidently and should cover many classes. Inception-v3
-assigns a probability to every class for each image; this vector is $p(y|x)$. Averaging those vectors over the generated set gives
-$p(y)$. Inception Score is high when individual predictions are concentrated but their average is spread across classes.
+Inception Score measures how confidently a classifier labels generated images and how varied its labels are across the set.
+Inception-v3 supplies the class probabilities for each image, $p(y|x)$, and we average them across the set to get $p(y)$. High scores
+require confident predictions spread across many classes.
 
 % equation
 \begin{center}
@@ -707,10 +707,9 @@ detail in the single question and a faulty decomposition are two possibilities t
 % https://arxiv.org/pdf/2404.01291 (Lin et al., ECCV 2024)
 % https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/
 
-Instead of comparing one image embedding with one text embedding, VQAScore asks a vision--language model a question --- ``Does this
-figure show `a horse riding an astronaut'? Please answer yes or no.'' --- and reads the probability it assigns to ``Yes''. In the
-paper's compositional tests, this question-answering setup distinguished word-order swaps more reliably than the embedding metrics it
-was compared with.
+VQAScore estimates how well an image matches a text description by asking a model that can answer questions about images. For example,
+it turns ``a horse riding an astronaut'' into a yes/no question about whether the image shows that scene. The model's probability of
+answering ``Yes'' becomes the score.
 
 % equation
 \begin{center}
@@ -790,9 +789,9 @@ right objects in the wrong arrangement, but inspecting the image is still necess
 % https://arxiv.org/pdf/2204.02249
 % ITU-T P.800 (absolute category rating), P.808 (crowdsourced)
 
-Twenty listeners hear a synthesized sentence and rate it from $1$ (bad) to $5$ (excellent); their mean is the Mean Opinion Score. MOS
-summarizes perceived speech quality, but its value depends on the listeners, material, instructions and test design. Compare systems
-under the same protocol.
+MOS summarizes perceived speech quality by averaging listeners' ratings, typically on a scale from $1$ (bad) to $5$ (excellent).
+Those ratings depend on who listens, what they hear and the instructions they receive, so compare systems under the same test
+conditions.
 
 % equation
 \begin{center}
@@ -870,9 +869,9 @@ systems.
 % ITU-T P.862 (2001), P.862.1 (MOS-LQO mapping), P.862.2 (wideband)
 % https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html
 
-Running a listening test for every codec checkpoint is impractical, so PESQ predicts perceived quality. It aligns a clean reference and
-degraded signal, transforms them into an auditory representation and measures the disturbance, penalizing added distortion more than
-lost signal.
+PESQ predicts perceived speech quality by comparing a processed recording with its clean original. It first aligns their timing and
+adjusts their levels, then measures differences using a model of human hearing. This helps evaluate changes such as compression or
+noise reduction without running a listening test each time.
 
 % equation
 \begin{center}
@@ -954,9 +953,8 @@ the degraded signal alone.
 % https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html
 % Shannon et al. (1995), Science — Speech recognition with primarily temporal cues
 
-A hearing-aid algorithm can make speech cleaner and no easier to understand. STOI predicts intelligibility. It splits clean and
-processed speech into $15$ bands, follows each envelope --- the slow rise and fall of energy that traces syllables --- over $384$ ms,
-and averages the correlation between clean and processed envelopes.
+STOI estimates how easy speech is to understand by comparing a noisy or processed recording with its clean original. It compares their
+energy envelopes, the patterns of rising and falling sound energy, over short intervals in different frequency bands.
 
 % equation
 \begin{center}
