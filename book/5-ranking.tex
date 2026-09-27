@@ -506,7 +506,7 @@ Diversity scores a recommendation list by how dissimilar its items are from each
     }
 \end{center}
 
-The choice of $d(i, j)$ drives everything. Common options: $1 - \cos(e_i, e_j)$ when item embeddings $e$ are available, or category distance ($0$ same genre, $1$ different) when only labels are. The metric inherits whatever bias the embedding has, so a model evaluated on cosine diversity can rank very differently under category diversity.
+The list is $L$, and $d(i,j)$ specifies how different two items are. For a simple genre comparison, set it to $0$ for two films in the same genre and $1$ for films in different genres. Diversity is then the fraction of pairs with different genres. The double sum counts each pair twice, once in each order, so the denominator does too. With richer item descriptions, we can instead compare their feature vectors.
 
 \textbf{When to use Diversity?}
 
@@ -532,7 +532,7 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
 \textbf{Figure. Diversity.} Two six-item recommendation lists rendered as horizontal strips, each tile colored by genre. \underline{Top:} one item per genre — Intra-List Diversity hits its maximum ($ILD = 1.00$) because every pair of items disagrees on category. Bottom: six action items — every pair matches, so $ILD = 0.00$. The metric reads the visible color mix of the list, not its accuracy.
 
 \orangebox{Did you know that...}
-{Intra-List Diversity (ILD) is the most common formulation of diversity in recommender systems. The choice of dissimilarity function $d(i,j)$ is crucial — common options include $1 - \cos$ of item feature vectors, or genre/category distance. Two papers can both report ``ILD'' and rank models differently because the underlying $d$ is different.}
+{Reordering a list leaves this diversity score unchanged. With three action films and one each from three other genres, $12$ of the $15$ pairs differ, giving diversity $0.8$. If the action films appear first, diversity within the first three is $0$. When users see only part of a list, calculate diversity for that part too.}
 
 \textbf{Other related metrics}
 

@@ -884,18 +884,18 @@ D2 Absolute Score measures how much a model reduces absolute prediction error co
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                D^2_{abs} = 1 - \frac{\sum_{t=1}^n \lvert {\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}\rvert}{\sum_{t=1}^n \lvert{\color{nmlcyan}Y_t} - {\color{teal!70!green}\bar{Y}}\rvert}
+                D^2_{abs} = 1 - \frac{\sum_{t=1}^n \lvert {\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}\rvert}{\sum_{t=1}^n \lvert{\color{nmlcyan}Y_t} - {\color{teal!70!green}\tilde{Y}}\rvert}
                 $
             }
         };
         
         \draw[overlay,-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {predicted value} +(1.00,0.50); 
-        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.30,0.10)$) to[bend right=15] node[pos=1, right] {mean of targets} +(1.00,-0.50); 
+        \draw[overlay,-latex,teal!70!green, semithick] ($(a.south)+(2.30,0.10)$) to[bend right=15] node[pos=1, right] {median of targets} +(1.00,-0.50);
         \draw[overlay,-latex,nmlcyan, semithick] ($(a.south)+(1.20,0.10)$) to[bend left=15] node[pos=1, left] {target value} +(-1.00,-0.50); 
     }
 \end{center}
 
-The standard score uses the \textbf{median}, not the mean shown in the equation above; that denominator and its label still need correction. With a nonzero baseline error, $D^2=1$ is perfect, $D^2=0$ matches the median baseline, and negative values mean greater absolute error.
+Here $\tilde{Y}$ is the median of the evaluated targets. With a nonzero baseline error, $D^2=1$ means perfect predictions and $D^2=0$ matches the error of always predicting that median. A negative score means the model makes more absolute error than this baseline.
 
 \textbf{When to use D2?}
 
@@ -1018,7 +1018,7 @@ For nonconstant targets, EVS has a maximum of $1$ and no lower bound. It equals 
 
 \textbf{When to use Explained Variance Score?}
 
-Use EVS alongside $R^2$ when you want to understand how much an average offset contributes to squared error. A large gap is a reason to inspect that offset, not proof that the model has learned every important relationship. Check the remaining errors and their behavior across groups or time.
+Use EVS alongside $R^2$ to check how much of the squared error comes from predictions being too high or too low on average. The gap between the scores measures this contribution relative to the variation in the targets. Inspect errors within groups too, since over-prediction in one group can cancel under-prediction in another.
 
 \coloredboxes{
     \item Comparing EVS with $R^2$ separates the contribution of the overall mean error from the variation around it.
@@ -1041,8 +1041,8 @@ Use EVS alongside $R^2$ when you want to understand how much an average offset c
 \textbf{Figure. Explained Variance Score.} All three models predict the same targets; the diagonal marks perfect predictions. On the left, a small mean error makes EVS and $R^2$ both round to $0.96$. The center model has a similar spread of errors but predicts about $6.2$ too high on average: EVS still rounds to $0.96$, while $R^2$ is $-0.22$. On the right, larger error variation brings both scores to about $0.21$.
 
 \orangebox{Did you know that...}
-{For nonconstant targets, $EVS=R^2+\operatorname{mean}(Y-\hat{Y})^2/\operatorname{Var}(Y)$. Adding the mean residual, $\operatorname{mean}(Y-\hat{Y})$, to every prediction would bring $R^2$ up to EVS on these data. That is an algebraic result on the same sample, not evidence that the correction will work on future data. The remaining error variation can include model mistakes as well as noise.}
+{We can remove the average offset in a set of predictions by adding the mean error, $\operatorname{mean}(Y-\hat{Y})$, to each one. If predictions are $7$ too high on average, this subtracts $7$. EVS stays the same, while $R^2$ rises to match it on those data. The relationship is $EVS=R^2+\operatorname{mean}(Y-\hat{Y})^2/\operatorname{Var}(Y)$ for nonconstant targets.}
 
 \textbf{Other related metrics}
 
-If an offset appears worth correcting, estimate it on a calibration dataset and assess the corrected model on separate data. Report $R^2$ and an error measure such as MAE or RMSE to show whether accuracy improves. Keep group-level checks, since an overall correction may help some groups and hurt others.
+To test whether an offset correction helps on new data, estimate it from one labeled dataset and evaluate the corrected predictions on another. Report $R^2$ with MAE or RMSE so readers can see both the relative improvement and the remaining error in the target's units. Check individual groups as well, because the same correction may help some and hurt others.

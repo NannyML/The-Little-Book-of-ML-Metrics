@@ -59,7 +59,7 @@ Entropy measures uncertainty in a labeling. MI is at least zero and cannot excee
 
 \textbf{When to use Mutual Info Score?}
 
-Use MI to compare clusters with reference classes, or two clustering runs on the same observations. Normalized MI (NMI) rescales to $[0,1]$ using label entropies; adjusted MI (AMI) also corrects for chance agreement. State the NMI normalization used. Chance inflation matters especially with many clusters relative to the number of observations.
+Use MI to compare clusters with reference classes, or two clustering runs on the same observations. A larger value means the labelings share more information. When comparing results with different numbers of clusters, consider the normalized and chance-adjusted versions described below.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -86,7 +86,9 @@ Use MI to compare clusters with reference classes, or two clustering runs on the
 
 \textbf{Other related metrics}
 
-NMI normalizes shared information but does not remove chance agreement; AMI subtracts expected MI and rescales the remainder. Neither makes unrelated datasets automatically comparable. Splitting pure clusters leaves raw MI and purity unchanged, while arithmetic-mean NMI and RI decrease. Inspect the contingency table to understand what changed.
+Normalized Mutual Information (NMI) rescales MI to $[0,1]$ using the uncertainty in the two labelings. Several normalizations exist, so use the same version when comparing results. NMI still counts information shared by chance, which can be substantial when there are many clusters for few observations.
+
+Adjusted Mutual Information (AMI) accounts for this by subtracting the MI expected from random assignments with the same group sizes, then rescaling the result. A score of $0$ matches that chance baseline. These variants help interpret agreement on the same observations; their scales alone do not make scores from unrelated datasets comparable.
 
 % ---------- rand index ----------
 \clearpage
@@ -149,7 +151,7 @@ RI and MI summarize agreement differently, while ARI and AMI also use chance bas
 \section{CH Index}\label{sec:ch-index}
 \subsection{Calinski-Harabasz Index}
 
-The Calinski-Harabasz (CH) Index compares how spread out cluster centers are with how spread out points are inside their clusters. WCSS adds the squared distances from points to their cluster centers. BCSS adds the squared distances from cluster centers to the overall center, weighted by cluster size. Higher CH favors greater separation relative to within-cluster spread.
+The Calinski-Harabasz (CH) Index compares how spread out cluster centers are with how spread out points are inside their clusters. A higher score favors compact groups whose centers are well separated. We can calculate it without reference labels, using the points and their assigned clusters.
 
 \begin{center}
     \tikz{
@@ -166,11 +168,11 @@ The Calinski-Harabasz (CH) Index compares how spread out cluster centers are wit
     }
 \end{center}
 
-Here $k$ is the number of clusters and $N$ is the number of observations. The factors $k-1$ and $N-k$ adjust the ratio for cluster count, but do not guarantee a peak at the true number of groups. Compare candidate scores on the same observations and feature scaling.
+The within-cluster sum of squares ($WCSS$) adds the squared distances from points to their own cluster centers. The between-cluster sum of squares ($BCSS$) adds the squared distances from each cluster center to the overall center, weighted by cluster size. The factors $k-1$ and $N-k$ adjust the ratio for the number of clusters $k$ and observations $N$.
 
 \textbf{When to use CH Index?}
 
-Use CH to compare candidate clusterings when Euclidean distances to centers describe the groups you want. It can help choose among tested cluster counts without reference labels. For curved or nested groups, consider whether the chosen features, distances and evaluation criterion reflect their structure.
+Use CH to compare clusterings of the same data, including different choices of cluster count. Keep the features and their scaling fixed so that the scores describe the same distances. The highest score identifies the grouping CH favors among those tested.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
@@ -486,7 +488,7 @@ At $\beta=1$, V-Measure equals NMI using the arithmetic mean of the label entrop
 \section{Davies-Bouldin Index}\label{sec:davies-bouldin-index}
 \subsection{Davies-Bouldin Index}
 
-The Davies-Bouldin (DB) Index compares the spread inside clusters with the distance between their centers. For each cluster, it finds the other cluster with the largest spread-to-separation ratio, then averages those worst-neighbor ratios. Lower values favor tighter clusters whose centers are farther apart relative to their spread.
+The Davies-Bouldin (DB) Index compares the spread inside clusters with the distance between their centers. For each pair, it divides their combined spread by the distance between their centers. It keeps the largest ratio for each cluster, then averages those values across clusters. Lower scores favor compact, well-separated groups.
 
 \begin{center}
     \tikz{
@@ -504,16 +506,16 @@ The Davies-Bouldin (DB) Index compares the spread inside clusters with the dista
     }
 \end{center}
 
-Here $k$ is the number of clusters, $s_i$ is the average distance from points in cluster $i$ to its center, and $d_{ij}$ is the distance between two centers. DB is nonnegative. Compare it across candidate groupings of the same data: the lowest score is preferred by this criterion, not proof of the true cluster count.
+Here $s_i$ is the average distance from points in cluster $i$ to its center, $d_{ij}$ is the distance between two centers, and $k$ is the number of clusters. If two clusters each have spread $1$ and their centers are $4$ apart, their ratio is $(1+1)/4=0.5$. DB averages the largest ratio for each cluster, giving a nonnegative score.
 
 \textbf{When to use Davies-Bouldin Index?}
 
-Use DB when distances to cluster centers describe the structure you want to recover. It needs no reference labels and is useful for comparing candidate cluster counts. Curved or density-based groups may fit its centroid-based view poorly; choose an evaluation distance and criterion that match the intended groups.
+Use DB to compare clusterings with compact groups around centers, such as k-means results with different cluster counts. Evaluate them on the same observations and features. The lowest score identifies the grouping DB favors among those tested.
 
 \enlargethispage{\baselineskip}
 \coloredboxes{
     \item Fast when there are relatively few clusters: it uses point-to-center and center-to-center distances, not all point pairs.
-    \item Highlights poorly separated neighbors. A large worst-neighbor ratio raises DB, making the score worse.
+    \item Checks each cluster against the one with the largest ratio of combined spread to separation, so a poorly separated pair can raise the overall score.
 }
 {
     \item The version here uses Euclidean distances and centers. It may fit curved or density-based groups poorly, even when they capture useful structure.
@@ -535,7 +537,7 @@ Use DB when distances to cluster centers describe the structure you want to reco
 
 \textbf{Other related metrics}
 
-CH compares pooled squared dispersion and is maximized; DB averages worst-neighbor ratios and is minimized. Silhouette complements these cluster-level summaries with point-level comparisons. Inspect the groups and individual scores to understand why the criteria favor different candidates.
+CH adds up squared distances across the data, while DB gives each cluster equal weight in its average. Silhouette instead evaluates each point against its own cluster and the nearest alternative. Its plot can help locate points that fit poorly, even when the overall clustering score looks good.
 
 % ---------- Fowlkes-Mallows Index ----------
 \clearpage
