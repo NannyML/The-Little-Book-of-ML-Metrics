@@ -11,10 +11,14 @@ book/main.fdb_latexmk
 book/main.fls
 book/main.xdv
 
+# Local editorial guidance and agent configuration
+BOOK_STATUS.md
 FORMULA_FIXES.md
-# Claude
-.claude/*
-!.claude/skills/
+QUALITY_UPGRADE.md
+AGENTS.md
+CLAUDE.md
+.agents/
+.claude/
 
 # Python / uv
 .venv/
