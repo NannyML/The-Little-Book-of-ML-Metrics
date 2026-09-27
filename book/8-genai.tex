@@ -54,9 +54,9 @@ benchmarks and how they changed as models improved.}{In this chapter}
 % https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/
 % https://arxiv.org/abs/1904.09751 (Holtzman et al., The Curious Case of Neural Text Degeneration)
 
-A language model predicts one token --- a word or word piece --- at a time. On held-out text, a perplexity of $20$ means its average
-negative log probability is the same as uniform guessing among $20$ tokens. Individual predictions can be much more or less certain;
-perplexity is the exponential of their average and needs only the text and the model's probabilities.
+Perplexity measures how well a language model predicts a piece of text. At each step, the model assigns probabilities to possible
+next tokens, which can be words or word pieces. We check the probabilities it gives to the tokens that actually appear in the text:
+the higher those probabilities, the lower the perplexity.
 
 % equation
 \begin{center}
@@ -134,9 +134,9 @@ pseudo-perplexity scores each token while masking it in turn.
 % https://arxiv.org/pdf/1904.09675
 % https://github.com/Tiiiger/bert_score (default layers, baseline rescaling, hash codes)
 
-A summary that says ``the physician postponed the operation'' when the reference says ``the doctor delayed the surgery'' shares no
-content word with it, and BLEU scores it near zero. BERTScore compares the two in a pretrained model's embedding space, matching each
-token to its most similar counterpart, so near-synonyms in context count as near-matches.
+BERTScore measures how closely generated text matches a reference in meaning. It uses a pretrained language model to compare words
+in context, so different wording can still receive a high score. For example, ``the physician postponed the operation'' and ``the
+doctor delayed the surgery'' describe the same event with different words.
 
 % equation
 \begin{center}
@@ -384,9 +384,9 @@ use LPIPS.
 % https://arxiv.org/abs/2104.11222 (Parmar, Zhang, Zhu — On Aliased Resizing and Surprising Subtleties in GAN Evaluation)
 % https://arxiv.org/abs/1911.07023 (Chong & Forsyth — Effectively Unbiased FID and Inception Score)
 
-Two generators can produce sharp faces while one repeats a narrow set of expressions. FID places generated and real images in
-Inception-v3's feature space, fits a Gaussian to each set and measures the distance between them. A shift in appearance and a loss of
-variety both raise the score.
+FID measures the difference between sets of generated and real images. It uses the Inception-v3 network to extract numerical features
+from each image, then compares their averages and variation. This helps detect differences in appearance and variety, such as a face
+generator that keeps producing similar expressions.
 
 % equation
 \begin{center}
@@ -464,8 +464,9 @@ limited samples, Kernel Inception Distance (KID) has an unbiased standard estima
 
 % references: https://arxiv.org/pdf/1801.03924
 
-A four-pixel shift makes a photograph look badly corrupted to a pixel distance, though a person sees the same picture. LPIPS instead
-passes both images through a pretrained network and learns how to weight differences between their feature maps.
+LPIPS estimates how different two images look to a person. It compares visual features from a pretrained neural network, using weights
+learned from human judgments. This helps distinguish changes that pixel error treats alike: a blurred photograph and a noisy one can
+have the same mean squared error but look quite different.
 
 % equation
 \begin{center}
@@ -497,7 +498,8 @@ sample diversity via mean pairwise LPIPS. Avoid it when exact pixel fidelity mat
 \coloredboxes{
 \item Matches human two-alternative choices better than SSIM and PSNR: about $69\%$ agreement on the paper's benchmark against the low
 sixties, near the $74\%$ ceiling set by human disagreement.
-\item Tolerant of shifts and small warps that destroy pixel metrics, because deep features are pooled over neighborhoods (figure).
+\item Distinguishes types of distortion that MSE treats equally: noise and blur in the figure share the same MSE but have different
+LPIPS scores.
 }
 {
 \item Not stable under adversarial change: a perturbation crafted against the backbone moves the score without visible effect, and
@@ -514,11 +516,10 @@ pair.
     \includegraphics[width=\textwidth]{figures/LPIPS_equal_mse.png}
 \end{center}
 
-\textbf{Figure. LPIPS.} Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so a pixel metric rates them equally
-bad. LPIPS with the AlexNet backbone does not: shifting the image by four pixels or brightening it scores $0.07$ and $0.03$, changes a
-viewer would not call damage, while noise and blur at the same MSE score $0.69$ and $0.82$. Deep features are pooled over neighborhoods and
-normalized across channels at each position, so they forgive some changes in position and intensity and react strongly to lost texture
-and edges.
+\textbf{Figure. LPIPS.} Four distortions tuned to the same pixel MSE of $0.023$ (PSNR $16.3$ dB), so MSE rates them equally.
+LPIPS with the AlexNet backbone gives the four-pixel shift and brightness change scores of $0.07$ and $0.03$, while noise and blur
+score $0.69$ and $0.82$. It distinguishes these distortions even though their MSEs match. The low score for this shift does not mean
+LPIPS always tolerates misalignment: even tiny shifts can change which image it rates as closer to the original.
 
 \orangebox{Did you know that...}
 {Zhang et al. found that features from a network with random weights already match SSIM at predicting which of two distorted images
@@ -543,8 +544,9 @@ slightly displaced. These patterns are clues to inspect the images, not diagnose
 % https://arxiv.org/pdf/2104.08718 (Hessel et al., CLIPScore, EMNLP 2021)
 % https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html
 
-A text-to-image model returns a picture of ``a corgi wearing sunglasses on a beach.'' CLIP Score embeds the picture and prompt with
-the same CLIP model and reports their cosine similarity, rescaled and clipped at zero. It needs no reference image or caption.
+CLIP Score estimates how well an image matches a text description, without needing a reference image. It uses CLIP, a model trained to
+associate images with text, to compare their content. For example, we can score a generated picture against the prompt ``a corgi wearing
+sunglasses on a beach''.
 
 % equation
 \begin{center}
@@ -622,9 +624,9 @@ photographs, and all three metrics inherit their evaluators' blind spots.
 % reference:
 % https://arxiv.org/pdf/2310.18235 (Cho et al., ICLR 2024)
 
-For the prompt ``a red bicycle leaning against a blue wall'', a picture of a blue bicycle beside a red wall contains every word and
-satisfies a bag-of-words judge. DSG turns the prompt into atomic yes/no questions (is there a bicycle? is it red? is the wall blue?),
-asks a VQA model each, and scores the image by the fraction answered yes.
+DSG checks whether a generated image includes the objects, attributes and relationships described in a prompt. It turns those details
+into yes/no questions for a visual question-answering (VQA) model. For ``a red bicycle leaning against a blue wall'', it asks whether
+there is a bicycle, whether it is red and whether the wall is blue.
 
 % equation
 \begin{center}
