@@ -78,7 +78,7 @@ Use MAE when each extra unit of error matters equally and overprediction has the
     \item Has a sharp corner at zero, but gradient-based methods can still optimize it using subgradients. Huber loss offers a smooth transition for small errors.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -101,6 +101,7 @@ is skewed (e.g., income, claim amounts), this distinction matters: MAE and MSE w
 RMSE gives larger errors more weight. When MAE is nonzero, an RMSE/MAE ratio near $1$ means the absolute error sizes are similar; a larger ratio indicates more variation in their sizes. Percentage measures offer another perspective when the target has a meaningful zero.
 
 % ---------- MSE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MSE}{Mean Squared Error (MSE)}\label{sec:mse}
@@ -140,7 +141,7 @@ Use MSE when a few large misses should matter more than many small ones. It is a
     \item Units are squared (dollars$^2$, meters$^2$), making raw MSE values hard to interpret. Report RMSE instead when communicating results.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -163,6 +164,7 @@ Use MSE when a few large misses should matter more than many small ones. It is a
 RMSE is the square root of MSE, so it returns the score to the target's units. The two rank models identically on the same evaluation data. MAE gives less emphasis to large misses, while inspecting individual errors shows which predictions drive the difference.
 
 % ---------- MSLE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MSLE}{Mean Squared Log Error (MSLE)}\label{sec:msle}
@@ -201,7 +203,7 @@ Use MSLE for nonnegative quantities spanning a wide range, such as website traff
     \item This book uses MSLE for nonnegative actuals and predictions. For equally sized raw errors to receive equal penalties in either direction, use MAE or MSE.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -226,6 +228,7 @@ Use MSLE for nonnegative quantities spanning a wide range, such as website traff
 Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Squared Log Error (RMSLE).
 
 % ---------- RMSE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{RMSE}{Root Mean Squared Error (RMSE)}\label{sec:rmse}
@@ -264,7 +267,7 @@ Use RMSE when large errors deserve extra weight but you want to report the resul
     \item Can be much larger than most errors. One miss of $100$ among $99$ misses of $1$ gives RMSE about $10.0$, although MAE is only $1.99$.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -286,11 +289,12 @@ Use RMSE when large errors deserve extra weight but you want to report the resul
 Metrics like Mean Absolute Error (MAE), Average Absolute Deviation (AAD), and Normalized Estimation Error Squared (NEES) are also used to evaluate model performance.
 
 % ---------- RMSLE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{RMSLE}{Root Mean Squared Log Error (RMSLE)}\label{sec:rmsle}
 
-RMSLE measures prediction errors on a logarithmic scale, using the square root of MSLE. We add one to actual and predicted values, take their logarithms, and calculate RMSE from those transformed values. This emphasizes proportional differences while returning the score in log units rather than squared log units.
+RMSLE is the square root of MSLE. Add one to actual and predicted values, take their logarithms, then calculate RMSE on those transformed values. The score emphasizes proportional differences and is in log units, rather than squared log units.
 
 % formula
 \begin{metricformula}
@@ -317,7 +321,7 @@ RMSLE is $0$ for perfect predictions and has no upper bound. For one prediction,
 
 \metricheading{When to use}
 
-Use RMSLE for nonnegative prices or counts when proportional differences matter more than differences in the original units. The added one makes proportional comparisons approximate, particularly near zero. Use RMSE or MAE on the original scale when equally sized over- and under-predictions should receive equal penalties.
+Use RMSLE for nonnegative prices or counts when proportional differences matter. The added one makes these comparisons approximate, especially near zero. Use original-scale RMSE or MAE when equal-sized over- and under-predictions should receive equal penalties.
 
 % strength and weakness box
 \coloredboxes{
@@ -329,7 +333,7 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter 
     \item Its larger penalty for under-prediction need not match the cost of a shortfall. RMSLE is already RMSE on $\log(1+Y)$; that transformation does not remove the asymmetry in raw errors.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -348,6 +352,7 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter 
 \metricheading{Related metrics}\metricsecondary
 MSLE gives the same model rankings without taking the root. RMSE evaluates errors in the original units, while MAPE expresses each absolute error as a percentage of its actual value and requires nonzero actuals.
 % ---------- MAPE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MAPE}{Mean Absolute Percentage Error (MAPE)}\label{sec:mape}
@@ -386,7 +391,7 @@ Use MAPE for quantities with a meaningful zero, such as positive sales volumes, 
     \item Gives more weight to small actuals for the same absolute miss. Minimizing it can favor lower forecasts; it does not target the mean outcome.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -411,6 +416,7 @@ Use MAPE for quantities with a meaningful zero, such as positive sales volumes, 
 sMAPE uses both actual and predicted values in its denominator. wMAPE divides total absolute error by total absolute actuals, while MASE scales errors by a historical naive-forecast error. The latter two can handle individual zero actuals, provided their overall denominators are nonzero.
 
 % ---------- sMAPE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{sMAPE}{Symmetric Mean Absolute Percentage Error (sMAPE)}\label{sec:smape}
@@ -433,11 +439,11 @@ sMAPE averages percentage errors using the sizes of both the actual and predicte
 	}
 \end{metricformula}
 
-The convention shown here ranges from $0\%$ to $200\%$, with $0\%$ for perfect predictions. Some implementations omit the factor of two and report half these values. Neither convention gives equal penalties to equally sized misses around a fixed actual: if the actual is $100$, predicting $90$ gives about $10.5\%$, while predicting $110$ gives about $9.5\%$ under this formula.
+This convention ranges from $0\%$ (perfect) to $200\%$. Some implementations omit the factor of two, halving these scores. Neither gives equal penalties to equal misses around a fixed actual: for an actual of $100$, predicting $90$ gives about $10.5\%$, while predicting $110$ gives about $9.5\%$ here.
 
 \metricheading{When to use}
 
-Use sMAPE when you want a bounded percentage measure that considers both actual and forecast size. It has been used in the M3 and M4 forecasting competitions. Check its behavior near zero before choosing it: a bounded score can still hide meaningful differences between forecasts.
+Use sMAPE for a bounded percentage measure that considers actual and forecast size. Used in the M3 and M4 forecasting competitions, it still needs care near zero: bounded scores can hide meaningful forecast differences.
 
 % strength and weakness box
 \coloredboxes{
@@ -449,7 +455,7 @@ Use sMAPE when you want a bounded percentage measure that considers both actual 
     \item Two zeros give $0/0$ and need an explicit convention, often a zero contribution. Tiny changes near zero can still cause large percentage changes.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -477,6 +483,7 @@ For $x=100$ and $y=400$, this gives $z=200$ and error $2/3$. Choosing $z=100$ gi
 
 MAPE and wMAPE scale errors by actual values; MASE uses a historical naive-forecast error.
 % ---------- wMAPE ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{wMAPE}{Weighted Mean Absolute Percentage Error (wMAPE)}\label{sec:wmape}
@@ -515,7 +522,7 @@ Use wMAPE when you want a percentage summary that allows some actuals to be zero
     \item Target size is not the same as business importance. If margins or the costs of mistakes differ, evaluate those consequences separately.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -531,11 +538,12 @@ Use wMAPE when you want a percentage summary that allows some actuals to be zero
 
 MAPE weights each percentage error equally, while wMAPE gives larger actuals more weight. If MAPE is higher, small actuals may have larger percentage errors; inspect the individual contributions before drawing a conclusion. For time series, MASE instead scales errors by a naive forecast's error on the training history.
 
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MASE}{Mean Absolute Scaled Error (MASE)}\label{sec:mase}
 
-MASE measures forecast errors relative to the error of a simple forecast on the training history. For a nonseasonal series, that simple forecast repeats the previous value. We calculate its average absolute error on the historical data, then divide the model's evaluation MAE by that amount. This puts errors from series with different units on a common scale.
+MASE divides a model's evaluation MAE by the error of a simple forecast on the training history. For nonseasonal data, that forecast repeats the previous value; its mean absolute error provides the denominator. Errors from series with different units then share a common scale.
 
 % formula
 \begin{metricformula}
@@ -569,7 +577,7 @@ Use MASE to compare forecast errors across time series with different scales. It
     \item The historical scale may not represent the future. To check whether a model beats the naive forecast in deployment, compare both on the same evaluation dates.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -586,6 +594,7 @@ Use MASE to compare forecast errors across time series with different scales. It
 MAPE and sMAPE express errors relative to actuals or predictions; MASE uses a historical forecast error instead. RMSE gives larger misses more influence than MAE. For direction rather than magnitude, consider MDA.
 
 % ---------- MDA ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MDA}{Mean Directional Accuracy (MDA)}\label{sec:mda}
@@ -628,7 +637,7 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
     \item Small fluctuations can flip a direction. Under the sign function shown here, a zero change matches only a forecast of no change.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -648,6 +657,7 @@ fall of $1.9$, and it counts as one miss, just like day $12$, where the forecast
 MAE and RMSE assess error magnitude, while MASE compares it with a historical error scale. These complement MDA when evaluating forecasts, but a trading strategy also needs evaluation of its actual gains, losses, and costs.
 
 % ---------- MPD ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MPD}{Mean Poisson Deviance (MPD)}\label{sec:mpd}
@@ -686,7 +696,7 @@ Use MPD to assess predictions of mean counts or rates, such as calls per day or 
     \item Its penalty does not specify the cost of a missed count or an excess prediction. Use an explicit cost measure when those consequences are the evaluation goal.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -704,6 +714,7 @@ Use MPD to assess predictions of mean counts or rates, such as calls per day or 
 MPD and MGD are members of the Tweedie deviance family. The compound Poisson--Gamma model, with $1<p<2$, describes a mix of zero and positive continuous amounts, such as total claim cost; it is not a general replacement for counts with many zeros. If MPD and MAE rank models differently, inspect the cases contributing most to each loss before deciding why.
 
 % ---------- MGD ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{MGD}{Mean Gamma Deviance (MGD)}\label{sec:mgd}
@@ -743,7 +754,7 @@ Use MGD when proportional errors matter for positive quantities, such as claim s
     \item Penalizes underprediction more than overprediction for equally sized misses. This fixed asymmetry may not match the costs of a particular decision.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -761,6 +772,7 @@ Use MGD when proportional errors matter for positive quantities, such as claim s
 MGD compares ratios, while RMSE gives more weight to large errors in the target's units. If they rank models differently, consider which errors matter for the prediction task. MPD instead scales with count size. Both losses can evaluate mean predictions, even when the full outcome distribution does not follow their namesake probability model exactly.
 
 % ---------- R-squared ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{R-squared}{R-squared}\label{sec:r-squared}
@@ -800,7 +812,7 @@ Use $R^2$ to express squared error relative to the variation in the targets. It 
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -817,6 +829,7 @@ Use $R^2$ to express squared error relative to the variation in the targets. It 
 Adjusted $R^2$ penalizes additional predictors in linear regression, but it does not replace evaluation on held-out data. A large training--test gap can prompt an investigation of overfitting or differences between datasets. D2 Absolute Score uses absolute errors and a median baseline instead.
 
 % ---------- D2 ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{D2}{D2 Absolute Score}\label{sec:d2}
@@ -856,7 +869,7 @@ Use D2 when absolute error fits your task and you want to compare it with a cons
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -874,6 +887,7 @@ Use D2 when absolute error fits your task and you want to compare it with a cons
 R-squared uses squared errors and a mean baseline, so it need not agree with D2 even without outliers. If they rank models differently, inspect the errors and decide which penalty fits the task. Both scores use baselines calculated from the evaluated targets by definition. Comparing with a historical training-set baseline is a different skill score.
 
 % ---------- Pinball Loss ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{Pinball Loss}{Pinball Loss}\label{sec:pinball-loss}
@@ -917,7 +931,7 @@ Use it when evaluating a chosen quantile, such as an upper demand forecast for i
 }
 
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -935,6 +949,7 @@ Use it when evaluating a chosen quantile, such as an upper demand forecast for i
 MAE targets the median, just as Pinball Loss does at $q=0.5$; MSE targets the mean. For a prediction interval, evaluate its lower and upper quantiles and check how often new outcomes fall inside it.
 
 % ---------- Explained Variance Score ----------
+\metricend
 \clearpage
 \thispagestyle{regressionstyle}
 \metricentry{Explained Variance Score}{Explained Variance Score}\label{sec:explained-variance-score}
@@ -973,7 +988,7 @@ Use EVS alongside $R^2$ to check how much of the squared error comes from predic
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -989,3 +1004,4 @@ Use EVS alongside $R^2$ to check how much of the squared error comes from predic
 \metricheading{Related metrics}\metricsecondary
 
 To test whether an offset correction helps on new data, estimate it from one labeled dataset and evaluate the corrected predictions on another. Report $R^2$ with MAE or RMSE so readers can see both the relative improvement and the remaining error in the target's units. Check individual groups as well, because the same correction may help some and hurt others.
+\metricend

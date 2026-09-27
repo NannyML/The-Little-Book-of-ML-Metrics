@@ -37,29 +37,14 @@
  \or\renewcommand{\metricband}{orangehard}%
  \or\renewcommand{\metricband}{coralhard}%
  \or\renewcommand{\metricband}{minthard}\fi}
-\AddToHook{shipout/background}{%
- \ifmetricentrypage
- \begin{tikzpicture}[remember picture,overlay]
- \ifodd\value{page}
-  \fill[\metricband] ([xshift=-5mm]current page.north east) rectangle (current page.south east);
-  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=-2.5mm,yshift=-7mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
- \else
-  \fill[\metricband] (current page.north west) rectangle ([xshift=5mm]current page.south west);
-  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=2.5mm,yshift=-7mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
- \fi
- \end{tikzpicture}
- \global\metricentrypagefalse
- \fi}
-\newcommand{\metricentry}[2]{%
+\newcommand{\metricentrytitle}[2]{%
  \metricbody\setmetricband\global\metricentrypagetrue
  \refstepcounter{section}\renewcommand{\sectiontitle}{#1}%
  \addcontentsline{toc}{section}{#1}\markboth{#1}{#1}%
  {\setlength{\parskip}{0pt}\sffamily\fontsize{15.5}{20}\selectfont\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000\strut #2\par}
  \nobreak\vspace{6pt}\nobreak}
 \newcommand{\monitorentry}[2]{%
- \metricentry{#1}{#1}%
+ \metricentrytitle{#1}{#1}%
  {\sffamily\fontsize{9}{11}\selectfont\color{black!65}#2\par}
  \nobreak\vspace{3pt}\nobreak}
 \newlength{\metricheadingbefore}
@@ -105,23 +90,23 @@
  \end{minipage}}
 \renewcommand{\coloredboxes}[2]{%
  \par\addvspace{12pt}\begingroup\setlength{\parskip}{0pt}
- \setlength{\metricpanelwidth}{\dimexpr.5\textwidth-17pt\relax}
+ \setlength{\metricpanelwidth}{\dimexpr.5\textwidth-14pt\relax}
  \sbox{\metricleftpanel}{\metriccolumn{Strengths}{#1}}
  \sbox{\metricrightpanel}{\metriccolumn{Weaknesses}{#2}}
  \setlength{\metricpanelheight}{\dimexpr\ht\metricleftpanel+\dp\metricleftpanel\relax}
  \ifdim\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax>\metricpanelheight
   \setlength{\metricpanelheight}{\dimexpr\ht\metricrightpanel+\dp\metricrightpanel\relax}\fi
- \noindent\makebox[\textwidth][c]{\begin{tikzpicture}
- \node[anchor=north west,inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=mygreen] (left) at (0,0) {%
+ \noindent\makebox[\textwidth][c]{\hspace*{8pt}\begin{tikzpicture}
+ \node[anchor=north west,inner sep=8pt,outer sep=0pt,rounded corners=2pt,fill=mygreen] (left) at (0,0) {%
   \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricleftpanel}\end{minipage}};
- \node[anchor=north west,inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=myred] at ([xshift=12pt]left.north east) {%
+ \node[anchor=north west,inner sep=8pt,outer sep=0pt,rounded corners=2pt,fill=myred] at ([xshift=12pt]left.north east) {%
   \begin{minipage}[t][\metricpanelheight][t]{\metricpanelwidth}\usebox{\metricrightpanel}\end{minipage}};
  \end{tikzpicture}}\par\endgroup}
 \definecolor{metricnotefill}{HTML}{FFF5D7}
 \definecolor{metricnoteink}{HTML}{604819}
 \renewcommand{\orangebox}[2]{%
  \par\addvspace{12pt}\noindent\makebox[\textwidth][c]{\tikz{%
-  \node[inner sep=11pt,outer sep=0pt,rounded corners=2pt,fill=metricnotefill]{%
+  \node[inner sep=8pt,outer sep=0pt,rounded corners=2pt,fill=metricnotefill]{%
    \begin{minipage}{\textwidth}\setlength{\parskip}{0pt}
    {\metricasidefont\fontsize{10}{12}\selectfont\mdseries\itshape\color{metricnoteink}#1\par}
    \nobreak\vspace{8pt}{\metricpaneltext\looseness=-1 #2\par}

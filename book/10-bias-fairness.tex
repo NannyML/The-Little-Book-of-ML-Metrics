@@ -1,9 +1,9 @@
 \chapteropener{Bias \& Fairness}{coralhard}{coralaccent}{%
-Bias and fairness metrics compare how a model performs for different groups of people. They can show whether it rejects qualified applicants more often in one group, approves unqualified applicants more often in another, or gives probabilities that are less reliable for some people. These differences can be missed when we report only the model's overall accuracy.
+Bias and fairness metrics compare a model's performance across groups. They can reveal whether it rejects qualified applicants more often in one group, approves unqualified applicants more often in another, or gives less reliable probabilities. Overall accuracy can hide these differences.
 
-The figures in this chapter follow a simulated model that selects applicants for an opportunity. Group A has $60$ qualified people out of $100$, while Group B has $30$ out of $100$. These proportions are the groups' \emph{base rates}. The model recognizes qualified applicants equally often in both groups, but a selected applicant is more likely to be qualified in A. The pages that follow explain why both can be true.
+The figures follow a simulated model selecting applicants for an opportunity. Group A has $60$ qualified people out of $100$; Group B has $30$. These proportions are their \emph{base rates}. The model recognizes qualified applicants equally often in both groups, yet a selected applicant is more likely to be qualified in A. The chapter explains why.
 
-To assess fairness in this example, we first need to decide what should be equal across the two groups. We could require the model to select the same proportion of applicants from each group, regardless of qualifications. This is \emph{demographic parity}. Or we could compare qualified applicants separately from unqualified applicants, requiring the selection rates to match within each category. This approach is called \emph{separation}. A third approach starts with the model's decisions: among selected applicants, the proportion who are qualified should match across groups, and the same should hold among rejected applicants. This is \emph{sufficiency}. Each approach checks a different aspect of the model's decisions, which is why the same model can meet one criterion and fail another.}{In this chapter}
+We first decide what should be equal. \emph{Demographic parity} requires selecting the same proportion from each group, regardless of qualifications. \emph{Separation} compares qualified and unqualified applicants separately, requiring equal selection rates within each category. \emph{Sufficiency} starts with the decisions: selected applicants should be qualified equally often across groups, and the same should hold among rejected applicants. These approaches check different aspects of decisions, so a model can meet one criterion and fail another.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{coralhard}{coralaccent}{Which criterion?}{Follow the branches to a criterion. The number next to it is its page.}
@@ -64,7 +64,7 @@ Use it when equal selection rates are the goal, such as access to an outreach pr
 \item Equal selection rates may conflict with predicting the labels accurately when positive outcomes occur at different rates across groups.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -85,11 +85,12 @@ The right-hand panel lowers Group B's threshold until it also selects $54$ peopl
 Demographic Parity compares selection rates across whole groups. Equality of Opportunity instead compares selection among qualified people, while Predictive Parity compares how many selected people are qualified. A model can select equal shares of two groups while selecting their qualified members at different rates.
 
 % ---------- Equality of Opportunity ----------
+\metricend
 \clearpage
 \thispagestyle{biasfairnesstyle}
 \metricentry{Equality of Opportunity}{Equality of Opportunity}\label{sec:equality-of-opportunity}
 
-Equality of opportunity requires qualified people to be selected at the same rate across groups. For a loan model, we compare only applicants who would repay: if it approves $80\%$ of the men who would repay, it should also approve $80\%$ of the women who would repay. This is the true positive rate. Demographic parity instead calculates approval rates using all applicants, including those who would not repay. Those overall approval rates can differ even when equality of opportunity holds.
+Equality of opportunity requires equal selection rates among qualified people across groups. For loans, compare applicants who would repay: approving $80\%$ of those men should mean approving $80\%$ of those women. This is the true positive rate. Demographic parity instead compares approval across all applicants, including non-repayers; those overall rates can differ even when equality of opportunity holds.
 
 % Formula
 \begin{metricformula}
@@ -124,7 +125,7 @@ Use it when missed positives are the main concern, such as overlooking qualified
 \item Equal rates can still be poor rates. A TPR of $20\%$ in every group satisfies the criterion while missing most positive cases.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -138,13 +139,14 @@ Use it when missed positives are the main concern, such as overlooking qualified
 Equality of opportunity holds because these proportions match, even though the counts differ. The faded squares represent unqualified people, whose predictions do not enter this calculation.
 
 \orangebox{Did you know that...}
-{Hardt, Price, and Srebro introduced this formulation of equality of opportunity in $2016$ to focus on access for people who qualify for a beneficial decision. One useful property is that a perfect classifier always satisfies it: every qualified person is selected in every group. Demographic parity can reject that same classifier. If $60\%$ of one group and $30\%$ of another qualify, selecting all and only qualified people gives different selection rates. The criteria disagree even though the model makes no prediction errors.}
+{Hardt, Price, and Srebro introduced this formulation in $2016$, focusing on access for qualified people. A perfect classifier always satisfies it: every qualified person is selected. Demographic parity can reject that classifier. If $60\%$ of one group and $30\%$ of another qualify, selecting all and only qualified people gives different selection rates, despite making no prediction errors.}
 
 \metricheading{Related metrics}\metricsecondary
 
 Equality of Odds also requires equal false-positive rates. If opportunity holds but odds fails, false-positive rates differ. Demographic Parity compares overall selection rates, which can differ when groups have different proportions of qualified people.
 
 % ---------- Equality of Odds ----------
+\metricend
 \clearpage
 \thispagestyle{biasfairnesstyle}
 \metricentry{Equality of Odds}{Equality of Odds}\label{sec:equality-of-odds}
@@ -185,7 +187,7 @@ Use it when both missed positives and false alarms matter, as in fraud detection
 \item When base rates differ and TPR and FPR are both nonzero, matching those rates gives different precision across groups.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -199,13 +201,14 @@ Use it when both missed positives and false alarms matter, as in fraud detection
 Both TPR and FPR match, so equality of odds holds. There are still more false positives in B: the same $10\%$ rate applies to $70$ unqualified people there, compared with $40$ in A.
 
 \orangebox{Did you know that...}
-{Equalized odds can sometimes be achieved by changing decisions after a model has been trained. Hardt, Price, and Srebro's $2016$ method uses each group's scores and labels to find decision rules that match both error rates while minimizing prediction loss. This can involve using different thresholds for different groups, or randomly choosing between thresholds. A shared numerical cutoff is therefore not required, and matching the rates may cost accuracy. The adjustment changes how the model's scores are used; it leaves the underlying scores unchanged.}
+{Hardt, Price, and Srebro's $2016$ method can achieve equalized odds after training. It uses each group's scores and labels to find decision rules that match both error rates while minimizing prediction loss. Rules may use different thresholds by group or randomly choose between thresholds. Matching rates may cost accuracy. The underlying scores remain unchanged; only their use changes.}
 
 \metricheading{Related metrics}\metricsecondary
 
 Equality of Odds includes Equality of Opportunity because it requires equal TPR as well as equal FPR. Predictive Parity checks precision instead, so compare it separately. Demographic Parity checks overall selection rates, which can differ even when both error rates match.
 
 % ---------- Predictive Parity ----------
+\metricend
 \clearpage
 \thispagestyle{biasfairnesstyle}
 \metricentry{Predictive Parity}{Predictive Parity}\label{sec:predictive-parity}
@@ -245,7 +248,7 @@ Use it when the correctness of positive predictions matters across groups, such 
 \item Equal precision can hide unequal recall: the model may overlook a much larger share of positive cases in one group.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -259,13 +262,14 @@ Use it when the correctness of positive predictions matters across groups, such 
 Both groups have the same TPR and FPR, but B has fewer qualified people. False positives therefore make up more of its selections.
 
 \orangebox{Did you know that...}
-{COMPAS is a tool used in criminal justice to estimate the risk that a person will reoffend. In $2016$, ProPublica reported higher false-positive rates for Black defendants than for white defendants. Its developer, Northpointe, responded that people classified as high risk had similar reoffending rates across racial groups. Those findings concern different criteria: error rates and predictive parity. Alexandra Chouldechova's $2017$ analysis explained why these criteria can conflict when base rates differ. The mathematical conflict did not settle whether the tool or its use was fair.}
+{COMPAS estimates reoffending risk in criminal justice. In $2016$, ProPublica reported higher false-positive rates for Black than white defendants. Developer Northpointe responded that high-risk defendants had similar reoffending rates across racial groups. These findings concern different criteria: error rates and predictive parity. Alexandra Chouldechova's $2017$ analysis explained their conflict when base rates differ; it did not settle whether the tool or its use was fair.}
 
 \metricheading{Related metrics}\metricsecondary
 
 Predictive Parity compares precision, while Equality of Opportunity compares recall and Equality of Odds also checks false-positive rates. Calibration within Groups checks probability scores; those scores can be calibrated even when precision differs after thresholding.
 
 % ---------- Calibration within Groups ----------
+\metricend
 \clearpage
 \thispagestyle{biasfairnesstyle}
 \metricentry{Calibration within Groups}{Calibration within Groups}\label{sec:calibration-within-groups}
@@ -305,7 +309,7 @@ Use it when decisions depend on estimated probabilities, such as the chance of r
 \item Requires enough outcomes within each group and score range. Small samples or broad bins can hide calibration errors.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -324,3 +328,4 @@ For scores between $0.5$ and $0.6$, about $77\%$ of Group A is qualified, compar
 \metricheading{Related metrics}\metricsecondary
 
 Calibration within Groups implies score-level sufficiency: among people with the same score, outcome rates do not depend on group. Predictive Parity instead pools everyone above a decision threshold, where groups may have different mixes of scores. Use Equality of Odds to assess the resulting error rates, and group-level calibration plots alongside the Brier Score to assess probability predictions.
+\metricend

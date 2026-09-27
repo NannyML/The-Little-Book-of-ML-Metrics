@@ -61,11 +61,7 @@ so it rewards shared phrases as well as individual words.
     }
 \end{metricformula}
 
-Each $p_n$ is the fraction of the output's $n$-grams that match a reference. Repeating a
-phrase earns credit only up to its largest count in any one reference. For a whole test set, BLEU pools
-these counts before combining the four precisions with equal weights. It then applies the brevity
-penalty $BP$ if the total output is too short relative to the references. The score ranges from $0$ to $1$, often
-reported on a $0$--$100$ scale; higher means more overlap.
+Each $p_n$ is the fraction of output $n$-grams matching a reference, with each phrase's credit capped at its largest count in any one reference. BLEU pools counts across the test set, combines the four precisions with equal weights, and applies a brevity penalty $BP$ for output shorter than the references. Scores range from $0$ to $1$, often reported as $0$--$100$; higher means more overlap.
 
 \metricheading{When to use}
 
@@ -84,7 +80,7 @@ phrase matches for a useful unsmoothed score.
 which records its version and settings.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -116,6 +112,7 @@ errors.
 % references:
 % https://aclanthology.org/W05-0909.pdf
 
+\metricend
 \clearpage
 \thispagestyle{nlpstyle}
 \metricentry{METEOR}{Metric for Evaluation of Translation with Explicit ORdering (METEOR)}\label{sec:meteor}
@@ -166,7 +163,7 @@ does not recognize it.
 what (see figure).
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -199,14 +196,12 @@ BERTScore, in the GenAI chapter, compares learned representations of words in co
 % https://aclanthology.org/W04-1013.pdf
 % https://aclanthology.org/E17-2007.pdf
 
+\metricend
 \clearpage
 \thispagestyle{nlpstyle}
 \metricentry{ROUGE}{Recall-Oriented Understudy for Gisting Evaluation (ROUGE)}\label{sec:rouge}
 
-ROUGE is a family of metrics that compares a summary's wording with a reference summary. ROUGE-1
-counts shared words, and ROUGE-2 counts shared pairs of adjacent words. ROUGE-L looks for the longest
-sequence of words that appears in the same order in both texts, allowing gaps. These comparisons can
-be reported as precision, recall or an F-score that combines the two.
+ROUGE compares a summary's wording with a reference. ROUGE-1 counts shared words; ROUGE-2 counts shared adjacent word pairs. ROUGE-L finds the longest word sequence in the same order in both texts, allowing gaps. Each comparison can report precision, recall or their combined F-score.
 
 % equation
 \begin{metricformula}
@@ -224,10 +219,7 @@ be reported as precision, recall or an F-score that combines the two.
     }
 \end{metricformula}
 
-The formula shows ROUGE-N \textit{recall}: matching $n$-grams divided by the number in the references.
-Precision instead divides by the number in the model's summary. Scores range from $0$ to $1$, with
-higher values indicating more overlap. State both the matching rule and the reported quantity, such
-as ROUGE-1 recall or ROUGE-L F1, because they answer different questions.
+The formula shows ROUGE-N \textit{recall}: matching $n$-grams divided by their reference count. Precision divides by their count in the model's summary. Scores range from $0$ to $1$; higher means more overlap. Specify the matching rule and quantity, such as ROUGE-1 recall or ROUGE-L F1.
 
 \metricheading{When to use}
 
@@ -247,7 +239,7 @@ help expose this padding.
 credit when their wording differs.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -277,6 +269,7 @@ beyond exact wording.
 
 % ---------- Translation Error Rate ----------
 % reference: https://aclanthology.org/2006.amta-papers.25.pdf
+\metricend
 \clearpage
 \thispagestyle{nlpstyle}
 \metricentry{TER}{Translation Edit Rate (TER)}\label{sec:ter}
@@ -323,7 +316,7 @@ measure that time directly: TER does not count the effort of reading and decidin
 possible, or to match a human's editing process.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -352,6 +345,7 @@ indicate more agreement with their references.
 
 % ---------- Exact Match ----------
 % reference: https://nlp.stanford.edu/pubs/rajpurkar2016squad.pdf
+\metricend
 \clearpage
 \thispagestyle{nlpstyle}
 \metricentry{EM}{Exact Match (EM)}\label{sec:em}
@@ -400,7 +394,7 @@ same way, and removing punctuation can erase a meaningful difference.
 validate the reference's correctness.
 }
 
-\clearpage
+\metricsecondpage
 
 \begin{metricfigure}
     \includegraphics[width=1\textwidth]{figures/EM_vs_F1.png}
@@ -426,14 +420,12 @@ the meaning. Read those answers before deciding they are nearly correct. For lon
 measures word and sequence overlap, while BERTScore compares words in context.
 
 % ---------- Word Error Rate ----------
+\metricend
 \clearpage
 \thispagestyle{nlpstyle}
 \metricentry{WER}{Word Error Rate (WER)}\label{sec:wer}
 
-WER measures how many word edits separate a speech recognizer's transcript from a reference transcript.
-It finds the alignment with the fewest substitutions, deletions and insertions, then divides that edit
-count by the number of reference words. A WER of $0.1$ means one edit per ten reference words; the
-edit could correct a wrong word, restore a missing one or remove an extra one.
+WER measures the word edits separating a speech recognizer's transcript from a reference. It finds the fewest substitutions, deletions and insertions, then divides by the reference-word count. WER $=0.1$ means one edit per ten reference words: replacing a wrong word, restoring a missing one or removing an extra one.
 
 % equation
 \begin{metricformula}
@@ -474,7 +466,7 @@ while having different consequences.
 such as \textit{can't}/\textit{cannot} before scoring.
 }
 
-\clearpage
+\metricsecondpage
 
 \begin{metricfigure}
     \includegraphics[width=\textwidth]{figures/WER_vs_errors.png}
@@ -498,3 +490,4 @@ CER applies the edit-distance calculation to characters rather than words. The c
 written units and word boundaries, not whether a spoken language uses tones. TER adds phrase shifts
 for translation, so it can reduce the edit count when words move together. BERTScore provides a
 comparison based on learned text representations, but does not replace checking transcription errors.
+\metricend

@@ -80,9 +80,7 @@ geometric mean of $1/p$: one token at $p = 10^{-6}$ costs $13.8$ nats, as much a
 
 \metricheading{When to use}
 
-Use it to compare checkpoints or data mixes when the tokenizer and evaluation text stay fixed, and to flag distribution shift when the
-perplexity of incoming text jumps. Avoid it for judging generated samples (use MAUVE or human ratings) and for masked models like BERT.
-To compare tokenizers or vocabularies, use bits per byte so the unit stays fixed.
+Use it to compare checkpoints or data mixes with a fixed tokenizer and evaluation text, or to flag distribution shift when incoming-text perplexity jumps. For generated samples, use MAUVE or human ratings. It does not apply directly to masked models like BERT; compare tokenizers using bits per byte.
 
 
 \coloredboxes{
@@ -97,7 +95,7 @@ instead.
 text does not guarantee better generations.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -125,6 +123,7 @@ improvement in the samples. Inspect the generations and decoding setup before dr
 pseudo-perplexity scores each token while masking it in turn.
 
 % ---------- BERTScore ----------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{BERTScore}{BERTScore}\label{sec:bertscore}
@@ -154,16 +153,11 @@ doctor delayed the surgery'' describe the same event with different words.
     }
 \end{metricformula}
 
-$R_{\text{BERT}}$ is recall: each reference token finds its best candidate token (embeddings are unit-normalized, so the dot product is
-a cosine). Precision runs the matching from the candidate side and $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the
-top of the scale; the reference implementation can optionally rescale them against a random-pair baseline. The figure uses raw scores,
-so $0.88$ is a similarity value, not $88\%$ correct.
+$R_{\text{BERT}}$ is recall: each reference token finds its best candidate match. Unit-normalized embeddings make the dot product a cosine. Precision reverses the matching; $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the top; optional rescaling uses a random-pair baseline. Here $0.88$ is raw similarity, not $88\%$ correct.
 
 \metricheading{When to use}
 
-Use it for summarization, translation and paraphrase evaluation, where a good output can be worded very differently from its reference.
-When numbers, names or code must be exact, check those values directly instead of trusting an aggregate similarity or overlap score. If
-there is no matched reference, compare collections with MAUVE or use a model judge.
+Use it for summarization, translation and paraphrase evaluation when good outputs can differ in wording from their references. Check exact numbers, names and code directly. Without matched references, compare collections with MAUVE or use a model judge.
 
 
 \coloredboxes{
@@ -177,7 +171,7 @@ $0.40$ and BLEU is zero (figure).
 barely moves (figure).
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -199,12 +193,10 @@ configuration next to every score.}
 
 \metricheading{Related metrics}\metricsecondary
 
-BLEU, METEOR and ROUGE (NLP chapter) count surface overlap; BERTScore compares contextual token similarity. Low BLEU with high BERTScore
-can be consistent with a good paraphrase, but it can also hide a role swap or negation, so inspect whether the wording changed or the
-meaning did. Numbers, names and other exact values need their own checks. MAUVE compares collections and needs a human reference
-collection, but no matched reference for each sample.
+BLEU, METEOR and ROUGE count surface overlap; BERTScore compares contextual similarity. Low BLEU with high BERTScore can indicate a paraphrase or hide a role swap or negation: inspect meaning, and check exact values separately. MAUVE compares collections, needing human reference texts but no matched reference per sample.
 
 % ---------- MAUVE ----------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{MAUVE}{MAUVE}\label{sec:mauve}
@@ -214,9 +206,7 @@ collection, but no matched reference for each sample.
 % https://arxiv.org/pdf/2102.01454
 % https://krishnap25.github.io/mauve/
 
-MAUVE measures how closely a collection of generated texts resembles human writing from the same setting. It groups texts using
-features from a language model, then compares how common each group is in the two collections. This can reveal missing variety or
-unusual outputs without requiring a matching reference for each generated text.
+MAUVE compares collections of generated and human texts from the same setting. It groups texts by language-model features and compares each group's frequency. This can reveal missing variety or unusual outputs without a matched reference for each generated text.
 
 % equation
 \begin{metricformula}
@@ -240,9 +230,7 @@ unusual outputs without requiring a matching reference for each generated text.
     }
 \end{metricformula}
 
-Each $\lambda$ mixes the distributions and produces one point on the divergence curve. The reference implementation adds $(0,1)$ and
-$(1,0)$ before calculating the area; the sweep itself need not reach them. Identical histograms score $1$. The horizontal coordinate
-falls for model-only mass, while the vertical coordinate falls when the model misses human-text mass.
+Each $\lambda$ mixes the distributions to give one curve point. The reference implementation adds $(0,1)$ and $(1,0)$ for integration; the sweep need not reach them. Identical histograms score $1$. Model-only mass lowers the horizontal coordinate; missing human-text mass lowers the vertical one.
 
 \metricheading{When to use}
 
@@ -262,7 +250,7 @@ side and uses $5{,}000$.
 \item Measures the embedding's view: length or topic differences can lower the score, and the embedding model and $k$ change it.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -290,6 +278,7 @@ stagnates. BERTScore compares one output to one reference. For images the same d
 fits in feature space rather than histograms.
 
 % ---------- Inception Score ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{IS}{Inception Score (IS)}\label{sec:is}
@@ -317,10 +306,7 @@ require confident predictions spread across many classes.
     }
 \end{metricformula}
 
-The score runs from $1$, when every image receives the same full class-probability vector, to the number of classifier classes
-($1{,}000$ for ImageNet). Historical reports commonly split a fixed sample into ten groups and report the mean and standard deviation of
-their scores. Each split estimates its own $p(y)$, so keep the sample count, split count and classifier setup fixed; that standard
-deviation is not a confidence interval for image quality.
+Scores range from $1$ (identical class-probability vectors for all images) to the classifier's class count ($1{,}000$ for ImageNet). Historical reports split samples into ten groups and report the mean and standard deviation of their scores. Each split estimates its own $p(y)$: fix the sample count, splits and classifier setup. That deviation is not an image-quality confidence interval.
 
 \metricheading{When to use}
 
@@ -341,7 +327,7 @@ it too.
 settings must match before comparing scores.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -368,6 +354,7 @@ possible explanation; inspect class coverage and repeated images before calling 
 use LPIPS.
 
 % ---------- Fréchet Inception Distance ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{FID}{Fréchet Inception Distance (FID)}\label{sec:fid}
@@ -378,9 +365,7 @@ use LPIPS.
 % https://arxiv.org/abs/2104.11222 (Parmar, Zhang, Zhu — On Aliased Resizing and Surprising Subtleties in GAN Evaluation)
 % https://arxiv.org/abs/1911.07023 (Chong & Forsyth — Effectively Unbiased FID and Inception Score)
 
-FID measures the difference between sets of generated and real images. It uses the Inception-v3 network to extract numerical features
-from each image, then compares their averages and variation. This helps detect differences in appearance and variety, such as a face
-generator that keeps producing similar expressions.
+FID compares sets of generated and real images using features extracted by Inception-v3. Differences in feature averages and variation can reveal changes in appearance and variety, such as a face generator repeating similar expressions.
 
 % equation
 \begin{metricformula}
@@ -405,9 +390,7 @@ grows.
 
 \metricheading{When to use}
 
-Use FID to compare generated and reference sets under one protocol, especially for historical GAN or diffusion results. For modern
-text-to-image models, pair it with prompt-alignment and human evaluation: distribution match is a different question. Small samples make
-rankings less stable; there is no universal cutoff. For one image, use LPIPS or SSIM.
+Use FID to compare generated and reference sets under one protocol, especially against historical GAN or diffusion results. Pair text-to-image evaluation with prompt-alignment and human checks. Small samples make rankings unstable; there is no universal cutoff. For one image pair, use LPIPS or SSIM.
 
 
 \coloredboxes{
@@ -422,7 +405,7 @@ people in other settings.
 resize and JPEG settings shift the score by points.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -451,6 +434,7 @@ limited samples, Kernel Inception Distance (KID) has an unbiased standard estima
 
 
 % ---------- Learned Perceptual Image Patch Similarity ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{LPIPS}{Learned Perceptual Image Patch Similarity (LPIPS)}\label{sec:lpips}
@@ -476,30 +460,23 @@ LPIPS estimates how different two images look to a person. It compares features 
     }
 \end{metricformula}
 
-At each position, LPIPS normalizes the feature vector across channels, compares the two vectors and weights each channel by $w_l$ before
-averaging over space and layers. Identical images score $0$; otherwise, lower means more similar under that setup. Report the backbone
-and weights, and validate any pass/fail cutoff on the application's images.
+At each position, LPIPS normalizes feature vectors across channels, compares them and weights each channel by $w_l$, then averages across space and layers. Identical images score $0$; lower means more similar under that setup. Report the backbone and weights; validate cutoffs on the application's images.
 
 \metricheading{When to use}
 
-Use it for super-resolution, image-to-image translation, compression and diffusion reconstructions with a ground-truth image, or for
-sample diversity via mean pairwise LPIPS. Avoid it when exact pixel fidelity matters, and for unpaired image sets (use FID).
+Use it for super-resolution, image-to-image translation, compression or diffusion reconstructions with a reference image. Mean pairwise LPIPS can assess sample diversity. Use pixel measures for exact fidelity and FID for unpaired image sets.
 
 
 \coloredboxes{
-\item Matches human two-alternative choices better than SSIM and PSNR: about $69\%$ agreement on the paper's benchmark against the low
-sixties, near the $74\%$ ceiling set by human disagreement.
-\item Distinguishes types of distortion that MSE treats equally: noise and blur in the figure share the same MSE but have different
-LPIPS scores.
+\item About $69\%$ agreement with human two-alternative choices in the paper, versus the low sixties for SSIM and PSNR and a $74\%$ human-agreement ceiling.
+\item Equal-MSE noise and blur can receive different LPIPS scores (figure).
 }
 {
-\item Not stable under adversarial change: a perturbation crafted against the backbone moves the score without visible effect, and
-backbones disagree on the ordering of distortions.
-\item Trained on $64 \times 64$ patches, so it under-weights errors in global layout, and it costs a full network forward pass per
-pair.
+\item Adversarial perturbations can change the score without visible effect. Backbones can rank distortions differently.
+\item Training on $64\times64$ patches under-weights global layout errors. Each pair costs a network forward pass.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -526,6 +503,7 @@ consistent with blur, because blur preserves broad pixel values while removing t
 slightly displaced. These patterns are clues to inspect the images, not diagnoses. FID compares sets of images and needs no pairs.
 
 % ---------- CLIPScore ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{CLIP Score}{CLIP Score}\label{sec:clip-score}
@@ -534,9 +512,7 @@ slightly displaced. These patterns are clues to inspect the images, not diagnose
 % https://arxiv.org/pdf/2104.08718 (Hessel et al., CLIPScore, EMNLP 2021)
 % https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html
 
-CLIP Score estimates how well an image matches a text description, without needing a reference image. It uses CLIP, a model trained to
-associate images with text, to compare their content. For example, we can score a generated picture against the prompt ``a corgi wearing
-sunglasses on a beach''.
+CLIP Score estimates image--text agreement without a reference image. CLIP learns to associate images with text and compares their content. For example, we can score a generated picture against ``a corgi wearing sunglasses on a beach''.
 
 % equation
 \begin{metricformula}
@@ -578,7 +554,7 @@ a single reference.
 different scales. Whether a small average gap is meaningful depends on the paired variation across prompts.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -586,11 +562,7 @@ different scales. Whether a small average gap is meaningful depends on the paire
     \includegraphics[width=\textwidth]{figures/CLIP_Score_matrix.png}
 \end{metricfigure}
 
-\metriccaption{Figure. CLIP Score.}{Four images against six captions, scored with CLIP ViT-B/32; each cell is $2.5$ times the cosine between
-the caption and image embeddings. The caption written for each image (boxed) beats every caption written for another image, so
-ranking across subjects works. But the raw cosines span only $0.06$--$0.35$, and for the first image the two probe captions (dashed)
-show the limit: with ``flag'' and ``woman'' swapped the score rises to $0.82$ against $0.79$ for the correct caption, and the negated
-caption keeps $0.69$. In this example and checkpoint, the score responds more to which words are present than to how they are arranged.}
+\metriccaption{Figure. CLIP Score.}{Four images and six captions, scored with CLIP ViT-B/32; cells show $2.5$ times embedding cosine. Each image's caption (boxed) beats captions for other images. Yet raw cosines span only $0.06$--$0.35$. Swapping ``flag'' and ``woman'' (dashed) raises the first image's score from $0.79$ to $0.82$; negation keeps $0.69$. Here the checkpoint responds more to the words than their arrangement.}
 
 \orangebox{Did you know that...}
 {A model can learn to exploit the judge when it is optimized directly against the same CLIP checkpoint used for evaluation. Images
@@ -600,12 +572,10 @@ was part of the objective. For a strong claim, add an independent evaluator and 
 
 \metricheading{Related metrics}\metricsecondary
 
-CLIP Score gives a broad measure of image--text alignment; VQAScore and DSG probe composition more directly. High CLIP Score with poor
-FID can suggest that prompt alignment improved while the generated set moved away from the chosen reference distribution. Good FID with
-low CLIP Score can suggest the opposite. Inspect examples before assigning a cause: FID does not itself test whether images look like
-photographs, and all three metrics inherit their evaluators' blind spots.
+CLIP Score measures broad image--text alignment; VQAScore and DSG probe composition. High CLIP Score with poor FID may suggest better alignment but worse reference-distribution matching; the reverse may suggest the opposite. Inspect examples: FID does not itself test photographic realism, and these metrics inherit their evaluators' blind spots.
 
 % ---------- Davidsonian Scene Graph ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{DSG}{Davidsonian Scene Graph (DSG)}\label{sec:dsg}
@@ -613,9 +583,7 @@ photographs, and all three metrics inherit their evaluators' blind spots.
 % reference:
 % https://arxiv.org/pdf/2310.18235 (Cho et al., ICLR 2024)
 
-DSG checks whether a generated image includes the objects, attributes and relationships described in a prompt. It turns those details
-into yes/no questions for a visual question-answering (VQA) model. For ``a red bicycle leaning against a blue wall'', it asks whether
-there is a bicycle, whether it is red and whether the wall is blue.
+DSG checks a generated image against the objects, attributes and relationships in its prompt. It makes yes/no questions for a visual question-answering (VQA) model. For ``a red bicycle leaning against a blue wall'', it asks whether a bicycle is present, whether it is red and whether the wall is blue.
 
 % equation
 \begin{metricformula}
@@ -635,11 +603,11 @@ there is a bicycle, whether it is red and whether the wall is blue.
     }
 \end{metricformula}
 
-$a_q$ is the VQA model's answer and $\text{pa}(q)$ the questions it depends on. If ``is there a bicycle?'' gets a no, ``is the bicycle red?'' counts as no whatever the model says. A language model generates these questions once per prompt; DSG scores the share of atomic facts the image gets right.
+$a_q$ is the VQA answer; $\text{pa}(q)$ lists prerequisite questions. If ``is there a bicycle?'' gets a no, ``is the bicycle red?'' counts as no regardless of its answer. A language model generates questions once per prompt; DSG scores the fraction of atomic facts satisfied.
 
 \metricheading{When to use}
 
-Use DSG for text-to-image prompts with several objects, attributes and relations, or to find which detail failed. For one alignment score at scale, CLIP Score is cheaper. Style questions such as ``is this in the style of Hokusai?'' are more subjective and depend heavily on the question generator and VQA model.
+Use DSG to evaluate several objects, attributes and relations, or identify a failed detail. CLIP Score is cheaper for one alignment score at scale. Style questions, such as ``is this in the style of Hokusai?'', depend heavily on the question generator and VQA model.
 
 \coloredboxes{
 \item Diagnostic: a score of $3/5$ comes with the two failed questions, so ``the wall is red instead of blue'' is read off directly
@@ -654,7 +622,7 @@ weakest on the relations and counts DSG targets.
 calls per image.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -682,6 +650,7 @@ which ones failed. A disagreement between VQAScore and DSG tells us that the eva
 detail in the single question and a faulty decomposition are two possibilities to check, not conclusions from the scores alone.
 
 % ---------- Visual Question Answering Score ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{VQAScore}{Visual Question Answering Score (VQAScore)}\label{sec:vqascore}
@@ -711,13 +680,11 @@ answering ``Yes'' becomes the score.
     }
 \end{metricformula}
 
-The score is the evaluator's probability of answering ``Yes'', not a calibrated probability that the image matches the prompt: $0.8$ does not mean eight in ten images are faithful. The paper's strongest version uses CLIP-FlanT5, a generative question-answering model. Other VQA models can be used, but their scores and failure modes may differ.
+The score is the evaluator's probability of answering ``Yes'', not calibrated image--prompt accuracy: $0.8$ does not mean eight in ten images are faithful. The paper's strongest version uses CLIP-FlanT5. Other VQA models may have different scores and failure modes.
 
 \metricheading{When to use}
 
-Use it to rank text-to-image and text-to-video outputs on compositional prompts --- counts, spatial relations, attribute binding,
-negation --- and as a reward when generating several candidates per prompt. Avoid it when you need to know which part of a prompt
-failed (use DSG), for realism (use FID), and as a filter over millions of pairs (use CLIP Score).
+Use it to rank text-to-image or text-to-video outputs on counts, spatial relations, attribute binding and negation, or to reward the best of several candidates. Use DSG to locate failed details, FID for realism, and CLIP Score for filtering millions of pairs.
 
 
 \coloredboxes{
@@ -732,7 +699,7 @@ wording moves the probability.
 offer more detail.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -756,6 +723,7 @@ the evaluators make sufficiently different errors. A high CLIP Score and low VQA
 right objects in the wrong arrangement, but inspecting the image is still necessary.
 
 % ---------- Mean Opinion Score ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{MOS}{Mean Opinion Score (MOS)}\label{sec:mos}
@@ -806,7 +774,7 @@ depends on the paired design, variability and power; repeated ratings are not in
 (figure). Report the interval too.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -835,6 +803,7 @@ Comparison MOS (CMOS: the same listeners rate A against B on a $-3$ to $+3$ scal
 systems.
 
 % ---------- Perceptual Evaluation of Speech Quality ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{PESQ}{Perceptual Evaluation of\\ Speech Quality (PESQ)}\label{sec:pesq}
@@ -883,7 +852,7 @@ still move results, so report them.
 \item Not differentiable: training needs an approximation. Implementations may require patent or software licences; ITU publishes the recommendation, not the software licence.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -912,6 +881,7 @@ before deciding which. For reference-free monitoring in production, learned pred
 the degraded signal alone.
 
 % ---------- Short-Time Objective Intelligibility ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
 \metricentry{STOI}{Short-Time Objective Intelligibility (STOI)}\label{sec:stoi}
@@ -964,7 +934,7 @@ evaluates only $150$ Hz--$4.3$ kHz.
 listening test supports a percentage of words understood.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -993,9 +963,10 @@ intelligibility with people. WER (NLP chapter) on a recognizer fed the processed
 for human intelligibility.
 
 % ---------- Benchmarks ---------
+\metricend
 \clearpage
 \thispagestyle{genaistyle}
-\metricentry{Benchmarks}{Benchmarks}\label{sec:benchmarks}
+\metricentrytitle{Benchmarks}{Benchmarks}\label{sec:benchmarks}
 \begingroup
 \setlength{\metricheadingbefore}{6pt}
 \setlength{\metricheadingafter}{-1.5pt}
@@ -1068,12 +1039,8 @@ $77.3\%$ pass@1. That milestone applies to this subset and study, not to scienti
 % reference:
 % https://arxiv.org/pdf/2310.16049
 
-Multistep Soft Reasoning (MuSR, $2023$) used generated murder mysteries, object-placement puzzles and team-assignment problems. Its authors
-designed it to challenge GPT-4 and to generate new instances as models improved. The construction process embeds facts from a hidden reasoning tree in each
-story, so answers require combining information across the narrative. Accuracy shows whether the model reached the right answer, not
-whether it followed that tree. Fresh instances can reduce exposure risk; the published dataset can still leak like any public benchmark.
+MuSR ($2023$) used generated murder mysteries, object-placement puzzles and team-assignment problems to challenge GPT-4. New instances can be generated as models improve. Stories embed facts from a hidden reasoning tree; answers require combining those facts across the narrative. Accuracy checks the answer, not the reasoning path. Fresh instances can reduce exposure risk, but published examples can still leak.
 
-\newpage
 \metricheading{MMLU-Pro}
 % references:
 % https://arxiv.org/pdf/2406.01574

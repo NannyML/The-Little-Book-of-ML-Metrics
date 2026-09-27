@@ -2,8 +2,12 @@
 % \documentclass{report}
 \documentclass{book}
 
-\usepackage[paperwidth=5.7in, paperheight=8.55in, margin=1.25cm]{geometry}
-\setlength{\footskip}{\dimexpr\footskip-.3cm\relax}
+% KDP hardcover: 5.5 x 8.5 in trim, 0.125 in bleed at top,
+% bottom and the outer edge. Inside/outside distances below are mirrored.
+\usepackage[paperwidth=5.625in,paperheight=8.75in,twoside,
+ inner=18mm,outer=15.175mm,top=15.675mm,bottom=18.675mm,
+ footskip=6mm]{geometry}
+
 \usepackage{hyperref}
 \hypersetup{hidelinks}
 \usepackage{xurl}
@@ -163,12 +167,14 @@
     \vspace*{\dimexpr 5.0cm - \baselineskip\relax}
     \noindent #4\par
     \ifblank{#5}{}{%
+        \begin{minipage}{\textwidth}
         \vspace{1.2em}
         {\large\bfseries #5}\par\vspace{4pt}
         {\setlength{\parskip}{0pt}\setlength{\columnsep}{1.6em}%
          \begin{multicols}{2}\raggedcolumns
          \printcontents[chapters]{l}{1}{\setcounter{tocdepth}{1}}%
          \end{multicols}}%
+        \end{minipage}%
     }%
     \clearpage
 }
@@ -501,6 +507,7 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 \newcommand{\mapnotes}[1]{\par\vspace{10pt}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
 
 \input{metric-style}
+\input{hardcover}
 
 \begin{document}
 \pagestyle{customstyle}
@@ -510,13 +517,13 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \thispagestyle{empty}
     \begin{tikzpicture}[remember picture, overlay]
         \fill[cyanlight] (current page.north west) rectangle ([yshift=-0.58\paperheight]current page.north east);
-        \node[anchor=south west, inner sep=0pt, text width=\textwidth] at ([xshift=1.25cm, yshift=-0.58\paperheight+1.4cm]current page.north west)
+        \node[anchor=south west, inner sep=0pt, text width=\textwidth] at ([xshift=\bookleftmargin, yshift=-0.58\paperheight+1.4cm]current page.north west)
             {\fontsize{34}{40}\selectfont\bfseries The Little Book of\\[2pt] ML Metrics};
-        \node[anchor=north west, inner sep=0pt, text width=\textwidth] at ([xshift=1.25cm, yshift=-0.58\paperheight-1.2cm]current page.north west)
+        \node[anchor=north west, inner sep=0pt, text width=\textwidth] at ([xshift=\bookleftmargin, yshift=-0.58\paperheight-1.2cm]current page.north west)
             {\Large What every metric measures, when to use it, and where it fails.\\[1.6em]
              \normalsize\color{black!60}Regression, classification, clustering, ranking, computer vision, NLP, GenAI,
              probabilistic performance estimation, bias and fairness, and data observability.};
-        \node[anchor=south west, inner sep=0pt] at ([xshift=1.25cm, yshift=1.4cm]current page.south west)
+        \node[anchor=south west, inner sep=0pt] at ([xshift=\bookleftmargin, yshift=1.4cm]current page.south west)
             {\large\bfseries NannyML};
     \end{tikzpicture}
 \end{titlepage}

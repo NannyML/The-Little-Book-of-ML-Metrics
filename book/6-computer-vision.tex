@@ -68,7 +68,7 @@ Use Pixel Accuracy to check the overall share of correct labels. When one class 
 \item Counts labels without checking object identity or boundary shape. Different mistakes can produce the same score.
 }
 
-\clearpage
+\metricsecondpage
 
 In this example, background fills $85\%$ of the image. Its high recall dominates the pixel average, while two small classes are much harder to find.
 
@@ -89,6 +89,7 @@ IoU includes both missed and extra pixels in its denominator. Mean IoU weights c
 
 
 % ---------- PCK ----------
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{PCK}{Percentage of Correct Keypoints (PCK)}\label{sec:pck}
@@ -124,7 +125,7 @@ Use PCK for pose estimation or landmark detection when a distance tolerance capt
 \item Ignores improvements within the threshold: errors of $1$ and $9$ pixels both pass a $10$-pixel tolerance.
 \item Small changes near the cutoff can flip a result. Errors of $9.9$ and $10.1$ pixels receive opposite scores at that same tolerance.
 }
-\clearpage
+\metricsecondpage
 
 \begin{metricfigure}
     \centering
@@ -144,6 +145,7 @@ For a benchmark, use its specified tolerance. For a new application, choose a to
 Object Keypoint Similarity (OKS) rewards smaller distance errors continuously and uses a separate tolerance for each type of keypoint. A PCK curve instead shows the fraction of correct predictions over a range of thresholds.
 
 % ---------- OKS ----------
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{OKS}{Object Keypoint Similarity (OKS)}\label{sec:oks}
@@ -182,7 +184,7 @@ Use OKS for COCO-style pose evaluation, where both object size and annotation un
 \item A pose's average can hide a poorly located joint. Inspect individual errors as well as the overall score.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -200,11 +202,12 @@ Use OKS for COCO-style pose evaluation, where both object size and annotation un
 PCK counts keypoints within a distance threshold. OKS gives partial credit according to distance, scale and keypoint tolerance. For comparing regions rather than landmarks, see IoU or Dice.
 
 % ---------- PSNR ----------
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{PSNR}{Peak Signal-to-Noise Ratio (PSNR)}\label{sec:psnr}
 
-PSNR measures how closely a reconstructed image matches the original's pixel values. It converts the mean squared error into a score in decibels: higher PSNR means less pixel error. Compression and restoration methods use it to measure how much their output differs from the original.
+PSNR measures how closely reconstructed pixels match the original. It converts mean squared error into decibels: higher PSNR means less pixel error. Compression and restoration methods use it to compare their output with the original.
 
 % equation
 \begin{metricformula}
@@ -261,7 +264,7 @@ Use PSNR when corresponding pixels should match. Compare methods on the same tes
 \item Sensitive to alignment and brightness. A low score can reflect an image shift rather than lost detail.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -290,6 +293,7 @@ SSIM and LPIPS compare image pairs, but neither automatically fixes misalignment
 % references:
 % https://rosettacode.org/wiki/Sorensen%E2%80%93Dice_coefficient
 % https://distancia.readthedocs.io/en/latest/SorensenDice.html
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{S{\o}rensen–Dice Coefficient}{S{\o}rensen–Dice Coefficient}\label{sec:sorensen-dice-coefficient}
@@ -329,7 +333,7 @@ Use Dice when overlap matters, especially for small foreground regions against a
 \item Equal overlap can hide different boundary errors. A high score does not guarantee a smooth or accurately located outline.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -352,6 +356,7 @@ $Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Pan
 % references:
 % https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf
 % https://www.nature.com/articles/s41598-023-35605-7
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{PQ}{Panoptic Quality (PQ)}\label{sec:pq}
@@ -392,7 +397,7 @@ Use PQ for panoptic segmentation, where every pixel needs a class label and indi
 \item Matching has a hard cutoff. An outline just below $0.5$ IoU produces no match, while one just above it does.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -416,6 +421,7 @@ Inspect SQ and RQ alongside PQ, remembering that SQ describes only the accepted 
 % https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html (has a good visual)
 % https://espace2.etsmtl.ca/id/eprint/12070/1/Noumeir%20R.%202015%2012070%20Limitations%20of%20the%20SSIM%20quality%20metric.pdf?utm_source=chatgpt.com
 
+\metricend
 \clearpage
 \thispagestyle{cvstyle}
 \metricentry{SSIM}{Structural Similarity Index (SSIM)}\label{sec:ssim}
@@ -455,7 +461,7 @@ Use SSIM alongside PSNR and visual inspection for compression or image restorati
 \item Sensitive to alignment and window size. A shifted image can score poorly even when a viewer sees little difference.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -472,3 +478,4 @@ Use SSIM alongside PSNR and visual inspection for compression or image restorati
 \metricheading{Related metrics}\metricsecondary
 
 PSNR measures pixel error, while MS-SSIM compares structure at several image scales. LPIPS uses learned image features; see the GenAI chapter. Like SSIM, standard LPIPS can react strongly to small spatial shifts, so it does not remove the need for alignment.
+\metricend

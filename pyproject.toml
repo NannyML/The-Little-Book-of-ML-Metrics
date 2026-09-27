@@ -11,3 +11,6 @@ dependencies = [
     "yfinance",
     "jupyter",
 ]
+
+[project.optional-dependencies]
+print = ["pypdf>=5", "pdfplumber>=0.11"]

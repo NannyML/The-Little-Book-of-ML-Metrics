@@ -1,11 +1,11 @@
 \chapteropener{Data Observability}{minthard}{mintaccent}{%
-Data observability monitors help check whether data arrives on time and whether its structure and values meet expectations. This chapter covers row counts, timestamps, schema changes, missing and repeated values, and summaries of numeric and text columns.
+Data observability monitors check whether data arrives on time and whether its structure and values meet expectations. We cover row counts, timestamps, schema changes, missing and repeated values, and numeric and text summaries.
 
-The figures in this chapter follow one simulated example: an \texttt{orders} table with six weeks of purchases from an online shop. Each row records an order, with fields such as its amount, customer ID and arrival time. We introduce problems along the way, including incomplete loads, missing values and amounts stored in the wrong units, to see which monitors notice them.
+The figures follow a simulated \texttt{orders} table with six weeks of online purchases. Each row records an order's amount, customer ID, arrival time and other fields. We introduce incomplete loads, missing values and wrong units to see which monitors notice them.
 
-We group each day's arrivals into a daily partition and calculate most metrics separately for each partition. The sum, for example, adds up that day's order amounts, while the average tells us the mean amount per order that day. Freshness checks the latest timestamp across the table, and schema monitoring checks its column names and types.
+Most metrics are calculated per daily partition. Sum adds that day's order amounts; Average gives the mean per order. Freshness checks the latest timestamp across the table, while schema monitoring checks column names and types.
 
-In the plots, gray bands show the expected ranges learned from earlier measurements, red points mark alerts, and hollow points indicate skipped or unavailable measurements. Following the same example across the chapter lets you compare what each monitor detects and what it misses.}{In this chapter}
+Gray bands show expected ranges learned from earlier measurements, red points mark alerts, and hollow points mark skipped or unavailable measurements. Using one example throughout lets you compare what each monitor detects and misses.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{minthard}{mintaccent}{Which monitor?}{Follow the branches to a monitor. The number next to it is its page.}

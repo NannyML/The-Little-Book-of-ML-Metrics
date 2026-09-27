@@ -70,7 +70,7 @@ Use MI to compare clusters with reference classes, or two clustering runs on the
     \item Requires two labelings. Their agreement alone does not show that either grouping is useful.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -90,6 +90,7 @@ Normalized Mutual Information (NMI) rescales MI to $[0,1]$ using the uncertainty
 Adjusted Mutual Information (AMI) accounts for this by subtracting the MI expected from random assignments with the same group sizes, then rescaling the result. A score of $0$ matches that chance baseline. These variants help interpret agreement on the same observations; their scales alone do not make scores from unrelated datasets comparable.
 
 % ---------- rand index ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Rand Index}{Rand Index}\label{sec:rand-index}
@@ -126,7 +127,7 @@ Use RI to describe pairwise agreement and ARI when comparing against chance. Bot
     \item Pair weighting gives large groups more influence. Chance correction does not remove every effect of unequal group sizes.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -144,6 +145,7 @@ Use RI to describe pairwise agreement and ARI when comparing against chance. Bot
 RI and MI summarize agreement differently, while ARI and AMI also use chance baselines. A disagreement between their scores does not by itself identify a cause. The Pair Confusion Matrix separates the two kinds of pairwise error; the Contingency Matrix shows which classes and clusters overlap.
 
 % ---------- calinski harabasz index ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{CH Index}{Calinski-Harabasz Index (CH Index)}\label{sec:ch-index}
@@ -181,7 +183,7 @@ Use CH to compare clusterings of the same data, including different choices of c
     \item Favors compact groups around centers. Curved or nested clusters may score poorly even when they are useful.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -199,6 +201,7 @@ Use CH to compare clusterings of the same data, including different choices of c
 Davies-Bouldin also compares spread with separation, but lower values are preferred. Silhouette compares each point's average distances within and outside its cluster. The criteria can favor different clusterings; inspect the candidate groups to understand what each score rewards.
 
 % ---------- contingency matrix ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Contingency Matrix}{Contingency Matrix}\label{sec:contingency-matrix}
@@ -234,7 +237,7 @@ Use the matrix when you have reference labels and need to see which groups split
     \item Many classes and clusters can make a dense table hard to read. Reordering or selecting rows and columns can reveal patterns hidden in the full display.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -252,6 +255,7 @@ Use the matrix when you have reference labels and need to see which groups split
 The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ table by counting \emph{pairs} of points instead of individual points, which is what powers the pair-counting family (RI, ARI, FMI). When $k \neq C$, the Pair Confusion Matrix still works, but the class-vs-cluster diagnostic detail is gone --- you trade granularity for a tidy summary.
 
 % ---------- pair confusion matrix ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Pair Confusion Matrix}{Pair Confusion Matrix}\label{sec:pair-confusion-matrix}
@@ -282,7 +286,7 @@ Use the matrix to distinguish splitting from merging. A large $C_{10}$ counts sa
     \item Same vs different is a coarse view: two clusterings can produce identical pair confusion matrices and still disagree on which specific class each cluster represents.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -303,6 +307,7 @@ The larger ``both apart'' count reflects the number of different-class pairs, bu
 FMI gives a symmetric summary of pairwise precision and recall. If merging and splitting have different consequences, keep those two rates or the off-diagonal counts separate. Use the Contingency Matrix to identify which classes are affected.
 
 % ---------- Completeness Score ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Completeness Score}{Completeness Score}\label{sec:completeness-score}
@@ -324,7 +329,7 @@ The Completeness Score measures whether members of each reference class stay tog
     }
 \end{metricformula}
 
-Let $C$ be the reference class and $K$ the assigned cluster. $H(K)$ is uncertainty about the cluster before we know the class; $H(K \mid C)$ is what remains afterward. Their ratio compares remaining uncertainty with its starting level. Completeness is $1$ when no class is split and $0$ when the class gives no information about the cluster. With only one cluster, both entropies are zero; completeness is defined as $1$.
+Let $C$ be the reference class and $K$ the cluster. $H(K)$ is cluster uncertainty before we know the class; $H(K\mid C)$ is what remains afterward. Completeness is $1$ when no class is split, and $0$ when the class tells us nothing about the cluster. With one cluster both entropies are zero; the score is defined as $1$.
 
 \metricheading{When to use}
 
@@ -340,7 +345,7 @@ When the task requires that all members of a class stay together: topic modeling
     \item Not chance-adjusted. Random clusterings can produce non-trivial Completeness scores; AMI corrects for this baseline when needed.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -359,11 +364,12 @@ When the task requires that all members of a class stay together: topic modeling
 Completeness and Homogeneity always need to be read together; one without the other is incomplete. If Completeness is high and Homogeneity is low, you're over-merging; the opposite signals over-splitting. V-Measure gives the harmonic-mean summary, and AMI provides the chance-corrected version of the same intuition.
 
 % ---------- Homogeneity Score ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Homogeneity Score}{Homogeneity Score}\label{sec:homogeneity-score}
 
-The Homogeneity Score measures whether each cluster contains points from only one reference class. A pure cluster has no class mixing, but purity alone does not tell us whether a class was split. Giving every point its own cluster produces homogeneity $1$, which is why it helps to read this score alongside completeness.
+Homogeneity measures whether each cluster contains only one reference class. Pure clusters need not keep a class together: assigning each point its own cluster gives homogeneity $1$. Read it alongside completeness to detect such splitting.
 
 \begin{metricformula}
     \tikz{
@@ -383,7 +389,7 @@ Here $H(C)$ is class uncertainty before we know the cluster. $H(C \mid K)$ is th
 
 \metricheading{When to use}
 
-When the task requires each cluster to be class-pure: customer segmentation where one segment shouldn't mix profiles, document clustering where one cluster shouldn't span topics. Always pair with Completeness (or use V-Measure); Homogeneity alone is gameable by over-splitting --- in the limit, $k = n$ gives Homogeneity $= 1$ trivially.
+Use Homogeneity when each cluster should be class-pure, such as customer segments that should not mix profiles or document clusters that should not span topics. Pair it with Completeness or use V-Measure: putting each point in its own cluster gives Homogeneity $=1$.
 
 
 \coloredboxes{
@@ -396,7 +402,7 @@ When the task requires each cluster to be class-pure: customer segmentation wher
 }
 
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -418,6 +424,7 @@ the failure Completeness alone would never report.}
 Homogeneity and Completeness mirror each other: if Homogeneity is high but Completeness is low, the algorithm is over-splitting; the opposite signals over-merging. V-Measure summarizes the pair as a harmonic mean; AMI provides the chance-corrected information-theoretic version of the same intuition.
 
 % ---------- V Measure ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{V-Measure}{V-Measure}\label{sec:v-measure}
@@ -456,7 +463,7 @@ Use V-Measure when both pure clusters and intact reference classes matter. Choos
     \item Hides the diagnostic. $V = 0.7$ doesn't say whether you're over-merging or over-splitting --- read Homogeneity and Completeness separately to identify the failure mode.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -475,6 +482,7 @@ Use V-Measure when both pure clusters and intact reference classes matter. Choos
 At $\beta=1$, V-Measure equals NMI using the arithmetic mean of the label entropies. AMI adds chance correction; ARI uses pairwise agreement with its own chance baseline. Differences between these scores can reflect their weighting as well as chance agreement. Inspect the contingency table before attributing them to a particular kind of split or merge.
 
 % ---------- Davis Bouldin Index ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Davies-Bouldin Index}{Davies-Bouldin Index}\label{sec:davies-bouldin-index}
@@ -513,7 +521,7 @@ Use DB to compare clusterings with compact groups around centers, such as k-mean
     \item Sensitive to outliers. They can increase cluster spread and raise DB, while also moving the centers used in the ratios.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -531,6 +539,7 @@ Use DB to compare clusterings with compact groups around centers, such as k-mean
 CH adds up squared distances across the data, while DB gives each cluster equal weight in its average. Silhouette instead evaluates each point against its own cluster and the nearest alternative. Its plot can help locate points that fit poorly, even when the overall clustering score looks good.
 
 % ---------- Fowlkes-Mallows Index ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{FMI}{Fowlkes-Mallows Index (FMI)}\label{sec:fmi}
@@ -569,7 +578,7 @@ Use FMI for balanced pair-counting comparisons, including hierarchical clusterin
 }
 
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -589,11 +598,12 @@ ARI adjusts pairwise agreement for chance, whereas FMI combines pairwise precisi
 
 
 % ---------- Silhouette Score ----------
+\metricend
 \clearpage
 \thispagestyle{clusteringstyle}
 \metricentry{Silhouette Score}{Silhouette Score}\label{sec:silhouette-score}
 
-The Silhouette Score measures how well each point fits its assigned cluster compared with an alternative cluster. It compares average distances, then averages the resulting scores across points. A high value means points are closer to their own groups under the chosen distance. Low or negative values suggest assignments worth inspecting, rather than proving that they are wrong.
+The Silhouette Score compares each point's average distance to its own cluster with an alternative cluster, then averages across points. High values mean points are closer to their own groups under the chosen distance. Low or negative values suggest assignments worth inspecting; they do not prove those assignments wrong.
 
 \begin{metricformula}
 \tikz{
@@ -630,7 +640,7 @@ Use silhouette for point-level diagnostics with a distance appropriate to the ta
     \item Favors compact, separated groups. Curved or density-based clusters can score lower even when they capture the intended structure.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -646,3 +656,4 @@ Use silhouette for point-level diagnostics with a distance appropriate to the ta
 \metricheading{Related metrics}\metricsecondary
 
 CH and Davies-Bouldin are faster options when distances to Euclidean centers suit the task. Silhouette allows other dissimilarities and shows individual point scores, but it can favor compact, separated groups too. The methods need not choose the same cluster count; compare what each one measures with the structure you want to recover.
+\metricend

@@ -94,7 +94,7 @@ SCIENTIFIC_PRINT_FIGURES = {'ECE_reliability', 'CBPE_estimation', 'PAPE_reweight
 def prepare_book_figure(fig, name, width_fraction=None):
     """Set ordinary lettering to 8pt and panel titles to 8.5pt in print.
 
-    Dense diagrams use 7pt lettering and 7.5pt panel titles.
+    Dense diagrams use 7.2pt lettering and 7.5pt panel titles.
 
     Line breaks and a few documented layout treatments change; plotted data,
     scales and scientific computations are untouched. Heatmap text contrast
@@ -103,8 +103,6 @@ def prepare_book_figure(fig, name, width_fraction=None):
     import re, textwrap
     name = Path(name).stem
     apply_plot_typography(fig)
-    if name in SCIENTIFIC_PRINT_FIGURES:
-        return
     if width_fraction is None:
         width_fraction = 1.0
         for source in (FIGURES_DIR.parent).glob('*.tex'):
@@ -114,8 +112,15 @@ def prepare_book_figure(fig, name, width_fraction=None):
                 width_fraction = float(match.group(1) or 1)
                 break
     from print_layout import arrange_for_print, dense_figure
-    arrange_for_print(fig, name)
-    base_pt = 7.0 if dense_figure(name) else 8.0
+    if name not in SCIENTIFIC_PRINT_FIGURES:
+        arrange_for_print(fig, name)
+    # Leave a real gap between 3D y-axis lettering and its colour bar.
+    if any(hasattr(ax, 'get_zlim') for ax in fig.axes):
+        for ax in fig.axes:
+            if not hasattr(ax, 'get_zlim') and ax.get_position().width < .12:
+                box=ax.get_position()
+                ax.set_position([box.x0+.09,box.y0,box.width,box.height])
+    base_pt = 7.2 if dense_figure(name) or name in SCIENTIFIC_PRINT_FIGURES else 8.0
     # The 3D metric name is already printed on its colour bar. Keeping a second
     # copy beside the z ticks creates collisions once labels are readable.
     for ax in fig.axes:
@@ -136,6 +141,20 @@ def prepare_book_figure(fig, name, width_fraction=None):
             text.set_text('\n'.join(textwrap.fill(line,34,break_long_words=False,break_on_hyphens=False)
                                     for line in label.split('\n')))
     titles = {id(ax.title) for ax in fig.axes}
+    # A nominal 7pt label can hide a 5pt mathematical subscript. Measure the
+    # actual math glyph sizes and keep the smallest at least 7.1pt in print.
+    from matplotlib.mathtext import MathTextParser
+    math_parser = MathTextParser('path')
+    math_ratios = {}
+    for text in fig.findobj(match=Text):
+        label = text.get_text()
+        if '$' in label and text.get_visible():
+            props = text.get_fontproperties().copy()
+            props.set_size(10)
+            glyphs = [g for line in label.split('\n')
+                      for g in math_parser.parse(line, dpi=72, prop=props).glyphs]
+            if glyphs: math_ratios[id(text)] = min(g[1] for g in glyphs) / 10
+
     print_width = PRINT_WIDTH_IN * width_fraction
     # Iterate because a tight crop includes labels and therefore changes scale.
     for _ in range(30):
@@ -147,11 +166,26 @@ def prepare_book_figure(fig, name, width_fraction=None):
         texts = [t for t in fig.findobj(match=Text) if t.get_visible() and t.get_text()]
         change = 0
         for text in texts:
-            target = (base_pt + .5 if id(text) in titles else base_pt) / scale
+            printed_target = base_pt + .5 if id(text) in titles else base_pt
+            if id(text) in math_ratios:
+                printed_target = max(printed_target, 7.12 / math_ratios[id(text)])
+            target = printed_target / scale
             change = max(change,abs(target-text.get_fontsize()))
             text.set_fontsize(target)
         if change < .04:
             break
+    fig.canvas.draw()
+    scale = print_width / fig.get_tightbbox(fig.canvas.get_renderer()).width
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Patch
+    from matplotlib.collections import Collection
+    for artist in fig.findobj():
+        if isinstance(artist, (Line2D, Patch)):
+            if artist.get_linewidth() > 0:
+                artist.set_linewidth(max(artist.get_linewidth(), .8 / scale))
+        elif isinstance(artist, Collection):
+            widths = artist.get_linewidths()
+            if len(widths): artist.set_linewidths([max(w, .8 / scale) if w else 0 for w in widths])
     fig.canvas.draw()
 
 
@@ -165,14 +199,14 @@ FIGSIZE_LARGE = (12, 10)                     # classification 3D / 2D multi-line
 FIGSIZE_SMALL = (7, 3)                       # compact inline plots (e.g. Pinball)
 
 # ---------------------------------------------------------------------------
-# Print-size rule. The approved compact layout has a 339.534 PDF-pt text area
-# (4.71575 inches). A figure's lettering scales with its actual inclusion width.
-# The final profiles target 8 pt ordinary / 7 pt dense lettering.
+# Print-size rule. The approved compact layout has a 109.7 mm text area
+# (4.3189 inches). A figure's lettering scales with its actual inclusion width.
+# The final profiles target 8 pt ordinary / 7.2 pt dense lettering.
 # BOOK_FONT/BOOK_FONT_MIN are legacy source-canvas defaults; save_figure adjusts
 # them using the actual crop and inclusion width. Check with printed_pt().
 # A tight crop can alter the final scale: use its saved width for precise checks.
 # ---------------------------------------------------------------------------
-PRINT_WIDTH_IN = 339.534 / 72
+PRINT_WIDTH_IN = 109.7 / 25.4
 FIG_W = 8.0
 BOOK_FONT = 15
 BOOK_FONT_MIN = 14

@@ -1,0 +1,80 @@
+% Print geometry shared by every hardcover page. Distances are from trim.
+\newlength{\bookbleed}\setlength{\bookbleed}{.125in}
+\newlength{\booktrimwidth}\setlength{\booktrimwidth}{5.5in}
+\newlength{\booktrimheight}\setlength{\booktrimheight}{8.5in}
+\newcommand{\bookleftmargin}{18mm}
+\newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{18mm}\else\renewcommand{\bookleftmargin}{15.175mm}\fi}
+\patchcmd{\chapteropener}{\clearpage}{\clearpage\booksetleftmargin}{}{}
+% First page of a metric is verso (left/even); the next page is recto.
+% Padding is inserted only when necessary and carries neither folio nor band.
+\newcommand{\metricentry}[2]{%
+ \clearpage
+ \ifodd\value{page}\thispagestyle{empty}\null\newpage\fi
+ \metricentrytitle{#1}{#2}\global\metricstartpage=\value{page}}
+\AddToHook{shipout/background}{%
+ \ifmetricentrypage
+ \begin{tikzpicture}[remember picture,overlay]
+ \ifodd\value{page}
+  \fill[\metricband] ([xshift=-13.425mm]current page.north east) rectangle (current page.south east);
+  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
+   at ([xshift=-11.675mm,yshift=-13.175mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
+ \else
+  \fill[\metricband] (current page.north west) rectangle ([xshift=13.425mm]current page.south west);
+  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
+   at ([xshift=11.675mm,yshift=-13.175mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
+ \fi
+ \end{tikzpicture}
+ \global\metricentrypagefalse
+ \fi}
+% Position chapter furniture within the same mirrored safe area as the prose.
+\patchcmd{\chapteropener}{xshift=1.25cm}{xshift=\bookleftmargin}{}{}
+\patchcmd{\chapteropener}{xshift=1.25cm}{xshift=\bookleftmargin}{}{}
+\patchcmd{\chapteropener}{yshift=-1.1cm}{yshift=-14.175mm}{}{}
+\patchcmd{\chapteropener}{yshift=-4.9cm}{yshift=-52.175mm}{}{}
+% Fine rules must survive print at their final inclusion scale.
+\tikzset{semithick/.style={line width=.95pt}}
+\forestset{dmap/.append style={for tree={edge={draw,line width=.8pt,black!40}}}}
+
+% Fail early if later editing breaks a facing-page metric spread.
+\newcount\metricstartpage
+\newcommand{\metricsecondpage}{%
+ \par\clearpage\typeout{SPREADFIRST|\thesection|\the\metricstartpage|\thepage}%
+ \ifnum\value{page}=\numexpr\metricstartpage+1\relax\else
+  \PackageError{hardcover}{First page of metric \sectiontitle\space overflowed}{Keep the explanation and comparison boxes on one page.}\fi}
+\newcommand{\metricend}{%
+ \par\clearpage\typeout{SPREADEND|\thesection|\the\metricstartpage|\thepage}%
+ \ifnum\value{page}=\numexpr\metricstartpage+2\relax\else
+  \PackageError{hardcover}{Second page of metric \sectiontitle\space overflowed}{Keep the visual and supporting discussion on one page.}\fi}
+% TeX points are slightly smaller than PDF points. Keep small navigation and
+% mathematical scripts above seven PDF points, including formula fit scaling.
+\renewcommand{\scriptsize}{\fontsize{7.7}{9}\selectfont}
+\DeclareMathSizes{8}{8}{7.7}{7.7}
+\DeclareMathSizes{9}{9}{7.7}{7.7}
+\DeclareMathSizes{10}{10}{8}{8}
+\DeclareMathSizes{11}{11}{8}{8}
+\DeclareMathSizes{12}{12}{8}{8}
+\DeclareMathSizes{14.4}{14.4}{10}{8}
+\setlength{\arrayrulewidth}{.8pt}
+
+% Fraction and radical rules share the math extension font's rule thickness.
+% Set every configured math size so fitted equations retain a printable rule.
+\makeatletter
+\AtBeginDocument{%
+ \begingroup
+ \@for\bookmathsize:=8,9,10,11,12,14.4\do{%
+  \fontsize{\bookmathsize}{18}\selectfont\check@mathfonts
+  \fontdimen8\textfont3=.9pt
+  \fontdimen8\scriptfont3=.9pt
+  \fontdimen8\scriptscriptfont3=.9pt}
+ \endgroup}
+\makeatother
+
+% A chapter opener must keep its introduction and contents on one page.
+\newcount\bookopenerstart
+\let\hardcoverchapteropener\chapteropener
+\renewcommand{\chapteropener}[5]{%
+ \clearpage\global\bookopenerstart=\value{page}%
+ \hardcoverchapteropener{#1}{#2}{#3}{#4}{#5}%
+ \typeout{CHAPTERFIT|\thechapter|\the\bookopenerstart|\thepage}%
+ \ifnum\value{page}=\numexpr\bookopenerstart+1\relax\else
+  \PackageError{hardcover}{Chapter opener #1 overflowed}{Keep the introduction and contents on one page.}\fi}

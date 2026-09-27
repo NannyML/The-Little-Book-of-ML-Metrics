@@ -38,13 +38,13 @@ For recommendations, we also look beyond relevance. A movie list might suit a vi
 \thispagestyle{rankingstyle}
 \metricentry{@K Metrics}{@K Metrics}\label{sec:k-metrics}
 
-An @K metric evaluates only the first $K$ items in a ranked list. Precision@$K$ measures the fraction of those items that are relevant, while Recall@$K$ measures the fraction of all relevant items we retrieved. If three of the top five recommendations are relevant and there are ten relevant items in total, $Precision@5 = 3/5$ and $Recall@5 = 3/10$. We calculate these scores for each query or user before averaging.
+An @K metric evaluates the first $K$ items in a ranking. Precision@$K$ is the fraction of those items that are relevant; Recall@$K$ is the fraction of all relevant items retrieved. With three relevant results in the top five and ten relevant items overall, $Precision@5=3/5$ and $Recall@5=3/10$. Average per-query or per-user scores.
 
 \begin{center}
     $\displaystyle Precision@K = \frac{|\text{relevant items in top-}K|}{K}$
 \end{center}
 
-Choose $K$ for the stage being evaluated: a retriever might supply $100$ candidates to a reranker that shows five results. Recall@$100$ checks what reached the reranker; Precision@$5$ checks the final five slots. Comparing several cutoffs can help decide how many candidates to retrieve.
+Choose $K$ for the stage evaluated. A retriever might supply $100$ candidates to a reranker showing five results: Recall@$100$ checks the candidate pool, Precision@$5$ the final slots. Compare cutoffs to choose a retrieval budget.
 
 \metricheading{When to use}
 
@@ -60,7 +60,7 @@ Use @K for a limited recommendation window or candidate budget. Compare systems 
     \item Precision@$K$ has a ceiling when relevant items are scarce. With three relevant items, $Precision@10$ maxes at $0.3$ even for a perfect ranker.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -78,11 +78,12 @@ Use @K for a limited recommendation window or candidate budget. Compare systems 
 Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$, and nDCG@$K$. For a binary check of whether any relevant item appears in the top-$K$, see Hit Rate.
 
 % ---------- Mean Reciprocal Rank ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{MRR}{Mean Reciprocal Rank (MRR)}\label{sec:mrr}
 
-Mean Reciprocal Rank (MRR) measures how early the first relevant result appears. For each query, find that result and take one divided by its rank: a first hit at rank $1$ scores $1$, while a first hit at rank $5$ scores $0.2$. MRR averages these scores across all queries, counting a query with no relevant result as zero.
+MRR measures how early the first relevant result appears. For each query, take one divided by that result's rank: rank $1$ scores $1$, rank $5$ scores $0.2$. Average across all queries, including zero for each query with no relevant result.
 
 \begin{metricformula}
     \tikz{
@@ -115,7 +116,7 @@ Use MRR when finding a first useful answer is the goal, as in known-item search 
     \item Failed queries must stay in the average. Dropping them inflates MRR; shortening the same lists cannot improve it.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -135,11 +136,12 @@ For multi-relevant evaluation use MAP. For graded relevance (some items more rel
 
 
 % ---------- Mean Average Precision ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{MAP}{Mean Average Precision (MAP)}\label{sec:map}
 
-Mean Average Precision (MAP) measures how well a ranking brings relevant items toward the top. For each query, add the precision at every relevant result and divide by the total number of relevant items. This gives Average Precision (AP); MAP averages AP across queries. The fourth relevant item at rank $10$, for example, contributes a precision of $4/10$.
+MAP measures how well a ranking brings relevant items toward the top. For each query, sum precision at each relevant result and divide by the total number of relevant items to get Average Precision (AP). MAP averages AP across queries. A fourth relevant item at rank $10$ contributes precision $4/10$.
 
 \begin{metricformula}
     \tikz{
@@ -157,11 +159,11 @@ Mean Average Precision (MAP) measures how well a ranking brings relevant items t
     }
 \end{metricformula}
 
-Here $R_q$ contains all known relevant items for query $q$, $n$ is the list length, and $rel(k)$ is $1$ for a relevant item and $0$ otherwise. Unretrieved relevant items contribute zero. AP reaches $1$ when every relevant item appears before any irrelevant one. Compare against a baseline on the same queries, such as shuffled rankings.
+$R_q$ contains all known relevant items for query $q$; $n$ is list length, and $rel(k)$ is $1$ for relevant items, $0$ otherwise. Unretrieved relevant items contribute zero. AP is $1$ when all relevant items precede irrelevant ones. Compare with a baseline, such as shuffled rankings, on the same queries.
 
 \metricheading{When to use}
 
-Use MAP for binary relevance when retrieving several useful results matters. MAP@$K$ sums only the first $K$ positions. TREC's map\_cut still divides by all known relevant items, penalizing those outside the cutoff; report the convention you use. For relevance grades, consider nDCG.
+Use MAP when several relevant results matter and relevance is binary. MAP@$K$ sums the first $K$ positions; TREC's map\_cut divides by all known relevant items, penalizing those beyond the cutoff. State your convention. Use nDCG for graded relevance.
 
 
 \coloredboxes{
@@ -169,12 +171,12 @@ Use MAP for binary relevance when retrieving several useful results matters. MAP
     \item Normalizes AP by the number of relevant items before averaging across queries.
 }
 {
-    \item Assumes binary relevance. No way to say ``item A is more relevant than item B'' the way nDCG can.
-    \item Incomplete judgments can distort AP in either direction. Report how unjudged items are treated and use the same judgments across models.
+    \item Binary relevance cannot express grades, unlike nDCG.
+    \item Incomplete judgments can shift AP either way. State how unjudged items are treated; keep judgments fixed across models.
     \item Less directly interpretable than a proportion such as Precision@$10$.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -195,6 +197,7 @@ For graded relevance use nDCG. For the first relevant result use MRR; for the nu
 % https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
 
 % ---------- Hit Rate ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{Hit Rate}{Hit Rate}\label{sec:hit-rate}
@@ -234,7 +237,7 @@ Use Hit Rate to check how often a top-$K$ list contains any known relevant item.
     \item Missing labels can turn useful recommendations into apparent misses. Choose $K$ for the intended window or retrieval budget, not just to separate models.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -252,6 +255,7 @@ Use Hit Rate to check how often a top-$K$ list contains any known relevant item.
 For position-aware evaluation use MRR or nDCG. For counting how many relevant items the list retrieved, use Recall@$K$. Hit Rate is the binary collapse of Recall@$K$.
 
 % ---------- Cumulative Gain ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{CG}{Cumulative Gain (CG)}\label{sec:cg}
@@ -288,7 +292,7 @@ Use CG when only total retrieved relevance matters and ordering is decided downs
     \item Falls back to a raw count of relevant items when only binary labels are available.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -308,6 +312,7 @@ how much relevance a list retrieved, not on where it put it.}
 DCG extends CG by discounting later positions. nDCG normalizes DCG against the ideal ranking, so scores are comparable across queries with different relevance budgets. In practice, CG is the warm-up step toward those two.
 
 % ---------- Discounted Cumulative Gain ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{DCG}{Discounted Cumulative Gain (DCG)}\label{sec:dcg}
@@ -344,7 +349,7 @@ Use DCG when you want to reward relevance grades and early positions within a ch
     \item Calculation conventions matter. Match the gain function, discount and cutoff before comparing scores from different implementations.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -362,11 +367,12 @@ Use DCG when you want to reward relevance grades and early positions within a ch
 nDCG divides DCG by the best possible score for each query. MAP uses binary relevance and precision at each hit, while MRR considers only the first hit.
 
 % ---------- Normalized Discounted Cumulative Gain ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{nDCG}{Normalized Discounted Cumulative\\ Gain (nDCG)}\label{sec:ndcg}
 
-Normalized Discounted Cumulative\\ Gain (nDCG) measures how close a ranked list comes to the best possible discounted relevance. It divides the list's DCG by an ideal DCG (IDCG), calculated by placing the highest-graded eligible items first. The ideal includes relevant items the model failed to retrieve, so a list cannot earn full credit simply by ordering a poor selection well.
+nDCG divides a ranking's DCG by its ideal DCG (IDCG), calculated by placing the highest-graded eligible items first. The ideal includes relevant items the model missed, so ordering a poor selection well cannot earn full credit.
 
 \begin{metricformula}
     \tikz{
@@ -398,7 +404,7 @@ Use nDCG@$K$ when both relevance and position matter within the first $K$ result
     \item Sensitive to the truncation $K$ in $nDCG_K$. Truncating at $K = 5$ vs $K = 100$ gives very different scores; report at the $K$ that matches the product.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -419,6 +425,7 @@ nDCG normalizes DCG against the ideal ranking. MAP is another option for binary 
 
 
 % ---------- Fraction of Concordant Pairs ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{FCP}{Fraction of Concordant Pairs (FCP)}\label{sec:fcp}
@@ -455,7 +462,7 @@ Use FCP when recovering preference order matters more than matching rating value
     \item Treats all pairs equally. A swap between rank $1$ and rank $2$ counts the same as a swap between rank $500$ and rank $501$.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -476,6 +483,7 @@ Kendall's tau also compares pairwise order, with variants that handle ties. nDCG
 % https://www.ijcai.org/Proceedings/13/Papers/449.pdf
 
 % ---------- Diversity ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{Diversity}{Diversity}\label{sec:diversity}
@@ -512,7 +520,7 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
     \item Does not measure usefulness. A varied list can still be irrelevant, so assess relevance separately and examine any trade-off.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -530,6 +538,7 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
 Diversity measures how different the items in one list are. The popularity-based Novelty score estimates unfamiliarity from how rarely items appear in interaction history. Serendipity combines relevance with unexpectedness, while Coverage measures catalog reach across many lists.
 
 % ---------- Novelty ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{Novelty}{Novelty}\label{sec:novelty}
@@ -556,7 +565,7 @@ Use Novelty when discovery matters, including exploratory search, and assess rel
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -574,6 +583,7 @@ Use Novelty when discovery matters, including exploratory search, and assess rel
 This Novelty score uses item popularity; Diversity compares items within a list. Serendipity additionally asks whether a relevant item is unexpected for the user, which need not mean it is unpopular. Coverage measures catalog reach.
 
 % ---------- Serendipity ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{Serendipity}{Serendipity}\label{sec:serendipity}
@@ -611,7 +621,7 @@ Use Serendipity for discovery, such as music browsing or exploratory search. Agr
     \item An offline score does not establish satisfaction or prove that the user would never have found the item without the recommender.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -629,11 +639,12 @@ Use Serendipity for discovery, such as music browsing or exploratory search. Agr
 Serendipity combines relevance with unexpectedness relative to a chosen baseline. Novelty may use popularity as a proxy for unfamiliarity; Diversity measures variety within the list. Neither alone tells us whether a recommendation is both useful and surprising.
 
 % ---------- Coverage ----------
+\metricend
 \clearpage
 \thispagestyle{rankingstyle}
 \metricentry{Coverage}{Coverage}\label{sec:coverage}
 
-Catalog coverage measures the fraction of available items that appear in a set of recommendations. If a system recommends $1{,}200$ distinct items from a $10{,}000$-item catalog during an evaluation week, its coverage is $0.12$. We count each item once, however many users receive it, so the score describes reach across lists rather than the quality of one person's list.
+Catalog coverage is the fraction of available items recommended during an evaluation period. Recommending $1{,}200$ distinct items from a $10{,}000$-item catalog in a week gives coverage $0.12$. Each item counts once, regardless of how many users receive it. The score describes reach across lists, not the quality of one person's list.
 
 \begin{metricformula}
     \tikz{
@@ -650,7 +661,7 @@ Catalog coverage measures the fraction of available items that appear in a set o
     }
 \end{metricformula}
 
-Define the evaluation period, users, list length and available catalog before comparing coverage. More recommendation opportunities can raise the score without improving the model. Coverage also ignores how often each item appears; entropy over items' recommendation shares can complement it, with higher entropy indicating more evenly spread exposure for a fixed catalog.
+Fix the evaluation period, users, list length and eligible catalog: extra recommendation opportunities can raise coverage without improving the model. Coverage ignores item frequencies. Entropy over recommendation shares complements it, measuring how evenly exposure is spread within a fixed catalog.
 
 \metricheading{When to use}
 
@@ -666,7 +677,7 @@ Use Coverage when catalog reach matters, such as exposure for marketplace seller
     \item Catalog-size dependent. $Coverage = 0.5$ on $100$ items is qualitatively different from $Coverage = 0.5$ on a million. Compare within a product, not across.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -682,3 +693,4 @@ Use Coverage when catalog reach matters, such as exposure for marketplace seller
 \metricheading{Related metrics}\metricsecondary
 
 Coverage measures catalog reach across lists, while Diversity measures variety within one list. Popularity-based Novelty estimates unfamiliarity from interaction counts. Use nDCG or MAP for relevance, and Serendipity for relevant recommendations that are also unexpected.
+\metricend

@@ -1,20 +1,11 @@
 \chapteropener{Probabilistic}{orangehard}{orangeaccent}{%
-In this chapter, we check whether a model's probabilities match observed outcomes and estimate its performance before new labels
-arrive. A loan model, for example, predicts repayment when someone applies, but we may wait months to learn whether they repay.
-Earlier predictions and their outcomes can help us estimate performance during that wait.
+This chapter checks whether a model's probabilities match observed outcomes and estimates performance before new labels arrive. A loan model predicts repayment at application time, but outcomes may take months. Earlier predictions and outcomes can help during that wait.
 
-We call those earlier predictions and outcomes a \emph{reference dataset}. Because the model did not train on these examples,
-they show how it performs on unseen data. We use the reference dataset to estimate performance on new data, then compare the
-estimates with actual performance on a separate set of labeled examples.
+These earlier examples form a \emph{reference dataset}. They were not used to train the model, so they show its performance on unseen data. We use them to estimate performance on new data, then validate the estimates on separate labeled examples.
 
-Before using probabilities to estimate performance, we need to check their \emph{calibration}: how well they agree with observed
-outcomes. We start with Expected Calibration Error (ECE) for this check, then introduce CBPE and PAPE, two methods that use
-calibrated probabilities to estimate classification metrics such as accuracy and F1. For regression, we cover Direct Loss
-Estimation (DLE), which learns to predict the model's error.
+First we check \emph{calibration}: agreement between probabilities and outcomes. Expected Calibration Error (ECE) measures this. CBPE and PAPE use calibrated probabilities to estimate classification metrics such as accuracy and F1. For regression, Direct Loss Estimation (DLE) learns to predict the model's error.
 
-These estimates can track changes in the input mix, or \emph{covariate shift}, but they assume the relationship between inputs
-and outcomes stays the same. If that relationship changes, we have \emph{concept drift}. Once labels arrive, Reverse Concept
-Drift (RCD) helps us estimate its effect on performance.}{In this chapter}
+These estimates can track \emph{covariate shift}, a change in the input mix, while assuming the input--outcome relationship stays fixed. A change in that relationship is \emph{concept drift}. Once labels arrive, Reverse Concept Drift (RCD) estimates its effect on performance.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangehard}{orangeaccent}{Which metric?}{Follow the branches to a method. The number next to it is its page.}
@@ -43,10 +34,7 @@ Drift (RCD) helps us estimate its effect on performance.}{In this chapter}
 % Guo, Pleiss, Sun, Weinberger (2017) — On Calibration of Modern Neural Networks (temperature scaling)
 % Murphy (1973) — decomposition of the Brier score
 
-Expected Calibration Error measures the gap between a classifier's confidence and how often its predictions are correct. Here,
-confidence means the probability assigned to the predicted class. If predictions made with about $80\%$ confidence are correct
-only $70\%$ of the time, the model is overconfident in that range. ECE groups predictions into confidence bins and averages these
-gaps, giving more weight to bins with more predictions.
+ECE measures the gap between classifier confidence and correctness. Here confidence is the probability assigned to the predicted class. Predictions at $80\%$ confidence that are only $70\%$ correct indicate overconfidence. ECE averages these gaps across confidence bins, weighted by their prediction counts.
 
 % equation
 \begin{metricformula}
@@ -84,7 +72,7 @@ The confidence-based ECE shown here can hide differences between classes.
 \item Low ECE does not imply useful predictions. Always predicting the class proportions can be calibrated while failing to distinguish individual cases.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -114,6 +102,7 @@ changing either ROC AUC or binned ECE, so read them together before explaining a
 (Bias \& Fairness chapter) can reveal errors hidden by pooling groups; CBPE additionally needs calibration to hold in production.
 
 % ---------- CBPE ----------
+\metricend
 \clearpage
 \thispagestyle{probabilisticstyle}
 \metricentry{CBPE}{Confidence-Based Performance Estimation (CBPE)}\label{sec:cbpe}
@@ -122,10 +111,7 @@ changing either ROC AUC or binned ECE, so read them together before explaining a
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#confidence-based-performance-estimation-cbpe
 % https://arxiv.org/abs/2505.05295 (Kivimäki, Białek, Kuberski, Nurminen, 2025)
 
-CBPE estimates a classifier's performance from probabilities before labels arrive. A fraud model can therefore be monitored
-while chargebacks are still pending. Here, $c_j$ is the calibrated probability of fraud and $\hat{y}_j$ the predicted label.
-A transaction flagged as fraud with $c_j=0.9$ contributes $0.9$ to expected
-true positives and $0.1$ to expected false positives.
+CBPE estimates classification performance from probabilities before labels arrive, such as while fraud chargebacks are pending. Here $c_j$ is calibrated fraud probability and $\hat{y}_j$ the predicted label. A flagged transaction at $c_j=0.9$ contributes $0.9$ to expected true positives and $0.1$ to false positives.
 
 % equation
 \begin{metricformula}
@@ -150,9 +136,7 @@ true positives and $0.1$ to expected false positives.
     }
 \end{metricformula}
 
-The indicator $\mathds{1}$ selects the predictions with the stated label, and each sum runs over one production batch. An
-unflagged transaction contributes $c_j$ to expected false negatives and $1-c_j$ to expected true negatives. Substituting these
-counts into metric formulas gives expected accuracy and precision, and approximations for recall and F1.
+$\mathds{1}$ selects the stated predicted label; each sum covers one production batch. Unflagged transactions contribute $c_j$ to expected false negatives and $1-c_j$ to true negatives. Substituting these counts gives expected accuracy and precision, and approximations for recall and F1.
 
 \metricheading{When to use}
 
@@ -170,7 +154,7 @@ method can reliably estimate performance for inputs absent from the reference da
 \item Estimated accuracy is at least $0.5$ if each label chooses the more likely class under the probabilities used.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -199,6 +183,7 @@ validation. When labels arrive, investigate gaps between estimated and measured 
 while estimator error and sampling variation may also contribute.
 
 % ---------- PAPE ----------
+\metricend
 \clearpage
 \thispagestyle{probabilisticstyle}
 \metricentry{PAPE}{Probabilistic Adaptive Performance Estimation (PAPE)}\label{sec:pape}
@@ -207,10 +192,7 @@ while estimator error and sampling variation may also contribute.
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/probabilistic-adaptive-performance-estimation-pape
 % https://arxiv.org/abs/2401.08348 — Estimating Model Performance Under Covariate Shift Without Labels
 
-PAPE estimates classification performance by adapting calibration to the production input mix. Suppose a loan model assigns
-$80\%$ repayment probability to two equally sized applicant groups, but their repayment rates are $90\%$ and $70\%$. The combined
-rate is $80\%$, so calibration looks right. If the first group becomes more common, the combined rate rises even though neither
-group's behavior changed. PAPE gives reference examples from that group more weight when refitting the calibrator.
+PAPE adapts calibration to the production input mix. Suppose a loan model predicts $80\%$ repayment for two equally sized groups whose rates are $90\%$ and $70\%$. Their combined rate is $80\%$: calibration looks right. If the first group grows, that rate rises without either group's behavior changing. PAPE upweights reference examples from that group when refitting calibration.
 
 % equation
 \begin{metricformula}
@@ -248,7 +230,7 @@ concept drift without new labels.
 \item Inaccurate weights distort calibration. If a few reference examples carry most of the weight, the estimate can be unstable even with many rows.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -276,6 +258,7 @@ the weights. Compare both estimates with measured performance on labeled periods
 DLE estimates regression loss; RCD uses new labels to assess the effect of a changed input--outcome relationship.
 
 % ---------- DLE ----------
+\metricend
 \clearpage
 \thispagestyle{probabilisticstyle}
 \metricentry{DLE}{Direct Loss Estimation (DLE)}\label{sec:dle}
@@ -283,10 +266,7 @@ DLE estimates regression loss; RCD uses new labels to assess the effect of a cha
 % reference:
 % https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html#direct-loss-estimation-dle
 
-Direct Loss Estimation estimates a regression model's performance by learning how large its errors tend to be for different
-inputs. A demand forecast, for example, may be more accurate for staples than for promotions. DLE trains a second model on
-reference errors, then averages its predicted losses over each production batch. In NannyML's terminology, this loss model is
-the \emph{nanny}, and the monitored model is the \emph{child}.
+DLE learns how large a regression model's errors tend to be for different inputs. Demand forecasts, for example, may be more accurate for staples than promotions. A second model learns reference errors and averages its predicted losses over production batches. NannyML calls this loss model the \emph{nanny} and the monitored model the \emph{child}.
 
 % equation
 \begin{metricformula}
@@ -326,7 +306,7 @@ or inputs outside the reference data.
 \item A second model needs training and validation. Noisy reference losses or a poorly fitted loss model can distort the performance estimate.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -354,6 +334,7 @@ check input changes, recent labeled errors, and the loss model's validation resu
 estimation, or sampling variation, and input monitoring alone cannot distinguish them.
 
 % ---------- RCD ----------
+\metricend
 \clearpage
 \thispagestyle{probabilisticstyle}
 \metricentry{RCD}{Reverse Concept Drift (RCD)}\label{sec:rcd}
@@ -361,10 +342,7 @@ estimation, or sampling variation, and input monitoring alone cannot distinguish
 % reference:
 % https://docs.nannyml.com/cloud/model-monitoring/how-it-works/reverse-concept-drift-rcd
 
-Reverse Concept Drift estimates how a changed relationship between inputs and outcomes affects model performance on the
-reference population. For a loan model, it keeps the earlier applicants' inputs fixed and estimates how accurate the same model
-would be under today's repayment behavior. A separate model $g$ learns that behavior, called the new \emph{concept}, from
-recent labeled data.
+RCD estimates how a changed input--outcome relationship affects performance on the reference population. For a loan model, it holds earlier applicants' inputs fixed and estimates the same model's accuracy under today's repayment behavior. A model $g$ learns that new \emph{concept} from recent labeled data.
 
 % equation
 \begin{metricformula}
@@ -405,7 +383,7 @@ to learn the new concept across the reference inputs.
 \item Describes the reference population; it does not capture drift confined to inputs absent from that population.
 }
 
-\clearpage
+\metricsecondpage
 
 \thispagestyle{customstyle}
 
@@ -432,3 +410,4 @@ CBPE, PAPE, and DLE assume the input--outcome relationship is stable; RCD helps 
 RCD also reports a \emph{magnitude}, $\frac{1}{n}\sum_j |g(x_j)-g_{\text{ref}}(x_j)|$, where $g_{\text{ref}}$ models the old concept
 and the sum covers the reference inputs. This measures how much estimated probabilities changed, regardless of their effect on
 accuracy. If magnitude is large but impact is small, examine individual groups for changes that cancel in the average.
+\metricend

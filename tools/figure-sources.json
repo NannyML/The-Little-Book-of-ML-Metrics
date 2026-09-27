@@ -1,0 +1,532 @@
+{
+  "Accuracy_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "BERTScore_matching.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "BLEU_ngram_precision.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 0.82,
+    "source": "nlp_plots.py"
+  },
+  "Balanced_Accuracy_comparison.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 1.0,
+    "source": "classification_new_plots2.py"
+  },
+  "Brier_Score_curves.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "CBPE_estimation.png": {
+    "chapter": "9-probabilistic.tex",
+    "width_fraction": 1.0,
+    "source": "probabilistic_plots.py"
+  },
+  "CG_order_blind.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "dedicated_figures.py"
+  },
+  "CG_vs_DCG.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "cg_vs_dcg_plot.py"
+  },
+  "CLIP_Score_matrix.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Calibration_within_Groups.png": {
+    "chapter": "10-bias-fairness.tex",
+    "width_fraction": 1.0,
+    "source": "bias_fairness_plots.py"
+  },
+  "Calinski_Harabasz_elbow.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "ch_index_plot.py"
+  },
+  "Cohens_Kappa_levels.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "cohens_kappa_plot.py"
+  },
+  "Completeness_Score_tradeoff.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 1.0,
+    "source": "completeness_plot.py"
+  },
+  "Confusion_Matrix_cells.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 1.0,
+    "source": "review_figures.py"
+  },
+  "Contingency_Matrix_heatmap.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "clustering_plots.py"
+  },
+  "Coverage_comparison.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "coverage_comparison_plot.py"
+  },
+  "D2_Log_Loss_curve.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "d2_log_loss_plot.py"
+  },
+  "D2_abs_comparison.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "d2_outlier_robustness_plot.py"
+  },
+  "DLE_nanny.png": {
+    "chapter": "9-probabilistic.tex",
+    "width_fraction": 1.0,
+    "source": "probabilistic_plots.py"
+  },
+  "DSG_question_graph.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Davies_Bouldin_elbow.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "davies_bouldin_plot.py"
+  },
+  "Demographic_Parity.png": {
+    "chapter": "10-bias-fairness.tex",
+    "width_fraction": 1.0,
+    "source": "bias_fairness_plots.py"
+  },
+  "Dice_overlap_examples.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 1.0,
+    "source": "cv_plots.py"
+  },
+  "Diversity_comparison.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "diversity_comparison_plot.py"
+  },
+  "ECE_reliability.png": {
+    "chapter": "9-probabilistic.tex",
+    "width_fraction": 1.0,
+    "source": "probabilistic_plots.py"
+  },
+  "EM_vs_F1.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 1.0,
+    "source": "nlp_plots.py"
+  },
+  "EVS_vs_R2_three_models.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "review_figures.py"
+  },
+  "Equality_of_Odds.png": {
+    "chapter": "10-bias-fairness.tex",
+    "width_fraction": 0.82,
+    "source": "bias_fairness_plots.py"
+  },
+  "Equality_of_Opportunity.png": {
+    "chapter": "10-bias-fairness.tex",
+    "width_fraction": 0.82,
+    "source": "bias_fairness_plots.py"
+  },
+  "F1_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "FCP_comparison.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "fcp_comparison_plot.py"
+  },
+  "FID_mechanism.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "FMI_plane.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "dedicated_figures.py"
+  },
+  "FNR_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_plots.ipynb"
+  },
+  "FPR_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_plots.ipynb"
+  },
+  "F_beta_curves.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots2.py"
+  },
+  "Hit_Rate_vs_K.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "hit_rate_vs_k_plot.py"
+  },
+  "Homogeneity_cluster_composition.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 1.0,
+    "source": "dedicated_figures.py"
+  },
+  "IS_mechanism.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Jaccard_overlap.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 1.0,
+    "source": "classification_new_plots2.py"
+  },
+  "LPIPS_equal_mse.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Log_Loss_curves.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "MAE_3d_surface.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "regression_plots.ipynb"
+  },
+  "MAPE_3d_surface.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "regression_plots.ipynb"
+  },
+  "MAP_precision_strips.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "map_precision_strips_plot.py"
+  },
+  "MASE_naive_baseline.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "dedicated_figures.py"
+  },
+  "MAUVE_frontier.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "MCC_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "MDA_direction.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "review_figures.py"
+  },
+  "METEOR_vs_BLEU.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 1.0,
+    "source": "nlp_plots.py"
+  },
+  "MGD_cross_section.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "cross_sections_plots.py"
+  },
+  "MI_contingency_contributions.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 1.0,
+    "source": "dedicated_figures.py"
+  },
+  "MOS_same_mean.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "MPD_cross_section.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "cross_sections_plots.py"
+  },
+  "MRR_ranked_lists.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 1.0,
+    "source": "mrr_ranked_lists_plot.py"
+  },
+  "MSE_3d_surface.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "regression_plots.ipynb"
+  },
+  "MSLE_3d_surface.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "regression_plots.ipynb"
+  },
+  "Novelty_curve.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "novelty_curve_plot.py"
+  },
+  "OKS_gaussian_falloff.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 0.82,
+    "source": "cv_plots.py"
+  },
+  "Observability_average.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_duplicates.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_expected_range.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_freshness.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_min_max.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_missing.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_quartiles.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_row_count.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_schema.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_stddev.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_sum.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_text_length.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "Observability_unique_count.png": {
+    "chapter": "11-data-observability.tex",
+    "width_fraction": 1.0,
+    "source": "observability_plots.py"
+  },
+  "P4_vs_F1.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "p4_vs_f1_plot.py"
+  },
+  "PAPE_reweighting.png": {
+    "chapter": "9-probabilistic.tex",
+    "width_fraction": 1.0,
+    "source": "probabilistic_plots.py"
+  },
+  "PCK_threshold_visual.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 1.0,
+    "source": "pck_threshold_plot.py"
+  },
+  "PESQ_alignment.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "PQ_decomposition.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 0.82,
+    "source": "cv_plots.py"
+  },
+  "PR_AUC_curves.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots2.py"
+  },
+  "PSNR_plot.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 1.0,
+    "source": "cv_plots.py"
+  },
+  "Pair_Confusion_Matrix.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "clustering_plots.py"
+  },
+  "Perplexity_surprisal.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Pinball_Loss.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "review_figures.py"
+  },
+  "Pixel_Accuracy_imbalance.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 1.0,
+    "source": "cv_plots.py"
+  },
+  "Precision_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots.py"
+  },
+  "Predictive_Parity.png": {
+    "chapter": "10-bias-fairness.tex",
+    "width_fraction": 0.82,
+    "source": "bias_fairness_plots.py"
+  },
+  "R2_explained.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "r2_explained_plot.py"
+  },
+  "RCD_decomposition.png": {
+    "chapter": "9-probabilistic.tex",
+    "width_fraction": 1.0,
+    "source": "probabilistic_plots.py"
+  },
+  "RMSE_sensitivity_outliers_plot.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "rmse_plots.py"
+  },
+  "RMSLE_comparison_MSLE.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "rmse_plots.py"
+  },
+  "ROC_AUC_curves.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots2.py"
+  },
+  "ROUGE_variants.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 0.82,
+    "source": "nlp_plots.py"
+  },
+  "Rand_Index_separation.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 1.0,
+    "source": "rand_index_plot.py"
+  },
+  "Recall_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_plots.ipynb"
+  },
+  "SSIM_vs_PSNR.png": {
+    "chapter": "6-computer-vision.tex",
+    "width_fraction": 1.0,
+    "source": "cv_plots.py"
+  },
+  "STOI_envelopes.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "Serendipity_scatter.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "serendipity_scatter_plot.py"
+  },
+  "Silhouette_Score_comparison.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 1.0,
+    "source": "silhouette_plot.py"
+  },
+  "TER_edit_breakdown.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 1.0,
+    "source": "nlp_plots.py"
+  },
+  "TNR_3d_surface.png": {
+    "chapter": "3-classification.tex",
+    "width_fraction": 0.82,
+    "source": "classification_new_plots2.py"
+  },
+  "VQAScore_vs_CLIP.png": {
+    "chapter": "8-genai.tex",
+    "width_fraction": 1.0,
+    "source": "genai_plots.py"
+  },
+  "V_Measure_plane.png": {
+    "chapter": "4-clustering.tex",
+    "width_fraction": 0.82,
+    "source": "dedicated_figures.py"
+  },
+  "WER_vs_errors.png": {
+    "chapter": "7-nlp.tex",
+    "width_fraction": 1.0,
+    "source": "nlp_plots.py"
+  },
+  "at_K_precision_recall.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "at_k_tradeoff_plot.py"
+  },
+  "nDCG_degradation.png": {
+    "chapter": "5-ranking.tex",
+    "width_fraction": 0.82,
+    "source": "ndcg_degradation_plot.py"
+  },
+  "sMAPE_3d_surface.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 0.82,
+    "source": "regression_plots.ipynb"
+  },
+  "wMAPE_compare_MAPE.png": {
+    "chapter": "2-regression.tex",
+    "width_fraction": 1.0,
+    "source": "dedicated_figures.py"
+  }
+}

@@ -1,9 +1,9 @@
 \chapteropener{Classification}{purplelight}{purpleaccent}{%
-Classification models predict which category an example belongs to. A spam filter, for example, predicts whether an email is spam or legitimate. Counting correct predictions tells us how often it gets the label right, but we also need to understand its mistakes. Letting spam into the inbox and sending a legitimate message to the spam folder have different consequences.
+Classification models predict which category an example belongs to. A spam filter predicts whether email is spam or legitimate. Counting correct predictions tells us how often it is right, but letting spam into the inbox and sending legitimate email to the spam folder have different consequences.
 
-We begin with the confusion matrix, a table that counts correct predictions and each type of mistake. From these counts, we can measure how much of the spam the filter catches and how often a message it flags really is spam. Most of this chapter uses problems with two categories to explain these comparisons.
+We begin with the confusion matrix, which counts correct predictions and each type of mistake. These counts tell us how much spam the filter catches and how often flagged messages really are spam. Most examples use two categories.
 
-Many classifiers also predict probabilities, which give us more information than the final labels alone. A filter may flag an email once its spam probability exceeds a chosen cutoff. Alongside metrics for those decisions, this chapter introduces ways to check whether spam receives higher scores than legitimate email and how much probability the model assigns to the categories that turn out to be correct.}{In this chapter}
+Many classifiers also predict probabilities. A filter may flag email once its spam probability exceeds a cutoff. Alongside decision metrics, we check whether spam receives higher scores than legitimate email and how much probability the model assigns to the correct categories.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
@@ -70,7 +70,7 @@ Use the confusion matrix when you want the full per-class breakdown of correct v
 \item Doesn't summarize to a single number. For model selection, leaderboards, or hyperparameter tuning you still need a derived metric.
 \item Large matrices can be hard to inspect. Clear labels, class ordering and per-class summaries help; keep class counts alongside normalized rates.
 }
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -98,6 +98,7 @@ When summary metrics disagree, inspect the counts rather than guessing the cause
 
 
 % ---------- FPR ----------
+\metricend
 \clearpage
 \metricentry{FPR}{False Positive Rate (FPR)}\label{sec:fpr}
 \thispagestyle{classificationstyle}
@@ -139,7 +140,7 @@ screening (healthy patients subjected to invasive follow-up). When both FPR and 
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 
@@ -168,6 +169,7 @@ Other metrics used alongside or instead of FPR include True Positive Rate (TPR),
 
 
 % ---------- FNR ----------
+\metricend
 \clearpage
 \metricentry{FNR}{False Negative Rate (FNR)}\label{sec:fnr}
 \thispagestyle{classificationstyle}
@@ -208,7 +210,7 @@ threats), predictive maintenance (undetected failures). If false alarms are the 
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 
@@ -236,6 +238,7 @@ Other metrics used alongside or instead of False Negative Rate
 are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
 
 % ---------- TPR ----------
+\metricend
 \clearpage
 \metricentry{TPR (Recall/Sensitivity)}{True Positive Rate (TPR / Recall / Sensitivity)}\label{sec:tpr-recall-sensitivity}
 \thispagestyle{classificationstyle}
@@ -274,7 +277,7 @@ Use recall when missed positives matter, such as undetected disease or fraud. Ch
 }
 
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 
@@ -301,6 +304,7 @@ Did you know that...}
 Precision describes the reliability of positive predictions; specificity describes correct rejections. F-beta combines precision and recall with a chosen emphasis.
 
 % ---------- TNR ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{TNR (Specificity)}{True Negative Rate (TNR / Specificity)}\label{sec:tnr-specificity}
@@ -343,7 +347,7 @@ When you need to assess a test's ability to identify negative cases correctly or
 \item It should be considered alongside sensitivity for a comprehensive evaluation.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -364,6 +368,7 @@ Did you know that...}
 Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall), FPR, which is $1 - \text{Specificity}$, F1-score, and the ROC curve.
 
 % ---------- Accuracy ----------
+\metricend
 \clearpage
 
 \thispagestyle{classificationstyle}
@@ -405,7 +410,7 @@ Use accuracy when the goal is to minimize the number of wrong decisions and each
 \item Counts a missed positive and a false alarm equally. Use Expected Cost or explicit error-rate requirements when their consequences differ.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -423,6 +428,7 @@ Use accuracy when the goal is to minimize the number of wrong decisions and each
 Balanced Accuracy gives each class's recall equal weight. Precision and Recall describe results for the positive class, while Expected Cost accounts for the consequences of different mistakes.
 
 % ---------- Balanced Accuracy ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Balanced Accuracy}{Balanced Accuracy}\label{sec:balanced-accuracy}
@@ -462,7 +468,7 @@ Use balanced accuracy when you want success within each class to contribute equa
 \item Small classes give uncertain estimates. With five positives, one additional missed positive lowers binary balanced accuracy by $10$ percentage points, if specificity stays fixed.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -480,6 +486,7 @@ Use balanced accuracy when you want success within each class to contribute equa
 A gap between Accuracy and Balanced Accuracy is a reason to inspect the individual class recalls. MCC offers a different summary of the same confusion matrix, as a correlation between actual and predicted labels. Precision and Recall help when the positive class is the main concern.
 
 % ---------- Precision ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Precision}{Precision}\label{sec:precision}
@@ -517,7 +524,7 @@ Use precision when you need to know how reliable the model's positive decisions 
 \item Undefined when the model predicts no positives. Check how your software reports this case.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -539,6 +546,7 @@ Precision is most commonly used alongside Recall. To combine both into a single 
 For a threshold-independent evaluation, consider the PR AUC.
 
 % ---------- F1-score ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{F1-score}{F1-score}\label{sec:f1-score}
@@ -580,7 +588,7 @@ Use F1 when you want one summary of precision and recall for the positive class,
 \item It assumes that precision and recall are equally important. F-beta score can address this by allowing adjustable weighting between precision and recall.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -600,6 +608,7 @@ Use F1 when you want one summary of precision and recall for the positive class,
 When precision and recall are not equally important, use the F-beta score. For a metric that also considers true negatives, consider MCC or the P4-metric.
 
 % ---------- F-beta ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{F-beta}{F-beta}\label{sec:f-beta}
@@ -640,7 +649,7 @@ Use F-beta when you need a single precision--recall summary but want to favor on
 \item Just like F1-score, F-beta doesn't consider true negatives, which might be necessary in some scenarios.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -658,6 +667,7 @@ Use F-beta when you need a single precision--recall summary but want to favor on
 The F-beta score generalizes the F1-score. If you need a metric that also accounts for true negatives, consider MCC or the P4-metric.
 
 % ---------- ROC AUC ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{ROC AUC}{Area Under the Receiver Operating Characteristic Curve (ROC AUC)}\label{sec:roc-auc}
@@ -699,7 +709,7 @@ Use ROC AUC to compare ranking ability before choosing a deployment threshold. W
 \item Does not tell you precision, or how reliable the predicted probabilities are.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 
@@ -719,6 +729,7 @@ leading to the development of signal detection theory and the receiver operating
 PR AUC complements ROC AUC by showing precision as recall changes. For decisions at one chosen threshold, examine the confusion matrix and metrics such as F1 or MCC.
 
 % ---------- PR AUC ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{PR AUC}{Area Under the Precision-Recall Curve (PR AUC)}\label{sec:pr-auc}
@@ -755,7 +766,7 @@ Use PR AUC when finding positive cases and limiting false alarms are the main co
 \item A full-curve summary can hide poor results at the threshold you need. It does not summarize correctly rejected negatives.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -773,6 +784,7 @@ Use PR AUC when finding positive cases and limiting false alarms are the main co
 PR AUC is complementary to ROC AUC. For a single-score summary that balances precision and recall at a fixed threshold, use the F1-score.
 For evaluating the predicted probabilities, consider Brier Score or Log Loss; neither isolates calibration alone.
 % ---------- Brier Score Loss ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Brier Score Loss}{Brier Score Loss}\label{sec:brier-score-loss}
@@ -810,7 +822,7 @@ Use the Brier Score when evaluating probabilities matters beyond getting the cla
 \item Scaling conventions differ. Check whether an implementation reports a score on the $0$--$1$ or $0$--$2$ scale.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -828,6 +840,7 @@ Use the Brier Score when evaluating probabilities matters beyond getting the cla
 The Brier Score and Log Loss both evaluate probability predictions. Brier loss is bounded, while Log Loss grows without bound as the probability assigned to the actual outcome approaches zero. For predicted class labels, use metrics such as accuracy or F1-score.
 
 % ---------- Log Loss ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Log Loss}{Log Loss}\label{sec:log-loss}
@@ -867,7 +880,7 @@ Use Log Loss to evaluate probability predictions, especially when confident mist
     \item Requires valid probabilities, not arbitrary decision scores. Poorly calibrated probabilities can and should still be evaluated.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -886,6 +899,7 @@ is the same as minimizing Log Loss, making it the natural loss function for prob
 Log Loss and the Brier Score evaluate overall probability quality; neither isolates calibration. A reliability diagram compares predicted probabilities with observed frequencies. D-squared Log Loss expresses improvement over a constant-probability baseline, while accuracy and F1 evaluate class labels.
 
 % ---------- Jaccard Index ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Jaccard Index}{Jaccard Index}\label{sec:jaccard-index}
@@ -925,7 +939,7 @@ Use Jaccard when the overlap between predicted and actual positives is the focus
     \item Leaves out true negatives. Use an additional metric if correctly recognizing negatives also matters.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -943,6 +957,7 @@ Use Jaccard when the overlap between predicted and actual positives is the focus
 For evaluations that include true negatives, use accuracy or balanced accuracy. The Computer Vision chapter covers the closely related Sørensen-Dice coefficient. When a distance between sets is needed, Jaccard distance is $1-J$ and satisfies the triangle inequality.
 
 % ---------- D-squared Log Loss Score ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{D-squared Log Loss Score}{D-squared Log Loss Score}\label{sec:d-squared-log-loss-score}
@@ -981,7 +996,7 @@ Use D-squared Log Loss to report improvement over a dataset's constant-probabili
     \item Inherits sensitivity to confident errors. A positive case assigned $0.001$ contributes about $6.91$ to log loss before averaging.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -1000,6 +1015,7 @@ but you can also compute D-squared with other losses like absolute error or Pois
 Use raw Log Loss to see the loss before normalization, and a reliability diagram to examine calibration. F1 and MCC summarize decisions at a chosen threshold; they answer a different question from the quality of the probabilities.
 
 % ---------- P4-metric ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{P4-metric}{P4-metric}\label{sec:p4-metric}
@@ -1040,7 +1056,7 @@ Use P4 when you want a summary that includes both classes. It can also compare c
     \item Degenerate counts can make the denominator zero. Check the implementation's treatment of undefined cases.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -1058,6 +1074,7 @@ Use P4 when you want a summary that includes both classes. It can also compare c
 P4 and MCC both include true negatives, but summarize the confusion matrix differently: P4 combines four rates, while MCC measures the association between predicted and actual labels. Neither replaces an explicit error-cost objective. F-beta is useful when the focus is the precision--recall trade-off for the positive class.
 
 % ---------- Cohen's Kappa ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{Cohen's Kappa}{Cohen's Kappa}\label{sec:cohen-s-kappa}
@@ -1095,7 +1112,7 @@ Use Cohen's Kappa to assess agreement between two annotators, for example when c
     \item Agreement does not establish correctness: both annotators can make the same mistakes.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -1113,6 +1130,7 @@ Use Cohen's Kappa to assess agreement between two annotators, for example when c
 Fleiss' Kappa extends agreement assessment to multiple annotators. MCC measures association between predicted and actual labels. A low kappa is a reason to examine disagreements and label frequencies; it does not identify their cause or prove that the labels are unusable.
 
 % ---------- MCC ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{MCC}{Matthews Correlation Coefficient (MCC)}\label{sec:mcc}
@@ -1150,7 +1168,7 @@ Use MCC as an overall summary when performance on both classes matters, includin
     \item A correlation is less direct to interpret than a proportion correct. MCC $=0.65$ does not mean that $65\%$ of predictions are correct.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
@@ -1168,6 +1186,7 @@ Use MCC as an overall summary when performance on both classes matters, includin
 MCC and F1 use different scales and summarize different aspects of a classifier. Similar values do not establish balanced performance across classes. Inspect precision, recall, specificity, and the confusion matrix to understand the results. ROC AUC adds a view of score ordering across thresholds.
 
 % ---------- EC ----------
+\metricend
 \clearpage
 \thispagestyle{classificationstyle}
 \metricentry{EC}{Expected Cost (EC)}\label{sec:ec}
@@ -1206,7 +1225,7 @@ Use EC when different decisions have consequences that you can specify. The aver
 \item If probabilities are used to choose the least costly decision, their calibration also matters.
 }
 
-\clearpage
+\metricsecondpage
 \thispagestyle{customstyle}
 
 
@@ -1258,3 +1277,4 @@ Did you know that...}
 \metricheading{Related metrics}\metricsecondary
 
 F1 combines precision and recall, while ROC AUC evaluates score ordering across thresholds. Neither requires an explicit cost for each decision. EC lets those application costs determine the evaluation. If correct decisions cost $0$ and every error costs $1$, EC equals one minus accuracy.
+\metricend
