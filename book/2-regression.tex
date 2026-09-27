@@ -43,7 +43,7 @@ The metrics in this chapter summarize those errors in different ways. Absolute e
 \section{MAE}\label{sec:mae}
 \subsection{Mean Absolute Error}
 
-Mean Absolute Error (MAE) measures how far predictions are from the actual values, on average. It takes the size of each error, ignoring whether the prediction was too high or too low, and averages those sizes. For house prices, an MAE of $\$15{,}000$ means the predictions miss the actual prices by $\$15{,}000$ on average.
+MAE is one of the most intuitive regression metrics: it tells you, on average, how far off your predictions are in the same units as your target. If you're predicting house prices and your MAE is $\$15{,}000$, your predictions are off by $\$15{,}000$ on average. This directness makes MAE a useful metric when you need to communicate model performance to non-technical stakeholders.
 
 % equation
 \begin{center}
@@ -61,7 +61,7 @@ Mean Absolute Error (MAE) measures how far predictions are from the actual value
     }
 \end{center}
 
-MAE is $0$ for perfect predictions and has no upper bound. Compare it with a simple baseline evaluated on the same test cases, such as always predicting the training data's median house price. A lower MAE means a smaller average miss than that baseline.
+MAE ranges from $0$ (perfect) to $+\infty$. To interpret it in context, compare it with the MAE of always predicting the training data's mean target value. A much lower MAE on the same test data means your model improves on that simple baseline; a similar MAE means it performs much the same.
 
 \textbf{When to use MAE?}
 
