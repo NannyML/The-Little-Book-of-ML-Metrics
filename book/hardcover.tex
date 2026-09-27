@@ -25,19 +25,17 @@
 \tikzset{metric edge label/.style={rotate=90,anchor=east,
  inner sep=0pt,outer sep=0pt,text height=6.08pt,text depth=1.92pt,
  font=\sffamily\fontsize{8}{10}\selectfont}}
+% Edge navigation is visible only on left/even pages, so readers browse
+% labels from one side of the closed book. Right-hand entries stay unbanded.
 \AddToHook{shipout/background}{%
  \ifmetricentrypage
- \begin{tikzpicture}[remember picture,overlay]
- \ifodd\value{page}
-  \fill[\metricband] ([xshift=-13.925mm]current page.north east) rectangle (current page.south east);
-  \node[metric edge label]
-   at ([xshift=-11.225mm]current page.north east |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
- \else
-  \fill[\metricband] (current page.north west) rectangle ([xshift=13.925mm]current page.south west);
-  \node[metric edge label]
-   at ([xshift=11.225mm]current page.north west |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
+ \ifodd\value{page}\else
+  \begin{tikzpicture}[remember picture,overlay]
+   \fill[\metricband] (current page.north west) rectangle ([xshift=13.925mm]current page.south west);
+   \node[metric edge label]
+    at ([xshift=11.225mm]current page.north west |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
+  \end{tikzpicture}
  \fi
- \end{tikzpicture}
  \global\metricentrypagefalse
  \fi}
 % Position chapter furniture within the same mirrored safe area as the prose.
