@@ -62,10 +62,10 @@ so it rewards shared phrases as well as individual words.
     }
 \end{center}
 
-Each ${\color{nmlcyan}p_n}$ is the fraction of the output's $n$-grams that match a reference. Repeating a
+Each $p_n$ is the fraction of the output's $n$-grams that match a reference. Repeating a
 phrase earns credit only up to its largest count in any one reference. For a whole test set, BLEU pools
 these counts before combining the four precisions with equal weights. It then applies the brevity
-penalty ${\color{nmlred}BP}$ if the total output is too short relative to the references. The score ranges from $0$ to $1$, often
+penalty $BP$ if the total output is too short relative to the references. The score ranges from $0$ to $1$, often
 reported on a $0$--$100$ scale; higher means more overlap.
 
 \textbf{When to use BLEU?}
@@ -143,9 +143,9 @@ score when those matches are scattered rather than forming phrases in the same o
     }
 \end{center}
 
-${\color{nmlcyan}F_{mean}}$ combines word-match precision and recall. The fragmentation term
-${\color{nmlpurple}frag}$ is the number of contiguous matched groups divided by the number of matched
-words; a group must stay adjacent and in order in both texts. ${\color{nmlred}\gamma}$ and $\beta$
+$F_{mean}$ combines word-match precision and recall. The fragmentation term
+$frag$ is the number of contiguous matched groups divided by the number of matched
+words; a group must stay adjacent and in order in both texts. $\gamma$ and $\beta$
 control the penalty. The example uses the original settings, $\gamma=0.5$ and $\beta=3$.
 Scores lie between $0$ and $1$; higher means closer agreement under these matching rules.
 
