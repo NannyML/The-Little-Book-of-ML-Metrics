@@ -37,11 +37,12 @@
  \or\renewcommand{\metricband}{orangehard}%
  \or\renewcommand{\metricband}{coralhard}%
  \or\renewcommand{\metricband}{minthard}\fi}
+\newcommand{\metrictitleanchor}{}
 \newcommand{\metricentrytitle}[2]{%
  \metricbody\setmetricband\global\metricentrypagetrue
  \refstepcounter{section}\renewcommand{\sectiontitle}{#1}%
  \addcontentsline{toc}{section}{#1}\markboth{#1}{#1}%
- {\setlength{\parskip}{0pt}\sffamily\fontsize{15.5}{20}\selectfont\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000\strut #2\par}
+ {\setlength{\parskip}{0pt}\sffamily\fontsize{15.5}{20}\selectfont\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000\strut\metrictitleanchor #2\par}
  \nobreak\vspace{6pt}\nobreak}
 \newcommand{\monitorentry}[2]{%
  \metricentrytitle{#1}{#1}%

@@ -11,19 +11,30 @@
  \clearpage
  \ifodd\value{page}\thispagestyle{empty}\null\newpage\fi
  \metricentrytitle{#1}{#2}\global\metricstartpage=\value{page}}
+% Record the first title line's cap height without changing its layout.
+\newlength{\metrictitlecapheight}
+\renewcommand{\metrictitleanchor}{%
+ \setlength{\metrictitlecapheight}{\fontcharht\font`M}%
+ \tikz[remember picture,overlay,baseline=0pt]{%
+  \coordinate (metric-title-\thepage) at (0,\the\metrictitlecapheight);}}
 % The 9.75 mm trimmed band leaves a 3.25 mm white gutter to the
-% 13 mm outer text margin. Lettering stays more than 6.35 mm from trim.
+% 13 mm outer text margin. Centre the label in the safe 6.35--9.75 mm
+% portion of the band. Fixed height/depth prevent chapter names with different
+% ascenders and descenders from changing its horizontal position.
+\tikzset{metric edge label/.style={rotate=90,anchor=east,
+ inner sep=0pt,outer sep=0pt,text height=6.08pt,text depth=1.92pt,
+ font=\sffamily\fontsize{8}{10}\selectfont}}
 \AddToHook{shipout/background}{%
  \ifmetricentrypage
  \begin{tikzpicture}[remember picture,overlay]
  \ifodd\value{page}
   \fill[\metricband] ([xshift=-12.925mm]current page.north east) rectangle (current page.south east);
-  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=-11.175mm,yshift=-13.175mm]current page.north east) {\chaptertitle\ \textendash\ \sectiontitle};
+  \node[metric edge label]
+   at ([xshift=-11.225mm]current page.north east |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
  \else
   \fill[\metricband] (current page.north west) rectangle ([xshift=12.925mm]current page.south west);
-  \node[rotate=90,anchor=east,inner sep=0pt,font=\sffamily\fontsize{8}{10}\selectfont]
-   at ([xshift=11.175mm,yshift=-13.175mm]current page.north west) {\chaptertitle\ \textendash\ \sectiontitle};
+  \node[metric edge label]
+   at ([xshift=11.225mm]current page.north west |- metric-title-\thepage) {\chaptertitle\ \textendash\ \sectiontitle};
  \fi
  \end{tikzpicture}
  \global\metricentrypagefalse
