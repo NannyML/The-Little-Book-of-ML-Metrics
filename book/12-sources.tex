@@ -1,381 +1,909 @@
+% Chicago author-date–based house style, grouped by chapter.
+% One work per entry; full names where supplied by the publication; up to six
+% authors, otherwise the first three and et al. Undated web sources use n.d.
+% DOI/arXiv locators are preferred to duplicate URLs.
+% Keep titles, dates and source attribution attached to their own links.
 \clearpage
 \refstepcounter{chapter}
 \addcontentsline{toc}{chapter}{Bibliography}\label{chapter:bibliography}
 \renewcommand{\chaptertitle}{Bibliography}
 \renewcommand{\sectiontitle}{}
 \pagestyle{plain}
-\noindent{\Huge\bfseries Bibliography\par}
-\vspace{0.5em}
-
 \begingroup
-\small
-\raggedright
-\interlinepenalty=10000 % Keep each reference together across page breaks.
-\setlength{\parskip}{5pt}
-\newcommand{\srchead}[1]{\par\addvspace{10pt}\noindent{\normalsize\bfseries #1}\par\nobreak\vspace{2pt}\nobreak}
+\normalfont\fontsize{10}{12.5}\selectfont\RaggedRight
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\interlinepenalty=10000
+\urlstyle{same}
+% Break links at path and word boundaries, not in the middle of words.
+\useOriginalUrlSetting
+\Urlmuskip=0mu
+\appto\UrlBreaks{\do\-}
+\newcommand{\srchead}[1]{%
+ \par\Needspace{135pt}\addvspace{17pt}%
+ {\fontsize{14}{17}\selectfont\bfseries #1\par}%
+ \nobreak\vspace{8pt}\nobreak}
+\newcommand{\bibentry}[2]{%
+ \par\noindent\begin{minipage}{\linewidth}%
+ \setlength{\leftskip}{12pt}\setlength{\parindent}{0pt}%
+ \noindent\hspace*{-12pt}\phantomsection\label{bib:#1}#2\par
+ \end{minipage}\par\vspace{7pt}}
+\newcommand{\biblink}[2]{%
+ \nobreak\newline{\fontsize{9}{11}\selectfont\color{black!70}%
+ \href{#1}{\nolinkurl{#2}}}}
+{\fontsize{30}{34}\selectfont\bfseries\itshape Bibliography\par}
+\vspace{2pt}
 
 \srchead{Regression}
-Hyndman, R.~J. and Koehler, A.~B. (2006). Another look at measures of forecast accuracy.
-\emph{International Journal of Forecasting} 22(4), 679--688.
-\url{https://doi.org/10.1016/j.ijforecast.2006.03.001}.\par
-Willmott, C.~J. and Matsuura, K. (2005). Advantages of the mean absolute error (MAE) over the root mean
-square error (RMSE) in assessing average model performance. \emph{Climate Research} 30, 79--82.
-\url{https://doi.org/10.3354/cr030079}.\par
-Makridakis, S. (1993). Accuracy measures: theoretical and practical concerns.
-\emph{International Journal of Forecasting} 9(4), 527--529.
-\url{https://doi.org/10.1016/0169-2070(93)90079-3}.\par
-Hyndman, R.~J. and Athanasopoulos, G. (2021). \emph{Forecasting: Principles and Practice}, 3rd ed.
-OTexts. Sections on evaluating point forecast accuracy, distributional forecasts and prediction intervals,
-and selecting predictors:
-\url{https://otexts.com/fpp3/accuracy.html};
-\url{https://otexts.com/fpp3/prediction-intervals.html};
-\url{https://otexts.com/fpp3/selecting-predictors.html}.\par
-Hyndman, R.~J. (2014). Errors on percentage errors. \emph{Hyndsight}, April 16.
-\url{https://robjhyndman.com/hyndsight/smape/}.\par
-Hyndman, R.~J. (2025). WAPE: Weighted Absolute Percentage Error. \emph{Hyndsight}, August 8.
-\url{https://robjhyndman.com/hyndsight/wape.html}.\par
-scikit-learn developers. \emph{Metrics and scoring: regression metrics}.
-\url{https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics}.\par
-scikit-learn developers. \emph{Single estimator versus bagging: bias--variance decomposition}.
-\url{https://scikit-learn.org/stable/auto_examples/ensemble/plot_bias_variance.html}.\par
-PyTorch contributors. \emph{L1Loss}. PyTorch documentation.
-\url{https://docs.pytorch.org/docs/2.14/generated/torch.nn.L1Loss.html}.\par
-scikit-learn developers. \emph{Generalized Linear Models}; \emph{Tweedie regression on insurance claims}.
-\url{https://scikit-learn.org/stable/modules/linear_model.html#generalized-linear-models};
-\url{https://scikit-learn.org/stable/auto_examples/linear_model/plot_tweedie_regression_insurance_claims.html}.\par
-McCullagh, P. and Nelder, J.~A. (1989). \emph{Generalized Linear Models}, 2nd ed. Chapman \& Hall.
-\url{https://www.routledge.com/Generalized-Linear-Models/McCullagh-Nelder/p/book/9780412317606}.\par
-Gneiting, T. (2011). Making and evaluating point forecasts.
-\emph{Journal of the American Statistical Association} 106(494), 746--762.
-\url{https://doi.org/10.1198/jasa.2011.r10138}.\par
-Koenker, R. and Bassett, G., Jr. (1978). Regression quantiles. \emph{Econometrica} 46(1), 33--50.
-\url{https://doi.org/10.2307/1913643}.\par
-Gneiting, T. (2011). Quantiles as optimal point forecasts.
-\emph{International Journal of Forecasting} 27(2), 197--207.
-\url{https://doi.org/10.1016/j.ijforecast.2009.12.015}.\par
-Blaskowitz, O. and Herwartz, H. (2011). On economic evaluation of directional forecasts.
-\emph{International Journal of Forecasting} 27(4), 1058--1065.
-\url{https://doi.org/10.1016/j.ijforecast.2010.07.002}.\par
-Mercari and Kaggle (2017--2018). \emph{Mercari Price Suggestion Challenge}.
-\url{https://www.kaggle.com/competitions/mercari-price-suggestion-challenge}.\par
-Miller, C. et al. (2020). The ASHRAE Great Energy Predictor III competition: Overview and results.
-\emph{Science and Technology for the Built Environment} 26(10), 1427--1447.
-\url{https://doi.org/10.1080/23744731.2020.1795514}.\par
-Makridakis, S. and Petropoulos, F. (2020). The M4 competition: Conclusions. \emph{International Journal of Forecasting} 36(1), 224--227. \url{https://doi.org/10.1016/j.ijforecast.2019.05.006}.\par
-scikit-learn developers. Common pitfalls and recommended practices: Data leakage. \url{https://scikit-learn.org/stable/common_pitfalls.html#data-leakage}.\par
+
+\bibentry{r015}{%
+Blaskowitz, Oliver, and Helmut Herwartz. 2011. “On Economic Evaluation of Directional Forecasts.” \emph{International Journal of Forecasting} 27 (4): 1058--1065.
+\biblink{https://doi.org/10.1016/j.ijforecast.2010.07.002}{doi.org/10.1016/j.ijforecast.2010.07.002}}
+
+\bibentry{r012}{%
+Gneiting, Tilmann. 2011a. “Making and Evaluating Point Forecasts.” \emph{Journal of the American Statistical Association} 106 (494): 746--762.
+\biblink{https://doi.org/10.1198/jasa.2011.r10138}{doi.org/10.1198/jasa.2011.r10138}}
+
+\bibentry{r014}{%
+Gneiting, Tilmann. 2011b. “Quantiles as Optimal Point Forecasts.” \emph{International Journal of Forecasting} 27 (2): 197--207.
+\biblink{https://doi.org/10.1016/j.ijforecast.2009.12.015}{doi.org/10.1016/j.ijforecast.2009.12.015}}
+
+\bibentry{r005}{%
+Hyndman, Rob J. 2014. “Errors on Percentage Errors.” \emph{Hyndsight}. April 16.
+\biblink{https://robjhyndman.com/hyndsight/smape/}{robjhyndman.com/hyndsight/smape/}}
+
+\bibentry{r006}{%
+Hyndman, Rob J. 2025. “WAPE: Weighted Absolute Percentage Error.” \emph{Hyndsight}. August 8.
+\biblink{https://robjhyndman.com/hyndsight/wape.html}{robjhyndman.com/hyndsight/wape.html}}
+
+\bibentry{r004}{%
+Hyndman, Rob J., and George Athanasopoulos. 2021. \emph{Forecasting: Principles and Practice}. 3rd ed. OTexts. Sections 5.5, 5.8, and 7.5.
+\biblink{https://otexts.com/fpp3/}{otexts.com/fpp3/}}
+
+\bibentry{r001}{%
+Hyndman, Rob J., and Anne B. Koehler. 2006. “Another Look at Measures of Forecast Accuracy.” \emph{International Journal of Forecasting} 22 (4): 679--688.
+\biblink{https://doi.org/10.1016/j.ijforecast.2006.03.001}{doi.org/10.1016/j.ijforecast.2006.03.001}}
+
+\bibentry{r013}{%
+Koenker, Roger, and Gilbert Bassett, Jr. 1978. “Regression Quantiles.” \emph{Econometrica} 46 (1): 33--50.
+\biblink{https://doi.org/10.2307/1913643}{doi.org/10.2307/1913643}}
+
+\bibentry{r003}{%
+Makridakis, Spyros. 1993. “Accuracy Measures: Theoretical and Practical Concerns.” \emph{International Journal of Forecasting} 9 (4): 527--529.
+\biblink{https://doi.org/10.1016/0169-2070(93)90079-3}{doi.org/10.1016/0169-2070(93)90079-3}}
+
+\bibentry{r018}{%
+Makridakis, Spyros, and Fotios Petropoulos. 2020. “The M4 Competition: Conclusions.” \emph{International Journal of Forecasting} 36 (1): 224--227.
+\biblink{https://doi.org/10.1016/j.ijforecast.2019.05.006}{doi.org/10.1016/j.ijforecast.2019.05.006}}
+
+\bibentry{r011}{%
+McCullagh, P., and J. A. Nelder. 1989. \emph{Generalized Linear Models}. 2nd ed. Chapman \& Hall.
+\biblink{https://www.routledge.com/Generalized-Linear-Models/McCullagh-Nelder/p/book/9780412317606}{www.routledge.com/Generalized-Linear-Models/McCullagh-Nelder/p/book/9780412317606}}
+
+\bibentry{r016}{%
+Mercari. n.d. “Mercari Price Suggestion Challenge.” \emph{Kaggle}. Competition, 2017--2018.
+\biblink{https://www.kaggle.com/competitions/mercari-price-suggestion-challenge}{www.kaggle.com/competitions/mercari-price-suggestion-challenge}}
+
+\bibentry{r017}{%
+Miller, Clayton, Pandarasamy Arjunan, Anjukan Kathirgamanathan, et al. 2020. “The ASHRAE Great Energy Predictor III Competition: Overview and Results.” \emph{Science and Technology for the Built Environment} 26 (10): 1427--1447.
+\biblink{https://doi.org/10.1080/23744731.2020.1795514}{doi.org/10.1080/23744731.2020.1795514}}
+
+\bibentry{r009}{%
+PyTorch contributors. n.d. “L1Loss.” \emph{PyTorch Documentation}. Version 2.14.
+\biblink{https://docs.pytorch.org/docs/2.14/generated/torch.nn.L1Loss.html}{docs.pytorch.org/docs/2.14/generated/torch.nn.L1Loss.html}}
+
+\bibentry{r019}{%
+scikit-learn developers. n.d.-f. “Common Pitfalls and Recommended Practices: Data Leakage.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/common_pitfalls.html\#data-leakage}{scikit-learn.org/stable/common_pitfalls.html\#data-leakage}}
+
+\bibentry{r010}{%
+scikit-learn developers. n.d.-i. “Generalized Linear Models.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/linear_model.html\#generalized-linear-models}{scikit-learn.org/stable/modules/linear_model.html\#generalized-linear-models}}
+
+\bibentry{r007}{%
+scikit-learn developers. n.d.-l. “Regression Metrics.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/model_evaluation.html\#regression-metrics}{scikit-learn.org/stable/modules/model_evaluation.html\#regression-metrics}}
+
+\bibentry{r008}{%
+scikit-learn developers. n.d.-m. “Single Estimator Versus Bagging: Bias--Variance Decomposition.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/auto_examples/ensemble/plot_bias_variance.html}{scikit-learn.org/stable/auto_examples/ensemble/plot_bias_variance.html}}
+
+\bibentry{r010b}{%
+scikit-learn developers. n.d.-n. “Tweedie Regression on Insurance Claims.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/auto_examples/linear_model/plot_tweedie_regression_insurance_claims.html}{scikit-learn.org/stable/auto_examples/linear_model/plot_tweedie_regression_insurance_claims.html}}
+
+\bibentry{r002}{%
+Willmott, C. J., and K. Matsuura. 2005. “Advantages of the Mean Absolute Error (MAE) Over the Root Mean Square Error (RMSE) in Assessing Average Model Performance.” \emph{Climate Research} 30: 79--82.
+\biblink{https://doi.org/10.3354/cr030079}{doi.org/10.3354/cr030079}}
 
 \srchead{Classification}
-Fawcett, T. (2006). An introduction to ROC analysis. \emph{Pattern Recognition Letters} 27(8), 861--874. \url{https://doi.org/10.1016/j.patrec.2005.10.010}.\par
-Hanley, J.~A. and McNeil, B.~J. (1982). The meaning and use of the area under a receiver operating
-characteristic (ROC) curve. \emph{Radiology} 143(1).\par
-van Rijsbergen, C.~J. (1979). \emph{Information Retrieval}, 2nd ed. Butterworths.\par
-Powers, D.~M.~W.
-(2011). Evaluation: from precision, recall and F-measure to ROC, informedness, markedness and correlation. \emph{Journal of Machine
-Learning Technologies} 2(1).\par
-Davis, J. and Goadrich, M. (2006). The relationship between precision-recall and ROC curves. \emph{ICML}. \url{https://ftp.cs.wisc.edu/machine-learning/shavlik-group/davis.icml06.pdf}.\par
-Saito, T. and Rehmsmeier, M. (2015). The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets. \emph{PLOS ONE} 10(3), e0118432. \url{https://doi.org/10.1371/journal.pone.0118432}.\par
-Good, I.~J. (1952). Rational decisions. \emph{Journal of the Royal Statistical Society B} 14(1).\par
-Brodersen, K.~H., Ong, C.~S., Stephan, K.~E. and Buhmann, J.~M. (2010). The balanced accuracy and its posterior distribution. \emph{ICPR}, 3121--3124. \url{https://www.ong-home.my/papers/brodersen10post-balacc.pdf}.\par
-Jaccard, P. (1901). Étude comparative de la distribution florale dans une portion des Alpes et des Jura.
-\emph{Bulletin de la Société Vaudoise des Sciences Naturelles} 37.\par
-Matthews, B.~W. (1975). Comparison of the predicted and observed secondary structure of T4 phage lysozyme. \emph{Biochimica et
-Biophysica Acta} 405(2).\par
-Kent, A., Berry, M.~M., Luehrs, F.~U., Jr. and Perry, J.~W. (1955). Machine literature searching VIII. Operational criteria for designing information retrieval systems. \emph{American Documentation} 6(2), 93--101.
-\url{https://doi.org/10.1002/asi.5090060209}.\par
-Yerushalmy, J. (1947). Statistical problems in assessing methods of medical diagnosis, with special reference to X-ray techniques. \emph{Public Health Reports} 62(40), 1432--1449.
-\url{https://stacks.cdc.gov/view/cdc/70598/cdc_70598_DS1.pdf}.\par
-Perdomo, J., Zrnic, T., Mendler-Dünner, C. and Hardt, M. (2020). Performative prediction. \emph{ICML}, PMLR 119, 7599--7609.
-\url{https://proceedings.mlr.press/v119/perdomo20a.html}.\par
-scikit-learn, \texttt{confusion\_matrix},
-\url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html}.\par
 
-Brier, G.~W. (1950). Verification of forecasts expressed in terms of probability. \emph{Monthly Weather Review} 78(1), 1--3. \url{https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2}.\par
-Gneiting, T. and Raftery, A.~E. (2007). Strictly proper scoring rules, prediction, and estimation. \emph{Journal of the American Statistical Association} 102(477), 359--378. \url{https://doi.org/10.1198/016214506000001437}.\par
-scikit-learn developers. Probability calibration. \url{https://scikit-learn.org/stable/modules/calibration.html}.\par
-scikit-learn developers. Classification metrics: Brier score, log loss, and $D^2$ log loss. \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html}; \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html}; \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.d2_log_loss_score.html}.\par
-Kosub, S. (2016). A note on the triangle inequality for the Jaccard distance. arXiv:1612.02696. \url{https://arxiv.org/abs/1612.02696}.\par
-Sitarz, M. (2023). Extending F1 metric, probabilistic approach. \emph{Advances in Artificial Intelligence and Machine Learning} 3(2), 1025--1038. \url{https://doi.org/10.54364/AAIML.2023.1161}.\par
-Cohen, J. (1960). A coefficient of agreement for nominal scales. \emph{Educational and Psychological Measurement} 20(1), 37--46. \url{https://doi.org/10.1177/001316446002000104}.\par
-Cohen, J. (1968). Weighted kappa: Nominal scale agreement with provision for scaled disagreement or partial credit. \emph{Psychological Bulletin} 70(4), 213--220. \url{https://doi.org/10.1037/h0026256}.\par
-Feinstein, A.~R. and Cicchetti, D.~V. (1990). High agreement but low kappa: I. The problems of two paradoxes. \emph{Journal of Clinical Epidemiology} 43(6), 543--549. \url{https://doi.org/10.1016/0895-4356(90)90158-L}.\par
-Chicco, D. and Jurman, G. (2020). The advantages of the Matthews correlation coefficient (MCC) over F1 score and accuracy in binary classification evaluation. \emph{BMC Genomics} 21, article 6. \url{https://doi.org/10.1186/s12864-019-6413-7}.\par
-Ferrer, L. (2022). Analysis and comparison of classification metrics. arXiv:2209.05355. \url{https://arxiv.org/abs/2209.05355}.\par
-NIST (2016). \emph{NIST 2016 Speaker Recognition Evaluation Plan}. \url{https://www.nist.gov/document/sre16evalplanv1-0pdf}.\par
-Lipton, Z.~C., Elkan, C. and Narayanaswamy, B. (2014). Thresholding classifiers to maximize F1 score. arXiv:1402.1892. \url{https://arxiv.org/abs/1402.1892}.\par
-scikit-learn, \emph{Classification metrics}, \url{https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics}; \texttt{average\_precision\_score}, \url{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html}.\par
+\bibentry{r034}{%
+Brier, Glenn W. 1950. “Verification of Forecasts Expressed in Terms of Probability.” \emph{Monthly Weather Review} 78 (1): 1--3.
+\biblink{https://doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2}{doi.org/10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2}}
 
-NIST/SEMATECH, \emph{e-Handbook of Statistical Methods}, Hypothesis testing.
-\url{https://www.itl.nist.gov/div898/handbook/prc/section2/prc222.htm}.\par
+\bibentry{r027}{%
+Brodersen, Kay Henning, Cheng Soon Ong, Klaas Enno Stephan, and Joachim M. Buhmann. 2010. “The Balanced Accuracy and Its Posterior Distribution.” In \emph{2010 20th International Conference on Pattern Recognition}, 3121--3124.
+\biblink{https://doi.org/10.1109/ICPR.2010.764}{doi.org/10.1109/ICPR.2010.764}}
+
+\bibentry{r043}{%
+Chicco, Davide, and Giuseppe Jurman. 2020. “The Advantages of the Matthews Correlation Coefficient (MCC) Over F1 Score and Accuracy in Binary Classification Evaluation.” \emph{BMC Genomics} 21 (1): 6.
+\biblink{https://doi.org/10.1186/s12864-019-6413-7}{doi.org/10.1186/s12864-019-6413-7}}
+
+\bibentry{r040}{%
+Cohen, Jacob. 1960. “A Coefficient of Agreement for Nominal Scales.” \emph{Educational and Psychological Measurement} 20 (1): 37--46.
+\biblink{https://doi.org/10.1177/001316446002000104}{doi.org/10.1177/001316446002000104}}
+
+\bibentry{r041}{%
+Cohen, Jacob. 1968. “Weighted Kappa: Nominal Scale Agreement with Provision for Scaled Disagreement or Partial Credit.” \emph{Psychological Bulletin} 70 (4): 213--220.
+\biblink{https://doi.org/10.1037/h0026256}{doi.org/10.1037/h0026256}}
+
+\bibentry{r024}{%
+Davis, Jesse, and Mark Goadrich. 2006. “The Relationship Between Precision-Recall and ROC Curves.” In \emph{Proceedings of the 23rd International Conference on Machine Learning - ICML '06}, 233--240.
+\biblink{https://doi.org/10.1145/1143844.1143874}{doi.org/10.1145/1143844.1143874}}
+
+\bibentry{r020}{%
+Fawcett, Tom. 2006. “An Introduction to ROC Analysis.” \emph{Pattern Recognition Letters} 27 (8): 861--874.
+\biblink{https://doi.org/10.1016/j.patrec.2005.10.010}{doi.org/10.1016/j.patrec.2005.10.010}}
+
+\bibentry{r042}{%
+Feinstein, Alvan R., and Domenic V. Cicchetti. 1990. “High Agreement but Low Kappa: I. the Problems of Two Paradoxes.” \emph{Journal of Clinical Epidemiology} 43 (6): 543--549.
+\biblink{https://doi.org/10.1016/0895-4356(90)90158-L}{doi.org/10.1016/0895-4356(90)90158-L}}
+
+\bibentry{r044}{%
+Ferrer, Luciana. 2022. “Analysis and Comparison of Classification Metrics.” Preprint.
+\biblink{https://arxiv.org/abs/2209.05355}{arXiv:2209.05355}}
+
+\bibentry{r035}{%
+Gneiting, Tilmann, and Adrian E Raftery. 2007. “Strictly Proper Scoring Rules, Prediction, and Estimation.” \emph{Journal of the American Statistical Association} 102 (477): 359--378.
+\biblink{https://doi.org/10.1198/016214506000001437}{doi.org/10.1198/016214506000001437}}
+
+\bibentry{r026}{%
+Good, I. J. 1952. “Rational Decisions.” \emph{Journal of the Royal Statistical Society Series B: Statistical Methodology} 14 (1): 107--114.
+\biblink{https://doi.org/10.1111/j.2517-6161.1952.tb00104.x}{doi.org/10.1111/j.2517-6161.1952.tb00104.x}}
+
+\bibentry{r021}{%
+Hanley, J. A., and B. J. McNeil. 1982. “The Meaning and Use of the Area Under a Receiver Operating Characteristic (ROC) Curve.” \emph{Radiology} 143 (1): 29--36.
+\biblink{https://doi.org/10.1148/radiology.143.1.7063747}{doi.org/10.1148/radiology.143.1.7063747}}
+
+\bibentry{r028}{%
+Jaccard, Paul. 1901. “Étude comparative de la distribution florale dans une portion des Alpes et du Jura.” \emph{Bulletin De La Société Vaudoise Des Sciences Naturelles} 37 (142): 547--579.
+\biblink{https://www.e-periodica.ch/cntmng?pid=bsv-002\%3A1901\%3A37\%3A\%3A790}{www.e-periodica.ch/cntmng?pid=bsv-002\%3A1901\%3A37\%3A\%3A790}}
+
+\bibentry{r030}{%
+Kent, Allen, Madeline M. Berry, Fred U. Luehrs, Jr., and J. W. Perry. 1955. “Machine Literature Searching VIII. Operational Criteria for Designing Information Retrieval Systems.” \emph{American Documentation} 6 (2): 93--101.
+\biblink{https://doi.org/10.1002/asi.5090060209}{doi.org/10.1002/asi.5090060209}}
+
+\bibentry{r038}{%
+Kosub, Sven. 2019. “A Note on the Triangle Inequality for the Jaccard Distance.” \emph{Pattern Recognition Letters} 120: 36--38.
+\biblink{https://doi.org/10.1016/j.patrec.2018.12.007}{doi.org/10.1016/j.patrec.2018.12.007}}
+
+\bibentry{r046}{%
+Lipton, Zachary Chase, Charles Elkan, and Balakrishnan Narayanaswamy. 2014. “Thresholding Classifiers to Maximize F1 Score.” Preprint.
+\biblink{https://arxiv.org/abs/1402.1892}{arXiv:1402.1892}}
+
+\bibentry{r029}{%
+Matthews, B. W. 1975. “Comparison of the Predicted and Observed Secondary Structure of T4 Phage Lysozyme.” \emph{Biochimica Et Biophysica Acta (BBA) - Protein Structure} 405 (2): 442--451.
+\biblink{https://doi.org/10.1016/0005-2795(75)90109-9}{doi.org/10.1016/0005-2795(75)90109-9}}
+
+\bibentry{r045}{%
+National Institute of Standards and Technology. 2016. “NIST 2016 Speaker Recognition Evaluation Plan.” March 30. Version 1.0.
+\biblink{https://www.nist.gov/document/sre16evalplanv1-0pdf}{www.nist.gov/document/sre16evalplanv1-0pdf}}
+
+\bibentry{r048}{%
+NIST/SEMATECH. n.d.-a. “Sample Sizes Required.” \emph{E-Handbook of Statistical Methods}. Section 7.2.2.2.
+\biblink{https://www.itl.nist.gov/div898/handbook/prc/section2/prc222.htm}{www.itl.nist.gov/div898/handbook/prc/section2/prc222.htm}}
+
+\bibentry{r032}{%
+Perdomo, Juan, Tijana Zrnic, Celestine Mendler-Dünner, and Moritz Hardt. 2020. “Performative Prediction.” In \emph{International Conference on Machine Learning}, Proceedings of Machine Learning Research 119, 7599--7609.
+\biblink{https://proceedings.mlr.press/v119/perdomo20a.html}{proceedings.mlr.press/v119/perdomo20a.html}}
+
+\bibentry{r023}{%
+Powers, David M. W. 2011. “Evaluation: From Precision, Recall and F-Measure to ROC, Informedness, Markedness and Correlation.” \emph{Journal of Machine Learning Technologies} 2 (1): 37--63. Author’s corrected copy, posted 2020.
+\biblink{https://arxiv.org/abs/2010.16061}{arxiv.org/abs/2010.16061}}
+
+\bibentry{r025}{%
+Saito, Takaya, and Marc Rehmsmeier. 2015. “The Precision-Recall Plot Is More Informative than the ROC Plot When Evaluating Binary Classifiers on Imbalanced Datasets.” \emph{PLOS ONE} 10 (3): e0118432.
+\biblink{https://doi.org/10.1371/journal.pone.0118432}{doi.org/10.1371/journal.pone.0118432}}
+
+\bibentry{r047b}{%
+scikit-learn developers. n.d.-a. “average\_precision\_score.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html}{scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html}}
+
+\bibentry{r0370}{%
+scikit-learn developers. n.d.-b. “brier\_score\_loss.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html}{scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html}}
+
+\bibentry{r047}{%
+scikit-learn developers. n.d.-c. “Classification Metrics.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/model_evaluation.html\#classification-metrics}{scikit-learn.org/stable/modules/model_evaluation.html\#classification-metrics}}
+
+\bibentry{r033}{%
+scikit-learn developers. n.d.-g. “confusion\_matrix.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html}{scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html}}
+
+\bibentry{r0372}{%
+scikit-learn developers. n.d.-h. “d2\_log\_loss\_score.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.d2_log_loss_score.html}{scikit-learn.org/stable/modules/generated/sklearn.metrics.d2_log_loss_score.html}}
+
+\bibentry{r0371}{%
+scikit-learn developers. n.d.-j. “log\_loss.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html}{scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html}}
+
+\bibentry{r036}{%
+scikit-learn developers. n.d.-k. “Probability Calibration.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/calibration.html}{scikit-learn.org/stable/modules/calibration.html}}
+
+\bibentry{r039}{%
+Sitarz, Mikołaj. 2023. “Extending F1 Metric, Probabilistic Approach.” \emph{Advances in Artificial Intelligence and Machine Learning} 3 (2): 1025--1038.
+\biblink{https://doi.org/10.54364/AAIML.2023.1161}{doi.org/10.54364/AAIML.2023.1161}}
+
+\bibentry{r022}{%
+van Rijsbergen, C. J. 1979. \emph{Information Retrieval}. 2nd ed. Butterworths.
+\biblink{https://www.dcs.gla.ac.uk/Keith/Preface.html}{www.dcs.gla.ac.uk/Keith/Preface.html}}
+
+\bibentry{r031}{%
+Yerushalmy, Jacob. 1947. “Statistical Problems in Assessing Methods of Medical Diagnosis, with Special Reference to X-Ray Techniques.” \emph{Public Health Reports} 62 (40): 1432--1449.
+\biblink{https://stacks.cdc.gov/view/cdc/70598/cdc_70598_DS1.pdf}{stacks.cdc.gov/view/cdc/70598/cdc_70598_DS1.pdf}}
 
 \srchead{Clustering}
-Vinh, N.~X., Epps, J. and Bailey, J. (2010). Information theoretic measures for clusterings comparison: variants,
-properties, normalization and correction for chance. \emph{JMLR} 11.
-\url{https://jmlr.org/papers/volume11/vinh10a/vinh10a.pdf}.\par
-Romano, S., Vinh, N.~X., Bailey, J. and Verspoor, K. (2016). Adjusting for chance clustering comparison measures.
-\emph{JMLR} 17(134). \url{https://jmlr.org/papers/v17/15-627.html}.\par
-Rand, W.~M. (1971). Objective criteria for the evaluation of clustering methods. \emph{JASA}
-66(336). \url{https://doi.org/10.1080/01621459.1971.10482356}.\par
-Hubert, L. and Arabie, P. (1985). Comparing partitions. \emph{Journal of Classification} 2.
-\url{https://doi.org/10.1007/BF01908075}.\par
-Caliński, T. and Harabasz, J. (1974). A dendrite method for cluster analysis. \emph{Communications in Statistics} 3(1).
-\url{https://doi.org/10.1080/03610927408827101}.\par
-SAS Institute, \emph{SAS/STAT 13.1 User's Guide: The CLUSTER Procedure},
-\url{https://support.sas.com/documentation/onlinedoc/stat/131/cluster.pdf}.\par
-Rosenberg, A. and Hirschberg, J. (2007). V-measure: a conditional entropy-based external
-cluster evaluation measure. \emph{EMNLP-CoNLL}. \url{https://aclanthology.org/D07-1043/}.\par
-Davies, D.~L. and Bouldin, D.~W. (1979). A cluster separation measure. \emph{IEEE TPAMI} 1(2).
-\url{https://doi.org/10.1109/TPAMI.1979.4766909}.\par
-Fowlkes, E.~B. and Mallows, C.~L. (1983). A method for comparing two hierarchical clusterings. \emph{JASA} 78(383).
-\url{https://doi.org/10.1080/01621459.1983.10478008}.\par
-Rousseeuw, P.~J. (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis.
-\emph{Journal of Computational and Applied Mathematics} 20.
-\url{https://doi.org/10.1016/0377-0427(87)90125-7}.\par
-scikit-learn, \emph{Clustering performance evaluation},
-\url{https://scikit-learn.org/stable/modules/clustering.html#clustering-performance-evaluation}.\par
-scikit-learn, \emph{Supervised clustering metric implementations},
-\url{https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/cluster/_supervised.py}.\par
+
+\bibentry{r053}{%
+Caliński, T., and J. Harabasz. 1974. “A Dendrite Method for Cluster Analysis.” \emph{Communications in Statistics} 3 (1): 1--27.
+\biblink{https://doi.org/10.1080/03610927408827101}{doi.org/10.1080/03610927408827101}}
+
+\bibentry{r056}{%
+Davies, David L., and Donald W. Bouldin. 1979. “A Cluster Separation Measure.” \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence} PAMI-1 (2): 224--227.
+\biblink{https://doi.org/10.1109/TPAMI.1979.4766909}{doi.org/10.1109/TPAMI.1979.4766909}}
+
+\bibentry{r057}{%
+Fowlkes, E. B., and C. L. Mallows. 1983. “A Method for Comparing Two Hierarchical Clusterings.” \emph{Journal of the American Statistical Association} 78 (383): 553--569.
+\biblink{https://doi.org/10.1080/01621459.1983.10478008}{doi.org/10.1080/01621459.1983.10478008}}
+
+\bibentry{r052}{%
+Hubert, Lawrence, and Phipps Arabie. 1985. “Comparing Partitions.” \emph{Journal of Classification} 2 (1): 193--218.
+\biblink{https://doi.org/10.1007/BF01908075}{doi.org/10.1007/BF01908075}}
+
+\bibentry{r051}{%
+Rand, William M. 1971. “Objective Criteria for the Evaluation of Clustering Methods.” \emph{Journal of the American Statistical Association} 66 (336): 846--850.
+\biblink{https://doi.org/10.1080/01621459.1971.10482356}{doi.org/10.1080/01621459.1971.10482356}}
+
+\bibentry{r050}{%
+Romano, Simone, Nguyen Xuan Vinh, James Bailey, and Karin Verspoor. 2016. “Adjusting for Chance Clustering Comparison Measures.” \emph{Journal of Machine Learning Research} 17 (134): 1--32.
+\biblink{https://jmlr.org/papers/v17/15-627.html}{jmlr.org/papers/v17/15-627.html}}
+
+\bibentry{r055}{%
+Rosenberg, Andrew, and Julia Hirschberg. 2007. “V-Measure: A Conditional Entropy-Based External Cluster Evaluation Measure.” In \emph{Proceedings of the 2007 Joint Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning (EMNLP-CoNLL)}, 410--420.
+\biblink{https://aclanthology.org/D07-1043/}{aclanthology.org/D07-1043/}}
+
+\bibentry{r058}{%
+Rousseeuw, Peter J. 1987. “Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis.” \emph{Journal of Computational and Applied Mathematics} 20: 53--65.
+\biblink{https://doi.org/10.1016/0377-0427(87)90125-7}{doi.org/10.1016/0377-0427(87)90125-7}}
+
+\bibentry{r054}{%
+SAS Institute. 2013. \emph{SAS/STAT 13.1 User’s Guide: The CLUSTER Procedure}. SAS Institute.
+\biblink{https://support.sas.com/documentation/onlinedoc/stat/131/cluster.pdf}{support.sas.com/documentation/onlinedoc/stat/131/cluster.pdf}}
+
+\bibentry{r060}{%
+scikit-learn developers. n.d.-d. “Clustering evaluation: \_supervised.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/cluster/_supervised.py}{github.com/scikit-learn/scikit-learn/blob/main/sklearn/metrics/cluster/_supervised.py}}
+
+\bibentry{r059}{%
+scikit-learn developers. n.d.-e. “Clustering Performance Evaluation.” \emph{Scikit-Learn Documentation}.
+\biblink{https://scikit-learn.org/stable/modules/clustering.html\#clustering-performance-evaluation}{scikit-learn.org/stable/modules/clustering.html\#clustering-performance-evaluation}}
+
+\bibentry{r049}{%
+Vinh, Nguyen Xuan, Julien Epps, and James Bailey. 2010. “Information Theoretic Measures for Clusterings Comparison: Variants, Properties, Normalization and Correction for Chance.” \emph{Journal of Machine Learning Research} 11 (95): 2837--2854.
+\biblink{https://jmlr.org/papers/v11/vinh10a.html}{jmlr.org/papers/v11/vinh10a.html}}
 
 \srchead{Ranking}
-Manning, C.~D., Raghavan, P. and Schütze, H. (2008). \emph{Introduction to Information Retrieval}, chapter 8.
-Cambridge University Press, \url{https://nlp.stanford.edu/IR-book/}.\par
-Voorhees, E.~M. (1999). The TREC-8 question answering track
-report. \url{https://trec.nist.gov/pubs/trec8/papers/qa_report.pdf}.\par
-Buckley, C. and Voorhees, E.~M. (2004). Retrieval evaluation with incomplete information. \emph{SIGIR}.
-\url{https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=150469}.\par
-NIST, \emph{trec\_eval: Mean average precision at cutoffs},
-\url{https://github.com/usnistgov/trec_eval/blob/master/m_map_cut.c}.\par
-Krichene, W. and Rendle, S. (2020). On sampled metrics for item recommendation. \emph{KDD}.
-\url{https://research.google/pubs/on-sampled-metrics-for-item-recommendation/}.\par
-Herlocker, J.~L. et al. (2004). Evaluating collaborative filtering recommender systems. \emph{ACM
-TOIS} 22(1).\par
-Ge, M., Delgado-Battenfeld, C. and Jannach, D. (2010). Beyond accuracy: evaluating recommender systems by coverage and
-serendipity. \emph{RecSys}.\par
-Järvelin, K. and Kekäläinen, J. (2000). IR evaluation methods for retrieving highly relevant documents. \emph{SIGIR}.
-\url{https://www.cse.iitb.ac.in/~soumen/readings/papers/JarvelinK2000ndcg.pdf}.\par
-Järvelin, K. and Kekäläinen, J. (2002). Cumulated gain-based evaluation of IR techniques. \emph{ACM TOIS} 20(4).
-\url{https://doi.org/10.1145/582415.582418}.\par
-Craswell, N., Mitra, B., Yilmaz, E. and Campos, D. (2020). Overview of the TREC 2020 Deep Learning Track.
-\url{https://trec.nist.gov/pubs/trec29/papers/OVERVIEW.DL.pdf}.\par
-Koren, Y. and Sill, J. (2013). Collaborative filtering on ordinal user feedback. \emph{IJCAI}.
-\url{https://www.ijcai.org/Proceedings/13/Papers/449.pdf}.\par
-SciPy, \emph{Kendall's tau},
-\url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html}.\par
-Zhou, T. et al. (2010). Solving the apparent diversity-accuracy dilemma of recommender systems.
-\emph{PNAS} 107(10). \url{https://doi.org/10.1073/pnas.1000488107}.\par
-Vargas, S. and Castells, P. (2011). Rank and relevance in novelty and diversity metrics for recommender systems.
-\emph{RecSys}. \url{https://castells.github.io/papers/recsys2011.pdf}.\par
-Castells, P., Hurley, N. and Vargas, S. (2015). Novelty and diversity in recommender systems. In
-\emph{Recommender Systems Handbook}, 2nd ed. Springer.\par
-Microsoft Recommenders, \emph{Evaluation: historical item novelty and distributional coverage},
-\url{https://recommenders-team.github.io/recommenders/evaluation.html}.\par
-Shani, G. and Gunawardana, A. (2011). Evaluating recommendation systems. In \emph{Recommender Systems Handbook}.
-\url{https://doi.org/10.1007/978-0-387-85820-3_8}.\par
-Marchionini, G. (2006). Exploratory search: from finding to understanding. \emph{Communications of the ACM} 49(4).
-\url{https://doi.org/10.1145/1121949.1121979}.\par
-Walpole, H. (1754). Letter to Horace Mann, 28 January. \emph{Yale Edition of Horace Walpole's Correspondence},
-vol.~20, pp.~407--408.
-\url{https://libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/435.pdf};
-\url{https://libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/436.pdf}.\par
+
+\bibentry{r063}{%
+Buckley, Chris, and Ellen M. Voorhees. 2004. “Retrieval Evaluation with Incomplete Information.” In \emph{Proceedings of the 27th Annual International ACM SIGIR Conference on Research and Development in Information Retrieval}, 25--32.
+\biblink{https://doi.org/10.1145/1008992.1009000}{doi.org/10.1145/1008992.1009000}}
+
+\bibentry{r075}{%
+Castells, Pablo, Neil J. Hurley, and Saúl Vargas. 2015. “Novelty and Diversity in Recommender Systems.” 2nd ed. In \emph{Recommender Systems Handbook}, 881--918. Springer US.
+\biblink{https://doi.org/10.1007/978-1-4899-7637-6_26}{doi.org/10.1007/978-1-4899-7637-6_26}}
+
+\bibentry{r070}{%
+Craswell, Nick, Bhaskar Mitra, Emine Yilmaz, and Daniel Campos. 2020. “Overview of the TREC 2020 Deep Learning Track.” In \emph{Proceedings of the Twenty-Ninth Text REtrieval Conference (TREC 2020)}.
+\biblink{https://trec.nist.gov/pubs/trec29/papers/OVERVIEW.DL.pdf}{trec.nist.gov/pubs/trec29/papers/OVERVIEW.DL.pdf}}
+
+\bibentry{r067}{%
+Ge, Mouzhi, Carla Delgado-Battenfeld, and Dietmar Jannach. 2010. “Beyond Accuracy: Evaluating Recommender Systems by Coverage and Serendipity.” In \emph{Proceedings of the Fourth ACM Conference on Recommender Systems}, 257--260.
+\biblink{https://doi.org/10.1145/1864708.1864761}{doi.org/10.1145/1864708.1864761}}
+
+\bibentry{r066}{%
+Herlocker, Jonathan L., Joseph A. Konstan, Loren G. Terveen, and John T. Riedl. 2004. “Evaluating Collaborative Filtering Recommender Systems.” \emph{ACM Transactions on Information Systems} 22 (1): 5--53.
+\biblink{https://doi.org/10.1145/963770.963772}{doi.org/10.1145/963770.963772}}
+
+\bibentry{r068}{%
+Järvelin, Kalervo, and Jaana Kekäläinen. 2000. “IR Evaluation Methods for Retrieving Highly Relevant Documents.” In \emph{Proceedings of the 23rd Annual International ACM SIGIR Conference on Research and Development in Information Retrieval}, 41--48.
+\biblink{https://doi.org/10.1145/345508.345545}{doi.org/10.1145/345508.345545}}
+
+\bibentry{r069}{%
+Järvelin, Kalervo, and Jaana Kekäläinen. 2002. “Cumulated Gain-Based Evaluation of IR Techniques.” \emph{ACM Transactions on Information Systems} 20 (4): 422--446.
+\biblink{https://doi.org/10.1145/582415.582418}{doi.org/10.1145/582415.582418}}
+
+\bibentry{r071}{%
+Koren, Yehuda, and Joseph Sill. 2013. “Collaborative Filtering on Ordinal User Feedback.” In \emph{Proceedings of the Twenty-Third International Joint Conference on Artificial Intelligence}, 3022--3026.
+\biblink{https://www.ijcai.org/Proceedings/13/Papers/449.pdf}{www.ijcai.org/Proceedings/13/Papers/449.pdf}}
+
+\bibentry{r065}{%
+Krichene, Walid, and Steffen Rendle. 2020. “On Sampled Metrics for Item Recommendation.” In \emph{Proceedings of the 26th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining}, 1748--1757.
+\biblink{https://doi.org/10.1145/3394486.3403226}{doi.org/10.1145/3394486.3403226}}
+
+\bibentry{r061}{%
+Manning, Christopher D., Prabhakar Raghavan, and Hinrich Schütze. 2008. \emph{Introduction to Information Retrieval}. Cambridge University Press. Chapter 8.
+\biblink{https://nlp.stanford.edu/IR-book/}{nlp.stanford.edu/IR-book/}}
+
+\bibentry{r078}{%
+Marchionini, Gary. 2006. “Exploratory Search: From Finding to Understanding.” \emph{Communications of the ACM} 49 (4): 41--46.
+\biblink{https://doi.org/10.1145/1121949.1121979}{doi.org/10.1145/1121949.1121979}}
+
+\bibentry{r064}{%
+National Institute of Standards and Technology. n.d. “trec\_eval: m\_map\_cut.c.” \emph{GitHub}. Source code.
+\biblink{https://github.com/usnistgov/trec_eval/blob/master/m_map_cut.c}{github.com/usnistgov/trec_eval/blob/master/m_map_cut.c}}
+
+\bibentry{r076}{%
+Recommenders Team. n.d. “Evaluation Module.” \emph{Recommenders Documentation}.
+\biblink{https://recommenders-team.github.io/recommenders/evaluation.html}{recommenders-team.github.io/recommenders/evaluation.html}}
+
+\bibentry{r072}{%
+SciPy contributors. n.d. “kendalltau.” \emph{SciPy Documentation}.
+\biblink{https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html}{docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html}}
+
+\bibentry{r077}{%
+Shani, Guy, and Asela Gunawardana. 2011. “Evaluating Recommendation Systems.” In \emph{Recommender Systems Handbook}, 257--297. Springer US.
+\biblink{https://doi.org/10.1007/978-0-387-85820-3_8}{doi.org/10.1007/978-0-387-85820-3_8}}
+
+\bibentry{r074}{%
+Vargas, Saúl, and Pablo Castells. 2011. “Rank and Relevance in Novelty and Diversity Metrics for Recommender Systems.” In \emph{Proceedings of the Fifth ACM Conference on Recommender Systems}, 109--116.
+\biblink{https://doi.org/10.1145/2043932.2043955}{doi.org/10.1145/2043932.2043955}}
+
+\bibentry{r062}{%
+Voorhees, Ellen M. 1999. “The TREC-8 Question Answering Track Report.” In \emph{Proceedings of the Eighth Text REtrieval Conference (TREC-8)}.
+\biblink{https://trec.nist.gov/pubs/trec8/papers/qa_report.pdf}{trec.nist.gov/pubs/trec8/papers/qa_report.pdf}}
+
+\bibentry{r079}{%
+Walpole, Horace. 1754. “Letter to Horace Mann, January 28.” In \emph{The Yale Edition of Horace Walpole’s Correspondence} 20, 407--408.
+\biblink{https://libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/435.pdf}{libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/435.pdf}
+\biblink{https://libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/436.pdf}{libsvcs-1.its.yale.edu/walpoleimages/hwcorrespondence/20/436.pdf}}
+
+\bibentry{r073}{%
+Zhou, Tao, Zoltán Kuscsik, Jian-Guo Liu, Matúš Medo, Joseph Rushton Wakeling, and Yi-Cheng Zhang. 2010. “Solving the Apparent Diversity-Accuracy Dilemma of Recommender Systems.” \emph{Proceedings of the National Academy of Sciences} 107 (10): 4511--4515.
+\biblink{https://doi.org/10.1073/pnas.1000488107}{doi.org/10.1073/pnas.1000488107}}
 
 \srchead{Computer Vision}
-Long, J., Shelhamer, E. and Darrell, T. (2015). Fully convolutional networks for semantic segmentation.
-\emph{CVPR}, \url{https://arxiv.org/abs/1411.4038}. Cityscapes evaluation protocol:
-\url{https://www.cityscapes-dataset.com/benchmarks/}.\par
-Everingham, M. et al. (2010). The PASCAL Visual Object Classes (VOC) challenge. \emph{IJCV} 88(2).\par
-Yang, Y. and Ramanan, D. (2013). Articulated human detection with flexible mixtures of parts. \emph{IEEE TPAMI} 35(12),
-\url{https://vision.ics.uci.edu/papers/YangR_TPAMI_2013/YangR_TPAMI_2013.pdf}.\par
-Andriluka, M., Pishchulin, L., Gehler, P. and Schiele, B. (2014). 2D human pose estimation: new benchmark and state of the art analysis. \emph{CVPR},
-\href{https://doi.org/10.1109/CVPR.2014.471}{doi:10.1109/CVPR.2014.471}. MPII's PCKh protocol:
-\href{https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/software-and-datasets/mpii-human-pose-dataset/results}{official evaluation and results}.\par
-Lin, T.-Y. et al. (2014). Microsoft COCO: common objects in context. \emph{ECCV}. COCO keypoint evaluation,
-\url{https://cocodataset.org/#keypoints-eval}. Reference implementation:
-\url{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}.\par
-Wang, Z., Bovik, A.~C., Sheikh, H.~R. and Simoncelli, E.~P. (2004). Image quality assessment: from error visibility to
-structural similarity. \emph{IEEE Transactions on Image Processing} 13(4), \url{https://www.cns.nyu.edu/pub/lcv/wang03-preprint.pdf}.\par
-Wang, Z. and Bovik, A.~C. (2009). Mean squared error: love it or leave it? A new look at signal fidelity measures.
-\emph{IEEE Signal Processing Magazine} 26(1), \url{https://www.ece.uwaterloo.ca/~z70wang/publications/SPM09.pdf}.\par
-Huynh-Thu, Q. and Ghanbari, M. (2008). Scope of validity of PSNR in image/video quality assessment. \emph{Electronics Letters} 44(13).\par
-Pambrun, J.-F. and Noumeir, R. (2015). Limitations of the SSIM quality metric in the context of diagnostic imaging.
-\emph{ICIP}, \href{https://doi.org/10.1109/ICIP.2015.7351345}{doi:10.1109/ICIP.2015.7351345}.\par
-scikit-image, image comparison metrics and SSIM example:
-\url{https://scikit-image.org/docs/0.25.x/api/skimage.metrics.html};
-\url{https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html}.\par
-Television Academy (2015). 2015 Engineering Emmys celebrate technical achievements.
-\url{https://www.televisionacademy.com/features/news/awards-news/2015-engineering-emmys-celebrate-technical-achievements}.\par
-Dice, L.~R. (1945). Measures of the amount of ecologic association between species. \emph{Ecology}
-26(3), \href{https://doi.org/10.2307/1932409}{doi:10.2307/1932409}.\par
-Sørensen, T. (1948). A method of establishing groups of equal amplitude in plant sociology. \emph{Biologiske Skrifter} 5(4).
-\par
-Milletari, F., Navab, N. and Ahmadi, S.-A. (2016). V-Net: fully convolutional neural networks for volumetric medical image segmentation.
-\emph{3DV}, \url{https://arxiv.org/abs/1606.04797}.\par
-MONAI, Dice metric implementation (empty-mask handling and aggregation):
-\url{https://github.com/Project-MONAI/MONAI/blob/dev/monai/metrics/meandice.py}.\par
-Kirillov, A., He, K., Girshick, R., Rother, C. and Dollár, P. (2019). Panoptic segmentation. \emph{CVPR},
-\url{https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf}.
-Reference implementation: \url{https://github.com/cocodataset/panopticapi/blob/master/panopticapi/evaluation.py}.\par
-Foucart, A., Debeir, O. and Decaestecker, C. (2023). Panoptic quality should be avoided as a metric for assessing cell nuclei segmentation and classification in digital pathology.
-\emph{Scientific Reports} 13, 8614, \url{https://www.nature.com/articles/s41598-023-35605-7}.\par
+
+\bibentry{r083}{%
+Andriluka, Mykhaylo, Leonid Pishchulin, Peter Gehler, and Bernt Schiele. 2014. “2D Human Pose Estimation: New Benchmark and State of the Art Analysis.” In \emph{2014 IEEE Conference on Computer Vision and Pattern Recognition}, 3686--3693.
+\biblink{https://doi.org/10.1109/CVPR.2014.471}{doi.org/10.1109/CVPR.2014.471}}
+
+\bibentry{r080b}{%
+Cityscapes. n.d. “Benchmark Suite.”
+\biblink{https://www.cityscapes-dataset.com/benchmarks/}{www.cityscapes-dataset.com/benchmarks/}}
+
+\bibentry{r084c}{%
+COCO Consortium. n.d.-a. “COCO evaluation: cocoeval.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}{github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py}}
+
+\bibentry{r084b}{%
+COCO Consortium. n.d.-b. “Keypoint Evaluation.”
+\biblink{https://cocodataset.org/\#keypoints-eval}{cocodataset.org/\#keypoints-eval}}
+
+\bibentry{r095b}{%
+COCO Consortium. n.d.-c. “Panoptic quality evaluation: evaluation.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/cocodataset/panopticapi/blob/master/panopticapi/evaluation.py}{github.com/cocodataset/panopticapi/blob/master/panopticapi/evaluation.py}}
+
+\bibentry{r091}{%
+Dice, Lee R. 1945. “Measures of the Amount of Ecologic Association Between Species.” \emph{Ecology} 26 (3): 297--302.
+\biblink{https://doi.org/10.2307/1932409}{doi.org/10.2307/1932409}}
+
+\bibentry{r081}{%
+Everingham, Mark, Luc Van Gool, Christopher K. I. Williams, John Winn, and Andrew Zisserman. 2010. “The PASCAL Visual Object Classes (VOC) Challenge.” \emph{International Journal of Computer Vision} 88 (2): 303--338.
+\biblink{https://doi.org/10.1007/s11263-009-0275-4}{doi.org/10.1007/s11263-009-0275-4}}
+
+\bibentry{r096}{%
+Foucart, Adrien, Olivier Debeir, and Christine Decaestecker. 2023. “Panoptic Quality Should Be Avoided as a Metric for Assessing Cell Nuclei Segmentation and Classification in Digital Pathology.” \emph{Scientific Reports} 13 (1): 8614.
+\biblink{https://doi.org/10.1038/s41598-023-35605-7}{doi.org/10.1038/s41598-023-35605-7}}
+
+\bibentry{r087}{%
+Huynh-Thu, Q., and M. Ghanbari. 2008. “Scope of Validity of PSNR in Image/video Quality Assessment.” \emph{Electronics Letters} 44 (13): 800--801.
+\biblink{https://doi.org/10.1049/el:20080522}{doi.org/10.1049/el:20080522}}
+
+\bibentry{r095}{%
+Kirillov, Alexander, Kaiming He, Ross Girshick, Carsten Rother, and Piotr Dollár. 2019. “Panoptic Segmentation.” In \emph{2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 9396--9405.
+\biblink{https://doi.org/10.1109/CVPR.2019.00963}{doi.org/10.1109/CVPR.2019.00963}}
+
+\bibentry{r084}{%
+Lin, Tsung-Yi, Michael Maire, Serge Belongie, et al. 2014. “Microsoft COCO: Common Objects in Context.” In \emph{Computer Vision -- ECCV 2014}, 740--755. Springer International Publishing.
+\biblink{https://doi.org/10.1007/978-3-319-10602-1_48}{doi.org/10.1007/978-3-319-10602-1_48}}
+
+\bibentry{r080}{%
+Long, Jonathan, Evan Shelhamer, and Trevor Darrell. 2015. “Fully Convolutional Networks for Semantic Segmentation.” In \emph{IEEE Conference on Computer Vision and Pattern Recognition}.
+\biblink{https://arxiv.org/abs/1411.4038}{arXiv:1411.4038}}
+
+\bibentry{r093}{%
+Milletari, Fausto, Nassir Navab, and Seyed-Ahmad Ahmadi. 2016. “V-Net: Fully Convolutional Neural Networks for Volumetric Medical Image Segmentation.” In \emph{2016 Fourth International Conference on 3D Vision (3DV)}, 565--571.
+\biblink{https://doi.org/10.1109/3DV.2016.79}{doi.org/10.1109/3DV.2016.79}}
+
+\bibentry{r094}{%
+MONAI Consortium. n.d. “Dice metric: meandice.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/Project-MONAI/MONAI/blob/dev/monai/metrics/meandice.py}{github.com/Project-MONAI/MONAI/blob/dev/monai/metrics/meandice.py}}
+
+\bibentry{r083b}{%
+MPII Human Pose Dataset. n.d. “Results.” PCKh evaluation protocol.
+\biblink{https://www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/software-and-datasets/mpii-human-pose-dataset/results}{www.mpi-inf.mpg.de/departments/computer-vision-and-machine-learning/software-and-datasets/mpii-human-pose-dataset/results}}
+
+\bibentry{r088}{%
+Pambrun, Jean-Francois, and Rita Noumeir. 2015. “Limitations of the SSIM Quality Metric in the Context of Diagnostic Imaging.” In \emph{2015 IEEE International Conference on Image Processing (ICIP)}, 2960--2963.
+\biblink{https://doi.org/10.1109/ICIP.2015.7351345}{doi.org/10.1109/ICIP.2015.7351345}}
+
+\bibentry{r0890}{%
+scikit-image developers. n.d.-a. “skimage.metrics.” \emph{Scikit-Image Documentation}. Version 0.25.2.
+\biblink{https://scikit-image.org/docs/0.25.x/api/skimage.metrics.html}{scikit-image.org/docs/0.25.x/api/skimage.metrics.html}}
+
+\bibentry{r0891}{%
+scikit-image developers. n.d.-b. “Structural Similarity Index.” \emph{Scikit-Image Documentation}. Version 0.25.2.
+\biblink{https://scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html}{scikit-image.org/docs/0.25.x/auto_examples/transform/plot_ssim.html}}
+
+\bibentry{r092}{%
+Sørensen, Thorvald. 1948. “A Method of Establishing Groups of Equal Amplitude in Plant Sociology Based on Similarity of Species Content and Its Application to Analyses of the Vegetation on Danish Commons.” \emph{Biologiske Skrifter} 5 (4): 1--34.
+\biblink{https://katalog.bibliothek.kit.edu/bib/896851}{katalog.bibliothek.kit.edu/bib/896851}}
+
+\bibentry{r090}{%
+Television Academy. 2015. “2015 Engineering Emmys Celebrate Technical Achievements.” October 28.
+\biblink{https://www.televisionacademy.com/features/news/awards-news/2015-engineering-emmys-celebrate-technical-achievements}{www.televisionacademy.com/features/news/awards-news/2015-engineering-emmys-celebrate-technical-achievements}}
+
+\bibentry{r086}{%
+Wang, Zhou, and A. C. Bovik. 2009. “Mean Squared Error: Love It or Leave It? A New Look at Signal Fidelity Measures.” \emph{IEEE Signal Processing Magazine} 26 (1): 98--117.
+\biblink{https://doi.org/10.1109/MSP.2008.930649}{doi.org/10.1109/MSP.2008.930649}}
+
+\bibentry{r085}{%
+Wang, Zhou, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli. 2004. “Image Quality Assessment: From Error Visibility to Structural Similarity.” \emph{IEEE Transactions on Image Processing} 13 (4): 600--612.
+\biblink{https://doi.org/10.1109/TIP.2003.819861}{doi.org/10.1109/TIP.2003.819861}}
+
+\bibentry{r082}{%
+Yang, Yi, and Deva Ramanan. 2013. “Articulated Human Detection with Flexible Mixtures of Parts.” \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence} 35 (12): 2878--2890.
+\biblink{https://doi.org/10.1109/TPAMI.2012.261}{doi.org/10.1109/TPAMI.2012.261}}
 
 \srchead{NLP}
-Papineni, K., Roukos, S., Ward, T. and Zhu, W.-J. (2002). BLEU: a method for automatic evaluation of machine translation.
-\emph{ACL}, \url{https://aclanthology.org/P02-1040.pdf}.\par
-Post, M. (2018). A call for clarity in reporting BLEU scores. \emph{WMT},
-\url{https://aclanthology.org/W18-6319/}. Implementation and reporting signatures:
-\url{https://github.com/mjpost/sacrebleu}.\par
-Banerjee, S. and Lavie, A. (2005). METEOR: an automatic metric for MT evaluation with improved correlation with human
-judgments. \emph{ACL Workshop}, \url{https://aclanthology.org/W05-0909.pdf}.
-Meteor 1.5 documentation: \url{https://www.cs.cmu.edu/~alavie/METEOR/README.html}.\par
-Lin, C.-Y. (2004). ROUGE: a package for automatic evaluation of summaries. \emph{ACL Workshop},
-\url{https://aclanthology.org/W04-1013.pdf}. Google's ROUGE implementation:
-\url{https://github.com/google-research/google-research/blob/master/rouge/rouge_scorer.py}.\par
-Schluter, N. (2017). The limits of automatic summarisation according to ROUGE. \emph{EACL},
-\url{https://aclanthology.org/E17-2007/}.\par
-Snover, M., Dorr, B., Schwartz, R., Micciulla, L. and Makhoul, J. (2006). A study of translation edit rate with targeted
-human annotation. \emph{AMTA}, \url{https://aclanthology.org/2006.amta-papers.25.pdf}.\par
-Koponen, M., Aziz, W., Ramos, L. and Specia, L. (2012). Post-editing time as a measure of cognitive effort.
-\emph{Workshop on Post-Editing Technology and Practice}, \url{https://aclanthology.org/2012.amta-wptp.2/}.\par
-Rajpurkar, P., Zhang, J., Lopyrev, K. and Liang, P. (2016). SQuAD: 100,000+ questions for machine comprehension of text.
-\emph{EMNLP}, \url{https://aclanthology.org/D16-1264/}. SQuAD evaluation code:
-\url{https://github.com/rajpurkar/SQuAD-explorer/blob/master/evaluate-v2.0.py}.\par
-Levenshtein, V.~I. (1966). Binary codes capable of correcting deletions, insertions, and reversals. \emph{Soviet Physics
-Doklady} 10(8). Original Russian publication (1965): \url{https://www.mathnet.ru/eng/dan31411}.\par
-Morris, A.~C., Maier, V. and Green, P. (2004). From WER and RIL to MER and WIL: improved evaluation measures for
-connected speech recognition. \emph{Interspeech},
-\url{https://www.isca-archive.org/interspeech_2004/morris04_interspeech.html}.\par
-Radford, A. et al. (2023). Robust speech recognition via large-scale weak supervision. \emph{ICML},
-\url{https://proceedings.mlr.press/v202/radford23a.html}.\par
+
+\bibentry{r099}{%
+Banerjee, Satanjeev, and Alon Lavie. 2005. “METEOR: An Automatic Metric for MT Evaluation with Improved Correlation with Human Judgments.” In \emph{Proceedings of the ACL Workshop on Intrinsic and Extrinsic Evaluation Measures for Machine Translation And/or Summarization}, 65--72.
+\biblink{https://aclanthology.org/W05-0909/}{aclanthology.org/W05-0909/}}
+
+\bibentry{r099b}{%
+Denkowski, Michael. n.d. “Meteor 1.5 README.”
+\biblink{https://www.cs.cmu.edu/~alavie/METEOR/README.html}{www.cs.cmu.edu/~alavie/METEOR/README.html}}
+
+\bibentry{r100b}{%
+Google Research. n.d. “ROUGE: rouge\_scorer.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/google-research/google-research/blob/master/rouge/rouge_scorer.py}{github.com/google-research/google-research/blob/master/rouge/rouge_scorer.py}}
+
+\bibentry{r103}{%
+Koponen, Maarit, Wilker Aziz, Luciana Ramos, and Lucia Specia. 2012. “Post-Editing Time as a Measure of Cognitive Effort.” In \emph{Workshop on Post-Editing Technology and Practice}.
+\biblink{https://aclanthology.org/2012.amta-wptp.2/}{aclanthology.org/2012.amta-wptp.2/}}
+
+\bibentry{r105}{%
+Levenshtein, V. I. 1965. “Binary Codes Capable of Correcting Deletions, Insertions, and Reversals.” \emph{Doklady Akademii Nauk SSSR} 163 (4): 845--848. In Russian; English translation in Soviet Physics Doklady 10 (1966): 707--10.
+\biblink{https://www.mathnet.ru/eng/dan31411}{www.mathnet.ru/eng/dan31411}}
+
+\bibentry{r100}{%
+Lin, Chin-Yew. 2004. “ROUGE: A Package for Automatic Evaluation of Summaries.” In \emph{Text Summarization Branches Out}, 74--81.
+\biblink{https://aclanthology.org/W04-1013/}{aclanthology.org/W04-1013/}}
+
+\bibentry{r106}{%
+Morris, Andrew Cameron, Viktoria Maier, and Phil Green. 2004. “From WER and RIL to MER and WIL: Improved Evaluation Measures for Connected Speech Recognition.” In \emph{Proc. Interspeech 2004}, 2765--2768.
+\biblink{https://doi.org/10.21437/Interspeech.2004-668}{doi.org/10.21437/Interspeech.2004-668}}
+
+\bibentry{r097}{%
+Papineni, Kishore, Salim Roukos, Todd Ward, and Wei-Jing Zhu. 2002. “BLEU: A Method for Automatic Evaluation of Machine Translation.” In \emph{Proceedings of the 40th Annual Meeting of the Association for Computational Linguistics}, 311--318.
+\biblink{https://doi.org/10.3115/1073083.1073135}{doi.org/10.3115/1073083.1073135}}
+
+\bibentry{r098}{%
+Post, Matt. 2018. “A Call for Clarity in Reporting BLEU Scores.” In \emph{Proceedings of the Third Conference on Machine Translation: Research Papers}, 186--191.
+\biblink{https://doi.org/10.18653/v1/W18-6319}{doi.org/10.18653/v1/W18-6319}}
+
+\bibentry{r107}{%
+Radford, Alec, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever. 2023. “Robust Speech Recognition via Large-Scale Weak Supervision.” In \emph{International Conference on Machine Learning}, Proceedings of Machine Learning Research 202, 28492--28518.
+\biblink{https://proceedings.mlr.press/v202/radford23a.html}{proceedings.mlr.press/v202/radford23a.html}}
+
+\bibentry{r104}{%
+Rajpurkar, Pranav, Jian Zhang, Konstantin Lopyrev, and Percy Liang. 2016. “SQuAD: 100,000+ Questions for Machine Comprehension of Text.” In \emph{Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing}, 2383--2392.
+\biblink{https://doi.org/10.18653/v1/D16-1264}{doi.org/10.18653/v1/D16-1264}}
+
+\bibentry{r098b}{%
+SacreBLEU contributors. n.d. “SacreBLEU.” \emph{GitHub}. Source code.
+\biblink{https://github.com/mjpost/sacrebleu}{github.com/mjpost/sacrebleu}}
+
+\bibentry{r101}{%
+Schluter, Natalie. 2017. “The Limits of Automatic Summarisation According to ROUGE.” In \emph{Proceedings of the 15th Conference of the European Chapter of the Association for Computational Linguistics: Volume 2, Short Papers}, 41--45.
+\biblink{https://aclanthology.org/E17-2007/}{aclanthology.org/E17-2007/}}
+
+\bibentry{r102}{%
+Snover, Matthew, Bonnie Dorr, Richard Schwartz, Linnea Micciulla, and John Makhoul. 2006. “A Study of Translation Edit Rate with Targeted Human Annotation.” In \emph{Proceedings of the 7th Conference of the Association for Machine Translation in the Americas: Technical Papers}, 223--231.
+\biblink{https://aclanthology.org/2006.amta-papers.25/}{aclanthology.org/2006.amta-papers.25/}}
+
+\bibentry{r104b}{%
+SQuAD contributors. n.d. “SQuAD 2.0 evaluation: evaluate-v2.0.py.” \emph{GitHub}. Source code.
+\biblink{https://github.com/rajpurkar/SQuAD-explorer/blob/master/evaluate-v2.0.py}{github.com/rajpurkar/SQuAD-explorer/blob/master/evaluate-v2.0.py}}
 
 \srchead{GenAI}
-Jelinek, F., Mercer, R.~L., Bahl, L.~R. and Baker, J.~K. (1977). Perplexity, a measure of the difficulty of speech
-recognition tasks. \emph{JASA} 62(S1).\par
-Holtzman, A. et al. (2020). The curious case of neural text degeneration. \emph{ICLR},
-arXiv:1904.09751. \url{https://arxiv.org/abs/1904.09751}; \url{https://huggingface.co/docs/transformers/perplexity};
-\url{https://kilthub.cmu.edu/articles/journal_contribution/Evaluation_Metrics_For_Language_Models/6605324};
-\url{https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/}.\par
-Zhang, T., Kishore, V., Wu, F., Weinberger, K.~Q. and Artzi, Y. (2020). BERTScore: evaluating text generation with
-BERT. \emph{ICLR}, \href{https://arxiv.org/abs/1904.09675}{arXiv:1904.09675}. Reference implementation: \url{https://github.com/Tiiiger/bert_score}.\par
-Pillutla, K. et al. (2021). MAUVE: measuring the gap between neural text and human text using divergence frontiers.
-\emph{NeurIPS}, \href{https://arxiv.org/abs/2102.01454}{arXiv:2102.01454}.\par
-Pillutla, K. et al. (2023). MAUVE scores for generative models: theory and practice.
-arXiv:2212.14578. \url{https://krishnap25.github.io/mauve/}.\par
-Salimans, T. et al. (2016). Improved techniques for training GANs. \emph{NeurIPS},
-\href{https://arxiv.org/abs/1606.03498}{arXiv:1606.03498}.\par
-Barratt, S. and Sharma,
-R. (2018). A note on the Inception Score. arXiv:1801.01973.\par
-Heusel, M. et al. (2017). GANs trained by a two time-scale update rule converge to a local Nash equilibrium. \emph{NeurIPS},
-\href{https://arxiv.org/abs/1706.08500}{arXiv:1706.08500}.\par
-Parmar, G., Zhang, R. and Zhu, J.-Y. (2022). On aliased resizing and surprising subtleties in GAN evaluation. \emph{CVPR},
-arXiv:2104.11222.\par
-Chong, M.~J. and Forsyth, D. (2020). Effectively unbiased FID and Inception Score. \emph{CVPR}, arXiv:1911.07023.\par
-Jayasumana, S. et al. (2024). Rethinking FID. \emph{CVPR}, arXiv:2401.09603.\par
-Zhang, R., Isola, P., Efros, A.~A., Shechtman, E. and Wang, O. (2018). The unreasonable effectiveness of deep features as a
-perceptual metric. \emph{CVPR}, \href{https://arxiv.org/abs/1801.03924}{arXiv:1801.03924}.\par
-Ghildyal, A. and Liu, F. (2022). Shift-tolerant perceptual similarity metric. \emph{ECCV}.
-\href{https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136780089.pdf}{Proceedings paper}.\par
-Johnson, J., Alahi, A. and Fei-Fei, L. (2016). Perceptual losses for real-time style transfer and super-resolution.
-\emph{ECCV}, arXiv:1603.08155.\par
-Hessel, J. et al. (2021). CLIPScore: a reference-free evaluation metric for image captioning. \emph{EMNLP},
-\href{https://arxiv.org/abs/2104.08718}{arXiv:2104.08718}. \url{https://lightning.ai/docs/torchmetrics/stable/multimodal/clip_score.html}.\par
-Cho, J. et al. (2024). Davidsonian scene graph: improving reliability in fine-grained evaluation for text-to-image
-generation. \emph{ICLR}, \href{https://arxiv.org/abs/2310.18235}{arXiv:2310.18235}.\par
-Lin, Z. et al. (2024). Evaluating text-to-visual generation with image-to-text generation. \emph{ECCV},
-\href{https://arxiv.org/abs/2404.01291}{arXiv:2404.01291}. \url{https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/}.\par
-ITU-T Recommendation \href{https://www.itu.int/rec/T-REC-P.800-199608-I/en}{P.800} (1996), \emph{Methods for subjective determination of transmission quality}; P.808 (2018),
-\emph{Subjective evaluation of speech quality with a crowdsourcing approach}; P.800.2 (2016), \emph{Mean opinion score
-interpretation and reporting}. \url{https://www.itu.int/rec/T-REC-P.800.2}. arXiv:2204.02249.\par
-ITU-T Recommendation P.862 (2001), \emph{Perceptual evaluation of speech quality}; P.862.1 (mapping to MOS-LQO);
-P.862.2 (wideband). The P.862 family was withdrawn on 5 January 2024; ITU-T directs users to P.863.
-\url{https://www.itu.int/rec/T-REC-P.862/en}; \url{https://lightning.ai/docs/torchmetrics/stable/audio/perceptual_evaluation_speech_quality.html}.\par
-Torcoli, M., Halimeh, M.~M. and Habets, E.~A.~P. (2025). Navigating PESQ: up-to-date versions and open implementations.
-\href{https://arxiv.org/abs/2505.19760}{arXiv:2505.19760}.\par
-Taal, C.~H., Hendriks, R.~C., Heusdens, R. and Jensen, J. (2011). An algorithm for intelligibility prediction of
-time-frequency weighted noisy speech. \emph{IEEE TASLP} 19(7).
-\href{https://doi.org/10.1109/TASL.2011.2114881}{doi:10.1109/TASL.2011.2114881}.\par
-Shannon, R.~V. et al. (1995). Speech recognition with primarily temporal
-cues. \emph{Science} 270(5234).
-\url{https://lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html};
-\url{https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html}.\par
-GLUE arXiv:1804.07461 and \url{https://gluebenchmark.com/}; SuperGLUE arXiv:1905.00537 and
-\url{https://super.gluebenchmark.com/}; IFEval arXiv:2311.07911; BIG-Bench arXiv:2206.04615; BBH arXiv:2210.09261; BBEH
-arXiv:2502.19187; MATH arXiv:2103.03874; GPQA arXiv:2311.12022; MuSR arXiv:2310.16049; MMLU-Pro arXiv:2406.01574 and
-\url{https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro}; SQuAD 2.0 arXiv:1806.03822 and \url{https://rajpurkar.github.io/SQuAD-explorer/};
-ARC arXiv:1911.01547.\par
-He, P., Liu, X., Gao, J. and Chen, W. (2021). DeBERTa: decoding-enhanced BERT with disentangled attention. \emph{ICLR},
-arXiv:2006.03654. SuperGLUE result: \url{https://www.microsoft.com/en-us/research/blog/microsoft-deberta-surpasses-human-performance-on-the-superglue-benchmark/}.\par
-Dussolle, A., Carde\~na D\'iaz, A., Sato, S. and Devine, P. (2025). M-IFEval: multilingual instruction-following evaluation.
-arXiv:2502.04688.\par
-Devlin, J., Chang, M.-W., Lee, K. and Toutanova, K. (2019). BERT: pre-training of deep bidirectional transformers for language
-understanding. \emph{NAACL}, arXiv:1810.04805.\par
-OpenAI (2024). Learning to reason with LLMs, \url{https://openai.com/index/learning-to-reason-with-llms/}; OpenAI o1 and new
-tools for developers, \url{https://openai.com/index/o1-and-new-tools-for-developers/}.\par
-DeepSeek-AI (2025). DeepSeek-R1: incentivizing reasoning capability in LLMs via reinforcement learning. arXiv:2501.12948.
-Official results: \url{https://github.com/deepseek-ai/DeepSeek-R1}.\par
-ARC Prize Foundation (2024). ARC Prize 2024: technical report. arXiv:2412.04604.\par
-Chollet, F. (2024). OpenAI o3 breakthrough high score on ARC-AGI-Pub.
-\url{https://arcprize.org/blog/oai-o3-pub-breakthrough}.\par
-ARC Prize Foundation (2025). ARC-AGI-2, \url{https://arcprize.org/arc-agi/2}.\par
-ARC Prize Foundation (2026). ARC-AGI-3, \url{https://arcprize.org/arc-agi/3}.\par
+
+\bibentry{r138}{%
+ARC Prize Foundation. 2025. “ARC-AGI-2.”
+\biblink{https://arcprize.org/arc-agi/2}{arcprize.org/arc-agi/2}}
+
+\bibentry{r139}{%
+ARC Prize Foundation. 2026. “ARC-AGI-3.”
+\biblink{https://arcprize.org/arc-agi/3}{arcprize.org/arc-agi/3}}
+
+\bibentry{r114}{%
+Barratt, Shane, and Rishi Sharma. 2018. “A Note on the Inception Score.” Preprint.
+\biblink{https://arxiv.org/abs/1801.01973}{arXiv:1801.01973}}
+
+\bibentry{r110b}{%
+BERTScore contributors. n.d. “BERTScore.” \emph{GitHub}. Source code.
+\biblink{https://github.com/Tiiiger/bert_score}{github.com/Tiiiger/bert_score}}
+
+\bibentry{r109c}{%
+Chen, Stanley, Douglas Beeferman, and Ronald Rosenfeld. 1998. “Evaluation Metrics for Language Models.” In \emph{Proceedings of the DARPA Broadcast News Transcription and Understanding Workshop}.
+\biblink{https://www.cs.cmu.edu/~roni/papers/eval-metrics-bntuw-9802.pdf}{www.cs.cmu.edu/~roni/papers/eval-metrics-bntuw-9802.pdf}}
+
+\bibentry{r123}{%
+Cho, Jaemin, Yushi Hu, Roopal Garg, et al. 2024. “Davidsonian Scene Graph: Improving Reliability in Fine-Grained Evaluation for Text-to-Image Generation.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/2310.18235}{arXiv:2310.18235}}
+
+\bibentry{r130-1911.01547}{%
+Chollet, François. 2019. “On the Measure of Intelligence.” Preprint.
+\biblink{https://arxiv.org/abs/1911.01547}{arXiv:1911.01547}}
+
+\bibentry{r137}{%
+Chollet, François. 2024. “OpenAI O3 Breakthrough High Score on ARC-AGI-Pub.” \emph{ARC Prize}. December 20.
+\biblink{https://arcprize.org/blog/oai-o3-pub-breakthrough}{arcprize.org/blog/oai-o3-pub-breakthrough}}
+
+\bibentry{r136}{%
+Chollet, François, Mike Knoop, Gregory Kamradt, and Bryan Landers. 2024. “ARC Prize 2024: Technical Report.” Preprint.
+\biblink{https://arxiv.org/abs/2412.04604}{arXiv:2412.04604}}
+
+\bibentry{r117}{%
+Chong, Min Jin, and David Forsyth. 2020. “Effectively Unbiased FID and Inception Score and Where to Find Them.” In \emph{2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 6069--6078.
+\biblink{https://doi.org/10.1109/CVPR42600.2020.00611}{doi.org/10.1109/CVPR42600.2020.00611}}
+
+\bibentry{r135}{%
+DeepSeek-AI. 2025. “DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning.” Preprint.
+\biblink{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}}
+
+\bibentry{r135b}{%
+DeepSeek-AI. n.d. “DeepSeek-R1.” \emph{GitHub}. Source code.
+\biblink{https://github.com/deepseek-ai/DeepSeek-R1}{github.com/deepseek-ai/DeepSeek-R1}}
+
+\bibentry{r133}{%
+Devlin, Jacob, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. “BERT: Pre-Training of Deep Bidirectional Transformers for Language Understanding.” In \emph{Conference of the North American Chapter of the Association for Computational Linguistics}.
+\biblink{https://arxiv.org/abs/1810.04805}{arXiv:1810.04805}}
+
+\bibentry{r132}{%
+Dussolle, Antoine, Andrea Cardeña Díaz, Shota Sato, and Peter Devine. 2025. “M-IFEval: Multilingual Instruction-Following Evaluation.” Preprint.
+\biblink{https://arxiv.org/abs/2502.04688}{arXiv:2502.04688}}
+
+\bibentry{r131b}{%
+Gao, Jianfeng. 2021. “Microsoft DeBERTa Surpasses Human Performance on the SuperGLUE Benchmark.” \emph{Microsoft Research Blog}. January 6.
+\biblink{https://www.microsoft.com/en-us/research/blog/microsoft-deberta-surpasses-human-performance-on-the-superglue-benchmark/}{www.microsoft.com/en-us/research/blog/microsoft-deberta-surpasses-human-performance-on-the-superglue-benchmark/}}
+
+\bibentry{r120}{%
+Ghildyal, Abhijay, and Feng Liu. 2022. “Shift-Tolerant Perceptual Similarity Metric.” In \emph{Computer Vision -- ECCV 2022}, 91--107. Springer Nature Switzerland.
+\biblink{https://doi.org/10.1007/978-3-031-19797-0_6}{doi.org/10.1007/978-3-031-19797-0_6}}
+
+\bibentry{r130web0}{%
+GLUE. n.d. “GLUE Benchmark.”
+\biblink{https://gluebenchmark.com/}{gluebenchmark.com/}}
+
+\bibentry{r131}{%
+He, Pengcheng, Xiaodong Liu, Jianfeng Gao, and Weizhu Chen. 2021. “DeBERTa: Decoding-Enhanced BERT with Disentangled Attention.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/2006.03654}{arXiv:2006.03654}}
+
+\bibentry{r130-2103.03874}{%
+Hendrycks, Dan, Collin Burns, Saurav Kadavath, et al. 2021. “Measuring Mathematical Problem Solving with the MATH Dataset.” In \emph{NeurIPS Datasets and Benchmarks}.
+\biblink{https://arxiv.org/abs/2103.03874}{arXiv:2103.03874}}
+
+\bibentry{r122}{%
+Hessel, Jack, Ari Holtzman, Maxwell Forbes, Ronan Le Bras, and Yejin Choi. 2021. “CLIPScore: A Reference-Free Evaluation Metric for Image Captioning.” In \emph{Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing}, 7514--7528.
+\biblink{https://doi.org/10.18653/v1/2021.emnlp-main.595}{doi.org/10.18653/v1/2021.emnlp-main.595}}
+
+\bibentry{r115}{%
+Heusel, Martin, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter. 2017. “GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/1706.08500}{arXiv:1706.08500}}
+
+\bibentry{r109}{%
+Holtzman, Ari, Jan Buys, Li Du, Maxwell Forbes, and Yejin Choi. 2020. “The Curious Case of Neural Text Degeneration.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/1904.09751}{arXiv:1904.09751}}
+
+\bibentry{r109b}{%
+Hugging Face. n.d. “Perplexity of Fixed-Length Models.” \emph{Transformers Documentation}.
+\biblink{https://huggingface.co/docs/transformers/perplexity}{huggingface.co/docs/transformers/perplexity}}
+
+\bibentry{r125a}{%
+International Telecommunication Union. 1996. \emph{Methods for Subjective Determination of Transmission Quality}. ITU-T Recommendation P.800.
+\biblink{https://www.itu.int/rec/T-REC-P.800-199608-I/en}{www.itu.int/rec/T-REC-P.800-199608-I/en}}
+
+\bibentry{r126a}{%
+International Telecommunication Union. 2001. \emph{Perceptual Evaluation of Speech Quality (PESQ): An Objective Method for End-to-End Speech Quality Assessment of Narrow-Band Telephone Networks and Speech Codecs}. ITU-T Recommendation P.862. Withdrawn January 5, 2024.
+\biblink{https://www.itu.int/rec/T-REC-P.862/en}{www.itu.int/rec/T-REC-P.862/en}}
+
+\bibentry{r126b}{%
+International Telecommunication Union. 2003. \emph{Mapping Function for Transforming P.862 Raw Result Scores to MOS-LQO}. ITU-T Recommendation P.862.1. Withdrawn January 5, 2024.
+\biblink{https://www.itu.int/rec/T-REC-P.862.1/en}{www.itu.int/rec/T-REC-P.862.1/en}}
+
+\bibentry{r126c}{%
+International Telecommunication Union. 2007. \emph{Wideband Extension to Recommendation P.862 for the Assessment of Wideband Telephone Networks and Speech Codecs}. ITU-T Recommendation P.862.2. Withdrawn January 5, 2024.
+\biblink{https://www.itu.int/rec/T-REC-P.862.2/en}{www.itu.int/rec/T-REC-P.862.2/en}}
+
+\bibentry{r125c}{%
+International Telecommunication Union. 2016. \emph{Mean Opinion Score Interpretation and Reporting}. ITU-T Recommendation P.800.2.
+\biblink{https://www.itu.int/rec/T-REC-P.800.2-201607-I/en}{www.itu.int/rec/T-REC-P.800.2-201607-I/en}}
+
+\bibentry{r125b}{%
+International Telecommunication Union. 2018. \emph{Subjective Evaluation of Speech Quality with a Crowdsourcing Approach}. ITU-T Recommendation P.808.
+\biblink{https://www.itu.int/rec/T-REC-P.808-201806-S/en}{www.itu.int/rec/T-REC-P.808-201806-S/en}}
+
+\bibentry{r118}{%
+Jayasumana, Sadeep, Srikumar Ramalingam, Andreas Veit, Daniel Glasner, Ayan Chakrabarti, and Sanjiv Kumar. 2024. “Rethinking FID: Towards a Better Evaluation Metric for Image Generation.” In \emph{2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 9307--9315.
+\biblink{https://doi.org/10.1109/CVPR52733.2024.00889}{doi.org/10.1109/CVPR52733.2024.00889}}
+
+\bibentry{r108}{%
+Jelinek, F., R. L. Mercer, L. R. Bahl, and J. K. Baker. 1977. “Perplexity—a Measure of the Difficulty of Speech Recognition Tasks.” \emph{The Journal of the Acoustical Society of America} 62 (S1): S63.
+\biblink{https://doi.org/10.1121/1.2016299}{doi.org/10.1121/1.2016299}}
+
+\bibentry{r121}{%
+Johnson, Justin, Alexandre Alahi, and Fei-Fei Li. 2016. “Perceptual Losses for Real-Time Style Transfer and Super-Resolution.” In \emph{Computer Vision -- ECCV 2016}, 694--711. Springer International Publishing.
+\biblink{https://doi.org/10.1007/978-3-319-46475-6_43}{doi.org/10.1007/978-3-319-46475-6_43}}
+
+\bibentry{r130-2502.19187}{%
+Kazemi, Mehran, Bahare Fatemi, Hritik Bansal, et al. 2025. “BIG-Bench Extra Hard.” Preprint.
+\biblink{https://arxiv.org/abs/2502.19187}{arXiv:2502.19187}}
+
+\bibentry{r124b}{%
+Lin, Zhiqiu. 2024. “VQAScore: Evaluating and Improving Vision-Language Generative Models.” \emph{Machine Learning Blog, Carnegie Mellon University}. October 7.
+\biblink{https://blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/}{blog.ml.cmu.edu/2024/10/07/vqascore-evaluating-and-improving-vision-language-generative-models/}}
+
+\bibentry{r124}{%
+Lin, Zhiqiu, Deepak Pathak, Baiqi Li, et al. 2025. “Evaluating Text-to-Visual Generation with Image-to-Text Generation.” In \emph{Computer Vision -- ECCV 2024}, 366--384. Springer Nature Switzerland.
+\biblink{https://doi.org/10.1007/978-3-031-72673-6_20}{doi.org/10.1007/978-3-031-72673-6_20}}
+
+\bibentry{r129c}{%
+MathWorks. n.d. “Measuring Speech Intelligibility and Perceived Audio Quality with STOI and ViSQOL.” \emph{Audio Toolbox Documentation}. Release R2026b.
+\biblink{https://www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html}{www.mathworks.com/help/audio/ug/measure-speech-intelligibility-and-perceived-audio-quality-with-stoi-and-visqol.html}}
+
+\bibentry{r112b}{%
+MAUVE contributors. n.d. “MAUVE: Measuring the Gap Between Neural Text and Human Text.” \emph{MAUVE Documentation}.
+\biblink{https://krishnap25.github.io/mauve/}{krishnap25.github.io/mauve/}}
+
+\bibentry{r109d}{%
+O’Connor, Brendan. 2013. “Perplexity as Branching Factor; as Shannon Diversity Index.” \emph{AI and Social Science}. January 7.
+\biblink{https://brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/}{brenocon.com/blog/2013/01/perplexity-as-branching-factor-as-shannon-diversity-index/}}
+
+\bibentry{r134}{%
+OpenAI. 2024a. “Learning to Reason with LLMs.” September 12.
+\biblink{https://openai.com/index/learning-to-reason-with-llms/}{openai.com/index/learning-to-reason-with-llms/}}
+
+\bibentry{r134b}{%
+OpenAI. 2024b. “OpenAI O1 and New Tools for Developers.” December 17.
+\biblink{https://openai.com/index/o1-and-new-tools-for-developers/}{openai.com/index/o1-and-new-tools-for-developers/}}
+
+\bibentry{r116}{%
+Parmar, Gaurav, Richard Zhang, and Jun-Yan Zhu. 2022. “On Aliased Resizing and Surprising Subtleties in GAN Evaluation.” In \emph{IEEE/CVF Conference on Computer Vision and Pattern Recognition}.
+\biblink{https://arxiv.org/abs/2104.11222}{arXiv:2104.11222}}
+
+\bibentry{r112}{%
+Pillutla, Krishna, Lang Liu, John Thickstun, et al. 2023. “MAUVE Scores for Generative Models: Theory and Practice.” \emph{Journal of Machine Learning Research} 24 (356): 1--92.
+\biblink{https://jmlr.org/papers/v24/23-0023.html}{jmlr.org/papers/v24/23-0023.html}}
+
+\bibentry{r111}{%
+Pillutla, Krishna, Swabha Swayamdipta, Rowan Zellers, et al. 2021. “MAUVE: Measuring the Gap Between Neural Text and Human Text Using Divergence Frontiers.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/2102.01454}{arXiv:2102.01454}}
+
+\bibentry{r125d}{%
+Ragano, Alessandro, Emmanouil Benetos, Michael Chinen, et al. 2023. “A Comparison of Deep Learning MOS Predictors for Speech Synthesis Quality.” In \emph{Irish Signals and Systems Conference}.
+\biblink{https://arxiv.org/abs/2204.02249}{arXiv:2204.02249}}
+
+\bibentry{r130-1806.03822}{%
+Rajpurkar, Pranav, Robin Jia, and Percy Liang. 2018. “Know What You Don't Know: Unanswerable Questions for SQuAD.” In \emph{Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics}.
+\biblink{https://arxiv.org/abs/1806.03822}{arXiv:1806.03822}}
+
+\bibentry{r130-2311.12022}{%
+Rein, David, Betty Li Hou, Asa Cooper Stickland, et al. 2023. “GPQA: A Graduate-Level Google-Proof Q\&A Benchmark.” Preprint.
+\biblink{https://arxiv.org/abs/2311.12022}{arXiv:2311.12022}}
+
+\bibentry{r113}{%
+Salimans, Tim, Ian Goodfellow, Wojciech Zaremba, Vicki Cheung, Alec Radford, and Xi Chen. 2016. “Improved Techniques for Training GANs.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/1606.03498}{arXiv:1606.03498}}
+
+\bibentry{r129}{%
+Shannon, Robert V., Fan-Gang Zeng, Vivek Kamath, John Wygonski, and Michael Ekelid. 1995. “Speech Recognition with Primarily Temporal Cues.” \emph{Science} 270 (5234): 303--304.
+\biblink{https://doi.org/10.1126/science.270.5234.303}{doi.org/10.1126/science.270.5234.303}}
+
+\bibentry{r130-2310.16049}{%
+Sprague, Zayne, Xi Ye, Kaj Bostrom, Swarat Chaudhuri, and Greg Durrett. 2024. “MuSR: Testing the Limits of Chain-of-Thought with Multistep Soft Reasoning.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/2310.16049}{arXiv:2310.16049}}
+
+\bibentry{r130web3}{%
+SQuAD. n.d. “SQuAD 2.0.”
+\biblink{https://rajpurkar.github.io/SQuAD-explorer/}{rajpurkar.github.io/SQuAD-explorer/}}
+
+\bibentry{r130-2206.04615}{%
+Srivastava, Aarohi, Abhinav Rastogi, Abhishek Rao, et al. 2022. “Beyond the Imitation Game: Quantifying and Extrapolating the Capabilities of Language Models.” Preprint.
+\biblink{https://arxiv.org/abs/2206.04615}{arXiv:2206.04615}}
+
+\bibentry{r130web1}{%
+SuperGLUE. n.d. “SuperGLUE Benchmark.”
+\biblink{https://super.gluebenchmark.com/}{super.gluebenchmark.com/}}
+
+\bibentry{r130-2210.09261}{%
+Suzgun, Mirac, Nathan Scales, Nathanael Schärli, et al. 2022. “Challenging BIG-Bench Tasks and Whether Chain-of-Thought Can Solve Them.” Preprint.
+\biblink{https://arxiv.org/abs/2210.09261}{arXiv:2210.09261}}
+
+\bibentry{r128}{%
+Taal, Cees H., Richard C. Hendriks, Richard Heusdens, and Jesper Jensen. 2011. “An Algorithm for Intelligibility Prediction of Time--Frequency Weighted Noisy Speech.” \emph{IEEE Transactions on Audio, Speech, and Language Processing} 19 (7): 2125--2136.
+\biblink{https://doi.org/10.1109/TASL.2011.2114881}{doi.org/10.1109/TASL.2011.2114881}}
+
+\bibentry{r130web2}{%
+TIGER-Lab. n.d. “MMLU-Pro Leaderboard.”
+\biblink{https://huggingface.co/spaces/TIGER-Lab/MMLU-Pro}{huggingface.co/spaces/TIGER-Lab/MMLU-Pro}}
+
+\bibentry{r122b}{%
+TorchMetrics contributors. n.d.-a. “CLIP Score.” \emph{TorchMetrics Documentation}.
+\biblink{https://lightning.ai/docs/torchmetrics/latest/multimodal/clip_score}{lightning.ai/docs/torchmetrics/latest/multimodal/clip_score}}
+
+\bibentry{r126d}{%
+TorchMetrics contributors. n.d.-b. “Perceptual Evaluation of Speech Quality (PESQ).” \emph{TorchMetrics Documentation}.
+\biblink{https://lightning.ai/docs/torchmetrics/latest/audio/perceptual_evaluation_speech_quality}{lightning.ai/docs/torchmetrics/latest/audio/perceptual_evaluation_speech_quality}}
+
+\bibentry{r129b}{%
+TorchMetrics contributors. n.d.-c. “Short-Time Objective Intelligibility (STOI).” \emph{TorchMetrics Documentation}.
+\biblink{https://api.lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html}{api.lightning.ai/docs/torchmetrics/stable/audio/short_time_objective_intelligibility.html}}
+
+\bibentry{r127}{%
+Torcoli, Matteo, Mhd Modar Halimeh, and Emanuël A. P. Habets. 2025. “Navigating PESQ: Up-To-Date Versions and Open Implementations.” In \emph{ITG Conference on Speech Communication}.
+\biblink{https://arxiv.org/abs/2505.19760}{arXiv:2505.19760}}
+
+\bibentry{r130-1905.00537}{%
+Wang, Alex, Yada Pruksachatkun, Nikita Nangia, et al. 2019. “SuperGLUE: A Stickier Benchmark for General-Purpose Language Understanding Systems.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/1905.00537}{arXiv:1905.00537}}
+
+\bibentry{r130-1804.07461}{%
+Wang, Alex, Amanpreet Singh, Julian Michael, Felix Hill, Omer Levy, and Samuel R. Bowman. 2019. “GLUE: A Multi-Task Benchmark and Analysis Platform for Natural Language Understanding.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/1804.07461}{arXiv:1804.07461}}
+
+\bibentry{r130-2406.01574}{%
+Wang, Yubo, Xueguang Ma, Ge Zhang, et al. 2024. “MMLU-Pro: A More Robust and Challenging Multi-Task Language Understanding Benchmark.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/2406.01574}{arXiv:2406.01574}}
+
+\bibentry{r119}{%
+Zhang, Richard, Phillip Isola, Alexei A. Efros, Eli Shechtman, and Oliver Wang. 2018. “The Unreasonable Effectiveness of Deep Features as a Perceptual Metric.” In \emph{2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition}, 586--595.
+\biblink{https://doi.org/10.1109/CVPR.2018.00068}{doi.org/10.1109/CVPR.2018.00068}}
+
+\bibentry{r110}{%
+Zhang, Tianyi, Varsha Kishore, Felix Wu, Kilian Q. Weinberger, and Yoav Artzi. 2020. “BERTScore: Evaluating Text Generation with BERT.” In \emph{International Conference on Learning Representations}.
+\biblink{https://arxiv.org/abs/1904.09675}{arXiv:1904.09675}}
+
+\bibentry{r130-2311.07911}{%
+Zhou, Jeffrey, Tianjian Lu, Swaroop Mishra, et al. 2023. “Instruction-Following Evaluation for Large Language Models.” Preprint.
+\biblink{https://arxiv.org/abs/2311.07911}{arXiv:2311.07911}}
 
 \srchead{Probabilistic}
-Naeini, M.~P., Cooper, G.~F. and Hauskrecht, M. (2015). Obtaining well calibrated probabilities using Bayesian binning.
-\emph{AAAI}.\par
-Guo, C., Pleiss, G., Sun, Y. and Weinberger, K.~Q. (2017). On calibration of modern neural networks. \emph{ICML}.
-\url{https://proceedings.mlr.press/v70/guo17a.html}.\par
-Nixon, J. et al. (2019; revised 2020). Measuring calibration in deep learning. arXiv:1904.01685v2.
-\url{https://arxiv.org/abs/1904.01685v2}.\par
-DeGroot, M.~H. and Fienberg, S.~E. (1983). The comparison and evaluation of forecasters. \emph{The Statistician} 32(1/2), 12--22.
-\url{https://doi.org/10.2307/2987588}.\par
-Scikit-learn documentation, \emph{Probability calibration}.
-\url{https://scikit-learn.org/stable/modules/calibration.html}.\par
-NannyML documentation, \emph{How it works: performance estimation},
-\url{https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html}.\par
-Kivimäki, J., Białek, J., Kuberski, W. and Nurminen, J.~K. (2025). Performance estimation in binary classification using
-calibrated confidence. arXiv:2505.05295.
-\url{https://arxiv.org/abs/2505.05295}.\par
-NannyML documentation, \emph{Confusion matrix estimation} (v0.13.0), including confidence bands and alert thresholds.
-\url{https://nannyml.readthedocs.io/en/v0.13.0/tutorials/performance_estimation/binary_performance_estimation/confusion_matrix_estimation.html}.\par
-Białek, J., Kivimäki, J., Kuberski, W. and Perrakis, N. (2025; first posted 2024). Estimating model performance under covariate
-shift without labels. arXiv:2401.08348v5.
-\url{https://arxiv.org/abs/2401.08348v5}.\par
-Angelopoulos, A.~N. and Bates, S. (2021; revised 2022). A gentle introduction to conformal prediction and distribution-free
-uncertainty quantification. arXiv:2107.07511v6.
-\url{https://arxiv.org/abs/2107.07511v6}.\par
-NannyML documentation, \emph{Reverse concept drift},
-\url{https://docs.nannyml.com/cloud/v0.22.0/model-monitoring/how-it-works/reverse-concept-drift-rcd}.\par
+
+\bibentry{r149}{%
+Angelopoulos, Anastasios N., and Stephen Bates. 2022. “A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification.” Preprint.
+\biblink{https://arxiv.org/abs/2107.07511v6}{arXiv:2107.07511v6}}
+
+\bibentry{r148}{%
+Białek, Jakub, Juhani Kivimäki, Wojtek Kuberski, and Nikolaos Perrakis. 2025. “Estimating Model Performance Under Covariate Shift Without Labels.” Preprint.
+\biblink{https://arxiv.org/abs/2401.08348v5}{arXiv:2401.08348v5}}
+
+\bibentry{r143}{%
+DeGroot, Morris H., and Stephen E. Fienberg. 1983. “The Comparison and Evaluation of Forecasters.” \emph{The Statistician} 32 (1/2): 12--22.
+\biblink{https://doi.org/10.2307/2987588}{doi.org/10.2307/2987588}}
+
+\bibentry{r141}{%
+Guo, Chuan, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. 2017. “On Calibration of Modern Neural Networks.” In \emph{International Conference on Machine Learning}, Proceedings of Machine Learning Research 70, 1321--1330.
+\biblink{https://proceedings.mlr.press/v70/guo17a.html}{proceedings.mlr.press/v70/guo17a.html}}
+
+\bibentry{r146}{%
+Kivimäki, Juhani, Jakub Białek, Wojtek Kuberski, and Jukka K. Nurminen. 2025. “Performance Estimation in Binary Classification Using Calibrated Confidence.” Preprint.
+\biblink{https://arxiv.org/abs/2505.05295}{arXiv:2505.05295}}
+
+\bibentry{r147}{%
+NannyML. n.d.-a. “Estimating Confusion Matrix Elements for Binary Classification.” \emph{NannyML Documentation}. Version 0.13.0.
+\biblink{https://nannyml.readthedocs.io/en/v0.13.0/tutorials/performance_estimation/binary_performance_estimation/confusion_matrix_estimation.html}{nannyml.readthedocs.io/en/v0.13.0/tutorials/performance_estimation/binary_performance_estimation/confusion_matrix_estimation.html}}
+
+\bibentry{r145}{%
+NannyML. n.d.-b. “Estimation of Performance of the Monitored Model.” \emph{NannyML Documentation}. Version 0.13.1.
+\biblink{https://nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html}{nannyml.readthedocs.io/en/stable/how_it_works/performance_estimation.html}}
+
+\bibentry{r150}{%
+NannyML. n.d.-c. “Reverse Concept Drift (RCD).” \emph{NannyML Cloud Documentation}. Version 0.22.0.
+\biblink{https://docs.nannyml.com/cloud/v0.22.0/model-monitoring/how-it-works/reverse-concept-drift-rcd}{docs.nannyml.com/cloud/v0.22.0/model-monitoring/how-it-works/reverse-concept-drift-rcd}}
+
+\bibentry{r142}{%
+Nixon, Jeremy, Mike Dusenberry, Ghassen Jerfel, et al. 2020. “Measuring Calibration in Deep Learning.” Preprint.
+\biblink{https://arxiv.org/abs/1904.01685v2}{arXiv:1904.01685v2}}
+
+\bibentry{r140}{%
+Pakdaman Naeini, Mahdi, Gregory Cooper, and Milos Hauskrecht. 2015. “Obtaining Well Calibrated Probabilities Using Bayesian Binning.” \emph{Proceedings of the AAAI Conference on Artificial Intelligence} 29 (1).
+\biblink{https://doi.org/10.1609/aaai.v29i1.9602}{doi.org/10.1609/aaai.v29i1.9602}}
+
+\bibentry{r144}{%
+scikit-learn developers. “Probability Calibration.” See Classification, p.~\pageref{bib:r036}.}
 
 \srchead{Bias \& Fairness}
-Angwin, J., Larson, J., Mattu, S. and Kirchner, L. (2016). Machine bias. \emph{ProPublica}.
-\url{https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing}.\par
-Barocas, S., Hardt, M. and Narayanan, A. (2023). \emph{Fairness and Machine Learning: Limitations and Opportunities}.
-MIT Press. Chapter 3: Classification. \url{https://fairmlbook.org/classification.html}.\par
-Chouldechova, A. (2017). Fair prediction with disparate impact: a study of bias in recidivism prediction instruments.
-\emph{Big Data} 5(2). \url{https://arxiv.org/abs/1703.00056}.\par
-Dieterich, W., Mendoza, C. and Brennan, T. (2016). \emph{COMPAS Risk Scales: Demonstrating Accuracy Equity and Predictive Parity}.
-Northpointe Research Department.
-\url{https://njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf}.\par
-\emph{Fairness and Algorithmic Decision Making}. Chapter 5: Parity measures.
-\url{https://afraenkel.github.io/fairness-book/content/05-parity-measures.html}.\par
-Google. Fairness: demographic parity. \emph{Machine Learning Crash Course}.
-\url{https://developers.google.com/machine-learning/crash-course/fairness/demographic-parity}.\par
-Hardt, M., Price, E. and Srebro, N. (2016). Equality of opportunity in supervised learning. \emph{NeurIPS}.
-\url{https://arxiv.org/abs/1610.02413}.\par
-Hu, X., Huang, Y., Li, B. and Lu, T. (2023). Inclusive FinTech lending via contrastive learning and domain adaptation.
-arXiv preprint. \url{https://arxiv.org/abs/2305.05827}.\par
-Kleinberg, J., Mullainathan, S. and Raghavan, M. (2017). Inherent trade-offs in the fair determination of risk scores.
-\emph{ITCS}. \url{https://arxiv.org/abs/1609.05807}.\par
-MLU-Explain. Equality of odds. \url{https://mlu-explain.github.io/equality-of-odds/}.\par
-Verma, S. and Rubin, J. (2018). Fairness definitions explained. \emph{FairWare}.
-\url{https://fairware.cs.umass.edu/papers/Verma.pdf}.\par
+
+\bibentry{r151}{%
+Angwin, Julia, Jeff Larson, Surya Mattu, and Lauren Kirchner. 2016. “Machine Bias.” \emph{ProPublica}. May 23.
+\biblink{https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing}{www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing}}
+
+\bibentry{r152}{%
+Barocas, Solon, Moritz Hardt, and Arvind Narayanan. 2023. \emph{Fairness and Machine Learning: Limitations and Opportunities}. MIT Press. Chapter 3: Classification.
+\biblink{https://fairmlbook.org/classification.html}{fairmlbook.org/classification.html}}
+
+\bibentry{r153}{%
+Chouldechova, Alexandra. 2017. “Fair Prediction with Disparate Impact: A Study of Bias in Recidivism Prediction Instruments.” \emph{Big Data} 5 (2): 153--163.
+\biblink{https://doi.org/10.1089/big.2016.0047}{doi.org/10.1089/big.2016.0047}}
+
+\bibentry{r154}{%
+Dieterich, William, Christina Mendoza, and Tim Brennan. 2016. \emph{COMPAS Risk Scales: Demonstrating Accuracy Equity and Predictive Parity}. Northpointe Research Department. July 8.
+\biblink{https://njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf}{njoselson.github.io/pdfs/ProPublica_Commentary_Final_070616.pdf}}
+
+\bibentry{r155}{%
+Fraenkel, Aaron. n.d. “Parity Measures.” \emph{Fairness \& Algorithmic Decision Making}. Chapter 5.
+\biblink{https://afraenkel.github.io/fairness-book/content/05-parity-measures.html}{afraenkel.github.io/fairness-book/content/05-parity-measures.html}}
+
+\bibentry{r156}{%
+Google. 2025. “Fairness: Demographic Parity.” \emph{Machine Learning Crash Course}. Updated August 25.
+\biblink{https://developers.google.com/machine-learning/crash-course/fairness/demographic-parity}{developers.google.com/machine-learning/crash-course/fairness/demographic-parity}}
+
+\bibentry{r157}{%
+Hardt, Moritz, Eric Price, and Nathan Srebro. 2016. “Equality of Opportunity in Supervised Learning.” In \emph{Advances in Neural Information Processing Systems}.
+\biblink{https://arxiv.org/abs/1610.02413}{arXiv:1610.02413}}
+
+\bibentry{r158}{%
+Hu, Xiyang, Yan Huang, Beibei Li, and Tian Lu. 2023. “Inclusive FinTech Lending via Contrastive Learning and Domain Adaptation.” Preprint.
+\biblink{https://arxiv.org/abs/2305.05827}{arXiv:2305.05827}}
+
+\bibentry{r159}{%
+Kleinberg, Jon, Sendhil Mullainathan, and Manish Raghavan. 2017. “Inherent Trade-Offs in the Fair Determination of Risk Scores.” In \emph{Innovations in Theoretical Computer Science}.
+\biblink{https://arxiv.org/abs/1609.05807}{arXiv:1609.05807}}
+
+\bibentry{r161}{%
+Verma, Sahil, and Julia Rubin. 2018. “Fairness Definitions Explained.” In \emph{Proceedings of the International Workshop on Software Fairness}, 1--7.
+\biblink{https://doi.org/10.1145/3194770.3194776}{doi.org/10.1145/3194770.3194776}}
+
+\bibentry{r160}{%
+Wilber, Jared, and Mia Mayer. n.d. “Equality of Odds.” \emph{MLU-Explain}.
+\biblink{https://mlu-explain.github.io/equality-of-odds/}{mlu-explain.github.io/equality-of-odds/}}
 
 \srchead{Data Observability}
-NIST/SEMATECH. What are control charts? \emph{e-Handbook of Statistical Methods}, Section 6.3.1.
-\url{https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm}.\par
-NumPy. \texttt{numpy.quantile}. \emph{NumPy documentation}.
-\url{https://numpy.org/doc/stable/reference/generated/numpy.quantile.html}.\par
-PostgreSQL. Aggregate functions. \emph{PostgreSQL documentation}, Section 9.21.
-\url{https://www.postgresql.org/docs/current/functions-aggregate.html}.\par
-Soda. Metric monitoring dashboard. \emph{Soda documentation}.
-\url{https://docs.soda.io/data-observability/metric-monitoring-dashboard}.\par
-Soda. Unique count. \emph{Soda documentation}.
-\url{https://docs.soda.io/data-observability/metric-monitoring-dashboard/column-monitors/all-data-types/unique-count}.\par
+
+\bibentry{r162}{%
+NIST/SEMATECH. n.d.-b. “What Are Control Charts?” \emph{E-Handbook of Statistical Methods}. Section 6.3.1.
+\biblink{https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm}{www.itl.nist.gov/div898/handbook/pmc/section3/pmc31.htm}}
+
+\bibentry{r163}{%
+NumPy contributors. n.d. “numpy.quantile.” \emph{NumPy Documentation}.
+\biblink{https://numpy.org/doc/stable/reference/generated/numpy.quantile.html}{numpy.org/doc/stable/reference/generated/numpy.quantile.html}}
+
+\bibentry{r164}{%
+PostgreSQL Global Development Group. n.d. “Aggregate Functions.” \emph{PostgreSQL Documentation}. Version 18, section 9.21.
+\biblink{https://www.postgresql.org/docs/current/functions-aggregate.html}{www.postgresql.org/docs/current/functions-aggregate.html}}
+
+\bibentry{r165}{%
+Soda. n.d.-a. “Metric Monitoring.” \emph{Soda Documentation}.
+\biblink{https://docs.soda.io/data-observability/metric-monitoring-dashboard}{docs.soda.io/data-observability/metric-monitoring-dashboard}}
+
+\bibentry{r166}{%
+Soda. n.d.-b. “Unique Count.” \emph{Soda Documentation}.
+\biblink{https://docs.soda.io/data-observability/metric-monitoring-dashboard/column-monitors/all-data-types/unique-count}{docs.soda.io/data-observability/metric-monitoring-dashboard/column-monitors/all-data-types/unique-count}}
+
 \endgroup
