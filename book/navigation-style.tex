@@ -1,13 +1,13 @@
 % Quiet book furniture: white chapter openers and a grouped metric contents.
-% The chapter colors remain on metric-page navigation bands.
+% Chapter color is limited to the small chapter label and metric-page bands.
 
 % Read older auxiliary files harmlessly on the first build after the redesign.
 \newcommand{\tocmark}[1]{}
 
-\newcommand{\bookchapterheading}[1]{%
+\newcommand{\bookchapterheading}[2]{%
  {\setlength{\parskip}{0pt}%
   \normalfont\color{black}\raggedright
-  {\fontsize{13}{16}\selectfont\itshape Chapter \thechapter\par}%
+  {\color{#2}\fontsize{13}{16}\selectfont\itshape Chapter \thechapter\par}%
   \nobreak\vspace{7pt}%
   {\fontsize{32}{35}\selectfont\bfseries\itshape #1\par}}%
  \nobreak\vspace{22pt}}
@@ -18,7 +18,7 @@
  {}{}{\hfill\contentspage}[\vspace{1pt}]
 
 % Keep the established five-argument interface for the chapter source files.
-% Color arguments are retained for compatibility, but openers are monochrome.
+% The accent colors only the small chapter label; the background stays white.
 \newcommand{\chapteropener}[5]{%
  \clearpage\metricbody
  \refstepcounter{chapter}\label{chapter:\thechapter}%
@@ -27,7 +27,7 @@
  \renewcommand{\chaptertitle}{#1}%
  \startcontents[chapters]%
  \vspace*{10pt}%
- \bookchapterheading{#1}%
+ \bookchapterheading{#1}{#3}%
  \noindent #4\par
  \ifblank{#5}{}{%
   \begin{minipage}{\textwidth}
@@ -42,7 +42,7 @@
  \clearpage}
 
 % Front matter: the first page is a half-title. Reserve a separate full title,
-% copyright, dedication, and a facing-page spread each for foreword/preface.
+% copyright, dedication, and one page each for foreword/preface.
 % Reservations are identified by PDF bookmarks, not printed placeholder copy.
 \newcommand{\bookblankpage}{\thispagestyle{empty}\null\newpage}
 \newcommand{\bookfrontheading}[1]{%
@@ -62,9 +62,9 @@
  \pdfbookmark[0]{Dedication}{dedication}\label{front:dedication}\bookblankpage
  \bookblankpage % dedication verso
  \pdfbookmark[0]{Foreword}{foreword}\label{front:foreword}%
- \bookfrontheading{Foreword}\newpage\bookblankpage
+ \bookfrontheading{Foreword}\newpage
  \pdfbookmark[0]{Preface}{preface}\label{front:preface}%
- \bookfrontheading{Preface}\newpage\bookblankpage}
+ \bookfrontheading{Preface}\newpage}
 
 % The main contents groups each chapter's metrics in two reading columns.
 % Whole chapter groups stay together. Page breaks balance the three pages:
@@ -73,11 +73,12 @@
 \newcounter{booktocgroup}
 \newif\ifbooktocactive
 \newif\ifbooktochasitems
-\newcommand{\bookcontentsheading}[1]{%
+\newcommand{\bookcontentsheading}{%
  \thispagestyle{plain}\vspace*{10pt}%
  {\normalfont\fontsize{30}{34}\selectfont\bfseries\itshape Contents\par}%
- \ifblank{#1}{}{\vspace{3pt}{\sffamily\fontsize{8.5}{11}\selectfont\color{black!60}#1\par}}%
  \vspace{16pt}}
+\newcommand{\bookcontentscontinuation}{%
+ \clearpage\thispagestyle{plain}\vspace*{10pt}}
 \newcommand{\booktocmetric}[3]{%
  \par\begingroup\setlength{\parskip}{2pt}%
  \rightskip=2em\parfillskip=-2em\noindent
@@ -102,7 +103,7 @@
 \newcommand{\booktableofcontents}{%
  \clearpage\pagestyle{plain}\pdfbookmark[0]{Contents}{contents}%
  \begingroup\setlength{\parskip}{0pt}%
- \bookcontentsheading{}%
+ \bookcontentsheading
  {\normalfont\fontsize{10}{13}\selectfont
   Foreword\hspace{.5em}\pageref{front:foreword}\hspace{2em}%
   Preface\hspace{.5em}\pageref{front:preface}\par}\vspace{3pt}%
@@ -111,8 +112,8 @@
  \renewcommand{\contentsline}[4]{%
   \ifstrequal{##1}{chapter}{%
    \booktocflush\stepcounter{booktocgroup}%
-   \ifnum\value{booktocgroup}=4\clearpage\bookcontentsheading{Continued}\fi
-   \ifnum\value{booktocgroup}=8\clearpage\bookcontentsheading{Continued}\fi
+   \ifnum\value{booktocgroup}=4\bookcontentscontinuation\fi
+   \ifnum\value{booktocgroup}=8\bookcontentscontinuation\fi
    \def\booktoctitle{##2}\def\booktocpage{##3}\def\booktocdestination{##4}%
    \booktocitems={}\booktocactivetrue\booktochasitemsfalse
   }{\ifstrequal{##1}{section}{%
