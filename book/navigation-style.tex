@@ -1,6 +1,25 @@
 % Quiet book furniture: white chapter openers and a grouped metric contents.
 % Chapter color is limited to the small chapter label and metric-page bands.
 
+% Reading guide: the book's serif hierarchy, with a compact, aligned color key.
+% Section counters and contents destinations retain the introduction's links.
+\newenvironment{bookreadingguide}{%
+ \clearpage\thispagestyle{customstyle}\begingroup\metricbody
+ \renewcommand{\section}[1]{%
+  \par\addvspace{13pt}\refstepcounter{section}%
+  \addcontentsline{toc}{section}{##1}\renewcommand{\sectiontitle}{##1}%
+  {\normalfont\fontsize{13}{16}\selectfont\bfseries ##1\par}%
+  \nobreak\vspace{3pt}\nobreak}%
+ {\normalfont\fontsize{26}{30}\selectfont\bfseries\itshape How to use this book\par}%
+ \vspace{2pt}%
+}{\par\endgroup\clearpage}
+\newcommand{\guidecolor}[3]{%
+ \noindent\makebox[73pt][l]{%
+  {\color{#1}\raisebox{2.5pt}{\rule{12pt}{2.5pt}}}\hspace{7pt}%
+  {\sffamily\fontsize{9}{12}\selectfont\bfseries #2}}%
+ \parbox[t]{\dimexpr\linewidth-73pt\relax}{%
+  \normalfont\fontsize{10}{12.5}\selectfont #3\strut}\par\vspace{3pt}}
+
 % Read older auxiliary files harmlessly on the first build after the redesign.
 \newcommand{\tocmark}[1]{}
 
