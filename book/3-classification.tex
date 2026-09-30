@@ -8,30 +8,30 @@ Many classifiers also predict probabilities. A filter may flag email once its sp
 % ---------- Decision map ----------
 \begin{decisionmap}{purplelight}{purpleaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What are you judging?}
-\begin{forest} dmap
+\begin{forest} dmap, compact
 [, coordinate, l sep=0pt
-  [{\dm{the probabilities}{What do you need from the score?}}
+  [{\dm{probabilities}{What should the score show?}}
     [{\dl{a training loss}{\mref{Log Loss}{sec:log-loss}}}]
     [{\dl{a bounded score}{\mref{Brier Score Loss}{sec:brier-score-loss}}}]
     [{\dl{skill over the base rate}{\mref{D-squared Log Loss Score}{sec:d-squared-log-loss-score}}}]
   ]
-  [{\dm{the ranking, before any threshold}{Are positives rare, and what matters?}}
+  [{\dm{ranking before a threshold}{Are positives rare?}}
     [{\dl{yes}{\mref{PR AUC}{sec:pr-auc}}}]
     [{\dl{no}{\mref{ROC AUC}{sec:roc-auc}}}]
   ]
-  [{\dm{the labels at a threshold}{Do you know what the errors cost?}}
+  [{\dm{labels at a threshold}{Know the error costs?}}
     [{\dl{yes}{\mref{EC}{sec:ec}}}]
-    [{\dl{no, and the classes are balanced}{\mref{Accuracy}{sec:accuracy}}}]
-    [{\dm{no, and the classes are imbalanced}{Which mistake is the expensive one?}}
-      [{\dl{a missed positive}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}}]
-      [{\dl{a false alarm, among what you flagged}{\mref{Precision}{sec:precision}}}]
-      [{\dl{a false alarm, among all negatives}{\mref{FPR}{sec:fpr}, \mref{TNR}{sec:tnr-specificity}}}]
+    [{\dl{no; balanced classes}{\mref{Accuracy}{sec:accuracy}}}]
+    [{\dm{no; imbalanced classes}{Which error is costlier?}}
+      [{\dl{missed positives}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}}]
+      [{\dl{false alarms among flagged cases}{\mref{Precision}{sec:precision}}}]
+      [{\dl{false alarms among all negatives}{\mref{FPR}{sec:fpr}, \mref{TNR}{sec:tnr-specificity}}}]
       [{\dl{both, traded off}{\mref{F1-score}{sec:f1-score}, \mref{F-beta}{sec:f-beta}}}]
-      [{\dl{both, as one number}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}}]
-      [{\dl{neither: the overlap of the positive sets}{\mref{Jaccard Index}{sec:jaccard-index}}}]
+      [{\dl{both, in one score}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}}]
+      [{\dl{neither: overlap of positive sets}{\mref{Jaccard Index}{sec:jaccard-index}}}]
     ]
   ]
-  [{\dl{agreement between two raters}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}}]
+  [{\dl{agreement between raters}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}}]
 ]
 \end{forest}
 \mapnotes{Start with the confusion matrix (p.~\pageref{sec:confusion-matrix}) when evaluating decisions, and report the threshold. If ROC AUC is high but PR AUC is low, inspect the precision--recall curve alongside the proportion of positives. Check recall and false alarms at the threshold you plan to use.}

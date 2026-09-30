@@ -382,8 +382,8 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 
 % ---------- Decision maps: one page per chapter, right after the opener ----------
 % A left-to-right tree.  The root question is printed above the tree; every node
-% shows the answer that leads to it (small, gray) and then either the next
-% question or the metric (bold) with its page.  Nodes of one level share a
+% shows the answer that leads to it (gray) and then either the next
+% question or the metric (bold) on its own line. Nodes of one level share a
 % column, leaves share the last column, edges are thin gray forks.
 \usepackage[edges]{forest}
 \colorlet{mapband}{cyanlight}
@@ -401,40 +401,48 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 }
 \newcommand{\nohyph}{\hyphenpenalty=10000 \exhyphenpenalty=10000 }
 % a metric with its page number
-\newcommand{\mref}[2]{\textbf{#1}~{\color{black!55}\mdseries\scriptsize\pageref{#2}}}
+\newcommand{\mref}[2]{{\color{black}\textbf{#1}}~{\color{black!65}\mdseries\scriptsize\pageref{#2}}}
 % a node: the answer that leads here, then the next question or the metric(s)
-\newcommand{\dm}[2]{{\color{black!58}#1}\\#2}
-% a leaf: the answer and the metric(s) on one line
-\newcommand{\dl}[2]{{\color{black!58}#1:} #2}
+\newcommand{\dm}[2]{{\color{black!68}#1}\\[2pt]{\color{black}\bfseries #2}}
+% Keep the answer and destination on separate lines, consistently across leaves.
+\newcommand{\dl}[2]{{\color{black!68}#1}\\[1pt]#2}
 \forestset{
     dmap/.style={
         for tree={
             grow'=0, child anchor=west, parent anchor=east, anchor=west,
             font=\footnotesize\nohyph, text=black!80, node options={align=left},
-            l sep=3.5mm, s sep=3mm, inner xsep=0pt, inner ysep=1.4pt, outer xsep=1.5pt,
+            l sep=3.5mm, s sep=2.8mm, inner xsep=0pt, inner ysep=1.4pt, outer xsep=1.5pt,
             edge={draw, line width=0.5pt, black!30},
             forked edges, fork sep=2mm,
             tier/.option=level,
         },
-        where n children=0{tier=leaf, text width=3.6cm}{},
+        where n children=0{tier=leaf, text width=3.95cm}{},
         % with an odd number of children the parent sits level with the middle one, so its stub and that child's tick form one line
         where n children=3{calign=child, calign child=2}{},
         where n children=5{calign=child, calign child=3}{},
-        where level=1{fork sep=0pt, if n children=0{}{text width=2.3cm}}{},
-        where level=2{if n children=0{}{text width=2.5cm}}{},
-        where level=3{if n children=0{}{text width=2.5cm}}{},
+        where level=1{fork sep=0pt, if n children=0{}{text width=2.2cm}}{},
+        where level=2{if n children=0{}{text width=2.3cm}}{},
+        where level=3{if n children=0{}{text width=2.3cm}}{},
+    },
+    compact/.style={for tree={s sep=1.8mm, inner ysep=1pt}},
+    wide/.style={
+        where n children=0{text width=5.8cm}{},
+        where level=1{if n children=0{}{text width=3.1cm}}{},
+        where level=2{if n children=0{}{text width=3.1cm}}{},
     },
     % for shallow trees: a larger size
     large/.style={
         for tree={font=\small\nohyph, s sep=4.5mm, l sep=5mm},
-        where n children=0{text width=3.8cm}{},
-        where level=1{if n children=0{}{text width=2.8cm}}{},
-        where level=2{if n children=0{}{text width=3.0cm}}{},
+        where n children=0{text width=5.8cm}{},
+        where level=1{if n children=0{}{text width=3.1cm}}{},
+        where level=2{if n children=0{}{text width=3.1cm}}{},
     },
 }
 % \begin{decisionmap}{band}{accent}{title}{subtitle} ... \end{decisionmap}
+\newcount\mapstartpage
 \newenvironment{decisionmap}[4]{%
     \clearpage
+    \mapstartpage=\value{page}%
     \colorlet{mapband}{#1}\colorlet{mapaccent}{#2}%
     \renewcommand{\maptitle}{#3}%
     \thispagestyle{mapstyle}%
@@ -445,10 +453,14 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \noindent
 }{%
     \clearpage
+    \typeout{MAPFIT|\the\mapstartpage|\thepage}%
+    \ifnum\value{page}=\numexpr\mapstartpage+1\relax\else
+      \PackageError{decisionmap}{Decision map overflowed its page}{Adjust the tree's label widths and spacing.}%
+    \fi
 }
 % the root question, printed above the tree
 \newcommand{\maproot}[1]{{\small\bfseries\color{black!85}#1}\par\vspace{4pt}\noindent}
-\newcommand{\mapnotes}[1]{\par\vspace{10pt}{\color{black!60}\footnotesize\setlength{\parskip}{3pt}#1\par}}
+\newcommand{\mapnotes}[1]{\par\vspace{12pt}{\color{black!70}\fontsize{8.5}{10.5}\selectfont\setlength{\parskip}{3pt}#1\par}}
 
 \input{metric-style}
 \input{hardcover}

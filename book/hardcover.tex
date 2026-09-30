@@ -48,7 +48,7 @@
 }{}
 % Fine rules must survive print at their final inclusion scale.
 \tikzset{semithick/.style={line width=.95pt}}
-\forestset{dmap/.append style={for tree={edge={draw,line width=.8pt,black!40}}}}
+\forestset{dmap/.append style={for tree={edge={draw,line width=.8pt,black!30}}}}
 
 % Fail early if later editing breaks a facing-page metric spread.
 \newcount\metricstartpage
@@ -64,6 +64,10 @@
 % mathematical scripts above seven PDF points, including formula fit scaling.
 \renewcommand{\scriptsize}{\fontsize{7.7}{9}\selectfont}
 \DeclareMathSizes{8}{8}{7.7}{7.7}
+% Decision-map text uses intermediate sizes. Reuse the established math fonts
+% so anyfontsize cannot cache a new substitute for scripts elsewhere in the book.
+\DeclareMathSizes{8.3}{8}{7.7}{7.7}
+\DeclareMathSizes{8.5}{8}{7.7}{7.7}
 \DeclareMathSizes{9}{9}{7.7}{7.7}
 \DeclareMathSizes{10}{10}{8}{8}
 \DeclareMathSizes{11}{11}{8}{8}

@@ -8,7 +8,7 @@ Without topic labels, we can still examine how close the documents in each clust
 % ---------- Decision map ----------
 \begin{decisionmap}{orangelight}{orangeaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{Do you have ground-truth classes?}
-\begin{forest} dmap
+\begin{forest} dmap, wide
 [, coordinate, l sep=0pt
   [{\dm{yes}{How do you compare the two labelings?}}
     [{\dl{look at the table}{\mref{Contingency Matrix}{sec:contingency-matrix}}}]

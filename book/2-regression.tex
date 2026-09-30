@@ -8,19 +8,19 @@ This chapter explains these ways of measuring error and when each is useful. We 
 % ---------- Decision map ----------
 \begin{decisionmap}{cyanlight}{cyanaccent}{Which metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What does the model predict?}
-\begin{forest} dmap
+\begin{forest} dmap, compact
 [, coordinate, l sep=0pt
-  [{\dl{a quantile or an interval bound}{\mref{Pinball Loss}{sec:pinball-loss}}}]
-  [{\dl{only the direction, up or down}{\mref{MDA}{sec:mda}}}]
-  [{\dm{a value}{How should the error be read?}}
-    [{\dm{in the target's units}{Should big misses count extra?}}
+  [{\dl{a quantile or interval bound}{\mref{Pinball Loss}{sec:pinball-loss}}}]
+  [{\dl{direction only: up or down}{\mref{MDA}{sec:mda}}}]
+  [{\dm{a value}{How should we read the error?}}
+    [{\dm{in target units}{Penalize big misses more?}}
       [{\dl{yes}{\mref{MSE}{sec:mse}, \mref{RMSE}{sec:rmse}}}]
       [{\dl{no}{\mref{MAE}{sec:mae}}}]
     ]
-    [{\dm{as a percentage}{Zeros or tiny values in the target?}}
+    [{\dm{as a percentage}{Zeros or tiny target values?}}
       [{\dl{no}{\mref{MAPE}{sec:mape}}}]
       [{\dl{yes: weight by volume}{\mref{wMAPE}{sec:wmape}}}]
-      [{\dl{yes, and keep the score bounded}{\mref{sMAPE}{sec:smape}}}]
+      [{\dl{yes: keep the score bounded}{\mref{sMAPE}{sec:smape}}}]
     ]
     [{\dl{against a naive forecast}{\mref{MASE}{sec:mase}}}]
     [{\dl{in log space}{\mref{MSLE}{sec:msle}, \mref{RMSLE}{sec:rmsle}}}]
@@ -31,7 +31,7 @@ This chapter explains these ways of measuring error and when each is useful. We 
     [{\dm{as variance explained}{Compared with what?}}
       [{\dl{squared error, bias included}{\mref{R-squared}{sec:r-squared}}}]
       [{\dl{any deviance}{\mref{D2}{sec:d2}}}]
-      [{\dl{ignoring a constant bias}{\mref{Explained Variance Score}{sec:explained-variance-score}}}]
+      [{\dl{ignore a constant bias}{\mref{Explained Variance Score}{sec:explained-variance-score}}}]
     ]
   ]
 ]
