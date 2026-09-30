@@ -4,7 +4,6 @@
 \newlength{\booktrimheight}\setlength{\booktrimheight}{8.5in}
 \newcommand{\bookleftmargin}{18mm}
 \newcommand{\booksetleftmargin}{\ifodd\value{page}\renewcommand{\bookleftmargin}{18mm}\else\renewcommand{\bookleftmargin}{17.175mm}\fi}
-\patchcmd{\chapteropener}{\clearpage}{\clearpage\booksetleftmargin}{}{}
 % First page of a metric is verso (left/even); the next page is recto.
 % Padding is inserted only when necessary and carries neither folio nor band.
 \newcommand{\metricentry}[2]{%
@@ -38,11 +37,6 @@
  \fi
  \global\metricentrypagefalse
  \fi}
-% Position chapter furniture within the same mirrored safe area as the prose.
-\patchcmd{\chapteropener}{xshift=1.25cm}{xshift=\bookleftmargin}{}{}
-\patchcmd{\chapteropener}{xshift=1.25cm}{xshift=\bookleftmargin}{}{}
-\patchcmd{\chapteropener}{yshift=-1.1cm}{yshift=-14.175mm}{}{}
-\patchcmd{\chapteropener}{yshift=-4.9cm}{yshift=-52.175mm}{}{}
 % Keep figures at their verified printed size as the text column narrows.
 % The 1 mm overhang on each side remains well within the safe margins.
 \newlength{\bookfigurewidth}\setlength{\bookfigurewidth}{109.7mm}

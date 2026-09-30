@@ -119,13 +119,4 @@
  \refstepcounter{section}\addcontentsline{toc}{section}{#1}%
  \renewcommand{\sectiontitle}{#1}\par\addvspace{6pt}
  {\sffamily\fontsize{13}{16}\selectfont\bfseries #1\par}\nobreak}
-\renewcommand{\cfttoctitlefont}{\sffamily\fontsize{24}{28}\selectfont\bfseries}
-\renewcommand{\cftchapfont}{\sffamily\fontsize{11}{14}\selectfont\bfseries}
-\renewcommand{\cftchappagefont}{\sffamily\fontsize{11}{14}\selectfont\bfseries}
-\renewcommand{\cftsecfont}{\normalfont\fontsize{10}{12}\selectfont}
-\renewcommand{\cftsecpagefont}{\normalfont\fontsize{10}{12}\selectfont}
-\pretocmd{\chapteropener}{\metricbody}{}{}
-\patchcmd{\chapteropener}{\Huge\bfseries}{\sffamily\Huge\bfseries}{}{}
-\patchcmd{\chapteropener}{\fontsize{58}{58}}{\sffamily\fontsize{58}{58}}{}{}
-\patchcmd{\chapteropener}{\large\bfseries}{\sffamily\large\bfseries}{}{}
 \forestset{dmap/.append style={for tree={font=\sffamily\footnotesize\nohyph}},large/.append style={for tree={font=\sffamily\small\nohyph}}}
