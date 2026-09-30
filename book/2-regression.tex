@@ -36,7 +36,7 @@ This chapter explains these ways of measuring error and when each is useful. We 
   ]
 ]
 \end{forest}
-\mapnotes{Compare models on the same target and test data using MAE or RMSE. A gap between MAPE and wMAPE reflects their different weighting of relative errors; inspect the item-level errors to understand it. A scale-free score helps with comparisons across scales, but its baseline and assumptions still matter.}
+\mapnotes{Compare models on the same test cases. If MAE and RMSE favor different models, inspect the largest errors: RMSE gives those errors more weight.}
 \end{decisionmap}
 
 % ---------- MAE ----------

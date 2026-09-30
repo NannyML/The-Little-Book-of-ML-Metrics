@@ -34,7 +34,7 @@ Many classifiers also predict probabilities. A filter may flag email once its sp
   [{\dl{agreement between raters}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}}]
 ]
 \end{forest}
-\mapnotes{Start with the confusion matrix (p.~\pageref{sec:confusion-matrix}) when evaluating decisions, and report the threshold. If ROC AUC is high but PR AUC is low, inspect the precision--recall curve alongside the proportion of positives. Check recall and false alarms at the threshold you plan to use.}
+\mapnotes{Inspect the confusion matrix (p.~\pageref{sec:confusion-matrix}) at the threshold you plan to use. A high AUC can still leave you with too many false alarms or missed positives at that threshold.}
 \end{decisionmap}
 
 % ---------- Confusion Matrix ----------

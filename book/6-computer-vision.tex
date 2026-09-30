@@ -23,7 +23,7 @@ This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice c
   ]
 ]
 \end{forest}
-\mapnotes{Dice and IoU (the Jaccard Index, p.~\pageref{sec:jaccard-index}) rank individual mask comparisons in the same order, but averaging over images or classes can change the ranking. Both are used for segmentation; follow the task's evaluation protocol. PSNR and SSIM can distinguish different aspects of image quality, so inspect the images alongside the scores.}
+\mapnotes{Keep the evaluation setup fixed when comparing models, including preprocessing and how scores are averaged across images or classes. For image restoration, inspect the images alongside PSNR and SSIM to see which differences each score captures.}
 \end{decisionmap}
 
 % ---------- Pixel Accuracy ----------
