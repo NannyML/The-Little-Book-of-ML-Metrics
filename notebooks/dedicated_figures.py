@@ -301,43 +301,43 @@ def fig_mase():
     e_naive = np.abs(yv - naive)
     mae_model = e_model[1:].mean()
     mae_naive = np.nanmean(e_naive)
-    mase = mae_model / mae_naive
-    fig, (axT, axB) = plt.subplots(2, 1, figsize=(11, 7.2), sharex=True,
-                                   gridspec_kw={'height_ratios': [1.25, 1], 'hspace': 0.32})
-    axT.plot(t, yv, color=DARK, lw=2.0, marker='o', ms=4, zorder=4)
-    axT.plot(t, naive, color=GREY_LINE, lw=1.8, ls=(0, (4, 3)), zorder=2)
-    axT.plot(t, model, color=start_color, lw=2.2, zorder=3)
-    ends = spread([yv[-1], model[-1], naive[-1]], 4.2)
-    for yy_, txt, col in zip(ends, ['actual', 'model forecast', "naive: yesterday's value"], [DARK, start_color, MID]):
-        axT.text(T + 0.4, yy_, txt, color=col, fontsize=13, va='center')
-    axT.set_ylabel('demand', fontsize=13)
-    axT.tick_params(labelsize=12)
-    despine(axT)
-    axT.spines['bottom'].set_bounds(0, T)
-    w = 0.4
-    axB.bar(t[1:] - w / 2, e_naive[1:], width=w, color=GREY, zorder=3)
-    axB.bar(t[1:] + w / 2, e_model[1:], width=w, color=start_color, zorder=3)
-    axB.axhline(mae_naive, xmax=(T + 1) / (T + 15), color=GREY_LINE, lw=1.4, ls=(0, (4, 3)), zorder=4)
-    axB.axhline(mae_model, xmax=(T + 1) / (T + 15), color=start_color, lw=1.4, ls=(0, (4, 3)), zorder=4)
-    lab = spread([mae_model, mae_naive], 1.6)
-    axB.text(T + 0.4, lab[1], f'naive MAE = {mae_naive:.2f}', color=MID, fontsize=13, va='center')
-    axB.text(T + 0.4, lab[0], f'model MAE = {mae_model:.2f}', color=start_color, fontsize=13, va='center')
-    axB.set_title(f'MASE = {mae_model:.2f} / {mae_naive:.2f} = {mase:.2f}', loc='left', fontsize=15, color=DARK, pad=8)
-    axB.set_ylabel('absolute error', fontsize=13)
-    axB.set_xlabel('day', fontsize=13)
-    axB.set_xlim(-1, T + 14)
+    ratio = mae_model / mae_naive
+    fig, (axT, axB) = book_figure(1.0, 2.75, 2, 1, sharex=True,
+                                  gridspec_kw={'height_ratios': [1.2, 1]})
+    axT.plot(t, naive, color=REF, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=2)
+    axT.plot(t, model, color=NML_CYAN, zorder=3)
+    axT.plot(t, yv, color=INK, lw=LW_THIN + 0.3, marker='o', ms=2.2, zorder=4)
+    ends = spread([yv[-1], model[-1], naive[-1]], 7.5)
+    for yy_, txt, col in zip(ends, ['actual', 'model forecast', "naive: yesterday's value"],
+                             [INK, NML_CYAN, MUTED]):
+        axT.text(T + 0.3, yy_, txt, color=col, va='center')
+    axT.set_ylabel('demand')
+    axT.set_yticks([40, 60, 80])
+    axT.set_ylim(36, 84)
+    tidy_axes(axT, bottom=False)
+    w = 0.42
+    axB.bar(t[1:] - w / 2, e_naive[1:], width=w, color=LIGHT, zorder=3, linewidth=0)
+    axB.bar(t[1:] + w / 2, e_model[1:], width=w, color=NML_CYAN, zorder=3, linewidth=0)
+    axB.plot([0, T - 1], [mae_naive] * 2, color=REF, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=4)
+    axB.plot([0, T - 1], [mae_model] * 2, color=NML_CYAN, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=4)
+    lab = spread([mae_model, mae_naive], 2.6)
+    axB.text(T + 0.3, lab[1], f'naive MAE = {num(mae_naive)}', color=MUTED, va='center')
+    axB.text(T + 0.3, lab[0], f'model MAE = {num(mae_model)}', color=NML_CYAN, va='center')
+    axB.set_title(f'model MAE / naive MAE = {num(mae_model)} / {num(mae_naive)} = {num(ratio)}'
+                  '  (same 39 days)', loc='left', fontsize=TEXT_PT)
+    axB.set_ylabel('absolute error')
+    axB.set_xlabel('day')
+    axB.set_yticks([0, 5, 10, 15])
+    axB.set_xlim(-1, T)
     axB.set_xticks(range(0, T + 1, 10))
-    axB.tick_params(labelsize=12)
-    despine(axB)
-    axB.spines['bottom'].set_bounds(0, T)
-    fig.subplots_adjust(left=0.08, right=0.99, top=0.97, bottom=0.09)
+    tidy_axes(axB)
     save_figure(fig, 'MASE_naive_baseline')
-    plt.close()
-    print(f'6. MASE model MAE {mae_model:.3f} naive MAE {mae_naive:.3f} MASE {mase:.3f}')
+    plt.close(fig)
+    print(f'MASE model MAE {mae_model:.3f} naive MAE {mae_naive:.3f} ratio {ratio:.3f}')
 
 
 # ===========================================================================
-# 7. wMAPE — the channel table, drawn: MAPE per channel vs contribution to wMAPE
+# wMAPE: MAPE per channel vs each channel's contribution to wMAPE
 # ===========================================================================
 def fig_wmape():
     channels = ['B2B', 'Online', 'Marketplace', 'Retail']
@@ -349,43 +349,42 @@ def fig_wmape():
     contrib = 100 * err / actual.sum()
     wmape = contrib.sum()
     mape = mape_i.mean()
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(12, 5.0), gridspec_kw={'wspace': 0.4})
+    fig, (axL, axR) = book_figure(1.0, 1.95, 1, 2, sharey=True, sharex=True)
     yy = np.arange(len(channels))[::-1]
-    axL.barh(yy, mape_i, color=GREY, height=0.6, zorder=3)
+    axL.barh(yy, mape_i, color=LIGHT, height=0.62, zorder=3)
     for yi, v in zip(yy, mape_i):
-        axL.text(v + 0.3, yi, f'{v:.1f}%', va='center', fontsize=13, color=DARK)
-    axL.set_yticks(yy)
-    axL.set_yticklabels(channels, fontsize=13)
-    axL.set_xlim(0, 14)
-    axL.set_xticks([0, 5, 10])
-    axL.tick_params(labelsize=12, axis='x')
-    axL.tick_params(axis='y', length=0)
-    despine(axL, keep=('bottom',))
-    axL.spines['bottom'].set_bounds(0, 10)
-    axL.set_title(f'per-channel MAPE, mean = {mape:.1f}%', fontsize=15, color=DARK, pad=26)
-    axL.text(0.5, 1.03, 'every channel weighs the same', ha='center', va='bottom', fontsize=12, color=MID, transform=axL.transAxes)
-    axL.set_xlabel('|error| / actual (%)', fontsize=13)
-    # right: contributions, bar height encodes revenue weight
-    axR.barh(yy, contrib, color=start_color, height=np.clip(weight * 3.2, 0.12, 0.95), zorder=3)
+        axL.text(v + 0.3, yi, f'{num(v, 1)}%', va='center', color=INK)
+    axR.barh(yy, contrib, color=NML_CYAN, height=0.62, zorder=3)
     for yi, v, wgt in zip(yy, contrib, weight):
-        axR.text(v + 0.15, yi, f'{v:.2f} pts   ({100 * wgt:.0f}% of revenue)', va='center', fontsize=12.5, color=DARK)
-    axR.set_yticks(yy)
-    axR.set_yticklabels(channels, fontsize=13)
-    axR.set_xlim(0, 11.5)
-    axR.set_xticks([0, 2, 4, 6, 8])
-    axR.tick_params(labelsize=12, axis='x')
-    axR.tick_params(axis='y', length=0)
-    despine(axR, keep=('bottom',))
-    axR.spines['bottom'].set_bounds(0, 8)
-    axR.set_title(f'contribution to wMAPE, sum = {wmape:.1f}%', fontsize=15, color=DARK, pad=26)
-    axR.text(0.5, 1.03, 'bar height = share of total revenue', ha='center', va='bottom', fontsize=12, color=MID, transform=axR.transAxes)
-    axR.set_xlabel('|error| / total actual (percentage points)', fontsize=13)
-    fig.subplots_adjust(left=0.1, right=0.99, top=0.85, bottom=0.16)
+        axR.text(v + 0.3, yi, f'{num(v)}  ({100 * wgt:.0f}% of revenue)', va='center', color=INK)
+    axL.set_title(f'MAPE per channel\nmean {num(mape, 1)}%', loc='left', fontsize=TEXT_PT, linespacing=1.3)
+    axR.set_title(f'contribution to wMAPE\nsum {num(wmape, 1)}%', loc='left', fontsize=TEXT_PT, linespacing=1.3)
+    axL.set_yticks(yy, labels=channels)
+    axL.set_xlabel('error / actual (%)')
+    axR.set_xlabel('error / total actual (points)')
+    for ax in (axL, axR):
+        ax.set_xlim(0, 12.5)
+        ax.set_xticks([0, 5, 10])
+        tidy_axes(ax)
+        ax.spines['left'].set_visible(False)
+        ax.tick_params(axis='y', length=0)
+    axR.tick_params(axis='y', labelleft=False)
     save_figure(fig, 'wMAPE_compare_MAPE')
-    plt.close()
-    print('7. wMAPE', dict(mape_i=np.round(mape_i, 1), weight=np.round(100 * weight, 1), contrib=np.round(contrib, 2), wmape=round(wmape, 2), mape=round(mape, 2)))
+    plt.close(fig)
+    print('wMAPE', dict(mape_i=np.round(mape_i, 1), weight=np.round(100 * weight, 1),
+                        contrib=np.round(contrib, 2), wmape=round(wmape, 2), mape=round(mape, 2)))
+
+
+FIGURES = {'MI_contingency_contributions': lambda: fig_mi(),
+           'Homogeneity_cluster_composition': lambda: fig_homogeneity(),
+           'V_Measure_plane': lambda: fig_vmeasure(), 'FMI_plane': lambda: fig_fmi(),
+           'CG_order_blind': lambda: fig_cg(), 'MASE_naive_baseline': lambda: fig_mase(),
+           'wMAPE_compare_MAPE': lambda: fig_wmape()}
 
 
 if __name__ == '__main__':
-    fig_mi(); fig_homogeneity(); fig_vmeasure(); fig_fmi(); fig_cg(); fig_mase(); fig_wmape()
-    print('done')
+    # Only MASE draws from RNG, so each figure can be rebuilt on its own.
+    wanted = set(sys.argv[1:])
+    for name, make in FIGURES.items():
+        if not wanted or name in wanted:
+            make()

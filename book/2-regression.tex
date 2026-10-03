@@ -344,7 +344,7 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter.
 \end{metricfigure}
 
 % Left text with the image on the right
-\metriccaption{Figure. RMSLE.}{This one-observation example fixes the actual value at $10$ and varies the raw prediction error. MSLE squares the log difference, not the error on the horizontal axis; RMSLE takes its square root. The curves use different scales but order predictions identically. For a dataset, the root comes after averaging the squared log differences.}
+\metriccaption{Figure. RMSLE.}{This one-observation example fixes the actual value at $Y=10$ and varies the prediction. MSLE squares the difference between the logs; RMSLE takes its square root. The curves use different scales but order predictions identically. For a dataset, the root comes after averaging the squared log differences.}
 
 \orangebox{Did you know that...}
 {Kaggle's Mercari Price Suggestion Challenge in 2017--2018 and ASHRAE Great Energy Predictor III in 2019 both used RMSLE. The tasks involved predicting product prices and building energy consumption, respectively.}
@@ -529,7 +529,7 @@ Use wMAPE when you want a percentage summary that allows some actuals to be zero
     \includegraphics[width=\textwidth]{figures/wMAPE_compare_MAPE.png}
 \end{metricfigure}
 
-\metriccaption{Figure. wMAPE.}{Four sales channels of one forecast. \textit{Left:} MAPE per channel; every channel is about $10\%$ off and the mean is $9.9\%$. \textit{Right:} bar width shows each channel's contribution to wMAPE: its absolute error divided by total revenue. Retail accounts for $76\%$ of revenue, so its $10\%$ error contributes $7.6$ of the $9.9$ percentage points. This identifies the largest contribution to the score; deciding which error to fix also depends on the business costs.}
+\metriccaption{Figure. wMAPE.}{Four sales channels of one forecast. \textit{Left:} MAPE per channel; every channel is about $10\%$ off and the mean is $9.9\%$. \textit{Right:} bar length shows each channel's contribution to wMAPE: its absolute error divided by total revenue. Retail accounts for $76\%$ of revenue, so its $10\%$ error contributes $7.6$ of the $9.9$ percentage points. This identifies the largest contribution to the score; deciding which error to fix also depends on the business costs.}
 
 \orangebox{Did you know that...}
 {wMAPE is also called WAPE. It equals MAE divided by the mean absolute actual value, multiplied by $100$. With no zero actuals, it is also a weighted average of percentage errors, with weights proportional to actual size. But zero rows must not be discarded: actuals $[100,0]$ and forecasts $[90,10]$ give $20\%$, because both errors enter the numerator.}
@@ -645,8 +645,8 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
 \end{metricfigure}
 
 \metriccaption{Figure. MDA.}{\textit{Top:} twenty days of a price, with the forecast for each day made the day before. \textit{Bottom:}
-the direction of the actual move and of the forecast move, day by day. Green means they agree, red means they don't. MDA counts the
-green columns: $15$ of $19$ moves, so MDA $= 0.79$. The size of a miss never enters: day $13$ forecasts a jump of $+4.6$ against a
+the direction of the actual move and of the forecast move, day by day. Cyan means they agree, red means they don't. MDA counts the
+cyan columns: $15$ of $19$ moves, so MDA $= 0.79$. The size of a miss never enters: day $13$ forecasts a jump of $+4.6$ against a
 fall of $1.9$, and it counts as one miss, just like day $12$, where the forecast missed a move of $0.2$.}
 
 \orangebox{Did you know that...}
@@ -819,7 +819,7 @@ Use $R^2$ to express squared error relative to the variation in the targets. It 
     \includegraphics[width=\textwidth]{figures/R2_explained.png}
 \end{metricfigure}
 
-\metriccaption{Figure. R² as a ratio of squared-error areas.}{On the left, each purple square has side length $|y_i-\hat{y}_i|$, so its area represents one squared prediction error. On the right, the red squares represent errors against the mean baseline. The labeled totals give $R^2=1-3.4/43.2\approx0.92$. If the model's total squared error exceeds the baseline's, $R^2$ is negative.}
+\metriccaption{Figure. R² as a ratio of squared-error areas.}{On the left, each purple square has side length $|y_i-\hat{y}_i|$, so its area represents one squared prediction error. On the right, the red squares represent errors against the mean baseline. The labeled totals give $R^2=1-3.6/43.2\approx0.92$. If the model's total squared error exceeds the baseline's, $R^2$ is negative.}
 
 \orangebox{Did you know that...}
 {$R^2=1-MSE_{model}/MSE_{baseline}$, where the baseline predicts the evaluated targets' mean. On the same nonconstant targets, the baseline error stays fixed, so minimizing MSE and maximizing $R^2$ rank models identically. An increase of $0.01$ in $R^2$ corresponds to a decrease of $0.01\times MSE_{baseline}$ in MSE. This equivalence does not make scores from different datasets directly comparable.}
@@ -877,7 +877,7 @@ Use D2 when absolute error fits your task and you want to compare it with a cons
     \includegraphics[width=\textwidth]{figures/D2_abs_comparison.png}
 \end{metricfigure}
 
-\metriccaption{Figure. D2 as a ratio of absolute-error bar heights.}{Purple bars measure absolute errors against the fitted line; red bars measure them against the median. Their totals are $10.5$ and $19.5$, giving $D^2\approx0.46$. The line was fitted to five points and kept fixed when the red outlier was added. Before that addition, $R^2\approx0.92$ and $D^2\approx0.72$; afterward, they are $0.30$ and $0.46$. D2 falls less in this example, but the outlier changes both scores and their baselines.}
+\metriccaption{Figure. D2 as a ratio of absolute-error bar heights.}{Purple bars measure absolute errors against the fitted line; red bars measure them against the median. Their totals are $10.7$ and $19.5$, giving $D^2\approx0.45$. The line was fitted to five points and kept fixed when the red outlier was added. Before that addition, $R^2\approx0.92$ and $D^2\approx0.71$; afterward, they are $0.30$ and $0.45$. D2 falls less in this example, but the outlier changes both scores and their baselines.}
 
 \orangebox{Did you know that...}
 {The D-squared framework compares a model's loss with the loss of a constant baseline. For absolute error, that baseline is the median and the score is $1-MAE_{model}/MAE_{baseline}$. In scikit-learn, it is available as \texttt{d2\_absolute\_error\_score}.}

@@ -225,8 +225,10 @@ LINE_KW = dict(linewidth=6, solid_capstyle="round")
 FIGURES_DIR = Path(__file__).resolve().parent.parent / "book" / "figures"
 
 
-def save_figure(fig, name: str, *, dpi: int = 300):
+def save_figure(fig, name: str, *, dpi: int = 300, crop: bool = True):
     """Save a figure to book/figures/<name>.png with book-standard settings."""
+    if getattr(fig, '_book_print', None):
+        return save_print_figure(fig, name, crop=crop)
     prepare_book_figure(fig, name)
     path = FIGURES_DIR / f"{name}.png"
     fig.savefig(path, dpi=dpi, bbox_inches="tight", pad_inches=0)
@@ -284,3 +286,245 @@ def show_colormap():
     plt.gca().set_visible(False)
     plt.colorbar(cmap=nml_cmap, orientation="horizontal")
     plt.show()
+
+
+# ===========================================================================
+# Print-size design
+#
+# Book figures are drawn at the size they print, with their final type sizes,
+# so the layout checked on screen is the layout on the page. A figure made with
+# book_figure() is saved by save_figure() without any rescaling, wrapping or
+# per-figure layout patches.
+#
+# House conventions (see .claude/skills/book-plot/SKILL.md):
+#   - lettering 8 pt (panel titles 8.5 pt); in-cell numbers of dense matrices
+#     and token diagrams 7 pt; nothing smaller.
+#   - labels in lower case, except acronyms, symbols and metric names written
+#     that way in the prose ("nDCG", "SNR", "Y").
+#   - left and bottom spines only, offset slightly so tick labels never meet at
+#     the origin; no gridlines; direct labels instead of legends when they fit.
+#   - 0-1 score axes print one decimal (0.0, 0.5, 1.0); other axes use whole
+#     "nice" steps with thousands separators.
+#   - negative numbers use the true minus sign; exact zeros carry no sign.
+#   - data lines 1.4 pt, reference lines 0.7 pt gray, markers 3.5 pt.
+#   - color meaning: cyan = good / correct / matched, red = bad / wrong,
+#     purple = second series or middle, grays = reference and context.
+# ===========================================================================
+from matplotlib import ticker as _ticker
+
+TEXTWIDTH_IN = PRINT_WIDTH_IN          # 109.7 mm
+TEXT_PT = 8.0
+TITLE_PT = 8.5
+SMALL_PT = 7.0
+LW = 1.4
+LW_THIN = 0.7
+MS = 3.5
+
+INK = '#2a2a2a'        # data drawn in neutral ink, emphasized labels
+MUTED = '#6f6f6f'      # annotations and secondary text
+REF = '#9a9a9a'        # reference lines, leaders, neutral markers
+LIGHT = '#d6d6d6'      # neutral cells and empty markers
+FILL = '#efefef'       # light context shading
+CYAN_TINT = '#e2f3f9'
+RED_TINT = '#fbe9e9'
+PURPLE_TINT = '#ebe5f2'
+
+PRINT_RC = {
+    **PLOT_FONT_SETTINGS,
+    'font.size': TEXT_PT,
+    'axes.titlesize': TITLE_PT,
+    'axes.titleweight': 'normal',
+    'axes.titlepad': 4,
+    'axes.labelsize': TEXT_PT,
+    'axes.labelpad': 3,
+    'axes.labelcolor': 'black',
+    'axes.linewidth': 0.6,
+    'axes.edgecolor': 'black',
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+    'axes.grid': False,
+    'axes.unicode_minus': True,
+    'xtick.labelsize': TEXT_PT,
+    'ytick.labelsize': TEXT_PT,
+    'xtick.major.width': 0.6,
+    'ytick.major.width': 0.6,
+    'xtick.major.size': 2.5,
+    'ytick.major.size': 2.5,
+    'xtick.major.pad': 2,
+    'ytick.major.pad': 2,
+    'xtick.minor.visible': False,
+    'ytick.minor.visible': False,
+    'lines.linewidth': LW,
+    'lines.markersize': MS,
+    'lines.solid_capstyle': 'round',
+    'patch.linewidth': 0.6,
+    'legend.fontsize': TEXT_PT,
+    'legend.frameon': False,
+    'legend.handlelength': 1.4,
+    'legend.handletextpad': 0.4,
+    'legend.borderaxespad': 0.2,
+    'legend.labelspacing': 0.3,
+    'legend.columnspacing': 1.2,
+    'figure.dpi': 100,
+    'savefig.dpi': 600,
+    'figure.constrained_layout.h_pad': 0.02,
+    'figure.constrained_layout.w_pad': 0.02,
+    'figure.constrained_layout.hspace': 0.04,
+    'figure.constrained_layout.wspace': 0.04,
+}
+
+
+def use_print_style():
+    """Switch matplotlib to the print-size defaults (call once per generator)."""
+    plt.rcParams.update(PRINT_RC)
+
+
+def book_figure(width=1.0, height=2.4, nrows=1, ncols=1, *, layout='constrained',
+                subplot_kw=None, gridspec_kw=None, **kwargs):
+    """Figure at its printed size: width is the fraction of the text width used
+    in the \\includegraphics call, height is in inches."""
+    use_print_style()
+    fig, axes = plt.subplots(nrows, ncols, figsize=(TEXTWIDTH_IN * width, height),
+                             layout=layout, subplot_kw=subplot_kw,
+                             gridspec_kw=gridspec_kw, **kwargs)
+    fig._book_print = {'width': width}
+    return fig, axes
+
+
+def book_canvas(width=1.0, height=2.4, layout=None):
+    """Empty print-size figure for hand-placed axes (3D surfaces, diagrams)."""
+    use_print_style()
+    fig = plt.figure(figsize=(TEXTWIDTH_IN * width, height), layout=layout)
+    fig._book_print = {'width': width}
+    return fig
+
+
+def tidy_axes(ax, offset=3, left=True, bottom=True):
+    """Open left/bottom spines, offset from the data so zero labels never meet."""
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(left)
+    ax.spines['bottom'].set_visible(bottom)
+    if left:
+        ax.spines['left'].set_position(('outward', offset))
+    if bottom:
+        ax.spines['bottom'].set_position(('outward', offset))
+    if not left:
+        ax.tick_params(axis='y', left=False, labelleft=False)
+    if not bottom:
+        ax.tick_params(axis='x', bottom=False, labelbottom=False)
+    return ax
+
+
+def bare_axes(ax):
+    """No spines or ticks: for diagrams, images and token figures."""
+    for side in ax.spines.values():
+        side.set_visible(False)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    return ax
+
+
+def num(x, nd=2, sign=False, pct=False, thousands=False):
+    """Format a number for figure text: true minus sign, no sign on zero."""
+    value = round(float(x), nd)
+    if value == 0:
+        value = 0.0
+    body = f'{abs(value):,.{nd}f}' if thousands else f'{abs(value):.{nd}f}'
+    if value < 0:
+        body = '−' + body
+    elif sign and value > 0:
+        body = '+' + body
+    return body + ('%' if pct else '')
+
+
+def unit_ticks(ax, axis='y', step=0.5, lo=0.0, hi=1.0):
+    """0-1 score axis printed with one decimal (0.0, 0.5, 1.0)."""
+    ticks = np.round(np.arange(lo, hi + step / 2, step), 6)
+    labels = [num(t, 1) for t in ticks]
+    if axis == 'y':
+        ax.set_yticks(ticks, labels=labels)
+    else:
+        ax.set_xticks(ticks, labels=labels)
+    return ticks
+
+
+def thousands_axis(ax, axis='y'):
+    fmt = _ticker.FuncFormatter(lambda v, _: num(v, 0, thousands=True))
+    (ax.yaxis if axis == 'y' else ax.xaxis).set_major_formatter(fmt)
+
+
+def minus_axis(ax, axis='y', nd=None):
+    """Tick labels with the true minus sign and an explicit number of decimals."""
+    def f(v, _):
+        d = nd if nd is not None else (0 if float(v).is_integer() else 1)
+        return num(v, d)
+    (ax.yaxis if axis == 'y' else ax.xaxis).set_major_formatter(_ticker.FuncFormatter(f))
+
+
+def label_end(ax, x, y, text, color, dx=3, dy=0, ha='left', va='center', **kw):
+    """Direct label next to a line end, offset in points."""
+    return ax.annotate(text, (x, y), xytext=(dx, dy), textcoords='offset points',
+                       ha=ha, va=va, color=color, annotation_clip=False, **kw)
+
+
+def note(ax, x, y, text, xy=None, color=None, ha='left', va='center', **kw):
+    """Gray annotation, optionally with a thin leader to xy (data coords)."""
+    color = color or MUTED
+    if xy is None:
+        return ax.text(x, y, text, color=color, ha=ha, va=va, **kw)
+    return ax.annotate(text, xy=xy, xytext=(x, y), color=color, ha=ha, va=va,
+                       arrowprops=dict(arrowstyle='-', color=REF, lw=LW_THIN,
+                                       shrinkA=1.5, shrinkB=2),
+                       annotation_clip=False, **kw)
+
+
+def _flatten(path):
+    from PIL import Image
+    with Image.open(path) as im:
+        if im.mode == 'RGB':
+            return
+        rgba = im.convert('RGBA')
+        flat = Image.new('RGB', rgba.size, 'white')
+        flat.paste(rgba, mask=rgba.getchannel('A'))
+        flat.save(path)
+
+
+def _check_print_text(fig, name):
+    problems = []
+    for text in fig.findobj(match=Text):
+        label = text.get_text()
+        if not text.get_visible() or not label.strip():
+            continue
+        if text.get_fontsize() < SMALL_PT - 0.01:
+            problems.append(f'{label[:30]!r} at {text.get_fontsize():.1f} pt')
+    if problems:
+        raise ValueError(f'{name}: lettering below {SMALL_PT} pt: {problems}')
+
+
+def save_print_figure(fig, name, *, crop=True, dpi=600):
+    """Save a print-size figure. With crop=True the canvas width is adjusted so
+    the tight crop equals the printed width exactly (no scaling at inclusion)."""
+    name = Path(name).stem
+    apply_plot_typography(fig)
+    target = TEXTWIDTH_IN * fig._book_print['width']
+    if crop:
+        for _ in range(8):
+            fig.canvas.draw()
+            box = fig.get_tightbbox(fig.canvas.get_renderer())
+            error = target - box.width
+            if abs(error) < 0.002:
+                break
+            fig.set_figwidth(fig.get_figwidth() + error)
+        fig.canvas.draw()
+        box = fig.get_tightbbox(fig.canvas.get_renderer())
+        if abs(box.width - target) > 0.01:
+            raise ValueError(f'{name}: crop width {box.width:.3f} in, expected {target:.3f} in')
+    _check_print_text(fig, name)
+    path = FIGURES_DIR / f'{name}.png'
+    if crop:
+        fig.savefig(path, dpi=dpi, bbox_inches='tight', pad_inches=0)
+    else:
+        fig.savefig(path, dpi=dpi)
+    _flatten(path)
+    print(f'Saved: {path} ({fig.get_figwidth():.2f} x {fig.get_figheight():.2f} in canvas)')
