@@ -528,3 +528,9 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
         fig.savefig(path, dpi=dpi)
     _flatten(path)
     print(f'Saved: {path} ({fig.get_figwidth():.2f} x {fig.get_figheight():.2f} in canvas)')
+
+# Set-overlap figures (Jaccard, Dice): the prediction is cyan and the ground
+# truth purple, as in the formulas; their overlap is the blend of the two.
+PRED_ONLY = '#8fd3ea'
+TRUTH_ONLY = '#b3a0d0'
+OVERLAP = '#2254aa'

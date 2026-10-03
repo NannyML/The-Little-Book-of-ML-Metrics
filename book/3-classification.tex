@@ -476,7 +476,7 @@ Use balanced accuracy when you want success within each class to contribute equa
     \includegraphics[width=\textwidth]{figures/Balanced_Accuracy_comparison.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Balanced Accuracy.}{Illustrative classifier results. On the left, the always-negative baseline misses every positive. The blue model catches about $79\%$ of positives and correctly rejects about $85\%$ of negatives, giving $0.85$ accuracy and $0.82$ balanced accuracy. It finds cases the baseline misses but makes more false alarms; whether that is preferable depends on the task. On balanced data (right), the two metrics agree.}
+\metriccaption{Figure. Balanced Accuracy.}{Illustrative classifier results. On the left, the always-negative baseline misses every positive. The cyan model catches about $79\%$ of positives and correctly rejects about $85\%$ of negatives, giving $0.85$ accuracy and $0.82$ balanced accuracy. It finds cases the baseline misses but makes more false alarms; whether that is preferable depends on the task. On balanced data (right), the same model scores $0.82$ on both metrics: balanced accuracy does not change with the class mix.}
 
 \orangebox{Did you know that...}
 {Calculating recall separately for each class and averaging the results equally is called \emph{macro-averaged recall}. This gives balanced accuracy when both averages use the same classes. With $K$ classes represented in the data, predictions independent of the true labels have expected balanced accuracy $1/K$.}
@@ -718,7 +718,7 @@ Use ROC AUC to compare ranking ability before choosing a deployment threshold. W
     \includegraphics[width=.82\textwidth]{figures/ROC_AUC_curves.png}
 \end{metricfigure}
 
-\metriccaption{Figure. ROC AUC.}{Two illustrative ROC curves. The blue curve achieves higher recall at the same false-positive rate and encloses more area. The dashed diagonal is the chance-ranking reference, with area $0.5$.}
+\metriccaption{Figure. ROC AUC.}{Two illustrative ROC curves. The cyan curve achieves higher recall at the same false-positive rate and encloses more area. The dashed diagonal is the chance-ranking reference, with area $0.5$.}
 
 \orangebox{Did you know that...}
 {The ROC curve was developed during World War II for analyzing radar signals. Radar operators needed to distinguish between enemy aircraft and noise,
@@ -774,7 +774,7 @@ Use PR AUC when finding positive cases and limiting false alarms are the main co
     \includegraphics[width=.82\textwidth]{figures/PR_AUC_curves.png}
 \end{metricfigure}
 
-\metriccaption{Figure. PR AUC.}{Two illustrative PR curves. The blue curve maintains higher precision at each recall level and encloses more area. Read the curve at the recall you need to see the corresponding precision.}
+\metriccaption{Figure. PR AUC.}{Two illustrative PR curves on data with $10\%$ positives. The cyan curve maintains higher precision at each recall level and encloses more area. A random ranking has precision $0.10$ at every recall, so its area is $0.10$, not $0.5$ as in ROC. Read the curve at the recall you need to see the corresponding precision.}
 
 \orangebox{Did you know that...}
 {The chance reference for a PR curve is the proportion of positive cases. With $10\%$ positives, selecting cases at random gives precision near $0.1$, so the reference area is $0.1$. Finite samples and the area convention affect the observed score. ROC AUC, in contrast, has expected value $0.5$ for random rankings.}
@@ -1235,30 +1235,27 @@ Use EC when different decisions have consequences that you can specify. The aver
 All costs in the tables and calculation are in thousands of dollars. Under these assumptions, approving a non-creditworthy applicant costs twice as much as rejecting a creditworthy one.
 
 \begin{metricfigure}
-\begin{tabular}{|c|c|c|}
-\hline
+\begin{tabular}{@{}lcc@{}}
+\toprule
  & $D_1$ (Approve) & $D_2$ (Reject) \\
-\hline
-$H_1$ (Creditworthy) & $c_{11} =  0$ & $c_{12} = 40$ \\
-\hline
-$H_2$ (Not creditworthy) & $c_{21} = 80$ & $c_{22} =  0$ \\
-\hline
+\midrule
+$H_1$ (Creditworthy) & $c_{11} = 0$ & $c_{12} = 40$ \\
+$H_2$ (Not creditworthy) & $c_{21} = 80$ & $c_{22} = 0$ \\
+\bottomrule
 \end{tabular}
 \end{metricfigure}
 
 For each of the three applications below, we look up the cost of the decision given the applicant's true class.
 
 \begin{metricfigure}
-\begin{tabular}{|c|c|c|c|}
-\hline
+\begin{tabular}{@{}cllr@{}}
+\toprule
 Application & True class & Decision & Cost \\
-\hline
+\midrule
 1 & Creditworthy & Approve & $0$ \\
-\hline
 2 & Not creditworthy & Approve & $80$ \\
-\hline
 3 & Creditworthy & Reject & $40$ \\
-\hline
+\bottomrule
 \end{tabular}
 \end{metricfigure}
 
