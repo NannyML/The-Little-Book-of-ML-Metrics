@@ -515,15 +515,22 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
             error = target - box.width
             if abs(error) < 0.002:
                 break
+            if fig.get_figwidth() + error < 0.5 * target:
+                raise ValueError(f'{name}: content is {box.width:.2f} in wide, cannot fit {target:.2f} in')
             fig.set_figwidth(fig.get_figwidth() + error)
         fig.canvas.draw()
         box = fig.get_tightbbox(fig.canvas.get_renderer())
-        if abs(box.width - target) > 0.01:
+        if box.width > target + 0.01:
             raise ValueError(f'{name}: crop width {box.width:.3f} in, expected {target:.3f} in')
+        # Fixed-aspect content cannot grow with the canvas: center it on a
+        # white strip of exactly the printed width instead.
+        from matplotlib.transforms import Bbox
+        pad = max(0.0, (target - box.width) / 2)
+        box = Bbox([[box.x0 - pad, box.y0], [box.x1 + pad, box.y1]])
     _check_print_text(fig, name)
     path = FIGURES_DIR / f'{name}.png'
     if crop:
-        fig.savefig(path, dpi=dpi, bbox_inches='tight', pad_inches=0)
+        fig.savefig(path, dpi=dpi, bbox_inches=box, pad_inches=0)
     else:
         fig.savefig(path, dpi=dpi)
     _flatten(path)

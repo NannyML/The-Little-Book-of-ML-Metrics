@@ -135,7 +135,7 @@ Use RI to describe pairwise agreement and ARI when comparing against chance. Bot
     \includegraphics[width=\textwidth]{figures/Rand_Index_separation.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Rand Index.}{Three clusterings of $300$ points in three balanced reference classes. RI is $1.00$ for the matching grouping, $0.90$ with partial overlap and $0.56$ for random assignments. In this example, many pairs are separated by both labelings even under random assignment. ARI accounts for that baseline, giving a value near zero in the random case.}
+\metriccaption{Figure. Rand Index.}{Three clusterings of $300$ points in three balanced reference classes. RI is $1.00$ for the matching grouping, $0.90$ with partial overlap and $0.56$ for random assignments. In this example, many pairs are separated by both labelings even under random assignment. ARI accounts for that baseline, giving a value near zero in the random case. In the middle panel, circled points sit in a cluster that does not match their class.}
 
 \orangebox{Did you know that...}
 {RI is the accuracy of a pairwise decision: together or apart. Group sizes influence how many such decisions each class contributes. A class of $100$ points contains $4{,}950$ within-class pairs; one of ten contains just $45$. That difference helps explain why good overall pairwise agreement can hide poor recovery of a small class.}
@@ -587,7 +587,7 @@ Use FMI for balanced pair-counting comparisons, including hierarchical clusterin
     \includegraphics[width=.82\textwidth]{figures/FMI_plane.png}
 \end{metricfigure}
 
-\metriccaption{Figure. FMI.}{The examples use $300$ points in three equal reference classes; the curves join equal FMI values. Splitting each class into roughly two pure groups preserves precision at $1$ but loses about half the together-pairs, giving FMI about $0.71$. One cluster recovers every reference pair but also merges all three classes: recall is $1$, precision about $0.33$ and FMI about $0.58$. ARI scores that one-cluster result zero.}
+\metriccaption{Figure. FMI.}{The examples use $300$ points in three equal reference classes; the curves join equal FMI values. Splitting each class into roughly two pure groups preserves precision at $1$ but loses about half the together-pairs, giving FMI about $0.71$. One cluster recovers every reference pair but also merges all three classes: recall is $1$, precision about $0.33$ and FMI about $0.58$. ARI scores that one-cluster result zero. Pairwise precision is the share of pairs placed together that share a class; pairwise recall is the share of same-class pairs placed together. The dashed curve, pairwise F1 $=0.5$, passes through the one-cluster result.}
 
 \orangebox{Did you know that...}
 {Fowlkes and Mallows introduced their index in 1983 to compare hierarchical clusterings at successive cuts. For the same pairwise precision and recall, their geometric mean is at least as large as the harmonic mean used by pairwise F1, and no larger than the arithmetic mean. All three coincide when precision and recall match.}
