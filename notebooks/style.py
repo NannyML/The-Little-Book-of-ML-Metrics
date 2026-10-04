@@ -8,6 +8,7 @@ Usage:
     from style import *
 """
 
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
@@ -502,6 +503,19 @@ def _check_print_text(fig, name):
         raise ValueError(f'{name}: lettering below {SMALL_PT} pt: {problems}')
 
 
+def _record_print_figure(fig, path, width_in):
+    """For tools/rebuild_figures.py: log each saved figure's printed width and
+    smallest lettering when BOOK_FIGURE_RECORD names a JSON-lines file."""
+    record = os.environ.get('BOOK_FIGURE_RECORD')
+    if not record:
+        return
+    import json
+    sizes = [t.get_fontsize() for t in fig.findobj(match=Text) if t.get_visible() and t.get_text().strip()]
+    with open(record, 'a') as stream:
+        stream.write(json.dumps({'name': path.name, 'printed_width_pt': 72 * width_in,
+                                 'smallest_printed_glyph_pt': min(sizes, default=SMALL_PT)}) + '\n')
+
+
 def save_print_figure(fig, name, *, crop=True, dpi=600):
     """Save a print-size figure. With crop=True the canvas width is adjusted so
     the tight crop equals the printed width exactly (no scaling at inclusion)."""
@@ -540,6 +554,7 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
     else:
         fig.savefig(path, dpi=dpi)
     _flatten(path)
+    _record_print_figure(fig, path, target)
     print(f'Saved: {path} ({fig.get_figwidth():.2f} x {fig.get_figheight():.2f} in canvas)')
 
 # Set-overlap figures (Jaccard, Dice): the prediction is cyan and the ground

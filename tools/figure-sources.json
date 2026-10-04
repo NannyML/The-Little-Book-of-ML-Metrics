@@ -2,27 +2,27 @@
   "Accuracy_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "surfaces.py"
   },
   "BERTScore_matching.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "BLEU_ngram_precision.png": {
     "chapter": "7-nlp.tex",
-    "width_fraction": 0.82,
-    "source": "nlp_plots.py"
+    "width_fraction": 1.0,
+    "source": "nlp_figures.py"
   },
   "Balanced_Accuracy_comparison.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 1.0,
-    "source": "classification_new_plots2.py"
+    "source": "classification_figures.py"
   },
   "Brier_Score_curves.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "classification_figures.py"
   },
   "CBPE_estimation.png": {
     "chapter": "9-probabilistic.tex",
@@ -32,37 +32,37 @@
   "CG_order_blind.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "dedicated_figures.py"
+    "source": "ranking_figures.py"
   },
   "CG_vs_DCG.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "cg_vs_dcg_plot.py"
+    "source": "ranking_figures.py"
   },
   "CLIP_Score_matrix.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Calibration_within_Groups.png": {
     "chapter": "10-bias-fairness.tex",
     "width_fraction": 1.0,
-    "source": "bias_fairness_plots.py"
+    "source": "fairness_figures.py"
   },
   "Calinski_Harabasz_elbow.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "ch_index_plot.py"
+    "source": "clustering_figures.py"
   },
   "Cohens_Kappa_levels.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "cohens_kappa_plot.py"
+    "source": "classification_figures.py"
   },
   "Completeness_Score_tradeoff.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 1.0,
-    "source": "completeness_plot.py"
+    "source": "clustering_figures.py"
   },
   "Confusion_Matrix_cells.png": {
     "chapter": "3-classification.tex",
@@ -72,17 +72,17 @@
   "Contingency_Matrix_heatmap.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "clustering_plots.py"
+    "source": "clustering_figures.py"
   },
   "Coverage_comparison.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "coverage_comparison_plot.py"
+    "source": "ranking_figures.py"
   },
   "D2_Log_Loss_curve.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "d2_log_loss_plot.py"
+    "source": "classification_figures.py"
   },
   "D2_abs_comparison.png": {
     "chapter": "2-regression.tex",
@@ -97,27 +97,27 @@
   "DSG_question_graph.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Davies_Bouldin_elbow.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "davies_bouldin_plot.py"
+    "source": "clustering_figures.py"
   },
   "Demographic_Parity.png": {
     "chapter": "10-bias-fairness.tex",
     "width_fraction": 1.0,
-    "source": "bias_fairness_plots.py"
+    "source": "fairness_figures.py"
   },
   "Dice_overlap_examples.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 1.0,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "Diversity_comparison.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "diversity_comparison_plot.py"
+    "source": "ranking_figures.py"
   },
   "ECE_reliability.png": {
     "chapter": "9-probabilistic.tex",
@@ -127,7 +127,7 @@
   "EM_vs_F1.png": {
     "chapter": "7-nlp.tex",
     "width_fraction": 1.0,
-    "source": "nlp_plots.py"
+    "source": "nlp_figures.py"
   },
   "EVS_vs_R2_three_models.png": {
     "chapter": "2-regression.tex",
@@ -137,92 +137,92 @@
   "Equality_of_Odds.png": {
     "chapter": "10-bias-fairness.tex",
     "width_fraction": 0.82,
-    "source": "bias_fairness_plots.py"
+    "source": "fairness_figures.py"
   },
   "Equality_of_Opportunity.png": {
     "chapter": "10-bias-fairness.tex",
     "width_fraction": 0.82,
-    "source": "bias_fairness_plots.py"
+    "source": "fairness_figures.py"
   },
   "F1_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "surfaces.py"
   },
   "FCP_comparison.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "fcp_comparison_plot.py"
+    "source": "ranking_figures.py"
   },
   "FID_mechanism.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "FMI_plane.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "dedicated_figures.py"
+    "source": "clustering_figures.py"
   },
   "FNR_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_plots.ipynb"
+    "source": "surfaces.py"
   },
   "FPR_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_plots.ipynb"
+    "source": "surfaces.py"
   },
   "F_beta_curves.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots2.py"
+    "source": "classification_figures.py"
   },
   "Hit_Rate_vs_K.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "hit_rate_vs_k_plot.py"
+    "source": "ranking_figures.py"
   },
   "Homogeneity_cluster_composition.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 1.0,
-    "source": "dedicated_figures.py"
+    "source": "clustering_figures.py"
   },
   "IS_mechanism.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Jaccard_overlap.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 1.0,
-    "source": "classification_new_plots2.py"
+    "source": "classification_figures.py"
   },
   "LPIPS_equal_mse.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Log_Loss_curves.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "classification_figures.py"
   },
   "MAE_3d_surface.png": {
     "chapter": "2-regression.tex",
     "width_fraction": 0.82,
-    "source": "regression_plots.ipynb"
+    "source": "surfaces.py"
   },
   "MAPE_3d_surface.png": {
     "chapter": "2-regression.tex",
     "width_fraction": 0.82,
-    "source": "regression_plots.ipynb"
+    "source": "surfaces.py"
   },
   "MAP_precision_strips.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "map_precision_strips_plot.py"
+    "source": "ranking_figures.py"
   },
   "MASE_naive_baseline.png": {
     "chapter": "2-regression.tex",
@@ -232,12 +232,12 @@
   "MAUVE_frontier.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "MCC_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "surfaces.py"
   },
   "MDA_direction.png": {
     "chapter": "2-regression.tex",
@@ -247,7 +247,7 @@
   "METEOR_vs_BLEU.png": {
     "chapter": "7-nlp.tex",
     "width_fraction": 1.0,
-    "source": "nlp_plots.py"
+    "source": "nlp_figures.py"
   },
   "MGD_cross_section.png": {
     "chapter": "2-regression.tex",
@@ -257,12 +257,12 @@
   "MI_contingency_contributions.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 1.0,
-    "source": "dedicated_figures.py"
+    "source": "clustering_figures.py"
   },
   "MOS_same_mean.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "MPD_cross_section.png": {
     "chapter": "2-regression.tex",
@@ -272,27 +272,27 @@
   "MRR_ranked_lists.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 1.0,
-    "source": "mrr_ranked_lists_plot.py"
+    "source": "ranking_figures.py"
   },
   "MSE_3d_surface.png": {
     "chapter": "2-regression.tex",
     "width_fraction": 0.82,
-    "source": "regression_plots.ipynb"
+    "source": "surfaces.py"
   },
   "MSLE_3d_surface.png": {
     "chapter": "2-regression.tex",
     "width_fraction": 0.82,
-    "source": "regression_plots.ipynb"
+    "source": "surfaces.py"
   },
   "Novelty_curve.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "novelty_curve_plot.py"
+    "source": "ranking_figures.py"
   },
   "OKS_gaussian_falloff.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 0.82,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "Observability_average.png": {
     "chapter": "11-data-observability.tex",
@@ -362,7 +362,7 @@
   "P4_vs_F1.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "p4_vs_f1_plot.py"
+    "source": "classification_figures.py"
   },
   "PAPE_reweighting.png": {
     "chapter": "9-probabilistic.tex",
@@ -372,37 +372,37 @@
   "PCK_threshold_visual.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 1.0,
-    "source": "pck_threshold_plot.py"
+    "source": "cv_figures.py"
   },
   "PESQ_alignment.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "PQ_decomposition.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 0.82,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "PR_AUC_curves.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots2.py"
+    "source": "classification_figures.py"
   },
   "PSNR_plot.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 1.0,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "Pair_Confusion_Matrix.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "clustering_plots.py"
+    "source": "clustering_figures.py"
   },
   "Perplexity_surprisal.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Pinball_Loss.png": {
     "chapter": "2-regression.tex",
@@ -412,17 +412,17 @@
   "Pixel_Accuracy_imbalance.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 1.0,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "Precision_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots.py"
+    "source": "surfaces.py"
   },
   "Predictive_Parity.png": {
     "chapter": "10-bias-fairness.tex",
     "width_fraction": 0.82,
-    "source": "bias_fairness_plots.py"
+    "source": "fairness_figures.py"
   },
   "R2_explained.png": {
     "chapter": "2-regression.tex",
@@ -447,82 +447,82 @@
   "ROC_AUC_curves.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots2.py"
+    "source": "classification_figures.py"
   },
   "ROUGE_variants.png": {
     "chapter": "7-nlp.tex",
     "width_fraction": 0.82,
-    "source": "nlp_plots.py"
+    "source": "nlp_figures.py"
   },
   "Rand_Index_separation.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 1.0,
-    "source": "rand_index_plot.py"
+    "source": "clustering_figures.py"
   },
   "Recall_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_plots.ipynb"
+    "source": "surfaces.py"
   },
   "SSIM_vs_PSNR.png": {
     "chapter": "6-computer-vision.tex",
     "width_fraction": 1.0,
-    "source": "cv_plots.py"
+    "source": "cv_figures.py"
   },
   "STOI_envelopes.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "Serendipity_scatter.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "serendipity_scatter_plot.py"
+    "source": "ranking_figures.py"
   },
   "Silhouette_Score_comparison.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 1.0,
-    "source": "silhouette_plot.py"
+    "source": "clustering_figures.py"
   },
   "TER_edit_breakdown.png": {
     "chapter": "7-nlp.tex",
     "width_fraction": 1.0,
-    "source": "nlp_plots.py"
+    "source": "nlp_figures.py"
   },
   "TNR_3d_surface.png": {
     "chapter": "3-classification.tex",
     "width_fraction": 0.82,
-    "source": "classification_new_plots2.py"
+    "source": "surfaces.py"
   },
   "VQAScore_vs_CLIP.png": {
     "chapter": "8-genai.tex",
     "width_fraction": 1.0,
-    "source": "genai_plots.py"
+    "source": "genai_figures.py"
   },
   "V_Measure_plane.png": {
     "chapter": "4-clustering.tex",
     "width_fraction": 0.82,
-    "source": "dedicated_figures.py"
+    "source": "clustering_figures.py"
   },
   "WER_vs_errors.png": {
     "chapter": "7-nlp.tex",
     "width_fraction": 1.0,
-    "source": "nlp_plots.py"
+    "source": "nlp_figures.py"
   },
   "at_K_precision_recall.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "at_k_tradeoff_plot.py"
+    "source": "ranking_figures.py"
   },
   "nDCG_degradation.png": {
     "chapter": "5-ranking.tex",
     "width_fraction": 0.82,
-    "source": "ndcg_degradation_plot.py"
+    "source": "ranking_figures.py"
   },
   "sMAPE_3d_surface.png": {
     "chapter": "2-regression.tex",
     "width_fraction": 0.82,
-    "source": "regression_plots.ipynb"
+    "source": "surfaces.py"
   },
   "wMAPE_compare_MAPE.png": {
     "chapter": "2-regression.tex",
