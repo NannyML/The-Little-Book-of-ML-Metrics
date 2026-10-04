@@ -5,25 +5,24 @@ The figures follow a simulated \texttt{orders} table with six weeks of online pu
 
 Most metrics are calculated per daily partition. Sum adds that day's order amounts; Average gives the mean per order. Freshness checks the latest timestamp across the table, while schema monitoring checks column names and types.
 
-Gray bands show expected ranges learned from earlier measurements, red points mark alerts, and hollow points mark skipped or unavailable measurements. Using one example throughout lets you compare what each monitor detects and misses.}{In this chapter}
+Gray bands show expected ranges learned from earlier measurements, red points mark alerts, and a hollow marker on the axis marks a day when no rows arrived. A bracket marks the training days, and axis ticks fall on Mondays. Using one example throughout lets you compare what each monitor detects and misses.}{In this chapter}
 
 % ---------- Decision map ----------
 \begin{decisionmap}{minthard}{mintaccent}{Which monitor for\\data observability?}{Follow the branches to a monitor. The number next to it is its page.}
 \maproot{What could have gone wrong upstream?}
 \begin{forest} dmap, wide
 [, coordinate, l sep=0pt
-  [{\dl{you first want to know how any monitor decides}{\mref{Expected Range}{sec:expected-range}}}]
-  [{\dm{the data is late or partial}{What do you check?}}
+  [{\dm{late or partial data}{What do you check?}}
     [{\dl{when it last landed}{\mref{Freshness}{sec:freshness}}}]
     [{\dl{how many rows came}{\mref{Row Count}{sec:row-count}}}]
   ]
   [{\dl{the structure changed}{\mref{Schema Changes}{sec:schema-changes}}}]
-  [{\dm{values are missing or repeated}{Which?}}
-    [{\dl{empty cells}{\mref{Missing Values}{sec:missing-values}}}]
+  [{\dm{missing or\\repeated values}{Which?}}
+    [{\dl{null cells}{\mref{Missing Values}{sec:missing-values}}}]
     [{\dl{rows that should be unique}{\mref{Duplicates}{sec:duplicates}}}]
     [{\dl{the number of distinct values}{\mref{Unique Count}{sec:unique-count}}}]
   ]
-  [{\dm{numbers drifted or spiked}{Which part of the distribution?}}
+  [{\dm{numbers drifted\\or spiked}{Which part of the distribution?}}
     [{\dl{the center}{\mref{Average}{sec:average}}}]
     [{\dl{the total}{\mref{Sum}{sec:sum}}}]
     [{\dl{the spread}{\mref{Standard Deviation}{sec:standard-deviation}}}]
@@ -33,7 +32,7 @@ Gray bands show expected ranges learned from earlier measurements, red points ma
   [{\dl{text changed shape}{\mref{Text Length}{sec:text-length}}}]
 ]
 \end{forest}
-\mapnotes{Check freshness and row count alongside value monitors: incomplete loads can affect their results. Compare schema changes with the previous or approved schema.}
+\mapnotes{Every monitor flags values outside an expected range learned from earlier scans: see \textbf{Expected Range}, p.~\pageref{sec:expected-range}. Check freshness and row count alongside value monitors: incomplete loads can affect their results. Compare schema changes with the previous or approved schema.}
 \end{decisionmap}
 
 % All figures in this chapter come from one simulated `orders` table, monitored daily for 42 days

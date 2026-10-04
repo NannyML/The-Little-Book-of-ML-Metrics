@@ -406,13 +406,13 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
 % a node: the answer that leads here, then the next question or the metric(s)
 \newcommand{\dm}[2]{{\color{black!68}#1}\\[2pt]{\color{black}\bfseries #2}}
 % Keep the answer and destination on separate lines, consistently across leaves.
-\newcommand{\dl}[2]{{\color{black!68}#1}\\[1pt]#2}
+\newcommand{\dl}[2]{{\color{black!68}#1}\\[0pt]#2}
 \forestset{
     dmap/.style={
         for tree={
             grow'=0, child anchor=west, parent anchor=east, anchor=west,
             font=\footnotesize\nohyph, text=black!80, node options={align=left},
-            l sep=3.5mm, s sep=2.8mm, inner xsep=0pt, inner ysep=1.4pt, outer xsep=1.5pt,
+            l sep=3.5mm, s sep=3mm, inner xsep=0pt, inner ysep=1pt, outer xsep=1.5pt,
             edge={draw, line width=0.5pt, black!30},
             forked edges, fork sep=2mm,
             tier/.option=level,
@@ -425,7 +425,8 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
         where level=2{if n children=0{}{text width=2.3cm}}{},
         where level=3{if n children=0{}{text width=2.3cm}}{},
     },
-    compact/.style={for tree={s sep=1.8mm, inner ysep=1pt}},
+    % one spacing between answer blocks in every map; compact only tightens the tree's levels
+    compact/.style={for tree={l sep=3mm}},
     wide/.style={
         where n children=0{text width=5.8cm}{},
         where level=1{if n children=0{}{text width=3.1cm}}{},
@@ -433,7 +434,7 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     },
     % for shallow trees: a larger size
     large/.style={
-        for tree={font=\small\nohyph, s sep=4.5mm, l sep=5mm},
+        for tree={font=\small\nohyph, l sep=5mm},
         where n children=0{text width=5.8cm}{},
         where level=1{if n children=0{}{text width=3.1cm}}{},
         where level=2{if n children=0{}{text width=3.1cm}}{},
@@ -447,6 +448,7 @@ label={[yshift=-7.5mm]above:\strut\textbf{Weaknesses}}, anchor=north west] (b) a
     \colorlet{mapband}{#1}\colorlet{mapaccent}{#2}%
     \renewcommand{\maptitle}{#3}%
     \thispagestyle{mapstyle}%
+    \frenchspacing
     {\noindent\color{black}\fontsize{22}{26}\selectfont\bfseries\raggedright\nohyph #3\par}
     \vspace{5pt}
     {\color{black!60}\small #4\par}

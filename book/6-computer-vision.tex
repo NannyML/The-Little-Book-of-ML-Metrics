@@ -8,11 +8,11 @@ This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice c
 \maproot{What does the model output?}
 \begin{forest} dmap, large
 [, coordinate, l sep=0pt
-  [{\dm{a reconstructed image}{Which kind of fidelity?}}
+  [{\dm{a reconstructed image}{Which kind of fidelity?}}, text width=3.6cm
     [{\dl{pixel by pixel}{\mref{PSNR}{sec:psnr}}}]
     [{\dl{perceived structure}{\mref{SSIM}{sec:ssim}}}]
   ]
-  [{\dm{a segmentation mask}{What do you need to know?}}
+  [{\dm{a segmentation mask}{What must it show?}}, text width=3.6cm
     [{\dl{the share of correct pixels}{\mref{Pixel Accuracy}{sec:pixel-accuracy}}}]
     [{\dl{the overlap, per class}{\mref{S{\o}rensen--Dice Coefficient}{sec:sorensen-dice-coefficient}}}]
     [{\dl{instances, segment by segment}{\mref{PQ}{sec:pq}}}]

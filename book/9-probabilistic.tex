@@ -13,10 +13,10 @@ These estimates can track \emph{covariate shift}, a change in the input mix, whi
 \begin{forest} dmap, large
 [, coordinate, l sep=0pt
   [{\dl{yes: how much is concept drift?}{\mref{RCD}{sec:rcd}}}]
-  [{\dm{no, and it is a classifier}{Are the reference probabilities calibrated?}}
-    [{\dl{check that first}{\mref{ECE}{sec:ece}}}]
-    [{\dl{calibration still holds in production}{\mref{CBPE}{sec:cbpe}}}]
-    [{\dl{input mix changed; reference covers it}{\mref{PAPE}{sec:pape}}}]
+  [{\dm{no, and it is\\a classifier}{Can you trust the reference probabilities?}}
+    [{\dl{not sure: check calibration first}{\mref{ECE}{sec:ece}}}]
+    [{\dl{yes, and production inputs\\resemble the reference}{\mref{CBPE}{sec:cbpe}}}]
+    [{\dl{yes, but the input mix has shifted\\within the reference's range}{\mref{PAPE}{sec:pape}}}]
   ]
   [{\dl{no, and it is a regressor}{\mref{DLE}{sec:dle}}}]
 ]

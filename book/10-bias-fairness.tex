@@ -11,11 +11,11 @@ We first decide what should be equal. \emph{Demographic parity} requires selecti
 \begin{forest} dmap, large
 [, coordinate, l sep=0pt
   [{\dl{the share of positive decisions}{\mref{Demographic Parity}{sec:demographic-parity}}}]
-  [{\dm{the error rates people experience}{Which error rates?}}
-    [{\dl{the true positive rate}{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}}]
-    [{\dl{both TPR and FPR}{\mref{Equality of Odds}{sec:equality-of-odds}}}]
+  [{\dm{selection, given the true outcome}{Which outcomes?}}
+    [{\dl{qualified people only (TPR)}{\mref{Equality of Opportunity}{sec:equality-of-opportunity}}}]
+    [{\dl{qualified and unqualified\\(TPR and FPR)}{\mref{Equality of Odds}{sec:equality-of-odds}}}]
   ]
-  [{\dm{what a prediction means}{For labels or for scores?}}
+  [{\dm{the meaning of\\a prediction}{For labels or for scores?}}
     [{\dl{labels: a positive is right equally often}{\mref{Predictive Parity}{sec:predictive-parity}}}]
     [{\dl{scores: outcome rates match predicted probabilities}{\mref{Calibration within Groups}{sec:calibration-within-groups}}}]
   ]
