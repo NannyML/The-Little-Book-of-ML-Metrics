@@ -73,7 +73,7 @@ Use it when equal selection rates are the goal, such as access to an outreach pr
     \includegraphics[width=\textwidth]{figures/Demographic_Parity.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Demographic Parity.}{Each square represents one person in a simulated screening task; each group has $100$ people. The black outline contains everyone selected by the model: blue squares are qualified people and red squares are unqualified people. With the original threshold, it selects $54$ people from Group A and $32$ from Group B, so demographic parity fails.}
+\metriccaption{Figure. Demographic Parity.}{Each square is one person in a simulated screening task; each group has $100$ people. The outline contains everyone the model selects: cyan squares are qualified, red squares are not. One threshold selects $54$ people in Group A and $32$ in Group B, so demographic parity fails. Lowering B's threshold until it selects $54$ (right) satisfies parity, but $25$ of those are unqualified.}
 
 The right-hand panel lowers Group B's threshold until it also selects $54$ people. The selection rates now match, but $25$ of B's selected people are unqualified, compared with four in A. Parity checks the size of the selected share, not whether those selections are correct.
 
@@ -134,7 +134,7 @@ Use it when missed positives matter most, such as overlooking qualified applican
     \includegraphics[width=.82\textwidth]{figures/Equality_of_Opportunity.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Equality of Opportunity.}{Each square represents one person in a simulated screening task. The outlined area contains the qualified people: $60$ in Group A and $30$ in Group B. Filled blue squares are selected; empty blue squares are missed. The model selects $50$ of $60$ in A and $25$ of $30$ in B, giving both a TPR of about $83\%$.}
+\metriccaption{Figure. Equality of Opportunity.}{Each square represents one person in a simulated screening task. The outline contains the qualified people: $60$ in Group A and $30$ in Group B; unqualified people are faded. Filled cyan squares are selected; empty cyan squares are missed. The model selects $50$ of $60$ in A and $25$ of $30$ in B, giving both a TPR of about $83\%$.}
 
 Equality of opportunity holds because these proportions match, even though the counts differ. The faded squares represent unqualified people, whose predictions do not enter this calculation.
 
@@ -257,7 +257,7 @@ Use it when the correctness of positive predictions matters across groups, such 
     \includegraphics[width=.82\textwidth]{figures/Predictive_Parity.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Predictive Parity.}{Each square represents one person in a simulated screening task. The black outline contains the people the model selects; blue squares are qualified and red squares are not. In Group A, $50$ of the $54$ selected people are qualified, giving a PPV of about $93\%$. In Group B, $25$ of $32$ are qualified, giving about $78\%$. Predictive parity fails, with a gap of about $14.5$ percentage points.}
+\metriccaption{Figure. Predictive Parity.}{Each square represents one person in a simulated screening task. The outline contains the people the model selects; cyan squares are qualified and red squares are not. In Group A, $50$ of the $54$ selected people are qualified, a PPV of $92.6\%$. In Group B, $25$ of $32$ are qualified, $78.1\%$. Predictive parity fails, with a gap of $14.5$ percentage points.}
 
 Both groups have the same TPR and FPR, but B has fewer qualified people. False positives therefore make up more of its selections.
 
@@ -318,9 +318,9 @@ Use it when decisions depend on estimated probabilities, such as the chance of r
     \includegraphics[width=1\textwidth]{figures/Calibration_within_Groups.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Calibration within Groups.}{Predicted probabilities of being qualified are grouped into score ranges. Group A is blue and Group B purple. Filled squares show observed qualified proportions rounded to tenths; labels give percentages. The black line marks each range's midpoint as an approximate calibration reference.}
+\metriccaption{Figure. Calibration within Groups.}{Scores are grouped into ranges; each filled square is $10\%$ of the people in a range who turn out to be qualified. The black line marks the range's midpoint, where a calibrated score would put the fill. The scores are calibrated for both groups combined, yet Group A (cyan) sits above the line and Group B (purple) below it.}
 
-For scores between $0.5$ and $0.6$, about $77\%$ of Group A is qualified, compared with $48\%$ of Group B. The model therefore understates the probability for A and overstates it for B in this range. The scores are not calibrated within these groups.
+For scores between $0.5$ and $0.6$, about $70\%$ of Group A is qualified, compared with $38\%$ of Group B. The model therefore understates the probability for A and overstates it for B, and the same happens in every range. The scores are calibrated overall but not within these groups.
 
 \orangebox{Did you know that...}
 {Kleinberg, Mullainathan, and Raghavan showed in $2017$ that group calibration can conflict with two other requirements: equal average scores among actual positive cases across groups, and equal average scores among actual negative cases. All three can hold together only with equal base rates or perfect prediction. This result concerns the scores themselves. Even with calibrated probabilities, an imperfect model can therefore assign different average scores to the groups' positive or negative cases.}

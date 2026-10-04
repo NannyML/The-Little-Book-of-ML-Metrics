@@ -509,6 +509,7 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
     apply_plot_typography(fig)
     target = TEXTWIDTH_IN * fig._book_print['width']
     if crop:
+        fig.set_dpi(dpi)          # measure text at the resolution it is saved at
         for _ in range(8):
             fig.canvas.draw()
             box = fig.get_tightbbox(fig.canvas.get_renderer())
@@ -519,6 +520,9 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
                 raise ValueError(f'{name}: content is {box.width:.2f} in wide, cannot fit {target:.2f} in')
             fig.set_figwidth(fig.get_figwidth() + error)
         fig.canvas.draw()
+        # Freeze the final layout so savefig renders exactly what was measured.
+        fig.set_layout_engine('none')
+        fig.canvas.draw()
         box = fig.get_tightbbox(fig.canvas.get_renderer())
         if box.width > target + 0.01:
             raise ValueError(f'{name}: crop width {box.width:.3f} in, expected {target:.3f} in')
@@ -526,7 +530,7 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
         # white strip of exactly the printed width instead.
         from matplotlib.transforms import Bbox
         pad = max(0.0, (target - box.width) / 2)
-        box = Bbox([[box.x0 - pad, box.y0], [box.x1 + pad, box.y1]])
+        box = Bbox([[box.x0 - pad, box.y0 - 0.01], [box.x1 + pad, box.y1 + 0.01]])
     _check_print_text(fig, name)
     path = FIGURES_DIR / f'{name}.png'
     if crop:
