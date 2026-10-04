@@ -510,15 +510,17 @@ def save_print_figure(fig, name, *, crop=True, dpi=600):
     target = TEXTWIDTH_IN * fig._book_print['width']
     if crop:
         fig.set_dpi(dpi)          # measure text at the resolution it is saved at
-        for _ in range(8):
+        for i in range(16):
             fig.canvas.draw()
+            fig.canvas.draw()     # constrained layout settles over two passes
             box = fig.get_tightbbox(fig.canvas.get_renderer())
             error = target - box.width
-            if abs(error) < 0.002:
+            if -0.008 < error < 0.002:
                 break
             if fig.get_figwidth() + error < 0.5 * target:
                 raise ValueError(f'{name}: content is {box.width:.2f} in wide, cannot fit {target:.2f} in')
-            fig.set_figwidth(fig.get_figwidth() + error)
+            # constrained layout can respond non-linearly; damp the later steps
+            fig.set_figwidth(fig.get_figwidth() + (error if i < 6 else 0.5 * error - 0.002))
         fig.canvas.draw()
         # Freeze the final layout so savefig renders exactly what was measured.
         fig.set_layout_engine('none')

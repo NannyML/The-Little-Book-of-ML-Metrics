@@ -81,7 +81,7 @@ Lowering $z$ narrows the range and increases sensitivity; raising it allows more
     \includegraphics[width=\textwidth]{figures/Observability_expected_range.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Expected Range.}{Daily counts for a simulated orders table. \textit{Left:} three weeks establish weekday averages with ranges of about $\pm 600$ rows. \textit{Right:} a missing load on day $26$ and a partial load on day $31$ fall below the range. Lower weekend counts stay within it.}
+\metriccaption{Figure. Expected Range.}{Daily counts for a simulated orders table. \textit{Left:} three weeks establish day-of-week averages with ranges of about $\pm 600$ rows. \textit{Right:} a missing load on day $26$ and a partial load on day $31$ fall below the range. Lower weekend counts stay within it.}
 
 \metricheading{When to use}
 
@@ -228,7 +228,7 @@ The formula compares the number of filled rows, $\text{count}(c)$, with the tota
     \includegraphics[width=\textwidth]{figures/Observability_missing.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Missing Values.}{About $2\%$ of country values are normally null. On day $29$, a source-field rename leaves $41\%$ missing, so the monitor flags the increase. The hollow point on day $26$ marks a day with no rows: there is no percentage to calculate.}
+\metriccaption{Figure. Missing Values.}{About $2\%$ of country values are normally null. On day $29$, a source-field rename leaves $41\%$ missing, so the monitor flags the increase. The hollow marker on the axis at day $26$ is the partition with no rows: there is no percentage to calculate.}
 
 \metricheading{When to use}
 
@@ -299,7 +299,7 @@ Here, $P_t$ is the group of rows being checked and $c(r)$ is the value in each r
     \includegraphics[width=\textwidth]{figures/Observability_unique_count.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Unique Count.}{Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays, but the drop on day $31$ comes from an incomplete load. On day $38$, IDs are shortened to their last three digits, making different IDs identical and leaving only $995$ unique values despite a normal load size. The hollow point marks day $26$, when no rows arrived and the check was skipped.}
+\metriccaption{Figure. Unique Count.}{Daily counts of different customer IDs. Weekends normally have fewer customers than weekdays, but the drop on day $31$ comes from an incomplete load. On day $38$, IDs are shortened to their last three digits, making different IDs identical and leaving only $995$ unique values despite a normal load size. The hollow marker on the axis is day $26$, when no rows arrived, so there is no value.}
 
 \metricheading{When to use}
 
@@ -447,7 +447,7 @@ The formula takes both values from the rows in $P_t$, the partition being checke
     \includegraphics[width=\textwidth]{figures/Observability_min_max.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Min and Max.}{Daily order amounts. \textit{Left:} refunds on day $32$ produce a minimum of $-121$; discounts on day $40$ lower the minimum to $1.86$. \textit{Right:} amounts stored in cents on day $23$ raise the maximum to $22{,}410$, above the scale. Day $29$ also triggers an alert, but its $487$ order is valid.}
+\metriccaption{Figure. Min and Max.}{Daily order amounts. \textit{Top:} refunds on day $32$ produce a minimum of $-121$; discounts on day $40$ lower it to $1.86$. \textit{Bottom:} amounts stored in cents on day $23$ raise the maximum to $22{,}410$, above the scale. Day $29$ also triggers an alert, but its $487$ order is valid.}
 
 \metricheading{When to use}
 
