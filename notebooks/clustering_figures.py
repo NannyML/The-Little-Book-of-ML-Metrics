@@ -30,12 +30,6 @@ DIV_MAP = mcolors.LinearSegmentedColormap.from_list('contrib', [NML_RED, '#fffff
 K_ = '$k$'
 
 
-def ink_for(rgb):
-    """Black or white text, chosen from the rendered cell color."""
-    lin = [c / 12.92 if c <= .04045 else ((c + .055) / 1.055) ** 2.4 for c in rgb[:3]]
-    return 'white' if sum(c * w for c, w in zip(lin, [.2126, .7152, .0722])) < .3 else INK
-
-
 def table_axes(ax):
     for side in ax.spines.values():
         side.set_visible(False)

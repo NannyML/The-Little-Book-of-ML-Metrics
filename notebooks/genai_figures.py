@@ -34,11 +34,6 @@ def clean_tok(t):
     return t.strip() if t.strip() else t
 
 
-def ink_for(rgb):
-    lin = [c / 12.92 if c <= .04045 else ((c + .055) / 1.055) ** 2.4 for c in rgb[:3]]
-    return 'white' if sum(c * w for c, w in zip(lin, [.2126, .7152, .0722])) < .3 else INK
-
-
 def kl(a, b):
     m = a > 0
     return float(np.sum(a[m] * np.log(a[m] / b[m])))

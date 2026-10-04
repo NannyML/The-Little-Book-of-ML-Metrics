@@ -463,6 +463,13 @@ def minus_axis(ax, axis='y', nd=None):
     (ax.yaxis if axis == 'y' else ax.xaxis).set_major_formatter(_ticker.FuncFormatter(f))
 
 
+def ink_for(rgb):
+    """Black or white text for a filled cell, chosen from the cell's rendered
+    luminance (white only on dark cells, so contrast stays high)."""
+    lin = [c / 12.92 if c <= .04045 else ((c + .055) / 1.055) ** 2.4 for c in rgb[:3]]
+    return 'white' if sum(c * w for c, w in zip(lin, [.2126, .7152, .0722])) < .3 else INK
+
+
 def label_end(ax, x, y, text, color, dx=3, dy=0, ha='left', va='center', **kw):
     """Direct label next to a line end, offset in points."""
     return ax.annotate(text, (x, y), xytext=(dx, dy), textcoords='offset points',
