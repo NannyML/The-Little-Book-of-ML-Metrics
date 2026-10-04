@@ -82,8 +82,8 @@ The confidence-based ECE shown here can hide differences between classes.
 \end{metricfigure}
 
 \metriccaption{Figure. ECE.}{Reliability diagrams for a simulated binary classifier before and after temperature scaling, which divides
-its raw scores (logits) by a positive value $T$. Bar height shows observed accuracy, shade and the numbers inside the bars show
-the percentage of predictions in each bin, and red segments show calibration gaps.
+its raw scores (logits) by a positive value $T$. Bar height shows observed accuracy, the numbers inside the bars show
+the percentage of predictions in each bin, red segments show calibration gaps, and the dashed diagonal marks perfect calibration.
 \textit{Left:} the top bin contains $55\%$ of predictions, with mean confidence $0.99$ and
 accuracy $0.90$; the weighted gaps sum to ECE $=0.110$.
 \textit{Right:} with $T=2.5$, ECE falls to $0.007$. ROC AUC stays at $0.867$ because
@@ -239,7 +239,7 @@ concept drift without new labels.
 
 \metriccaption{Figure. PAPE.}{A simulated classifier whose calibration varies with input $x_2$.
 \textit{Left:} reference and final-production densities are shown above the mean reference weight in each $x_2$ bin. The
-weight peaks near $18$ in the production region.
+weight peaks near $18$ in the production region; bins with fewer than $30$ reference points are not drawn.
 \textit{Right:} fixed reference calibration keeps CBPE near $0.75$ as realized accuracy reaches
 $0.89$. PAPE follows it, with a mean absolute error of $0.009$ versus CBPE's $0.089$.}
 
@@ -392,7 +392,7 @@ to learn the new concept across the reference inputs.
 
 \metriccaption{Figure. RCD.}{\textit{Left:} simulated reference inputs, the monitored model's boundary (black), and the new concept model's
 boundary (red). \textit{Right:} accuracy falls from $0.829$ to $0.750$.
-Moving the inputs under the old concept gives $+0.011$; applying the new concept to reference inputs gives
+Moving the inputs under the old concept gives $+0.012$; applying the new concept to reference inputs gives
 $-0.062$. Together these reach $0.779$. The explicit residual step, $-0.029$,
 accounts for the remaining difference. Interaction between shifts, concept-model error and sampling variation can all contribute;
 these effects need not add independently.}

@@ -114,7 +114,7 @@ def fig_ece():
 
     T = minimize_scalar(nll, bounds=(0.2, 10), method='bounded').x
     panels = []
-    for name, zz in [('Before scaling', z_over[ev]), (f'After scaling: T = {T:.1f}', z_over[ev] / T)]:
+    for name, zz in [('before temperature scaling', z_over[ev]), (f'after scaling with T = {T:.1f}', z_over[ev] / T)]:
         p = expit(zz)
         conf = np.maximum(p, 1 - p)
         correct = ((p >= 0.5).astype(int) == y_te[ev]).astype(float)
@@ -122,29 +122,24 @@ def fig_ece():
         panels.append((name, ece, rows))
     auc = roc_auc_score(y_te[ev], z_over[ev])
 
-    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'wspace': 0.18})
+    fig, axes = book_figure(1.0, 2.25, 1, 2, sharey=True)
     for ax, (name, ece, rows) in zip(axes, panels):
-        ax.plot([0.5, 1], [0.5, 1], color=GREY_LINE, lw=1.2, ls=(0, (4, 3)), zorder=1)
+        ax.plot([0.5, 1], [0.5, 1], color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=1)
         for lo, hi, share, acc, cf in rows:
             if share == 0:
                 continue
-            w = (hi - lo) * 0.92
-            # bar: observed accuracy; width by bin edges, opacity by share, gap shaded in red
-            ax.bar((lo + hi) / 2, acc, width=w, color=start_color, alpha=0.25 + 0.75 * min(share / 0.25, 1), zorder=3)
-            ax.plot([cf, cf], [min(acc, cf), max(acc, cf)], color=end_color, lw=3.2, solid_capstyle='round', zorder=4)
-            ax.text((lo + hi) / 2, 0.025, f'{100 * share:.0f}', ha='center', va='bottom', fontsize=11, color=DARK, zorder=5)
+            ax.bar((lo + hi) / 2, acc, width=(hi - lo) * 0.9, color=NML_CYAN, alpha=0.5, linewidth=0, zorder=3)
+            ax.plot([cf, cf], [min(acc, cf), max(acc, cf)], color=NML_RED, lw=LW + 0.4, solid_capstyle='butt', zorder=4)
+            ax.text((lo + hi) / 2, 0.025, f'{100 * share:.0f}', ha='center', va='bottom', fontsize=SMALL_PT,
+                    color=INK, zorder=5)
         ax.set_xlim(0.5, 1.0)
         ax.set_ylim(0, 1.02)
-        ax.set_xticks([0.5, 0.6, 0.7, 0.8, 0.9, 1.0])
-        ax.set_yticks([0, 0.5, 1.0])
-        ax.tick_params(labelsize=11)
-        ax.set_xlabel('Confidence bin', fontsize=11)
-        despine(ax)
-        ax.set_title(f'ECE = {ece:.3f}', fontsize=12, pad=22, color=DARK)
-        ax.text(0.5, 1.02, name, ha='center', va='bottom', fontsize=11, color=MID, transform=ax.transAxes)
-    axes[0].set_ylabel('Observed accuracy', fontsize=11)
-    # Counts and gap meanings belong in the shared caption, not over the data.
-    fig.subplots_adjust(left=0.09, right=0.98, top=0.80, bottom=0.17, wspace=0.28)
+        ax.set_xticks([0.5, 0.75, 1.0], labels=['0.50', '0.75', '1.00'])
+        unit_ticks(ax, 'y', 0.5)
+        ax.set_xlabel('confidence bin')
+        ax.set_title(f'{name}\nECE = {num(ece, 3)}', loc='left', fontsize=TEXT_PT, linespacing=1.3)
+        tidy_axes(ax)
+    axes[0].set_ylabel('observed accuracy')
     save_figure(fig, 'ECE_reliability')
     plt.close()
     top = panels[0][2][-1]
@@ -212,49 +207,44 @@ def fig_cbpe():
                       estimated=float(cbpe_accuracy(cal.predict(s_val), s_val >= thr)))
     order = np.argsort(-c)
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 4.0), gridspec_kw={'width_ratios': [0.9, 1.25], 'wspace': 0.28})
+    fig, (axL, axR) = book_figure(1.0, 2.5, 1, 2, gridspec_kw={'width_ratios': [0.9, 1.25]})
     ys = np.arange(len(order))[::-1]
     for row, j in zip(ys, order):
-        axL.barh(row, p_correct[j], color=start_color, height=0.62, zorder=3)
-        axL.barh(row, 1 - p_correct[j], left=p_correct[j], color=GREY, height=0.62, zorder=3)
-        axL.text(-0.03, row, f'{yhat[j]} · {c[j]:.2f}', ha='right', va='center', fontsize=11, color=DARK)
-        mark = '✓' if yhat[j] == y[j] else '✗'
-        axL.text(1.04, row, mark, ha='left', va='center', fontsize=11, color=start_color if mark == '✓' else end_color)
+        axL.barh(row, p_correct[j], color=NML_CYAN, height=0.62, linewidth=0, zorder=3)
+        axL.barh(row, 1 - p_correct[j], left=p_correct[j], color=LIGHT, height=0.62, linewidth=0, zorder=3)
+        axL.text(-0.3, row, f'{yhat[j]}', ha='center', va='center', color=INK, fontsize=SMALL_PT)
+        axL.text(-0.04, row, num(c[j]), ha='right', va='center', color=INK, fontsize=SMALL_PT)
+        ok = yhat[j] == y[j]
+        axL.text(1.06, row, '\u2713' if ok else '\u2717', ha='left', va='center', color=NML_CYAN if ok else NML_RED,
+                 fontsize=SMALL_PT)
+    top = len(order) - 0.2
+    for xx, t, ha in [(-0.3, '$\\hat{y}$', 'center'), (-0.04, '$c$', 'right'), (1.06, 'later', 'left')]:
+        axL.text(xx, top, t, ha=ha, va='bottom', color=MUTED, fontsize=SMALL_PT)
     axL.set_xlim(0, 1.0)
-    axL.set_ylim(-2.6, len(order) - 0.3)
-    axL.set_xticks([0, 0.5, 1])
-    axL.tick_params(axis='x', labelsize=11)
+    axL.set_ylim(-0.6, len(order) + 0.5)
+    axL.set_xticks([0, 0.5, 1.0], labels=['0.0', '0.5', '1.0'])
     axL.set_yticks([])
-    despine(axL, keep=('bottom',))
-    axL.set_xlabel('Chance of being right', fontsize=11)
-    axL.text(0.5, len(order) + 0.4, 'Twelve predictions', ha='center', va='bottom', fontsize=11, color=DARK)
-    axL.text(-0.03, len(order)-0.25, 'ŷ · c', ha='right', va='bottom', fontsize=11, color=MID)
-    axL.text(1.04, len(order) - 0.15, 'Later', ha='left', va='bottom', fontsize=11, color=MID)
-    axL.text(0.0, -1.15, f'Expected: {p_correct.mean():.2f}', ha='left', va='center', fontsize=12, color=start_color)
-    axL.text(0.0, -1.95, f'Realized: {(yhat == y).mean():.2f}', ha='left', va='center', fontsize=12, color=MID)
-
+    axL.set_xlabel('chance of being right')
+    axL.set_title(f'twelve predictions\nexpected {num(p_correct.mean())}, realized {num((yhat == y).mean())}',
+                  loc='left', fontsize=TEXT_PT, linespacing=1.3)
+    tidy_axes(axL, left=False)
     k = np.arange(1, len(chunks) + 1)
-    axR.axvspan(7.5, 12.5, color=end_color, alpha=0.07, zorder=0)
-    axR.fill_between(k, est - band, est + band, color=start_color, alpha=0.15, linewidth=0, zorder=2)
-    axR.plot(k, realized, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
-    axR.plot(k, est, color=start_color, lw=3.2, marker='o', ms=6, solid_capstyle='round', zorder=4)
-    axR.axhline(ref_acc, color=GREY_LINE, lw=1, ls=(0, (4, 3)), zorder=1)
-    axR.text(1.0, ref_acc + 0.006, f'Reference: {ref_acc:.2f}', fontsize=11, color=MID, va='bottom', ha='left')
-    axR.text(10.0, est[6] + 0.035, 'CBPE estimate', color=start_color, fontsize=11, ha='center', va='bottom')
-    axR.text(1.0, 0.87, 'Realized accuracy', color=MID, fontsize=11, ha='left', va='top')
-    axR.text(4.0, 0.56, 'Input mix\nchanges', ha='center',
-             va='top', fontsize=11, color=DARK, linespacing=1.3)
-    axR.text(10.0, 0.56, 'Concept drift\nadded',
-             ha='center', va='top', fontsize=11, color=end_color, linespacing=1.3)
-    axR.set_xticks(k[::2])
+    axR.axvspan(7.5, 12.5, color=RED_TINT, zorder=0, linewidth=0)
+    axR.fill_between(k, est - band, est + band, color=NML_CYAN, alpha=0.15, linewidth=0, zorder=2)
+    axR.plot(k, realized, color=REF, lw=LW - 0.2, marker='o', ms=2.6, zorder=3)
+    axR.plot(k, est, color=NML_CYAN, marker='o', ms=2.6, zorder=4)
+    axR.axhline(ref_acc, color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=1)
+    axR.text(12.6, ref_acc, f'reference\n{num(ref_acc)}', color=MUTED, va='center', linespacing=1.15)
+    label_end(axR, 12, est[-1], 'CBPE\nestimate', NML_CYAN, dx=4, linespacing=1.15)
+    label_end(axR, 12, realized[-1], 'realized', MUTED, dx=4)
+    axR.text(4.0, 0.57, 'input mix\nchanges', ha='center', va='bottom', color=INK, linespacing=1.2)
+    axR.text(10.0, max(realized.max(), est.max()) + 0.035, 'concept drift', ha='center', va='top', color=NML_RED)
+    axR.set_xticks([1, 4, 8, 12])
     axR.set_xlim(0.5, 12.5)
-    lo = min(realized.min(), est.min()) - 0.13
-    axR.set_ylim(lo, max(realized.max(), est.max()) + 0.04)
-    axR.tick_params(labelsize=11)
-    axR.set_xlabel('Production chunk', fontsize=11)
-    axR.set_title('Accuracy', fontsize=11, loc='left', pad=12)
-    despine(axR)
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.87, bottom=0.19, wspace=0.48)
+    axR.set_ylim(0.55, max(realized.max(), est.max()) + 0.04)
+    axR.set_xlabel('production chunk')
+    axR.set_ylabel('accuracy')
+    tidy_axes(axR)
     save_figure(fig, 'CBPE_estimation')
     plt.close()
     print('2. CBPE: ref acc %.3f | band ±%.3f | chunks realized %s | est %s | left panel expected %.3f realized %.3f' %
@@ -310,59 +300,53 @@ def fig_pape():
                       cbpe=float(cbpe_accuracy(cal.predict(s_val), s_val >= thr)),
                       pape=float(cbpe_accuracy(cal_w.predict(s_val), s_val >= thr)))
 
-    fig = plt.figure(figsize=(7.2, 4.0))
-    grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.2], hspace=.22, wspace=.43)
+    fig = book_canvas(1.0, 2.5, layout='constrained')
+    grid = fig.add_gridspec(2, 2, width_ratios=[1, 1.2])
     axL = fig.add_subplot(grid[0, 0])
     ax2 = fig.add_subplot(grid[1, 0], sharex=axL)
     axR = fig.add_subplot(grid[:, 1])
     bins = np.linspace(-3.2, 3.8, 36)
-    axL.hist(X_ref[:, 1], bins=bins, color=GREY, density=True, zorder=2)
-    axL.hist(X_last[:, 1], bins=bins, histtype='step', color=middle_color, lw=2.2, density=True, zorder=3)
-    order = np.argsort(X_ref[:, 1])
-    # smooth the weights along x2 for display (binned means), keep raw values honest
+    axL.hist(X_ref[:, 1], bins=bins, color=LIGHT, density=True, zorder=2)
+    axL.hist(X_last[:, 1], bins=bins, histtype='step', color=INK, lw=LW_THIN + 0.2, density=True, zorder=3)
     centers = (bins[:-1] + bins[1:]) / 2
     idx = np.clip(np.digitize(X_ref[:, 1], bins) - 1, 0, len(bins) - 2)
+    counts = np.bincount(idx, minlength=len(bins) - 1)
     wbin = np.array([w_last[idx == b].mean() if np.any(idx == b) else np.nan for b in range(len(bins) - 1)])
-    ax2.plot(centers, wbin, color=start_color, lw=3, solid_capstyle='round', zorder=4)
-    ax2.set_ylim(0, np.nanmax(wbin) * 1.15)
-    ax2.tick_params(axis='y', labelsize=11, colors=start_color)
-    ax2.spines['left'].set_color(start_color)
-    for sp in ('top', 'right'):
-        ax2.spines[sp].set_visible(False)
+    shown = np.where(counts >= 30, wbin, np.nan)     # bins with too few reference points are not drawn
+    ax2.plot(centers, shown, color=NML_CYAN, zorder=4)
+    ax2.set_ylim(0, np.nanmax(shown) * 1.15)
     from matplotlib.lines import Line2D
     from matplotlib.patches import Patch
-    axL.legend(handles=[Patch(facecolor=GREY, label='Reference'),
-                        Line2D([], [], color=middle_color, lw=2, label='Production')],
-               loc='upper left', frameon=False, fontsize=11, handlelength=1.0)
-    axL.set_ylabel('Density', fontsize=11, labelpad=8)
-    axL.tick_params(axis='y', labelsize=11)
-    ax2.set_ylabel('Mean weight', fontsize=11, color=start_color, labelpad=8)
-    ax2.set_xlabel('Input $x_2$', fontsize=11)
+    axL.legend(handles=[Patch(facecolor=LIGHT, label='reference'),
+                        Line2D([], [], color=INK, lw=LW_THIN + 0.2, label='production')],
+               loc='upper left', handlelength=1.0)
+    axL.set_ylabel('density')
+    axL.set_yticks([0, 0.4, 0.8])
+    ax2.set_ylabel('mean weight')
+    ax2.set_xlabel('input x\u2082')
     axL.tick_params(axis='x', labelbottom=False)
-    ax2.tick_params(axis='x', labelsize=11)
-    ax2.set_xticks([-3, 0, 3])
+    ax2.set_xticks([-3, 0, 3], labels=['\u22123', '0', '3'])
     axL.set_xlim(-3.2, 3.8)
-    despine(axL)
-    ax2.set_xlim(-3.2, 3.8)
+    tidy_axes(axL)
+    tidy_axes(ax2)
+    fig.align_ylabels([axL, ax2])
 
     k = np.arange(1, len(rows) + 1)
     r = np.array([row[1] for row in rows])
     ec = np.array([row[2] for row in rows])
     ep = np.array([row[3] for row in rows])
-    axR.plot(k, r, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
-    axR.plot(k, ec, color=middle_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=4)
-    axR.plot(k, ep, color=start_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=5)
-    axR.text(k[-1] + 0.2, r[-1] - 0.005, 'Realized', color=MID, fontsize=12, va='center')
-    axR.text(k[-1] + 0.2, ec[-1], 'CBPE', color=middle_color, fontsize=12, va='center')
-    axR.text(k[-1] + 0.2, ep[-1] + 0.006, 'PAPE', color=start_color, fontsize=12, va='center')
-    axR.set_xticks(k[::2])
-    axR.set_xlim(0.5, len(rows) + 2.5)
-    axR.set_yticks([.75,.80,.85,.90])
-    axR.tick_params(labelsize=11)
-    axR.set_xlabel('Production chunk', fontsize=11)
-    axR.set_ylabel('accuracy', fontsize=12)
-    despine(axR)
-    fig.subplots_adjust(left=0.10, right=0.97, top=0.95, bottom=0.17)
+    axR.plot(k, r, color=REF, lw=LW - 0.2, marker='o', ms=2.6, zorder=3)
+    axR.plot(k, ec, color=NML_PURPLE, marker='o', ms=2.6, zorder=4)
+    axR.plot(k, ep, color=NML_CYAN, marker='o', ms=2.6, zorder=5)
+    label_end(axR, k[-1], r[-1] - 0.006, 'realized', MUTED, dx=4)
+    label_end(axR, k[-1], ec[-1], 'CBPE', NML_PURPLE, dx=4)
+    label_end(axR, k[-1], ep[-1] + 0.007, 'PAPE', NML_CYAN, dx=4)
+    axR.set_xticks([1, 4, 7, 10])
+    axR.set_xlim(0.5, len(rows) + 0.5)
+    axR.set_yticks([.75, .80, .85, .90], labels=['0.75', '0.80', '0.85', '0.90'])
+    axR.set_xlabel('production chunk')
+    axR.set_ylabel('accuracy')
+    tidy_axes(axR)
     save_figure(fig, 'PAPE_reweighting')
     plt.close()
     mae_c = np.mean(np.abs(ec - r))
@@ -406,50 +390,43 @@ def fig_dle():
     validation = dict(realized=float(np.mean(np.abs(y_val-f_val))),
                       estimated=float(nonnegative_loss(nanny, x_val, f_val).mean()))
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'width_ratios': [1.15, 1], 'wspace': 0.28})
+    fig, (axL, axR) = book_figure(1.0, 2.2, 1, 2, gridspec_kw={'width_ratios': [1.15, 1]})
     sub = RNG.choice(n, 900, replace=False)
-    axL.scatter(x_ref[sub], y_ref[sub], s=9, color=GREY, zorder=2, linewidths=0)
+    axL.scatter(x_ref[sub], y_ref[sub], s=2.5, color=LIGHT, zorder=2, linewidths=0)
     xs = np.linspace(0, 1, 200)
     fs = child.predict(xs[:, None])
     hs = nonnegative_loss(nanny, xs, fs)
-    axL.plot(xs, fs, color=DARK, lw=2.2, zorder=4)
-    axL.fill_between(xs, fs - hs, fs + hs, color=start_color, alpha=0.22, zorder=3, linewidth=0)
-    axL.plot(xs, fs + hs, color=start_color, lw=2, zorder=4)
-    axL.plot(xs, fs - hs, color=start_color, lw=2, zorder=4)
-    axL.text(0.985, fs[-1] + hs[-1] + 0.12, 'f(x) ± h(x)', color=start_color, fontsize=12, ha='right', va='bottom')
-    axL.text(0.52, child.predict([[0.52]])[0] - 0.55, 'Model f', color=DARK, fontsize=12, ha='left', va='top')
-    # the nanny's training target: |y - f(x)| for two example points
+    axL.fill_between(xs, fs - hs, fs + hs, color=NML_CYAN, alpha=0.2, zorder=3, linewidth=0)
+    axL.plot(xs, fs + hs, color=NML_CYAN, lw=LW_THIN + 0.3, zorder=4)
+    axL.plot(xs, fs - hs, color=NML_CYAN, lw=LW_THIN + 0.3, zorder=4)
+    axL.plot(xs, fs, color=INK, lw=LW - 0.2, zorder=4)
+    axL.text(1.02, fs[-1] + hs[-1], '$f(x) + h(x)$', color=NML_CYAN, va='center', clip_on=False)
+    axL.text(1.02, fs[-1], 'model $f$', color=INK, va='center', clip_on=False)
+    axL.text(1.02, fs[-1] - hs[-1], '$f(x) - h(x)$', color=NML_CYAN, va='center', clip_on=False)
     for xi in (0.25, 0.8):
         j = sub[np.argmin(np.abs(x_ref[sub] - xi) + 0.05 * (np.abs(y_ref[sub] - child.predict([[xi]])[0]) < 0.3))]
-        axL.plot([x_ref[j], x_ref[j]], [f_ref[j], y_ref[j]], color=end_color, lw=2, zorder=5)
-        axL.scatter([x_ref[j]], [y_ref[j]], s=30, color=end_color, zorder=6)
-        axL.annotate(f'|error| = {ae_ref[j]:.2f}',
-                     xy=(x_ref[j], y_ref[j]),
-                     xytext=(.02 if xi < .5 else .48, -.65 if xi < .5 else -.95),
-                     fontsize=11, color=end_color, ha='left', va='top',
-                     arrowprops=dict(arrowstyle='-', color=end_color, lw=.9),
-                     bbox=dict(facecolor='white', edgecolor='none', alpha=.85, pad=1.5))
-    axL.set_xlabel('input $x$', fontsize=12)
-    axL.set_ylabel('target $y$', fontsize=12)
+        axL.plot([x_ref[j], x_ref[j]], [f_ref[j], y_ref[j]], color=NML_RED, lw=LW - 0.2, zorder=5)
+        axL.scatter([x_ref[j]], [y_ref[j]], s=10, color=NML_RED, zorder=6, linewidths=0)
+        axL.annotate(f'|error| = {num(ae_ref[j])}', xy=(x_ref[j], y_ref[j]),
+                     xytext=(.03 if xi < .5 else .58, -.95), color=NML_RED, ha='left',
+                     va='top', arrowprops=dict(arrowstyle='-', color=NML_RED, lw=LW_THIN, shrinkA=1, shrinkB=2),
+                     bbox=dict(facecolor='white', edgecolor='none', pad=0.6))
+    axL.set_xlabel('input $x$')
+    axL.set_ylabel('target $y$')
     axL.set_xlim(0, 1)
-    axL.set_xticks([0, 0.5, 1])
-    axL.tick_params(labelsize=11)
-    despine(axL)
-    axL.text(0.02, axL.get_ylim()[1] - 0.15, 'Reference data', fontsize=12, color=MID, va='top')
-
-    k = np.arange(1, len(rows) + 1)
-    axR.plot(k, r, color=GREY_LINE, lw=2.5, marker='o', ms=6, solid_capstyle='round', zorder=3)
-    axR.plot(k, e, color=start_color, lw=3, marker='o', ms=6, solid_capstyle='round', zorder=4)
-    axR.text(.04, .87, 'Measured MAE', color=MID, fontsize=11, va='top', transform=axR.transAxes)
-    axR.text(.04, .96, 'DLE estimate', color=start_color, fontsize=11, va='top', transform=axR.transAxes)
-    axR.set_xticks(k[::2])
-    axR.set_xticklabels([f'{c:.2f}' for c in centres[::2]], fontsize=11)
-    axR.set_xlim(0.5, len(rows) + .4)
-    axR.tick_params(axis='y', labelsize=11)
-    axR.set_xlabel('Chunk centre $x$', fontsize=12)
-    axR.set_ylabel('MAE', fontsize=12)
-    despine(axR)
-    fig.subplots_adjust(left=0.08, right=0.98, top=0.94, bottom=0.20, wspace=0.40)
+    axL.set_xticks([0, 0.5, 1.0], labels=['0.0', '0.5', '1.0'])
+    minus_axis(axL, 'y', 0)
+    axL.set_title('reference data', loc='left', fontsize=TEXT_PT)
+    tidy_axes(axL)
+    axR.plot(centres, e, color=NML_CYAN, zorder=3)
+    axR.scatter(centres, r, s=16, facecolors='white', edgecolors=MUTED, linewidths=0.8, zorder=4)
+    axR.text(0.12, 0.68, 'line: DLE estimate', color=NML_CYAN, va='top', ha='left')
+    axR.text(0.12, 0.61, 'circles: measured MAE', color=MUTED, va='top', ha='left')
+    axR.set_xticks([0.2, 0.4, 0.6, 0.8], labels=['0.2', '0.4', '0.6', '0.8'])
+    axR.set_xlim(0.1, 0.9)
+    axR.set_xlabel('chunk center $x$')
+    axR.set_ylabel('MAE')
+    tidy_axes(axR)
     save_figure(fig, 'DLE_nanny')
     plt.close()
     print('4. DLE: realized %s\n   estimate %s\n   max gap %.3f' % (np.round(r, 3), np.round(e, 3), np.max(np.abs(r - e))))
@@ -502,56 +479,61 @@ def fig_rcd():
     validation = dict(concept_accuracy=float(np.mean((p_val >= .5) == y_val)),
                       probability_mae_to_oracle=float(np.mean(np.abs(p_val-concept(X_val, rot)))))
 
-    fig, (axL, axR) = plt.subplots(1, 2, figsize=(7.2, 3.6), gridspec_kw={'width_ratios': [1, 1.35], 'wspace': 0.3})
+    fig, (axL, axR) = book_figure(1.0, 2.25, 1, 2, gridspec_kw={'width_ratios': [1, 1.6]})
     sub = RNG.choice(n, 700, replace=False)
-    axL.scatter(X_ref[sub, 0], X_ref[sub, 1], s=10, c=np.where(y_ref[sub] == 1, start_color, GREY), zorder=2, linewidths=0)
+    axL.scatter(X_ref[sub, 0], X_ref[sub, 1], s=2.5, c=np.where(y_ref[sub] == 1, NML_CYAN, LIGHT), zorder=2,
+                linewidths=0)
     gx, gy = np.meshgrid(np.linspace(-3.2, 3.2, 200), np.linspace(-3.2, 3.2, 200))
     G = np.column_stack([gx.ravel(), gy.ravel()])
-    axL.contour(gx, gy, model.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[DARK], linewidths=2.2, zorder=4)
-    axL.contour(gx, gy, g.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[end_color], linewidths=2.6, zorder=5)
-    axL.text(-2.9, -2.25, 'Model f', color=DARK, fontsize=11, ha='left', va='bottom', bbox=dict(facecolor='white', edgecolor='none', alpha=.8, pad=1))
-    axL.text(3.0, -2.2, 'New concept g', color=end_color, fontsize=11, ha='right', va='top',
-             linespacing=1.3)
-    axL.text(-3.0, 2.9, 'Reference inputs\nCyan: y = 1', color=MID, fontsize=11, ha='left', va='top', linespacing=1.3)
+    axL.contour(gx, gy, model.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[INK],
+                linewidths=LW - 0.2, zorder=4)
+    axL.contour(gx, gy, g.predict_proba(G)[:, 1].reshape(gx.shape), levels=[0.5], colors=[NML_RED],
+                linewidths=LW, zorder=5)
     axL.set_xlim(-3.2, 3.2)
     axL.set_ylim(-3.2, 3.2)
+    axL.set_aspect('equal')
     axL.set_xticks([])
     axL.set_yticks([])
-    axL.set_xlabel('$x_1$', fontsize=12)
-    axL.set_ylabel('$x_2$', fontsize=12)
-    despine(axL)
+    axL.set_xlabel('x\u2081')
+    axL.set_ylabel('x\u2082')
+    axL.set_title('reference inputs (cyan: y = 1)', loc='left', fontsize=TEXT_PT)
+    tidy_axes(axL)
+    from matplotlib.lines import Line2D
+    axL.legend(handles=[Line2D([], [], color=INK, lw=LW - 0.2, label='model f'),
+                        Line2D([], [], color=NML_RED, lw=LW, label='new concept g')],
+               loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=2, handlelength=1.2)
 
-    # This is a counterfactual accounting, not an additive causal decomposition.
-    # Show the remainder as its own step, not as an unexplained gap.
     resid = acc_mon - (acc_cov + impact)
     steps = [('Reference', acc_ref, None),
-             ('Input mix', acc_cov-acc_ref, middle_color),
-             ('RCD impact', impact, end_color),
-             ('Residual', resid, GREY_LINE),
+             ('Input mix', acc_cov-acc_ref, NML_PURPLE),
+             ('RCD impact', impact, NML_RED),
+             ('Residual', resid, REF),
              ('Observed', acc_mon, None)]
-    level = acc_ref
+    # Printed steps are differences of rounded levels, so the printed numbers add up.
+    level, shown = acc_ref, round(acc_ref, 3)
     for i, (name, val, col) in enumerate(steps):
         if col is None:
-            # A horizontal level mark has no implied zero-based bar length.
-            axR.plot([i-.28, i+.28], [val, val], color=DARK, lw=3, zorder=4)
-            axR.text(i, val+.009, f'{val:.3f}', ha='center', va='bottom', fontsize=11, color=DARK)
+            axR.plot([i - .28, i + .28], [val, val], color=INK, lw=LW + 0.4, zorder=4)
+            axR.text(i, val + .008, num(val, 3), ha='center', va='bottom', color=INK)
         else:
-            axR.plot([i-.72, i-.28], [level, level], color=GREY_LINE, lw=1, ls=(0,(3,2)), zorder=2)
-            axR.bar(i, val, bottom=level, color=col, width=.56, zorder=3)
-            axR.text(i, max(level,level+val)+.009, f'{val:+.3f}', ha='center', va='bottom', fontsize=11, color=col)
+            axR.plot([i - .72, i - .28], [level, level], color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=2)
+            axR.bar(i, val, bottom=level, color=col, width=.56, linewidth=0, zorder=3)
+            new_shown = round(level + val, 3)
+            axR.text(i, max(level, level + val) + .008, num(new_shown - shown, 3, sign=True), ha='center',
+                     va='bottom', color=col if col != REF else MUTED)
             level += val
-    axR.plot([3.28,3.72],[acc_mon,acc_mon],color=GREY_LINE,lw=1,ls=(0,(3,2)))
-    axR.set_xticks(range(len(steps)))
-    axR.set_xticklabels(['Ref.', 'Input\nmix', 'RCD\nimpact', 'Resid.', 'New\ndata'], fontsize=11)
-    axR.set_xlim(-.5,4.5)
-    lo = min(acc_mon, acc_cov+impact)-.035
-    axR.set_ylim(lo,max(acc_ref,acc_cov)+.055)
-    axR.set_yticks(np.round(np.arange(np.ceil(lo*20)/20, max(acc_ref,acc_cov)+.05,.05),2))
-    axR.tick_params(axis='y', labelsize=11)
-    axR.set_ylabel('accuracy', fontsize=12)
-    despine(axR)
+            shown = new_shown
+    axR.plot([3.28, 3.72], [acc_mon, acc_mon], color=REF, lw=LW_THIN, ls=(0, (3, 2)))
+    axR.set_xticks(range(len(steps)), labels=['reference', 'input\nmix', 'RCD\nimpact', 'residual', 'new\ndata'],
+                   fontsize=SMALL_PT)
+    axR.set_xlim(-.5, 4.5)
+    lo = min(acc_mon, acc_cov + impact) - .035
+    axR.set_ylim(lo, max(acc_ref, acc_cov) + .055)
+    ticks = np.round(np.arange(np.ceil(lo * 20) / 20, max(acc_ref, acc_cov) + .05, .05), 2)
+    axR.set_yticks(ticks, labels=[f'{t:.2f}' for t in ticks])
+    axR.set_ylabel('accuracy')
+    tidy_axes(axR)
     axR.tick_params(axis='x', length=0)
-    fig.subplots_adjust(left=0.06, right=0.99, top=0.94, bottom=0.22, wspace=0.30)
     save_figure(fig, 'RCD_decomposition')
     plt.close()
     print(f'5. RCD: ref acc {acc_ref:.3f}, cov-only {acc_cov:.3f} ({acc_cov - acc_ref:+.3f}), '

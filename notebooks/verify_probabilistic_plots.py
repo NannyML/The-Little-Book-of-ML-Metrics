@@ -140,8 +140,8 @@ def captions(n):
     count_text='all twelve' if count==12 else f'${count}$ of twelve'
     return {
       'ECE':rf'''Reliability diagrams for a simulated binary classifier before and after temperature scaling, which divides
-its raw scores (logits) by a positive value $T$. Bar height shows observed accuracy, shade and the numbers inside the bars show
-the percentage of predictions in each bin, and red segments show calibration gaps.
+its raw scores (logits) by a positive value $T$. Bar height shows observed accuracy, the numbers inside the bars show
+the percentage of predictions in each bin, red segments show calibration gaps, and the dashed diagonal marks perfect calibration.
 \textit{{Left:}} the top bin contains ${100*e['top_bin'][2]:.0f}\%$ of predictions, with mean confidence ${e['top_bin'][4]:.2f}$ and
 accuracy ${e['top_bin'][3]:.2f}$; the weighted gaps sum to ECE $={e['ece'][0]:.3f}$.
 \textit{{Right:}} with $T={e['temperature']:.1f}$, ECE falls to ${e['ece'][1]:.3f}$. ROC AUC stays at ${e['auc']:.3f}$ because
@@ -154,7 +154,7 @@ concept drift lowers accuracy to ${c['production_realized'][-1]:.2f}$ while the 
 The illustrative band is $\pm 3$ reference-chunk standard deviations around the estimate, not a validated uncertainty interval or fixed alert threshold.''',
       'PAPE':rf'''A simulated classifier whose calibration varies with input $x_2$.
 \textit{{Left:}} reference and final-production densities are shown above the mean reference weight in each $x_2$ bin. The
-weight peaks near ${pap['binned_weight_peak']:.0f}$ in the production region.
+weight peaks near ${pap['binned_weight_peak']:.0f}$ in the production region; bins with fewer than $30$ reference points are not drawn.
 \textit{{Right:}} fixed reference calibration keeps CBPE near ${np.mean(pap['cbpe_estimates']):.2f}$ as realized accuracy reaches
 ${pap['production_realized'][-1]:.2f}$. PAPE follows it, with a mean absolute error of ${pap['mae_pape']:.3f}$ versus CBPE's ${pap['mae_cbpe']:.3f}$.''',
       'DLE':rf'''\textit{{Left:}} simulated reference data with noise that grows with the input, a linear model $f$, and a loss
@@ -164,8 +164,8 @@ it has no stated coverage probability. Two absolute errors used to train $h$ are
 ${d['production_realized'][-1]:.2f}$; the maximum gap from DLE is ${d['maximum_absolute_gap']:.3f}$ in this example.''',
       'RCD':rf'''\textit{{Left:}} simulated reference inputs, the monitored model's boundary (black), and the new concept model's
 boundary (red). \textit{{Right:}} accuracy falls from ${r['reference_accuracy']:.3f}$ to ${r['monitored_accuracy']:.3f}$.
-Moving the inputs under the old concept gives ${r['covariate_effect']:+.3f}$; applying the new concept to reference inputs gives
-${r['concept_impact']:+.3f}$. Together these reach ${r['sum_before_residual']:.3f}$. The explicit residual step, ${r['residual']:+.3f}$,
+Moving the inputs under the old concept gives ${round(r['reference_accuracy']+r['covariate_effect'],3)-round(r['reference_accuracy'],3):+.3f}$; applying the new concept to reference inputs gives
+${round(r['sum_before_residual'],3)-round(r['reference_accuracy']+r['covariate_effect'],3):+.3f}$. Together these reach ${r['sum_before_residual']:.3f}$. The explicit residual step, ${round(r['monitored_accuracy'],3)-round(r['sum_before_residual'],3):+.3f}$,
 accounts for the remaining difference. Interaction between shifts, concept-model error and sampling variation can all contribute;
 these effects need not add independently.'''}
 
