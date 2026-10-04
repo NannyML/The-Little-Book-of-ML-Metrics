@@ -536,7 +536,7 @@ def stoi():
     d, Xb, Yn, cf, frame_s = stoi_blocks(clean, noisy, 16000)
     band = int(np.argmin(np.abs(cf - 1000)))
     s0, n_show, L = 2, 3, 30
-    fig, (axT, axB) = book_figure(1.0, 2.4, 2, 1, gridspec_kw={'height_ratios': [1, 1.25]})
+    fig, (axT, axB) = book_figure(1.0, 2.33, 2, 1, gridspec_kw={'height_ratios': [1, 1.25]})
     sl = slice(s0 * L, (s0 + n_show) * L)
     tt = np.arange(sl.start, sl.stop) * frame_s
     axT.plot(tt, Xb[band, sl], color=NML_CYAN, lw=LW - 0.2)
