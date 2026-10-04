@@ -161,14 +161,14 @@ Use it for summarization, translation and paraphrase evaluation when good output
 
 
 \coloredboxes{
-\item Rewards paraphrase: the example scores $F_{\text{BERT}} = 0.88$ despite changing every content word; unigram precision is
-$0.40$ and BLEU is zero (figure).
+\item Rewards paraphrase: the example scores $F_{\text{BERT}} = 0.875$ despite changing every content word; unigram precision is
+$0.40$ (figure).
 \item Token-level. The matching matrix shows which reference words went unmatched, so a low score points to a specific omission.
 }
 {
 \item Configuration-dependent. Report the model, layer, IDF weighting and baseline rescaling; each changes the scale.
-\item Weak on word order and negation: swapping who did what to whom, or inserting ``not'', keeps most token matches and the score
-barely moves (figure).
+\item Weak on word order and negation: swapping who did what to whom scores $0.90$, and inserting ``not'' still scores $0.84$,
+because most token matches survive.
 }
 
 \metricsecondpage
@@ -181,8 +181,8 @@ barely moves (figure).
 
 \metriccaption{Figure. BERTScore.}{Raw cosine similarities between reference tokens (rows) and candidate tokens (columns) from
 layer $9$ of bert-base-uncased, without baseline rescaling or IDF weighting. Each row's maximum (boxed) is that token's best match and
-their mean is recall; column maxima (dots) give precision. ``Doctor'' finds ``physician'' at $0.82$, so raw
-$F_{\text{BERT}} = 0.88$ where unigram precision is $0.40$.}
+their mean is recall; column maxima (red dots) give precision. ``Doctor'' finds ``physician'' at $0.82$, so raw
+$F_{\text{BERT}} = 0.875$ where unigram precision is $0.40$.}
 
 \orangebox{Did you know that...}
 {The embeddings BERTScore uses do not come from the model's last layer. The authors tuned the layer choice against human judgments and
@@ -259,8 +259,8 @@ side and uses $5{,}000$.
 \end{metricfigure}
 
 \metriccaption{Figure. MAUVE.}{\textit{Left:} human text $P$ (gray) and three model distributions $Q$ over eight embedding clusters.
-\textit{Right:} the curve produced as $\lambda$ changes, completed with the two boundary points used for integration; MAUVE is the
-shaded area with $c = 5$. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
+\textit{Right:} the curve each model produces as $\lambda$ changes, completed with the two boundary points used for integration; MAUVE is the
+area under its curve with $c = 5$, shaded for one model. A model close to the human histogram fills the square (rounding to $1.00$); one with a quarter of its mass on clusters no
 human text falls in loses area along the horizontal axis; one that writes only the three commonest kinds of text loses it along the
 vertical axis.}
 
@@ -338,7 +338,7 @@ settings must match before comparing scores.
 \metriccaption{Figure. Inception Score.}{Each row is one generated image's class distribution $p(y|x)$; the bottom row is their average, the
 marginal $p(y)$. IS is the exponential of the mean KL divergence between rows and marginal, so it is high only when the rows are peaked
 \emph{and} the marginal is flat: confident, diverse predictions reach $2.98$ of a possible $4$. Four equally confident predictions of
-one class give $\text{IS} = 1$; diffuse predictions score $1.06$ however many classes they cover.}
+one class give $\text{IS} = 1$; uncertain predictions score only $1.06$ even though they cover all four classes.}
 
 \orangebox{Did you know that...}
 {The Inception Score is $\exp$ of a mutual information, $I(x;y) = H(y) - H(y|x)$: the label entropy across samples minus the average
@@ -414,7 +414,7 @@ resize and JPEG settings shift the score by points.
 \end{metricfigure}
 
 \metriccaption{Figure. FID.}{A two-dimensional stand-in for Inception's feature space (the axes are the two feature dimensions): $500$ real
-samples (gray) against $500$ generated, with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
+samples (gray) against $500$ generated (purple), with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
 term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third
 population was constructed with the same mean and covariance as the reference but a different shape. Its $500$ sampled points have
 slightly different fitted moments, giving $0.02$; exactly matching fitted moments would give zero.}
@@ -707,14 +707,14 @@ offer more detail.
     \includegraphics[width=\textwidth]{figures/VQAScore_vs_CLIP.png}
 \end{metricfigure}
 
-\metriccaption{Figure. VQAScore.}{One image, four captions, two metrics: CLIP-S (gray) and VQAScore computed as $P(\text{``Yes''})$ from a
-small generative VQA model (BLIP-base) asked whether the figure shows the caption. Both rank the wrong object last, VQAScore at $0.46$
+\metriccaption{Figure. VQAScore.}{One image, four captions, two metrics: CLIP-S (gray) and a simplified VQAScore from a small VQA model (BLIP-base): its probability of
+the first answer token ``yes'', renormalized over ``yes'' and ``no''. Red captions are the two hard probes of the correct caption. Both rank the wrong object last, VQAScore at $0.46$
 and CLIP-S at $0.14$, and neither handles the negated caption well ($0.66$ and $0.69$). But CLIP scores the word-swapped caption
 \emph{above} the correct one, $0.82$ against $0.79$, while VQAScore reads the sentence in order and ranks them the right way round,
 $0.93$ against $0.82$. The paper's much larger CLIP-FlanT5 model pushes mismatched captions further down; the mechanism is the same.}
 
 \orangebox{Did you know that...}
-{VQAScore reads one next-token probability from a vision--language model: the chance of ``Yes'' given an image and question. Perplexity aggregates the same kind of probability over a sequence. Using the probability gives a continuous score where a yes/no answer would not, but the template still matters because every conditioning token can change it. Lin et al. (2024) also asked the model for a $1$--$5$ rating; those ratings clustered near the top of the scale and were much less informative.}
+{VQAScore reads the probability a vision--language model gives to the answer ``Yes'' for an image and question. Perplexity aggregates the same kind of probability over a sequence. Using the probability gives a continuous score where a yes/no answer would not, but the template still matters because every conditioning token can change it. Lin et al. (2024) also asked the model for a $1$--$5$ rating; those ratings clustered near the top of the scale and were much less informative.}
 
 \metricheading{Related metrics}\metricsecondary
 
@@ -752,7 +752,7 @@ conditions.
 \end{metricformula}
 
 Ratings often follow ITU-T's absolute category scale. Report the listeners, stimuli, sampling unit and whether the design is paired. For
-illustration, $20$ independent ratings with $\sigma=0.8$ give a $95\%$ interval of roughly $\pm0.35$ around one mean. Comparing two
+illustration, $20$ independent ratings with $\sigma=0.8$ give a $95\%$ $t$-interval of roughly $\pm0.37$ around one mean. Comparing two
 systems instead depends on their paired differences.
 
 \metricheading{When to use}
@@ -784,8 +784,8 @@ depends on the paired design, variability and power; repeated ratings are not in
 
 \metriccaption{Figure. MOS.}{Twenty listeners rate each of three systems and all three land on $\text{MOS} = 3.0$ with a median of $3$. The
 consensus system is one everyone finds mediocre; the polarized one half the panel likes and half cannot stand; the skewed one leans
-toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but their rating distributions do. The intervals shown
-are illustrative summaries of these constructed samples; the zero width for the consensus system follows from giving every listener the
+toward $2$ with a few enthusiasts. Neither mean nor median distinguishes them, but their rating distributions do. The $\pm$ values are
+$95\%$ $t$-intervals for these constructed samples; the zero width for the consensus system follows from giving every listener the
 same rating. Report the distribution and uncertainty with the mean, and compare systems under the same protocol.}
 
 \orangebox{Did you know that...}
@@ -863,7 +863,7 @@ still move results, so report them.
 \metriccaption{Figure. PESQ.}{The same eight-second sentence under eight conditions. Waveform SNR (left) compares samples directly: a $20$ ms
 delay or a $6$ dB gain change makes the signals disagree sample by sample and the SNR falls to $-3.4$ and $6.0$ dB, numbers that
 would suggest heavy damage. PESQ (right; narrowband P.862 mapped to MOS-LQO) aligns and level-equalizes first and returns its maximum
-of $4.55$ for both, and $4.33$ for telephone band-limiting. Added white noise, which is audible, moves it from $3.76$ at $40$ dB SNR
+of $4.55$ for both, and $4.33$ for telephone band-limiting. Red marks these three changes that SNR punishes much more than PESQ. Added white noise, which is audible, moves it from $3.76$ at $40$ dB SNR
 down to $1.45$ at $10$ dB.}
 
 \orangebox{Did you know that...}
@@ -945,7 +945,7 @@ listening test supports a percentage of words understood.
 \metriccaption{Figure. STOI.}{\textit{Top:} the energy envelope of one band ($952$ Hz) for clean speech and the same speech in white
 noise at $0$ dB SNR over three $384$ ms segments. Noise fills the valleys between syllables; the clean--noisy correlation is $0.98$
 in the segment with a strong syllable onset and $0.73$ in the quieter one. \textit{Bottom:} the correlation for all $15$ bands and
-every segment. STOI is their mean, $0.76$ here ($0.77$ with the reference implementation's sliding segments), $0.91$ at $10$ dB SNR
+every segment, from a simplified calculation with non-overlapping segments; two cells are slightly negative (red). Their mean is $0.76$; the reference implementation gives $0.77$ here, $0.91$ at $10$ dB SNR
 and $0.70$ at $-5$ dB.}
 
 \orangebox{Did you know that...}
