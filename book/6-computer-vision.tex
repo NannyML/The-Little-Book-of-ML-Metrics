@@ -132,7 +132,7 @@ Use PCK for pose estimation or landmark detection when a distance tolerance capt
     \includegraphics[width=\textwidth]{figures/PCK_threshold_visual.png}
 \end{metricfigure}
 
-\metriccaption{Figure. PCK.}{The same $14$ constructed predictions are evaluated at two tolerances. Here $L$ is the neck-to-pelvis length, and each purple circle has radius $\alpha L$; circles are shown for three joints. Increasing $\alpha$ from $0.2$ to $0.5$ changes the count from $11$ to $13$ correct. The coordinates and circles share the same scale.}
+\metriccaption{Figure. PCK.}{The same $14$ constructed predictions are evaluated at two tolerances. Here $L$ is the neck-to-pelvis length, and each purple circle has radius $\alpha L$, drawn around the three joints that miss at $\alpha = 0.2$. Increasing $\alpha$ to $0.5$ brings two of them inside their circles, changing the count from $11$ to $13$ correct; the left wrist still misses. The coordinates and circles share the same scale.}
 
 For a benchmark, use its specified tolerance. For a new application, choose a tolerance that reflects the precision you need, and report how the reference length is measured.
 
@@ -192,7 +192,7 @@ Use OKS for COCO-style pose evaluation, where both object size and annotation un
     \includegraphics[width=.82\textwidth]{figures/OKS_gaussian_falloff.png}
 \end{metricfigure}
 
-\metriccaption{Figure. OKS.}{Larger values of $k$ let the score fall more slowly as the error grows. The three curves illustrate this effect; their body-part labels do not reproduce COCO's exact tolerances. In the formula shown here, COCO uses $k = 0.05$ for eyes, $0.158$ for shoulders and $0.214$ for hips. The gray step illustrates a hard cutoff using the same normalized distance.}
+\metriccaption{Figure. OKS.}{Larger values of $k$ let the score fall more slowly as the error grows. The three curves use COCO's values in the formula shown here: $k = 0.05$ for eyes, $0.158$ for shoulders and $0.214$ for hips. The gray step is a hypothetical PCK-style cutoff on the same normalized distance: full credit up to $0.30$, none beyond.}
 
 \orangebox{Did you know that...}
 {COCO's headline keypoint score is Average Precision, not the mean OKS of all poses. It uses OKS thresholds from $0.50$ to $0.95$ to decide whether a predicted pose matches a person, then averages the resulting AP values. A model must therefore locate joints well and find the people in the image.}
@@ -406,7 +406,7 @@ Use PQ for panoptic segmentation, where every pixel needs a class label and indi
     \includegraphics[width=.82\textwidth]{figures/PQ_decomposition.png}
 \end{metricfigure}
 
-\metriccaption{Figure. PQ.}{For one class, multiplying SQ by RQ gives PQ. B and C have different component scores but similar PQ ($0.45$ and about $0.47$). RQ alone does not reveal whether a region was missed or failed the class or overlap test. Point D is not valid under the usual matching rule: whenever matches exist, their average IoU, SQ, must be strictly above $0.5$.}
+\metriccaption{Figure. PQ.}{For one class, multiplying SQ by RQ gives PQ; the curves join equal PQ values. B and C have different component scores but similar PQ ($0.45$ and about $0.47$). RQ alone does not reveal whether a region was missed or failed the class or overlap test. The vertical axis starts at $0.5$: whenever matches exist, SQ averages IoUs that are strictly above $0.5$.}
 
 \orangebox{Did you know that...}
 {The IoU $> 0.5$ rule makes matching unique because panoptic regions do not overlap within either segmentation. No predicted region can match two ground-truth regions, or vice versa. Kirillov and colleagues used this property to avoid a separate assignment algorithm when they introduced PQ.}
@@ -470,7 +470,7 @@ Use SSIM alongside PSNR and visual inspection for compression or image restorati
     \includegraphics[width=\textwidth]{figures/SSIM_vs_PSNR.png}
 \end{metricfigure}
 
-\metriccaption{Figure. SSIM.}{Three distortions of the same grayscale image, each tuned to PSNR $24$ dB. Here SSIM scores the brightness shift at $0.99$, blur at $0.76$ and noise at $0.55$, using $11 \times 11$ Gaussian-weighted windows. These results show how equal pixel error can produce different local similarities; they do not establish a universal ordering of blur and noise, or a human quality rating.}
+\metriccaption{Figure. SSIM.}{Three distortions of the same grayscale image, each tuned to PSNR $24$ dB. Here SSIM scores the brightness shift at $0.99$, blur at $0.69$ and noise at $0.43$, using $11 \times 11$ Gaussian-weighted windows. These results show how equal pixel error can produce different local similarities; they do not establish a universal ordering of blur and noise, or a human quality rating.}
 
 \orangebox{Did you know that...}
 {SSIM reached beyond research papers. In $2015$, the Television Academy awarded a Primetime Engineering Emmy to Zhou Wang, Alan Bovik, Hamid Sheikh and Eero Simoncelli for developing it. The award recognized its use in assessing video quality across the television industry.}
