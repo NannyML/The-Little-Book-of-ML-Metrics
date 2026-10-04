@@ -34,6 +34,17 @@ def clean_tok(t):
     return t.strip() if t.strip() else t
 
 
+def balanced(text, width):
+    """Break a label into at most two lines of similar length, never leaving one word alone."""
+    if len(text) <= width:
+        return text
+    words = text.split()
+    small = {'a', 'an', 'the', 'on', 'in', 'of', 'with', 'and', '“a', '“an', '“the'}
+    splits = [k for k in range(1, len(words) - 1) if words[k - 1].lower() not in small]
+    best = min(splits, key=lambda k: max(len(' '.join(words[:k])), len(' '.join(words[k:]))))
+    return ' '.join(words[:best]) + '\n' + ' '.join(words[best:])
+
+
 def kl(a, b):
     m = a > 0
     return float(np.sum(a[m] * np.log(a[m] / b[m])))
@@ -136,7 +147,7 @@ def mauve():
           ('adds junk text', 0.75 * P + 0.25 * np.array([0, 0, 0, 0, 0, 0, .5, .5]), NML_RED),
           ('misses rare modes', np.array([.28, .22, .18, 0, 0, 0, 0, 0]) / .68, NML_PURPLE)]
     fig = book_canvas(1.0, 2.6, layout='constrained')
-    gs = fig.add_gridspec(3, 2, width_ratios=[1.0, 1.0])
+    gs = fig.add_gridspec(3, 2, width_ratios=[1.3, 1.0])
     af = fig.add_subplot(gs[:, 1])
     xb = np.arange(len(P))
     out = {}
@@ -160,7 +171,7 @@ def mauve():
     af.fill_between(jpts[:, 0], 0, jpts[:, 1], color=jcol, alpha=0.15, linewidth=0)
     for name, (pts, area, col) in out.items():
         af.plot(pts[:, 0], pts[:, 1], color=col, clip_on=False)
-    af.text(0.06, 0.08, f'shaded area under the\nred curve = {num(jarea)}', color=NML_RED, linespacing=1.2)
+    af.text(0.05, 0.06, f'shaded area\nunder the red\ncurve = {num(jarea)}', color=NML_RED, linespacing=1.2)
     af.set_xlim(0, 1)
     af.set_ylim(0, 1)
     af.set_aspect('equal')
@@ -246,7 +257,7 @@ def fid():
         ax.set_aspect('equal')
         bare_axes(ax)
         ax.set_title(f'{name}', loc='center', fontsize=TEXT_PT, linespacing=1.2)
-        ax.set_xlabel(f'FID = {num(F)}\nmean term {num(mt, 3)}\ncovariance term {num(ct, 3)}', linespacing=1.3)
+        ax.set_xlabel(f'FID = {num(F, 3)}\nmean term {num(mt, 3)}\ncovariance term {num(ct, 3)}', linespacing=1.3)
     fig.legend(handles=[Line2D([], [], marker='o', ls='', ms=3, color=LIGHT, label='real'),
                         Line2D([], [], marker='o', ls='', ms=3, color=NML_PURPLE, label='generated')],
                loc='outside upper center', ncol=2, handletextpad=0.2)
@@ -306,8 +317,7 @@ def clip_score():
         axm.add_patch(Rectangle((-0.47, i - 0.47), 0.94, 0.94, fill=False, edgecolor=NML_RED, lw=1.1,
                                 ls=(0, (2, 1.5))))
     axm.set_xticks([])
-    import textwrap
-    axm.set_yticks(range(nC), labels=['\n'.join(textwrap.wrap(f'“{cp}”', 27)) for cp in caps])
+    axm.set_yticks(range(nC), labels=[balanced(f'“{cp}”', 27) for cp in caps])
     axm.tick_params(length=0)
     for side in axm.spines.values():
         side.set_visible(False)
@@ -327,8 +337,8 @@ def clip_score():
 
 # ===========================================================================
 def dsg():
-    Q = {'q1': ('Is there a\nbicycle?', []), 'q2': ('Is the bicycle\nred?', ['q1']), 'q3': ('Is there\na wall?', []),
-         'q4': ('Is the wall\nblue?', ['q3']), 'q5': ('Is it leaning\non the wall?', ['q1', 'q3'])}
+    Q = {'q1': ('Is there a\nbicycle?', []), 'q2': ('Is the\nbicycle red?', ['q1']), 'q3': ('Is there\na wall?', []),
+         'q4': ('Is the\nwall blue?', ['q3']), 'q5': ('Is it leaning\non the wall?', ['q1', 'q3'])}
     pos = {'q1': (0.2, 0.74), 'q3': (0.8, 0.74), 'q2': (0.17, 0.34), 'q4': (0.83, 0.34), 'q5': (0.5, 0.34)}
     images = [('image A: wrong colors', {'q1': 'yes', 'q2': 'no', 'q3': 'yes', 'q4': 'no', 'q5': 'yes'}),
               ('image B: no bicycle', {'q1': 'no', 'q2': 'yes', 'q3': 'yes', 'q4': 'yes', 'q5': 'yes'})]
@@ -385,19 +395,19 @@ def vqascore():
     axI = fig.add_axes([0.0, 0.12, 0.2, 0.74])
     axI.imshow(plt.imread(DATA / 'img_hopper.png'))
     bare_axes(axI)
-    axA = fig.add_axes([0.6, 0.18, 0.17, 0.66])
-    axB = fig.add_axes([0.82, 0.18, 0.17, 0.66])
+    axA = fig.add_axes([0.575, 0.18, 0.165, 0.66])
+    axB = fig.add_axes([0.805, 0.18, 0.165, 0.66])
     ys = np.arange(len(order))[::-1]
     for ax, vals, col, title in [(axA, p_yes, NML_CYAN, 'BLIP yes/no\nscore'), (axB, clip_s, MUTED, 'CLIP-S')]:
         for y, j in zip(ys, order):
             ax.scatter(vals[j], y, s=14, color=col, zorder=3, linewidths=0)
             ax.text(vals[j], y + 0.22, num(vals[j]), ha='center', va='bottom', color=INK, fontsize=SMALL_PT)
-        ax.set_xlim(0, 1)
+        ax.set_xlim(-0.08, 1.08)
         ax.set_ylim(-0.5, len(order) - 0.3)
         ax.set_xticks([0, 0.5, 1.0], labels=['0.0', '0.5', '1.0'])
         ax.set_title(title, fontsize=TEXT_PT, linespacing=1.2)
         tidy_axes(ax, left=False)
-    axA.set_yticks(ys, labels=['\n'.join(textwrap.wrap(f'\u201c{caps[j]}\u201d', 26)) for j in order])
+    axA.set_yticks(ys, labels=[balanced(f'\u201c{caps[j]}\u201d', 26) for j in order])
     axA.tick_params(axis='y', length=0, labelleft=True, pad=6)
     for lab, j in zip(axA.get_yticklabels(), order):
         lab.set_color(NML_RED if tags[j] in ('hopper_swap', 'hopper_neg') else INK)
@@ -430,7 +440,7 @@ def mos():
                      fontsize=TEXT_PT, linespacing=1.3)
         ax.set_xlabel('listener rating')
         tidy_axes(ax, left=False)
-    axes[2].text(0.6, 20.5, f'{n} listeners,\none dot each', color=MUTED, va='top', ha='left')
+    axes[2].text(3.3, 20.5, '1 dot =\n1 listener', color=MUTED, va='top', ha='left', linespacing=1.2)
     save_figure(fig, 'MOS_same_mean')
     plt.close(fig)
     print('MOS', {k: tuple(round(x, 3) for x in v) for k, v in out.items()}, 't', round(tcrit, 3))
@@ -458,7 +468,8 @@ def pesq():
         else:
             axL.scatter(d['snr_db'], y, s=12, color=col, zorder=4, linewidths=0)
             axL.annotate(num(d['snr_db'], 1), (d['snr_db'], y), xytext=(4, 0), textcoords='offset points',
-                         va='center', color=col, fontsize=SMALL_PT)
+                         va='center', color=col, fontsize=SMALL_PT, zorder=5,
+                         bbox=dict(facecolor='white', edgecolor='none', pad=0.3))
         axR.scatter(d['pesq_nb'], y, s=12, color=col, zorder=4, linewidths=0)
         axR.annotate(num(d['pesq_nb']), (d['pesq_nb'], y), xytext=(-4, 0), textcoords='offset points',
                      va='center', ha='right', color=col, fontsize=SMALL_PT)
@@ -469,8 +480,8 @@ def pesq():
     axR.set_xlim(1, 4.7)
     axR.set_xticks([1, 2, 3, 4])
     axR.axvline(pmax, color=REF, lw=LW_THIN, zorder=1, ls=(0, (3, 2)))
-    axR.text(pmax, len(order) - 0.35, f'maximum {num(pmax)}', ha='right', va='bottom', color=MUTED,
-             fontsize=SMALL_PT)
+    axR.annotate(f'maximum {num(pmax)}', (pmax, len(order) - 0.35), xytext=(-3, 0), textcoords='offset points',
+                 ha='right', va='bottom', color=MUTED, fontsize=SMALL_PT)
     axR.set_xlabel('PESQ (MOS-LQO)')
     for ax in (axL, axR):
         ax.set_yticks([])
@@ -543,8 +554,9 @@ def stoi():
             axT.axvline(t0, color=REF, lw=LW_THIN, zorder=1)
         axT.text((t0 + t1) / 2, top * 1.12, f'correlation = {num(d[band, s0 + m])}', ha='center', va='bottom',
                  color=INK)
-    axT.text(tt[-1], top * 1.0, 'clean', color=NML_CYAN, va='top', ha='right')
-    axT.text(tt[-1], top * 0.84, 'noisy, 0 dB SNR\n(normalized, clipped)', color=NML_RED, va='top', ha='right',
+    xl = (s0 + n_show - 1) * L * frame_s + 0.02
+    axT.text(xl, top * 1.02, 'clean', color=NML_CYAN, va='top', ha='left')
+    axT.text(xl, top * 0.80, 'noisy, 0 dB SNR\n(normalized, clipped)', color=NML_RED, va='top', ha='left',
              linespacing=1.2)
     axT.set_xlim(tt[0], tt[-1])
     axT.set_ylim(0, top * 1.3)
@@ -567,7 +579,7 @@ def stoi():
                   loc='left', fontsize=TEXT_PT)
     cb = fig.colorbar(im, ax=axB, fraction=0.05, pad=0.02, aspect=12)
     cb.set_ticks([-0.2, 0, 0.5, 1.0], labels=['−0.2', '0.0', '0.5', '1.0'])
-    cb.set_label('envelope correlation')
+    cb.set_label('correlation')
     cb.outline.set_linewidth(0.6)
     save_figure(fig, 'STOI_envelopes')
     plt.close(fig)

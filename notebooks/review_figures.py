@@ -161,8 +161,7 @@ def fig_confusion():
                                 facecolor=CYAN_TINT if ok else RED_TINT, edgecolor='none'))
         axL.text(0.5, yy, str(actual[i]), ha='center', va='center', color=INK)
         axL.text(1.75, yy, str(pred[i]), ha='center', va='center', color=INK)
-        axL.text(2.95, yy, kind[i], ha='center', va='center', color=NML_CYAN if ok else NML_RED,
-                 fontweight='semibold')
+        axL.text(2.95, yy, kind[i], ha='center', va='center', color=INK)
     # right: the matrix and the four reads of it
     axR.set_xlim(-1.0, 4.45)
     axR.set_ylim(-1.55, 2.75)
@@ -171,8 +170,7 @@ def fig_confusion():
     for (cx, cy), (name, cnt, ok) in cells.items():
         axR.add_patch(Rectangle((cx + 0.03, cy + 0.03), 0.94, 0.94,
                                 facecolor=CYAN_TINT if ok else RED_TINT, edgecolor='none'))
-        axR.text(cx + 0.5, cy + 0.6, str(cnt), ha='center', va='center', fontsize=11,
-                 color=NML_CYAN if ok else NML_RED, fontweight='semibold')
+        axR.text(cx + 0.5, cy + 0.6, str(cnt), ha='center', va='center', fontsize=11, color=INK)
         axR.text(cx + 0.5, cy + 0.24, name, ha='center', va='center', color=MUTED)
     # the diagonal holds the correct predictions: accuracy reads it
     axR.add_patch(Rectangle((0.0, 1.0), 1.0, 1.0, fill=False, edgecolor=INK, lw=0.7, ls=(0, (2, 1.5))))

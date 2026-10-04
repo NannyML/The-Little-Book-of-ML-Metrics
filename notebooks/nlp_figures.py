@@ -198,7 +198,7 @@ def bleu_figure():
     T.fig, T.ax, T.r = fig, top, fig.canvas.get_renderer()
     rw, cw = toks(SENT), toks(cand)
     T.row(rw, 37, [REFC] * 9, [INK] * 9, label='reference')
-    T.row(cw, 15, [MISS if a != b else MATCH for a, b in zip(rw, cw)], label='candidate')
+    T.row(cw, 15, [MISS if a != b else MATCH for a, b in zip(rw, cw)], label='output')
     ax = fig.add_axes([0.135, 0.15, 0.5, 0.52])
     xs = np.arange(1, 5)
     ax.bar(xs, ps, width=0.6, color=NML_CYAN, linewidth=0)
@@ -297,8 +297,8 @@ def ter_figure():
     ref, hyp = toks('police arrested the suspect on monday morning'), toks('on monday morning police arrested the suspect')
     phrase = {'on', 'monday', 'morning'}
     n = len(ref)
-    T = Tokens(1.0, 1.7)
-    yr, yh = 88, 50
+    T = Tokens(1.0, 1.5)
+    yr, yh = 84, 46
     rx = T.row(ref, yr, [SYN if w in phrase else MATCH for w in ref], label='reference')
     hx = T.row(hyp, yh, [SYN if w in phrase else MATCH for w in hyp], label='output')
     src = (hx[0][0] + hx[2][1]) / 2
@@ -306,7 +306,8 @@ def ter_figure():
     T.ax.annotate('', xy=(dst, yr - 8), xytext=(src, yh + 8),
                   arrowprops=dict(arrowstyle='-|>', color=REF, lw=LW_THIN + 0.2, mutation_scale=7,
                                   connectionstyle='arc3,rad=-0.08'))
-    T.text(LABEL_X + 6, yr + 15, 'one shift moves the whole phrase (purple) to its place', color=MUTED)
+    T.text((src + dst) / 2, (yr + yh) / 2, 'one shift', ha='center', color=MUTED, zorder=4,
+           bbox=dict(facecolor='white', edgecolor='none', pad=1.0))
     T.text(2, 24, f'without shifts: 3 deletions + 3 insertions = 6 edits; edit rate = 6/{n} = {num(6 / n)}',
            color=MUTED)
     T.text(2, 9, f'with one shift: 1 edit; TER = 1/{n} = {num(1 / n)}', color=SYN)

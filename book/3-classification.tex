@@ -19,10 +19,10 @@ Many classifiers also predict probabilities. A filter may flag email once its sp
     [{\dl{yes}{\mref{PR AUC}{sec:pr-auc}}}]
     [{\dl{no}{\mref{ROC AUC}{sec:roc-auc}}}]
   ]
-  [{\dm{labels at a threshold}{Know the error costs?}}
+  [{\dm{labels at\\a threshold}{Know the error costs?}}
     [{\dl{yes}{\mref{EC}{sec:ec}}}]
     [{\dl{no; balanced classes}{\mref{Accuracy}{sec:accuracy}}}]
-    [{\dm{no; imbalanced classes}{Which error is costlier?}}
+    [{\dm{no; classes\\are imbalanced}{Which error is costlier?}}
       [{\dl{missed positives}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}}]
       [{\dl{false alarms among flags}{\mref{Precision}{sec:precision}}}]
       [{\dl{false alarms per negative}{\mref{FPR}{sec:fpr}, \mref{TNR}{sec:tnr-specificity}}}]
@@ -912,14 +912,14 @@ The Jaccard Index measures the overlap between two sets: the size of their inter
             {
                 $\displaystyle
                 J(A, B) =
-                \frac{\textcolor{nmlpurple}{|A \cap B|}}
-                {\textcolor{nmlcyan}{|A \cup B|}}
+                \frac{|{\color{nmlcyan}A} \cap {\color{nmlpurple}B}|}
+                {|{\color{nmlcyan}A} \cup {\color{nmlpurple}B}|}
                 $
             }
         };
 
-        \draw[-latex, nmlpurple, semithick] ($(a.north)+(1.11,-0.10)$) to[bend right=15] node[pos=1, left] {\color{nmlpurple} Intersection} +(-1.00,0.34);
-        \draw[-latex, nmlcyan, semithick] ($(a.south)+(1.11,0.16)$) to[bend left=15] node[pos=1, left] {\color{nmlcyan} Union} +(-1.00,-0.39);
+        \draw[-latex, black!60, semithick] ($(a.north)+(1.11,-0.10)$) to[bend right=15] node[pos=1, left] {\color{black!70} Intersection} +(-1.00,0.34);
+        \draw[-latex, black!60, semithick] ($(a.south)+(1.11,0.16)$) to[bend left=15] node[pos=1, left] {\color{black!70} Union} +(-1.00,-0.39);
     }
 \end{metricformula}
 
@@ -947,7 +947,7 @@ Use Jaccard when the overlap between predicted and actual positives is the focus
     \includegraphics[width=\textwidth]{figures/Jaccard_overlap.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Jaccard Index.}{The predicted region (cyan) overlaps the actual region (purple) more on the left than on the right. Jaccard divides the shared area by the total area covered by either region. For example, two masks of $100$ pixels sharing $50$ have a union of $150$, so their Jaccard score is $1/3$.}
+\metriccaption{Figure. Jaccard Index.}{The predicted region $A$ (cyan) overlaps the actual region $B$ (purple) more on the left than on the right. Jaccard divides the shared area by the total area covered by either region. For example, two masks of $100$ pixels sharing $50$ have a union of $150$, so their Jaccard score is $1/3$.}
 
 \orangebox{Did you know that...}
 {For one pair of sets, Jaccard and Sørensen-Dice satisfy $\text{Jaccard} = \text{Dice}/(2 - \text{Dice})$. This monotonic conversion preserves rankings when both scores use the same pooled counts. Averaging separate scores across images or classes can change the rankings, because averaging and this conversion do not give the same result in either order.}

@@ -271,13 +271,13 @@ def pq():
     for letter, desc, rq, sq, off, ha in models:
         ax.scatter(rq, sq, s=26, color=NML_PURPLE, edgecolors='white', linewidths=0.8, zorder=5)
         ax.annotate(letter, (rq, sq), xytext=off, textcoords='offset points', ha=ha, va='center',
-                    color=INK, fontweight='semibold', zorder=6,
+                    color=INK, zorder=6,
                     bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
         lines.append(f'{letter}: {desc}, PQ = {num(rq * sq)}')
     ax.set_xlim(0, 1)
     ax.set_ylim(0.5, 1)
     unit_ticks(ax, 'x', 0.5)
-    ax.set_yticks([0.5, 0.75, 1.0], labels=['0.50', '0.75', '1.00'])
+    unit_ticks(ax, 'y', 0.1, lo=0.5)
     ax.set_xlabel('recognition quality (RQ)')
     ax.set_ylabel('segmentation quality (SQ)')
     tidy_axes(ax)

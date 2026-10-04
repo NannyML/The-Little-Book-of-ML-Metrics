@@ -239,10 +239,9 @@ def ndcg_degradation():
 # ===========================================================================
 def fcp():
     true = np.array([1, 2, 3, 4, 5])
-    panels = [('good ranking', np.array([1, 3, 2, 4, 5]), NML_CYAN),
-              ('poor ranking', np.array([4, 2, 5, 3, 1]), NML_RED)]
+    panels = [('good ranking', np.array([1, 3, 2, 4, 5])), ('poor ranking', np.array([4, 2, 5, 3, 1]))]
     fig, axes = book_figure(1.0, 2.15, 1, 2)
-    for ax, (name, pred, col) in zip(axes, panels):
+    for ax, (name, pred) in zip(axes, panels):
         conc = disc = 0
         for i in range(5):
             for j in range(i + 1, 5):
@@ -250,10 +249,12 @@ def fcp():
                     conc += 1
                 else:
                     disc += 1
-                    ax.plot([true[i], true[j]], [pred[i], pred[j]], color=NML_RED, lw=LW_THIN,
-                            alpha=0.8, zorder=1)
+                    # gentle arcs, so pairs whose points are collinear stay distinct
+                    ax.annotate('', xy=(true[j], pred[j]), xytext=(true[i], pred[i]), zorder=1,
+                                arrowprops=dict(arrowstyle='-', color=NML_RED, lw=LW_THIN, alpha=0.8,
+                                                shrinkA=0, shrinkB=0, connectionstyle='arc3,rad=0.18'))
         f = conc / (conc + disc)
-        ax.scatter(true, pred, s=30, color=col, zorder=3, linewidths=0)
+        ax.scatter(true, pred, s=30, color=INK, zorder=3, linewidths=0)
         ax.set_title(f'{name}: FCP = {conc}/{conc + disc} = {num(f)}', loc='left', fontsize=TEXT_PT)
         ax.set_xlim(0.6, 5.4)
         ax.set_ylim(0.6, 5.4)
@@ -324,10 +325,13 @@ def serendipity():
     fig, ax = book_figure(0.82, 2.9)
     g = np.linspace(0.005, 1.0, 300)
     R, U = np.meshgrid(g, g)
-    cs = ax.contour(R, U, R * U, levels=[0.25, 0.5], colors=[NML_PURPLE], linewidths=LW_THIN,
+    P = R * U
+    P[(R < 0.36) & (U > 0.84)] = np.nan          # keep the curves clear of the corner label
+    cs = ax.contour(R, U, P, levels=[0.25, 0.5], colors=[NML_PURPLE], linewidths=LW_THIN,
                     alpha=0.7)
-    ax.clabel(cs, fmt=lambda v: f'product = {v:g}', fontsize=SMALL_PT, colors=NML_PURPLE, inline=True,
-              inline_spacing=2, manual=[(0.6, 0.25 / 0.6), (0.82, 0.5 / 0.82)])
+    for t in ax.clabel(cs, fmt=lambda v: f'product = {v:g}', fontsize=SMALL_PT, colors=NML_PURPLE, inline=False,
+                       manual=[(0.6, 0.25 / 0.6), (0.82, 0.5 / 0.82)]):
+        t.set_bbox(dict(facecolor='white', edgecolor='none', pad=0.8))
     ax.scatter(rel, unexp, s=12, color=NML_PURPLE, alpha=0.9, edgecolors='white', linewidths=0.4,
                zorder=3)
     for x, y, t, ha in [(0.02, 0.98, 'surprising but\nirrelevant', 'left'),

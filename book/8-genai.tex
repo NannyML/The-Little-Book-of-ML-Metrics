@@ -153,7 +153,7 @@ doctor delayed the surgery'' describe the same event with different words.
     }
 \end{metricformula}
 
-$R_{\text{BERT}}$ is recall: each reference token finds its best candidate match. Unit-normalized embeddings make the dot product a cosine. Precision reverses the matching; $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the top; optional rescaling uses a random-pair baseline. Here $0.88$ is raw similarity, not $88\%$ correct.
+$R_{\text{BERT}}$ is recall: each reference token finds its best candidate match. Unit-normalized embeddings make the dot product a cosine. Precision reverses the matching; $F_{\text{BERT}}$ is their harmonic mean. Raw scores crowd near the top; optional rescaling uses a random-pair baseline. Here $0.875$ is raw similarity, not $87.5\%$ correct.
 
 \metricheading{When to use}
 
@@ -417,7 +417,7 @@ resize and JPEG settings shift the score by points.
 samples (gray) against $500$ generated (purple), with FID from the fitted Gaussians. A generator whose samples are shifted pays through the mean
 term; one that collapses onto near-identical outputs keeps the mean and pays through the covariance term, which IS cannot see. The third
 population was constructed with the same mean and covariance as the reference but a different shape. Its $500$ sampled points have
-slightly different fitted moments, giving $0.02$; exactly matching fitted moments would give zero.}
+slightly different fitted moments, giving $0.025$; exactly matching fitted moments would give zero.}
 
 \orangebox{Did you know that...}
 {FID depends on how you shrink the images. Inception expects $299 \times 299$ inputs and the resize step is not part of the metric's
@@ -943,7 +943,7 @@ listening test supports a percentage of words understood.
 \end{metricfigure}
 
 \metriccaption{Figure. STOI.}{\textit{Top:} the energy envelope of one band ($952$ Hz) for clean speech and the same speech in white
-noise at $0$ dB SNR over three $384$ ms segments. Noise fills the valleys between syllables; the clean--noisy correlation is $0.98$
+noise at $0$ dB SNR over three $384$ ms segments, with silent frames removed. Noise fills the valleys between syllables; the clean--noisy correlation is $0.98$
 in the segment with a strong syllable onset and $0.73$ in the quieter one. \textit{Bottom:} the correlation for all $15$ bands and
 every segment, from a simplified calculation with non-overlapping segments; two cells are slightly negative (red). Their mean is $0.76$; the reference implementation gives $0.77$ here, $0.91$ at $10$ dB SNR
 and $0.70$ at $-5$ dB.}

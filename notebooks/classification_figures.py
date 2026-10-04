@@ -70,7 +70,7 @@ def f_beta():
     for (beta, col, lab), y in zip(curves, spread(ends, 0.075)):
         ax.text(1.02, y, lab, color=col, va='center')
     ax.scatter([0.8], [0.8], s=18, facecolors='white', edgecolors=INK, linewidths=0.8, zorder=5)
-    note(ax, 0.62, 0.9, 'curves meet where\nrecall = precision = 0.8', xy=(0.79, 0.81), ha='right', va='center')
+    note(ax, 0.97, 0.33, 'curves meet where\nrecall = precision = 0.8', xy=(0.8, 0.775), ha='right', va='center')
     note(ax, 0.98, 0.06, 'precision fixed at 0.8', ha='right', va='bottom')
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)

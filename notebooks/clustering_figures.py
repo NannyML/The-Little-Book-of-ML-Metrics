@@ -305,21 +305,27 @@ def fig_homogeneity():
     axes[0].set_yticks([0, 100, 200, 300])
     axes[0].set_ylabel('points in the cluster')
     handles = [matplotlib.patches.Patch(color=CLASS_COLORS[i], label=f'class {i}') for i in range(K)]
-    fig.legend(handles=handles, loc='outside lower center', ncol=3, handlelength=1.0)
+    leg = fig.legend(handles=handles, loc='outside lower center', ncol=3, handlelength=1.0,
+                     title='number above a bar: class entropy within that cluster', title_fontsize=TEXT_PT)
+    leg.get_title().set_color(MUTED)
     save_figure(fig, 'Homogeneity_cluster_composition')
     plt.close(fig)
 
 
 # ===========================================================================
-def _plane(name, metric_fn, coords_fn, label, xlabel, ylabel, labels, extra=None):
+def _plane(name, metric_fn, coords_fn, label, xlabel, ylabel, labels, extra=None, label_x=None):
     fig, ax = book_figure(0.82, 2.85)
     g = np.linspace(0.002, 1, 500)
     A, B = np.meshgrid(g, g)
     levels = [0.2, 0.4, 0.6, 0.8]
     cs = ax.contour(A, B, metric_fn(A, B), levels=levels, colors=[REF], linewidths=LW_THIN)
-    ax.clabel(cs, fmt=lambda v: f'{label} = {v:g}', fontsize=SMALL_PT, colors=MUTED, inline=True,
-              inline_spacing=2, manual=[(0.87, float(B[np.argmin(np.abs(metric_fn(0.87, g) - v)), 0]))
-                                        for v in levels])
+    # white-backed labels mask the curve behind them at any final layout
+    at = label_x or {v: 0.87 for v in levels}
+    texts = ax.clabel(cs, fmt=lambda v: f'{label} = {v:g}', fontsize=SMALL_PT, colors=MUTED, inline=False,
+                      manual=[(at[v], float(B[np.argmin(np.abs(metric_fn(at[v], g) - v)), 0])) for v in levels])
+    for t in texts:
+        t.set_bbox(dict(facecolor='white', edgecolor='none', pad=0.8))
+        t.set_clip_on(False)
     if extra:
         extra(ax, A, B)
     pts = {}
@@ -338,7 +344,7 @@ def _plane(name, metric_fn, coords_fn, label, xlabel, ylabel, labels, extra=None
     order = [3, 0, 1, 2]
     fig.legend(handles=[handles[i] for i in order], loc='outside lower center', ncol=2,
                handletextpad=0.2, columnspacing=1.0)
-    ax.set_xlim(0, 1)
+    ax.set_xlim(-0.04, 1)          # keeps a point at h = 0 off the y-axis ticks
     ax.set_ylim(0, 1)
     unit_ticks(ax, 'x', 0.5)
     unit_ticks(ax, 'y', 0.5)
@@ -368,15 +374,17 @@ def fig_fmi():
         F1 = 2 * A * B / (A + B)
         cs = ax.contour(A, B, F1, levels=[0.5], colors=[NML_PURPLE], linewidths=LW_THIN,
                         linestyles=[(0, (3, 2))])
-        ax.clabel(cs, fmt=lambda v: 'pairwise F1 = 0.5', fontsize=SMALL_PT, colors=NML_PURPLE,
-                  inline=True, inline_spacing=2, manual=[(0.55, 0.5 * 0.55 / (2 * 0.55 - 0.5))])
+        for t in ax.clabel(cs, fmt=lambda v: 'pairwise F1 = 0.5', fontsize=SMALL_PT, colors=NML_PURPLE,
+                           inline=False, manual=[(0.55, 0.5 * 0.55 / (2 * 0.55 - 0.5))]):
+            t.set_bbox(dict(facecolor='white', edgecolor='none', pad=0.8))
     pts = _plane('FMI_plane', lambda p, r: np.sqrt(p * r),
                  lambda p: (*pair_pr(Y, p), fowlkes_mallows_score(Y, p)),
                  'FMI', 'pairwise precision', 'pairwise recall',
                  {'one cluster': (0.37, 0.95, 'left', 'top'),
                   'well separated': (0.96, 0.95, 'right', 'top'),
                   'overlapping': (0.72, 0.77, 'right', 'center'),
-                  'over-split': (0.96, 0.44, 'right', 'top')}, extra=f1_curve)
+                  'over-split': (0.96, 0.44, 'right', 'top')}, extra=f1_curve,
+                 label_x={0.2: 0.87, 0.4: 0.87, 0.6: 0.87, 0.8: 0.91})
     print('FMI', {k: tuple(round(v, 4) for v in t) for k, t in pts.items()})
 
 

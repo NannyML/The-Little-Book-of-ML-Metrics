@@ -33,7 +33,7 @@ def main():
     ss_res = float(((Y - fit) ** 2).sum())
     ss_tot = float(((Y - mean) ** 2).sum())
     r2 = 1 - ss_res / ss_tot
-    fig, axes = book_figure(1.0, 2.05, 1, 2)
+    fig, axes = book_figure(1.0, 1.9, 1, 2)
     line_x = np.array([0.3, 15.7])
     panels = [(axes[0], fit, SLOPE * line_x + INTERCEPT, NML_PURPLE,
                f'model: linear fit\n$SS_{{res}}$ = {num(ss_res, 1)}'),

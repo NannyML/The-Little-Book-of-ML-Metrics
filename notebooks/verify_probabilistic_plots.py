@@ -98,7 +98,7 @@ def numeric_report(d):
                  'roles':dict(zip(['child_training','reference','validation'],roles)),
                  'production_realized':c['r'].tolist(),'cbpe_estimates':c['ec'].tolist(),'pape_estimates':c['ep'].tolist(),
                  'mae_cbpe':float(np.mean(abs(c['ec']-c['r']))),'mae_pape':float(np.mean(abs(c['ep']-c['r']))),
-                 'binned_weight_peak':float(np.nanmax(c['wbin'])),'maximum_raw_weight':float(c['w_last'].max()),
+                 'binned_weight_peak':float(np.nanmax(c['shown'])),'maximum_raw_weight':float(c['w_last'].max()),
                  'effective_reference_sample_size':float(c['w_last'].sum()**2/sum(c['w_last']**2)),
                  'validation':c['validation']}
     c=d['dle'];roles=separate(c['x_train'],c['x_ref'],c['x_val'])
@@ -154,7 +154,7 @@ concept drift lowers accuracy to ${c['production_realized'][-1]:.2f}$ while the 
 The illustrative band is $\pm 3$ reference-chunk standard deviations around the estimate, not a validated uncertainty interval or fixed alert threshold.''',
       'PAPE':rf'''A simulated classifier whose calibration varies with input $x_2$.
 \textit{{Left:}} reference and final-production densities are shown above the mean reference weight in each $x_2$ bin. The
-weight peaks near ${pap['binned_weight_peak']:.0f}$ in the production region; bins with fewer than $30$ reference points are not drawn.
+weight rises to about ${pap['binned_weight_peak']:.0f}$ where the reference data thins out; bins with fewer than $50$ reference points are not drawn.
 \textit{{Right:}} fixed reference calibration keeps CBPE near ${np.mean(pap['cbpe_estimates']):.2f}$ as realized accuracy reaches
 ${pap['production_realized'][-1]:.2f}$. PAPE follows it, with a mean absolute error of ${pap['mae_pape']:.3f}$ versus CBPE's ${pap['mae_cbpe']:.3f}$.''',
       'DLE':rf'''\textit{{Left:}} simulated reference data with noise that grows with the input, a linear model $f$, and a loss

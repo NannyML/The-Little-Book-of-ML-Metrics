@@ -367,14 +367,15 @@ def main():
     yy = 0.98
     axR.text(0.0, yy, f'scan {d} vs scan {d + 1}', color=INK, va='top', transform=axR.transAxes)
     yy -= 0.15
-    for col, typ in NEW_SCHEMA:
+    for col, typ in NEW_SCHEMA:            # marks in their own column so every name starts at one x
         if col not in before:
-            txt, colr = f'+ {col} {typ}', NML_RED
+            mark, txt, colr = '+', f'{col} {typ}', NML_RED
         elif before[col] != typ:
-            txt, colr = f'~ {col} {before[col]}\n   → {typ}', NML_RED
+            mark, txt, colr = '~', f'{col} {before[col]}\n→ {typ}', NML_RED
         else:
-            txt, colr = f'  {col} {typ}', MUTED
-        axR.text(0.0, yy, txt, color=colr, va='top', transform=axR.transAxes, fontsize=SMALL_PT, linespacing=1.1)
+            mark, txt, colr = '', f'{col} {typ}', MUTED
+        axR.text(0.0, yy, mark, color=colr, va='top', transform=axR.transAxes, fontsize=SMALL_PT)
+        axR.text(0.07, yy, txt, color=colr, va='top', transform=axR.transAxes, fontsize=SMALL_PT, linespacing=1.1)
         yy -= 0.2 if '\n' in txt else 0.105
     axR.text(0.0, yy - 0.02, '+ added   ~ type changed', color=MUTED, va='top', transform=axR.transAxes,
              fontsize=SMALL_PT)
@@ -469,7 +470,7 @@ def main():
     no_rows(ax)
     ax.set_ylim(20, top)
     ax.set_yticks([20, 30, 40])
-    ax.set_ylabel('standard deviation\nof amount')
+    ax.set_ylabel('standard deviation\n(currency units)')
     frame(ax)
     d = INCIDENT['currency_slip']
     ax.annotate(f'off the scale: {val("std_amount", d):,.0f}', (day(d), top), xytext=(5, -1), textcoords='offset points',
@@ -493,8 +494,8 @@ def main():
     d = INCIDENT['refunds']
     axT.annotate(f'refunds: off the scale at {num(val("min_amount", d), 0)}', (day(d), -3), xytext=(-6, 1),
                  textcoords='offset points', ha='right', va='bottom', color=NML_RED)
-    label(axT, 'half price', (day(INCIDENT['promotion']), val('min_amount', INCIDENT['promotion'])),
-          (day(INCIDENT['promotion']) - 1.6, -1.6), ha='right')
+    label(axT, 'half\nprice', (day(INCIDENT['promotion']), val('min_amount', INCIDENT['promotion'])),
+          (day(INCIDENT['promotion']) - 1.4, -1.2), ha='right')
     clip = 900
     x, vv, lo, hi, fmax = series(axB, m, 'max_amount', clip=clip)
     no_rows(axB)
@@ -528,7 +529,7 @@ def main():
     label_end(ax, DAYS, m['avg_amount'].values[-1] + 2, 'mean', INK)
     d = INCIDENT['currency_slip']
     ax.plot(day(d), top, marker='^', ms=5, color=INK, clip_on=False, zorder=6)
-    ax.text(day(d) - 0.8, top - 1, '5% of amounts in cents:\nthe mean leaves the frame;\nQ3 rises a little (flagged)',
+    ax.text(day(d) - 0.8, top - 5, '5% of amounts in cents:\nthe mean leaves the frame;\nQ3 rises a little (flagged)',
             ha='right', va='top', color=NML_RED, linespacing=1.2)
     d = INCIDENT['promotion']
     label(ax, 'half price under 30: Q1 drops;\nthe median and Q3 do not', (day(d), m['q1_amount'][d]),

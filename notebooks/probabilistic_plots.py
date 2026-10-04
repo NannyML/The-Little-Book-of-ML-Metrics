@@ -34,6 +34,18 @@ MID = '#6f6f6f'
 RNG = np.random.default_rng(2024)
 
 
+MIN_REF = 50       # PAPE: weight bins with fewer reference points are too noisy to draw
+
+
+def rounded_percentages(shares):
+    """Whole percentages that add up to 100 (largest-remainder rounding)."""
+    raw = 100 * np.asarray(shares, float) / np.sum(shares)
+    out = np.floor(raw).astype(int)
+    for k in np.argsort(-(raw - out))[:100 - out.sum()]:
+        out[k] += 1
+    return out.tolist()
+
+
 def fresh(seed):
     """Each figure gets its own generator so results do not depend on run order."""
     global RNG
@@ -125,16 +137,19 @@ def fig_ece():
     fig, axes = book_figure(1.0, 2.25, 1, 2, sharey=True)
     for ax, (name, ece, rows) in zip(axes, panels):
         ax.plot([0.5, 1], [0.5, 1], color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=1)
-        for lo, hi, share, acc, cf in rows:
+        pct = rounded_percentages([share for _, _, share, _, _ in rows])
+        first = min(k for k, r in enumerate(rows) if r[2] > 0)
+        for k, (lo, hi, share, acc, cf) in enumerate(rows):
             if share == 0:
                 continue
             ax.bar((lo + hi) / 2, acc, width=(hi - lo) * 0.9, color=NML_CYAN, alpha=0.5, linewidth=0, zorder=3)
             ax.plot([cf, cf], [min(acc, cf), max(acc, cf)], color=NML_RED, lw=LW + 0.4, solid_capstyle='butt', zorder=4)
-            ax.text((lo + hi) / 2, 0.025, f'{100 * share:.0f}', ha='center', va='bottom', fontsize=SMALL_PT,
+            ax.text((lo + hi) / 2, 0.025, f'{pct[k]}%' if k == first else f'{pct[k]}', ha='center', va='bottom',
+                    fontsize=SMALL_PT,
                     color=INK, zorder=5)
         ax.set_xlim(0.5, 1.0)
         ax.set_ylim(0, 1.02)
-        ax.set_xticks([0.5, 0.75, 1.0], labels=['0.50', '0.75', '1.00'])
+        unit_ticks(ax, 'x', 0.1, lo=0.5)
         unit_ticks(ax, 'y', 0.5)
         ax.set_xlabel('confidence bin')
         ax.set_title(f'{name}\nECE = {num(ece, 3)}', loc='left', fontsize=TEXT_PT, linespacing=1.3)
@@ -213,12 +228,12 @@ def fig_cbpe():
         axL.barh(row, p_correct[j], color=NML_CYAN, height=0.62, linewidth=0, zorder=3)
         axL.barh(row, 1 - p_correct[j], left=p_correct[j], color=LIGHT, height=0.62, linewidth=0, zorder=3)
         axL.text(-0.3, row, f'{yhat[j]}', ha='center', va='center', color=INK, fontsize=SMALL_PT)
-        axL.text(-0.04, row, num(c[j]), ha='right', va='center', color=INK, fontsize=SMALL_PT)
+        axL.text(-0.2, row, num(c[j]), ha='left', va='center', color=INK, fontsize=SMALL_PT)   # '0.' aligns the decimals
         ok = yhat[j] == y[j]
         axL.text(1.06, row, '\u2713' if ok else '\u2717', ha='left', va='center', color=NML_CYAN if ok else NML_RED,
                  fontsize=SMALL_PT)
     top = len(order) - 0.2
-    for xx, t, ha in [(-0.3, '$\\hat{y}$', 'center'), (-0.04, '$c$', 'right'), (1.06, 'later', 'left')]:
+    for xx, t, ha in [(-0.3, '$\\hat{y}$', 'center'), (-0.2, '$c$', 'left'), (1.06, 'later', 'left')]:
         axL.text(xx, top, t, ha=ha, va='bottom', color=MUTED, fontsize=SMALL_PT)
     axL.set_xlim(0, 1.0)
     axL.set_ylim(-0.6, len(order) + 0.5)
@@ -312,7 +327,8 @@ def fig_pape():
     idx = np.clip(np.digitize(X_ref[:, 1], bins) - 1, 0, len(bins) - 2)
     counts = np.bincount(idx, minlength=len(bins) - 1)
     wbin = np.array([w_last[idx == b].mean() if np.any(idx == b) else np.nan for b in range(len(bins) - 1)])
-    shown = np.where(counts >= 30, wbin, np.nan)     # bins with too few reference points are not drawn
+    shown = np.where(counts >= MIN_REF, wbin, np.nan)   # bins with too few reference points are not drawn
+    print('PAPE drawn bins', [(round(c, 2), int(n), round(w, 1)) for c, n, w in zip(centers, counts, shown) if n >= MIN_REF][-4:])
     ax2.plot(centers, shown, color=NML_CYAN, zorder=4)
     ax2.set_ylim(0, np.nanmax(shown) * 1.15)
     from matplotlib.lines import Line2D
@@ -420,8 +436,10 @@ def fig_dle():
     tidy_axes(axL)
     axR.plot(centres, e, color=NML_CYAN, zorder=3)
     axR.scatter(centres, r, s=16, facecolors='white', edgecolors=MUTED, linewidths=0.8, zorder=4)
-    axR.text(0.12, 0.68, 'line: DLE estimate', color=NML_CYAN, va='top', ha='left')
-    axR.text(0.12, 0.61, 'circles: measured MAE', color=MUTED, va='top', ha='left')
+    from matplotlib.lines import Line2D
+    axR.legend(handles=[Line2D([], [], color=NML_CYAN, label='DLE estimate'),
+                        Line2D([], [], ls='none', marker='o', ms=MS, mfc='white', mec=MUTED, mew=0.8,
+                               label='measured MAE')], loc='upper left', handlelength=1.2, borderaxespad=0.2)
     axR.set_xticks([0.2, 0.4, 0.6, 0.8], labels=['0.2', '0.4', '0.6', '0.8'])
     axR.set_xlim(0.1, 0.9)
     axR.set_xlabel('chunk center $x$')
@@ -479,7 +497,7 @@ def fig_rcd():
     validation = dict(concept_accuracy=float(np.mean((p_val >= .5) == y_val)),
                       probability_mae_to_oracle=float(np.mean(np.abs(p_val-concept(X_val, rot)))))
 
-    fig, (axL, axR) = book_figure(1.0, 2.25, 1, 2, gridspec_kw={'width_ratios': [1, 1.6]})
+    fig, (axL, axR) = book_figure(1.0, 2.25, 1, 2, gridspec_kw={'width_ratios': [1, 1.9]})
     sub = RNG.choice(n, 700, replace=False)
     axL.scatter(X_ref[sub, 0], X_ref[sub, 1], s=2.5, c=np.where(y_ref[sub] == 1, NML_CYAN, LIGHT), zorder=2,
                 linewidths=0)
@@ -510,23 +528,27 @@ def fig_rcd():
              ('Residual', resid, REF),
              ('Observed', acc_mon, None)]
     # Printed steps are differences of rounded levels, so the printed numbers add up.
+    X = [0, 1.35, 2.5, 3.65, 5.0]     # the two levels sit a little apart from the three steps
     level, shown = acc_ref, round(acc_ref, 3)
     for i, (name, val, col) in enumerate(steps):
+        x = X[i]
         if col is None:
-            axR.plot([i - .28, i + .28], [val, val], color=INK, lw=LW + 0.4, zorder=4)
-            axR.text(i, val + .008, num(val, 3), ha='center', va='bottom', color=INK)
+            axR.plot([x - .28, x + .28], [val, val], color=INK, lw=LW + 0.4, zorder=4)
+            axR.text(x, val + .008, num(val, 3), ha='center', va='bottom', color=INK)
         else:
-            axR.plot([i - .72, i - .28], [level, level], color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=2)
-            axR.bar(i, val, bottom=level, color=col, width=.56, linewidth=0, zorder=3)
+            axR.plot([X[i - 1] + .28, x - .28], [level, level], color=REF, lw=LW_THIN, ls=(0, (3, 2)), zorder=2)
+            axR.bar(x, val, bottom=level, color=col, width=.56, linewidth=0, zorder=3)
             new_shown = round(level + val, 3)
-            axR.text(i, max(level, level + val) + .008, num(new_shown - shown, 3, sign=True), ha='center',
-                     va='bottom', color=col if col != REF else MUTED)
+            up = val >= 0 or i == 1          # gains are labelled above the bar, losses below it
+            axR.text(x, (max(level, level + val) + .008) if up else (min(level, level + val) - .008),
+                     num(new_shown - shown, 3, sign=True), ha='center', va='bottom' if up else 'top',
+                     color=col if col != REF else MUTED)
             level += val
             shown = new_shown
-    axR.plot([3.28, 3.72], [acc_mon, acc_mon], color=REF, lw=LW_THIN, ls=(0, (3, 2)))
-    axR.set_xticks(range(len(steps)), labels=['reference', 'input\nmix', 'RCD\nimpact', 'residual', 'new\ndata'],
+    axR.plot([X[3] + .28, X[4] - .28], [acc_mon, acc_mon], color=REF, lw=LW_THIN, ls=(0, (3, 2)))
+    axR.set_xticks(X, labels=['reference', 'input\nmix', 'RCD\nimpact', 'residual', 'new\ndata'],
                    fontsize=SMALL_PT)
-    axR.set_xlim(-.5, 4.5)
+    axR.set_xlim(-.5, X[-1] + .5)
     lo = min(acc_mon, acc_cov + impact) - .035
     axR.set_ylim(lo, max(acc_ref, acc_cov) + .055)
     ticks = np.round(np.arange(np.ceil(lo * 20) / 20, max(acc_ref, acc_cov) + .05, .05), 2)
