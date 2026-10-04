@@ -301,7 +301,7 @@ Use CG when only total retrieved relevance matters and ordering is decided downs
 \end{metricfigure}
 
 \metriccaption{Figure. CG.}{The same ten items in one order and its reverse. CG adds the relevance grades and reaches $12$ either
-way: it cannot tell the two lists apart. DCG discounts each grade by $1/\log_2(i+1)$ and scores them $7.28$ and $4.38$. CG is a check on
+way: it cannot tell the two lists apart. DCG discounts each grade by $1/\log_2(i+1)$ and scores them $7.50$ and $3.81$. CG is a check on
 how much relevance a list retrieved, not on where it put it.}
 
 \orangebox{Did you know that...}
@@ -357,7 +357,7 @@ Use DCG when you want to reward relevance grades and early positions within a ch
     \includegraphics[width=.82\textwidth]{figures/CG_vs_DCG.png}
 \end{metricfigure}
 
-\metriccaption{Figure. DCG.}{The same list scored by CG (red) and DCG (blue). Both agree at rank $1$; later contributions receive less weight in DCG. At $K = 10$, the scores are $12.0$ and $7.16$, a reduction of about $40\%$ in the position-weighted score. The reduction is the vertical gap between the curves at that cutoff, not the area of the shading.}
+\metriccaption{Figure. DCG.}{The best-first list from the CG page, scored by CG (purple) and DCG (cyan). Both agree at rank $1$; later contributions receive less weight in DCG. At $K = 10$, the scores are $12$ and $7.50$: the arrow marks the gap of $4.50$, a reduction of about $38\%$ in the position-weighted score.}
 
 \orangebox{Did you know that...}
 {Kalervo J\"arvelin and Jaana Kek\"al\"ainen introduced logarithmic discounting in their 2000 SIGIR paper and developed the work further in 2002. This chapter uses each relevance grade directly as its gain. Another common choice, $2^{rel}-1$, gives high grades more influence: grades $1$ and $3$ become gains of $1$ and $7$.}
@@ -470,7 +470,7 @@ Use FCP when recovering preference order matters more than matching rating value
     \includegraphics[width=\textwidth]{figures/FCP_comparison.png}
 \end{metricfigure}
 
-\metriccaption{Figure. FCP.}{Two rankers order the same five items, giving ten pairs to compare. The left ranker gets nine pairs right: only the order of items $2$ and $3$ is reversed, so FCP is $0.90$. The right ranker gets three pairs right, giving $0.30$. FCP counts these pairwise agreements, not the number of points sitting on the diagonal.}
+\metriccaption{Figure. FCP.}{Two rankers order the same five items, giving ten pairs to compare. The left ranker gets nine pairs right: only the order of items $2$ and $3$ is reversed, so FCP is $0.90$. The right ranker gets three pairs right, giving $0.30$. Red lines join the pairs ranked in the wrong order; FCP counts the pairs, not how close the points sit to a diagonal.}
 
 \orangebox{Did you know that...}
 {For two rankings without ties, FCP and Kendall's tau express the same pairwise agreement on different scales: $\tau = 2 \cdot FCP - 1$. FCP ranges from $0$ to $1$, while tau ranges from $-1$ to $1$. The identity does not generally hold for tie-adjusted versions such as Kendall's tau-b.}
@@ -528,7 +528,7 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
     \includegraphics[width=\textwidth]{figures/Diversity_comparison.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Diversity.}{Two six-item recommendation lists rendered as horizontal strips, each tile colored by genre. \textit{Top:} one item per genre — Intra-List Diversity hits its maximum ($ILD = 1.00$) because every pair of items disagrees on category. Bottom: six action items — every pair matches, so $ILD = 0.00$. The metric reads the visible color mix of the list, not its accuracy.}
+\metriccaption{Figure. Diversity.}{Two six-item recommendation lists, each tile colored by genre. \textit{Top:} one item per genre; every pair of items differs, so diversity reaches its maximum of $1.00$. \textit{Bottom:} six action items; every pair matches, so diversity is $0.00$. This category-based score, also called intra-list diversity (ILD), reads the mix of the list, not its accuracy.}
 
 \orangebox{Did you know that...}
 {Reordering a list leaves this diversity score unchanged. With three action films and one each from three other genres, $12$ of the $15$ pairs differ, giving diversity $0.8$. If the action films appear first, diversity within the first three is $0$. When users see only part of a list, calculate diversity for that part too.}
@@ -629,7 +629,7 @@ Use Serendipity for discovery, such as music browsing or exploratory search. Agr
     \includegraphics[width=.82\textwidth]{figures/Serendipity_scatter.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Serendipity.}{These hypothetical recommendations illustrate the product of relevance and unexpectedness. Darker contours mark higher products, reached when both factors are high. A small factor reduces the score; an exactly zero factor makes it zero. Moderate values can still contribute: $0.5 \times 0.5 = 0.25$.}
+\metriccaption{Figure. Serendipity.}{These hypothetical recommendations illustrate the product of relevance and unexpectedness. The curves mark products of $0.25$ and $0.5$; higher products need both factors to be high. A small factor reduces the score; an exactly zero factor makes it zero. Moderate values can still contribute: $0.5 \times 0.5 = 0.25$.}
 
 \orangebox{Did you know that...}
 {Horace Walpole coined ``serendipity'' in a letter to Horace Mann dated 28 January 1754. He drew the word from \emph{The Three Princes of Serendip}, a tale whose heroes made discoveries through both accident and perceptive reasoning. The name captures the appeal of finding something valuable that we were not deliberately looking for.}
