@@ -85,7 +85,7 @@ which records its version and settings.
 \thispagestyle{customstyle}
 
 \begin{metricfigure}
-    \includegraphics[width=.82\textwidth]{figures/BLEU_ngram_precision.png}
+    \includegraphics[width=\textwidth]{figures/BLEU_ngram_precision.png}
 \end{metricfigure}
 
 \metriccaption{Figure. BLEU.}{Replacing \textit{fox} with \textit{cat} and \textit{lazy} with \textit{tired}
@@ -159,8 +159,8 @@ they cover.
 {
 \item Matches depend on language resources. A valid alternative can receive no credit if the matcher
 does not recognize it.
-\item Word matches do not guarantee the same meaning. Even a high score can hide a reversal of who did
-what (see figure).
+\item Matching words need not keep the meaning: swapping \textit{fox} and \textit{dog} still scores
+about $0.98$.
 }
 
 \metricsecondpage
@@ -171,12 +171,7 @@ what (see figure).
     \includegraphics[width=\textwidth]{figures/METEOR_vs_BLEU.png}
 \end{metricfigure}
 
-\metriccaption{Figure. METEOR.}{This illustration uses hand-chosen word pairs to show how matching works,
-rather than a full METEOR implementation. The middle row retains some one- and two-word matches but
-loses every three- and four-word match, making unsmoothed BLEU-4 zero. The last row changes who jumps
-over whom, so it is not an equivalent paraphrase despite the label. It also drops \textit{brown}; its
-lower METEOR score reflects both missing matches and fragmentation. The displayed $1.00$ scores are
-rounded.}
+\metriccaption{Figure. METEOR.}{A constructed example with hand-chosen synonym pairs and the original settings. Synonyms keep every word matched, so METEOR stays near $1$ (rounded) while unsmoothed BLEU-4 drops to $0$. Reordering the same words into three chunks barely moves METEOR ($0.98$) but cuts BLEU to $0.61$.}
 
 \orangebox{Did you know that...}
 {Banerjee and Lavie introduced METEOR at Carnegie Mellon in 2005, partly to address BLEU's lack of an
@@ -251,7 +246,7 @@ credit when their wording differs.
 The shorter summary, \textit{the bank raised rates to curb inflation}, matches seven of its nine words,
 giving recall $7/9\approx0.78$. Appending filler keeps those seven matches while increasing the summary
 to $24$ words: recall stays fixed and precision falls from $7/7=1$ to $7/24\approx0.29$.
-The red curve is ROUGE-1 precision; the plot's claim that ROUGE does not report it is incorrect.}
+ROUGE reports both scores; recall is the one that ignores the padding.}
 
 \orangebox{Did you know that...}
 {Chin-Yew Lin introduced ROUGE in 2004 for summary evaluation. Its name emphasizes recall, but the
@@ -326,8 +321,7 @@ possible, or to match a human's editing process.
 
 \metriccaption{Figure. TER.}{The model output moves \textit{on monday morning} to the front. With only word
 insertions, deletions and substitutions, the minimum edit count is six: three deletions and three
-insertions achieve it. That gives a WER-style rate of $6/7\approx0.86$, incorrectly labeled TER in
-the gray annotation. Allowing one phrase shift gives TER $=1/7\approx0.14$.}
+insertions achieve it. That gives an edit rate of $6/7\approx0.86$. Allowing one phrase shift gives TER $=1/7\approx0.14$.}
 
 \orangebox{Did you know that...}
 {Snover and colleagues introduced TER in 2006 with phrase shifts alongside the usual word edits.
