@@ -14,11 +14,11 @@ account for the context in which words appear.}{In this chapter}
 % ---------- Decision map ----------
 \begin{decisionmap}{cyanhard}{cyanaccent}{Which NLP metric?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What is the task?}
-\begin{forest} dmap, large
+\begin{forest} dmap, large, where n children=0{text width=5.3cm}{}
 [, coordinate, l sep=0pt
   [{\dm{text with references,\\such as translation}{What do you count?}}, text width=3.6cm
     [{\dl{$n$-gram precision, over the corpus}{\mref{BLEU}{sec:bleu}}}]
-    [{\dl{stems and synonyms, per sentence}{\mref{METEOR}{sec:meteor}}}]
+    [{\dl{synonyms too, per sentence}{\mref{METEOR}{sec:meteor}}}]
     [{\dl{edits to reach the reference}{\mref{TER}{sec:ter}}}]
   ]
   [{\dl{summarization}{\mref{ROUGE}{sec:rouge}}}]

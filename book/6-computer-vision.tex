@@ -6,7 +6,7 @@ This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice c
 % ---------- Decision map ----------
 \begin{decisionmap}{mintlight}{mintaccent}{Which metric for\\computer vision?}{Follow the branches to a metric. The number next to it is its page.}
 \maproot{What does the model output?}
-\begin{forest} dmap, large
+\begin{forest} dmap, large, where n children=0{text width=5.3cm}{}
 [, coordinate, l sep=0pt
   [{\dm{a reconstructed image}{Which kind of fidelity?}}, text width=3.6cm
     [{\dl{pixel by pixel}{\mref{PSNR}{sec:psnr}}}]
@@ -18,7 +18,7 @@ This chapter introduces metrics for those comparisons. Pixel Accuracy and Dice c
     [{\dl{instances, segment by segment}{\mref{PQ}{sec:pq}}}]
   ]
   [{\dm{keypoints}{How strict should ``correct'' be?}}
-    [{\dl{within a fraction of a reference length}{\mref{PCK}{sec:pck}}}]
+    [{\dl{within a fraction of body size}{\mref{PCK}{sec:pck}}}]
     [{\dl{a COCO-style tolerance}{\mref{OKS}{sec:oks}}}]
   ]
 ]
