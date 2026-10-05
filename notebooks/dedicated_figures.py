@@ -33,12 +33,13 @@ def spread(vals, gap):
 
 
 def fig_mase():
-    T = 40
+    rng = np.random.default_rng(0)
+    T = 11
     t = np.arange(T)
-    level = 50 + 12 * np.sin(2 * np.pi * t / 14) + 0.4 * t
-    yv = level + RNG.normal(0, 3.0, T)
+    level = 50 + 12 * np.sin(2 * np.pi * t / 10)
+    yv = level + rng.normal(0, 3.0, T)
     naive = np.r_[np.nan, yv[:-1]]
-    model = level + RNG.normal(0, 2.0, T) + 1.5 * np.sin(2 * np.pi * t / 14 + 1.0)
+    model = level + rng.normal(0, 2.0, T)
     e_model = np.abs(yv - model)
     e_naive = np.abs(yv - naive)
     mae_model = e_model[1:].mean()
@@ -49,29 +50,30 @@ def fig_mase():
     axT.plot(t, naive, color=REF, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=2)
     axT.plot(t, model, color=NML_CYAN, zorder=3)
     axT.plot(t, yv, color=INK, lw=LW_THIN + 0.3, marker='o', ms=2.2, zorder=4)
-    ends = spread([yv[-1], model[-1], naive[-1]], 7.5)
+    ends = spread([yv[-1], model[-1], naive[-1]], 5.0)
     for yy_, txt, col in zip(ends, ['actual', 'model forecast', "naive: yesterday's value"],
                              [INK, NML_CYAN, MUTED]):
         axT.text(T + 0.3, yy_, txt, color=col, va='center')
     axT.set_ylabel('demand')
-    axT.set_yticks([40, 60, 80])
-    axT.set_ylim(36, 84)
+    axT.set_yticks([40, 50, 60])
+    axT.set_ylim(33, 67)
     tidy_axes(axT, bottom=False)
     w = 0.42
     axB.bar(t[1:] - w / 2, e_naive[1:], width=w, color=LIGHT, zorder=3, linewidth=0)
     axB.bar(t[1:] + w / 2, e_model[1:], width=w, color=NML_CYAN, zorder=3, linewidth=0)
     axB.plot([0, T - 1], [mae_naive] * 2, color=REF, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=4)
     axB.plot([0, T - 1], [mae_model] * 2, color=NML_CYAN, lw=LW_THIN + 0.2, ls=(0, (3, 2)), zorder=4)
-    lab = spread([mae_model, mae_naive], 2.6)
+    lab = spread([mae_model, mae_naive], 1.8)
     axB.text(T + 0.3, lab[1], f'naive MAE = {num(mae_naive)}', color=MUTED, va='center')
     axB.text(T + 0.3, lab[0], f'model MAE = {num(mae_model)}', color=NML_CYAN, va='center')
     axB.set_title(f'model MAE / naive MAE = {num(mae_model)} / {num(mae_naive)} = {num(ratio)}'
-                  '  (same 39 days)', loc='left', fontsize=TEXT_PT)
+                  f'  (same {T - 1} days)', loc='left', fontsize=TEXT_PT)
     axB.set_ylabel('absolute error')
     axB.set_xlabel('day')
-    axB.set_yticks([0, 5, 10, 15])
+    axB.set_yticks([0, 5, 10])
+    axB.set_ylim(0, 10)
     axB.set_xlim(-1, T)
-    axB.set_xticks(range(0, T + 1, 10))
+    axB.set_xticks(t)
     tidy_axes(axB)
     save_figure(fig, 'MASE_naive_baseline')
     plt.close(fig)

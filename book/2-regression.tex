@@ -584,7 +584,7 @@ Use MASE to compare forecast errors across time series with different scales. It
     \includegraphics[width=\textwidth]{figures/MASE_naive_baseline.png}
 \end{metricfigure}
 
-\metriccaption{Figure. MASE.}{\textit{Top:} forty days of demand, the model's forecast and the naive forecast that repeats yesterday's value. \textit{Bottom:} their absolute errors, with the means dashed. This illustrates scaling within one series: both averages use the same $39$ changes. The ratio $3.22/5.03=0.64$ means the model's error is $36\%$ smaller here. In a future evaluation, MASE instead uses the naive error from the earlier training history as its denominator.}
+\metriccaption{Figure. MASE.}{\textit{Top:} eleven days of demand, the model's forecast and the naive forecast that repeats yesterday's value. \textit{Bottom:} their absolute errors, with the means dashed. This illustrates scaling within one series: both averages use the same $10$ days. The ratio $3.06/5.15=0.60$ means the model's error is $40\%$ smaller here. In a future evaluation, MASE instead uses the naive error from the earlier training history as its denominator.}
 
 \orangebox{Did you know that...}
 {Rob Hyndman and Anne Koehler introduced MASE in 2006 to compare forecast accuracy across time series with different scales. Scaling by historical naive errors also avoids MAPE's division by individual actual values. Their paper explicitly notes an exception: a constant history leaves MASE with a zero denominator.}
@@ -644,7 +644,7 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
     \includegraphics[width=\textwidth]{figures/MDA_direction.png}
 \end{metricfigure}
 
-\metriccaption{Figure. MDA.}{Eight days of a price. For each day, the gray bar is the actual change from the previous day's price, and the colored bar is the forecast change, made the day before. Cyan forecasts point the same way as the actual move; red ones point the other way. MDA counts the cyan bars: $6$ of $8$, so MDA $= 0.75$. The size of a move never enters: day $6$ forecasts a rise of $4.6$ against a fall of $1.9$ and counts as one miss, just like day $5$, where the forecast missed a rise of $0.2$. Day $2$ counts as a hit, although its forecast fall is a third of the real one.}
+\metriccaption{Figure. MDA.}{\textit{Top:} nine days of a price, with the forecast for each day made the day before. \textit{Bottom:} the direction of the actual move and of the forecast move, day by day. Cyan means they agree, red means they don't. MDA counts the cyan columns: $6$ of $8$ moves, so MDA $= 0.75$. The size of a miss never enters: day $6$ forecasts a rise of $4.6$ against a fall of $1.9$, and it counts as one miss, just like day $5$, where the forecast missed a rise of $0.2$.}
 
 \orangebox{Did you know that...}
 {Oliver Blaskowitz and Helmut Herwartz examined the economic value of directional forecasts in 2011, including the size of the resulting gains and losses. A $55\%$ hit rate can be profitable or unprofitable: the answer also depends on those amounts, position sizes, and trading costs. Counting correct directions alone leaves that information out.}
