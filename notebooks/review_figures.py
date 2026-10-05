@@ -10,58 +10,46 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import matplotlib
 matplotlib.use('Agg')
 from style import *  # noqa: F401,F403
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Patch, Rectangle
 
 
 # ===========================================================================
 # MDA: direction right or wrong, day by day
 # ===========================================================================
 def fig_mda():
-    rng = np.random.default_rng(7)
-    T = 20
-    t = np.arange(T)
-    actual = 100 + np.cumsum(rng.normal(0, 2.0, T))
-    forecast = actual.copy()
-    for i in range(1, T):
-        move = actual[i] - actual[i - 1]
-        sign = np.sign(move) if rng.random() < 0.7 else -np.sign(move)
-        forecast[i] = actual[i - 1] + sign * abs(rng.normal(0, 3.0))
-    a_dir = np.sign(np.diff(actual))
-    f_dir = np.sign(forecast[1:] - actual[:-1])
-    hit = a_dir == f_dir
-    fig, (axT, axB) = book_figure(1.0, 2.95, 2, 1, sharex=True,
-                                  gridspec_kw={'height_ratios': [3.0, 1.15]})
-    for i in range(1, T):
-        axT.plot([i - 1, i], [actual[i - 1], forecast[i]], color=NML_CYAN, lw=LW_THIN + 0.2, zorder=2)
-    axT.plot(t, actual, color=INK, lw=LW, marker='o', ms=2.8, zorder=4)
-    axT.scatter(t[1:], forecast[1:], s=9, color=NML_CYAN, zorder=3, linewidths=0)
-    axT.text(0.3, 87.6, 'actual', color=INK)
-    axT.text(0.3, 89.5, 'forecast, made the day before', color=NML_CYAN)
-    axT.set_ylabel('price')
-    axT.set_yticks([90, 95, 100])
-    axT.set_ylim(86, 104)
-    axT.set_title(f'MDA = {hit.sum()} / {T - 1} = {num(hit.mean())}', loc='left', fontsize=TEXT_PT)
-    tidy_axes(axT, bottom=False)
-    for i in range(1, T):
-        ok = hit[i - 1]
-        axB.add_patch(Rectangle((i - 0.45, 0.08), 0.9, 1.84, facecolor=CYAN_TINT if ok else RED_TINT,
-                                edgecolor='none'))
-        axB.text(i, 1.45, '\u2191' if a_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
-                 fontsize=TEXT_PT + 1, color=INK)
-        axB.text(i, 0.55, '\u2191' if f_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
-                 fontsize=TEXT_PT + 1, color=NML_CYAN if ok else NML_RED)
-    axB.text(0.4, 1.45, 'actual move', ha='right', va='center', color=INK, clip_on=False)
-    axB.text(0.4, 0.55, 'forecast move', ha='right', va='center', color=INK, clip_on=False)
-    axB.set_ylim(0, 2.0)
-    axB.set_xlim(-0.6, T - 0.4)
-    axB.set_xticks([1, 5, 10, 15, 19])
-    axB.set_xlabel('day')
-    bare_axes(axB)
-    axB.set_xticks([1, 5, 10, 15, 19])
-    axB.tick_params(axis='x', length=0, pad=2)
+    # Eight days of a price and the forecast for each day, made the day before.
+    actual = np.array([100.0, 100.6, 98.8, 97.9, 100.6, 100.8, 98.9, 97.7, 98.7])
+    forecast_move = np.array([0.7, -0.6, -1.6, 2.4, -0.2, 4.6, -2.6, 0.3])
+    forecast = actual[:-1] + forecast_move
+    a_move = np.diff(actual)                  # y_t - y_(t-1)
+    f_move = forecast - actual[:-1]           # forecast_t - y_(t-1)
+    hit = np.sign(a_move) == np.sign(f_move)
+    days = np.arange(1, len(a_move) + 1)
+    fig, ax = book_figure(1.0, 2.2)
+    w = 0.34
+    ax.bar(days - w / 2 - 0.02, a_move, w, color=MUTED, linewidth=0)
+    ax.bar(days + w / 2 + 0.02, f_move, w, color=np.where(hit, NML_CYAN, NML_RED), linewidth=0)
+    ax.axhline(0, color=INK, lw=LW_THIN, zorder=3)
+    big, small = days[~hit][np.argmax(np.abs(f_move[~hit]))], days[~hit][np.argmin(np.abs(a_move[~hit]))]
+    ax.text(big + 0.55, f_move[big - 1] - 0.1, f'day {small} and day {big}\ncount one miss each',
+            va='top', color=MUTED)
+    ax.set_xticks(days)
+    ax.set_xlim(0.4, days[-1] + 0.6)
+    ax.set_yticks([-2, 0, 2, 4])
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: num(v, 0, sign=True)))
+    ax.set_xlabel('day')
+    ax.set_ylabel('change from the\nprevious day\'s price')
+    ax.set_title(f'MDA = {hit.sum()}/{len(hit)} = {num(hit.mean())}', loc='left', fontsize=TEXT_PT)
+    tidy_axes(ax)
+    ax.tick_params(axis='x', length=0)
+    fig.legend(handles=[Patch(color=MUTED, label='actual move'),
+                        Patch(color=NML_CYAN, label='forecast: same direction'),
+                        Patch(color=NML_RED, label='forecast: opposite')],
+               loc='outside lower center', ncol=3, handlelength=1.0, columnspacing=1.0, handletextpad=0.4)
     save_figure(fig, 'MDA_direction')
     plt.close(fig)
-    print(f'MDA {hit.sum()}/{T - 1} = {hit.mean():.3f}; misses on days {[int(i) + 1 for i in np.nonzero(~hit)[0]]}')
+    print(f'MDA {hit.sum()}/{len(hit)} = {hit.mean():.3f}; moves {np.round(a_move, 2).tolist()}; '
+          f'misses on days {days[~hit].tolist()}')
 
 
 # ===========================================================================
