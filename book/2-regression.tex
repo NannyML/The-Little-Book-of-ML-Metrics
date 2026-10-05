@@ -644,7 +644,7 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
     \includegraphics[width=\textwidth]{figures/MDA_direction.png}
 \end{metricfigure}
 
-\metriccaption{Figure. MDA.}{\textit{Top:} nine days of a price, with the forecast for each day made the day before. \textit{Bottom:} the direction of the actual move and of the forecast move, day by day. Cyan means they agree, red means they don't. MDA counts the cyan columns: $6$ of $8$ moves, so MDA $= 0.75$. The size of a miss never enters: day $6$ forecasts a rise of $4.6$ against a fall of $1.9$, and it counts as one miss, just like day $5$, where the forecast missed a rise of $0.2$.}
+\metriccaption{Figure. MDA.}{\textit{Top:} nine days of a price, with the forecast for each day made the day before. \textit{Bottom:} the direction of the actual move and of the forecast move, each under the segment it describes. Cyan means they agree, red means they don't. MDA counts the cyan columns: $6$ of $8$ moves, so MDA $= 0.75$. The size of a miss never enters: the forecast for day $6$ calls a rise of $4.6$ against a fall of $1.9$, and it counts as one miss, just like the forecast for day $5$, which missed a rise of $0.2$.}
 
 \orangebox{Did you know that...}
 {Oliver Blaskowitz and Helmut Herwartz examined the economic value of directional forecasts in 2011, including the size of the resulting gains and losses. A $55\%$ hit rate can be profitable or unprofitable: the answer also depends on those amounts, position sizes, and trading costs. Counting correct directions alone leaves that information out.}

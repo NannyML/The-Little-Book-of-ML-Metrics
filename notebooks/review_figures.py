@@ -39,21 +39,23 @@ def fig_mda():
     axT.set_ylim(95.5, 106)
     axT.set_title(f'MDA = {hit.sum()} / {T - 1} = {num(hit.mean())}', loc='left', fontsize=TEXT_PT)
     tidy_axes(axT, bottom=False)
+    # each move sits under the segment it describes, from day i - 1 to day i
     for i in range(1, T):
         ok = hit[i - 1]
-        axB.add_patch(Rectangle((i - 0.45, 0.08), 0.9, 1.84, facecolor=CYAN_TINT if ok else RED_TINT,
+        x = i - 0.5
+        axB.add_patch(Rectangle((x - 0.45, 0.08), 0.9, 1.84, facecolor=CYAN_TINT if ok else RED_TINT,
                                 edgecolor='none'))
-        axB.text(i, 1.45, '\u2191' if a_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
+        axB.text(x, 1.45, '\u2191' if a_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
                  fontsize=TEXT_PT + 1, color=INK)
-        axB.text(i, 0.55, '\u2191' if f_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
+        axB.text(x, 0.55, '\u2191' if f_dir[i - 1] > 0 else '\u2193', ha='center', va='center',
                  fontsize=TEXT_PT + 1, color=NML_CYAN if ok else NML_RED)
-    axB.text(0.4, 1.45, 'actual move', ha='right', va='center', color=INK, clip_on=False)
-    axB.text(0.4, 0.55, 'forecast move', ha='right', va='center', color=INK, clip_on=False)
+    axB.text(-0.1, 1.45, 'actual move', ha='right', va='center', color=INK, clip_on=False)
+    axB.text(-0.1, 0.55, 'forecast move', ha='right', va='center', color=INK, clip_on=False)
     axB.set_ylim(0, 2.0)
-    axB.set_xlim(-0.3, T - 0.5)
+    axB.set_xlim(-0.25, T - 0.75)
     axB.set_xlabel('day')
     bare_axes(axB)
-    axB.set_xticks(t[1:])
+    axB.set_xticks(t)
     axB.tick_params(axis='x', length=0, pad=2)
     save_figure(fig, 'MDA_direction')
     plt.close(fig)
