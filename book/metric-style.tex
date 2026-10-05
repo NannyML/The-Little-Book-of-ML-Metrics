@@ -11,6 +11,11 @@
  BoldFont=*-SemiBold,ItalicFont=*-Italic,BoldItalicFont=*-SemiBoldItalic]}
 \newfontfamily\metricasidefont{PlayfairDisplay}[Path=fonts/PlayFairFont/,
  Extension=.ttf,UprightFont=*-Regular,ItalicFont=*-Italic]
+% Words inside formulas (\text{acc}, \text{ECE}) use the roman of the math font,
+% not the Inter labels around the formula.
+\newfontfamily\metricformulawords{lmroman10-regular.otf}[Ligatures=TeX,SizeFeatures={
+ {Size=-6,Font=lmroman5-regular.otf},{Size=6-8.5,Font=lmroman7-regular.otf},
+ {Size=8.5-11,Font=lmroman10-regular.otf},{Size=11-,Font=lmroman12-regular.otf}}]
 \newcommand{\metricbody}{\normalfont\fontsize{11}{13.5}\selectfont}
 \newcommand{\metricsecondary}{\normalfont\fontsize{10}{12}\selectfont}
 \newcommand{\metriclabel}{\sffamily\fontsize{10}{12}\selectfont\bfseries\color{black}}
@@ -60,6 +65,8 @@
 \newsavebox{\metricformulabox}
 \NewDocumentEnvironment{metricformula}{+b}{%
  \par\begingroup\sffamily\fontsize{10}{12}\selectfont
+ \let\metricplaintext\text
+ \renewcommand{\text}[1]{\metricplaintext{\metricformulawords\upshape ##1}}%
  \setlength{\parskip}{0pt}%
  \sbox{\metricformulabox}{\ignorespaces#1\unskip}%
  \vspace{9pt}\nointerlineskip
