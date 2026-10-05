@@ -4,6 +4,7 @@ CG and DCG use one list and one color mapping (CG purple, DCG cyan); relevant
 items are cyan throughout. Every printed number is computed here.
 Run: uv run python notebooks/ranking_figures.py [NAME ...]
 """
+import itertools
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -13,7 +14,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle
+from matplotlib.patches import FancyBboxPatch, Patch, Rectangle
 from style import *  # noqa: F401,F403
 
 CG_COLOR, DCG_COLOR = NML_PURPLE, NML_CYAN
@@ -238,36 +239,65 @@ def ndcg_degradation():
 
 # ===========================================================================
 def fcp():
-    true = np.array([1, 2, 3, 4, 5])
-    panels = [('good ranking', np.array([1, 3, 2, 4, 5])), ('poor ranking', np.array([4, 2, 5, 3, 1]))]
-    fig, axes = book_figure(1.0, 2.15, 1, 2)
-    for ax, (name, pred) in zip(axes, panels):
-        conc = disc = 0
-        for i in range(5):
-            for j in range(i + 1, 5):
-                if (true[i] - true[j]) * (pred[i] - pred[j]) > 0:
-                    conc += 1
-                else:
-                    disc += 1
-                    # gentle arcs, so pairs whose points are collinear stay distinct
-                    ax.annotate('', xy=(true[j], pred[j]), xytext=(true[i], pred[i]), zorder=1,
-                                arrowprops=dict(arrowstyle='-', color=NML_RED, lw=LW_THIN, alpha=0.8,
-                                                shrinkA=0, shrinkB=0, connectionstyle='arc3,rad=0.18'))
-        f = conc / (conc + disc)
-        ax.scatter(true, pred, s=30, color=INK, zorder=3, linewidths=0)
-        ax.set_title(f'{name}: FCP = {conc}/{conc + disc} = {num(f)}', loc='left', fontsize=TEXT_PT)
-        ax.set_xlim(0.6, 5.4)
-        ax.set_ylim(0.6, 5.4)
-        ax.set_xticks(range(1, 6))
-        ax.set_yticks(range(1, 6))
-        ax.set_aspect('equal')
-        ax.set_xlabel('true preference rank')
-        tidy_axes(ax)
-        print(f'FCP {name}: {conc}/{conc + disc}')
-    axes[0].set_ylabel('predicted rank')
-    fig.legend(handles=[Line2D([], [], color=NML_RED, lw=LW_THIN, label='pair in the wrong order')],
-               loc='outside lower center')
-    save_figure(fig, 'FCP_comparison')
+    """Every pair of five items, checked against the user's order."""
+    items = 'ABCDE'                                   # the user's order, favorite first
+    rankers = [('good ranking', 'ACBDE'), ('poor ranking', 'EBDAC')]
+    pairs = list(itertools.combinations(items, 2))    # AB, AC, ..., DE: ten pairs
+    pad, gap, group_gap, label_x = 2.0, 2.6, 6.0, 56
+    fig = book_canvas(1.0, 1.95)
+    W, H = fig.get_figwidth() * 72, fig.get_figheight() * 72
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_xlim(0, W)
+    ax.set_ylim(0, H)
+    bare_axes(ax)
+    renderer = fig.canvas.get_renderer()
+
+    def width(s):
+        t = ax.text(0, 0, s, fontsize=TEXT_PT)
+        w = t.get_window_extent(renderer).width * 72 / fig.dpi
+        t.remove()
+        return w
+
+    item_w = max(width(c) for c in items) + 2 * pad + 2
+    pair_w = max(width(a + b) for a, b in pairs) + 2 * pad
+
+    def chip(x, y, s, face, w, ink=INK):
+        h = TEXT_PT + 2 * pad
+        ax.add_patch(FancyBboxPatch((x, y - h / 2), w, h, boxstyle='round,pad=0,rounding_size=1.6',
+                                    facecolor=face, edgecolor='none'))
+        ax.text(x + w / 2, y, s, ha='center', va='center_baseline', color=ink)
+
+    def order_row(y, label, order):
+        ax.text(label_x, y, label, ha='right', va='center_baseline', color=MUTED)
+        for k, c in enumerate(order):
+            chip(label_x + 6 + k * (item_w + gap), y, c, '#e4e4e4', item_w)
+
+    x0 = label_x + 6
+    y = H - 8
+    order_row(y, "user's order", items)
+    ax.text(x0 + 5 * (item_w + gap) + 2, y, 'favorite first', va='center_baseline', color=MUTED)
+    for name, order in rankers:
+        position = {c: k for k, c in enumerate(order)}
+        right = [position[a] < position[b] for a, b in pairs]
+        y -= 22
+        ax.text(0, y, f'{name}: FCP = {sum(right)}/{len(pairs)} = {num(sum(right) / len(pairs))}',
+                va='center_baseline', color=INK, fontsize=TITLE_PT)
+        y -= 16
+        order_row(y, "model's order", order)
+        y -= 16
+        ax.text(label_x, y, 'pairs', ha='right', va='center_baseline', color=MUTED)
+        x = x0
+        for k, ((a, b), ok) in enumerate(zip(pairs, right)):
+            if k and a != pairs[k - 1][0]:
+                x += group_gap                        # group the pairs by their first item
+            chip(x, y, a + b, NML_CYAN if ok else NML_RED, pair_w, 'white')   # as the NLP token figures
+            x += pair_w + gap
+        print(f'FCP {name}: {sum(right)}/{len(pairs)}')
+    fig.legend(handles=[Patch(color=NML_CYAN, label="pair in the user's order"),
+                        Patch(color=NML_RED, label='pair reversed')],
+               loc='lower left', bbox_to_anchor=(x0 / W - 0.012, 0.0), ncol=2,
+               handlelength=1.0, columnspacing=1.0, borderaxespad=0.1)
+    save_figure(fig, 'FCP_comparison', crop=False)
     plt.close(fig)
 
 

@@ -470,7 +470,7 @@ Use FCP when recovering preference order matters more than matching rating value
     \includegraphics[width=\textwidth]{figures/FCP_comparison.png}
 \end{metricfigure}
 
-\metriccaption{Figure. FCP.}{Two rankers order the same five items, giving ten pairs to compare. The left ranker gets nine pairs right: only the order of items $2$ and $3$ is reversed, so FCP is $0.90$. The right ranker gets three pairs right, giving $0.30$. Red lines join the pairs ranked in the wrong order; FCP counts the pairs, not how close the points sit to a diagonal.}
+\metriccaption{Figure. FCP.}{Two rankers order five items that the user prefers in the order $A$ to $E$. Five items make ten pairs, and each box below a ranker is one pair: cyan if the ranker keeps the user's order, red if it reverses it. The good ranker swaps only $B$ and $C$, so nine of ten pairs are in order and FCP is $0.90$. The poor ranker reverses seven pairs, giving $0.30$.}
 
 \orangebox{Did you know that...}
 {For two rankings without ties, FCP and Kendall's tau express the same pairwise agreement on different scales: $\tau = 2 \cdot FCP - 1$. FCP ranges from $0$ to $1$, while tau ranges from $-1$ to $1$. The identity does not generally hold for tie-adjusted versions such as Kendall's tau-b.}
