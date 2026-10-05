@@ -265,7 +265,7 @@ def pq():
     for v in levels:
         ax.text(v, 1.012, f'PQ = {v:g}', ha='center', va='bottom', color=MUTED, fontsize=SMALL_PT)
     models = [('A', 'good all round', 0.90, 0.85, (-6, 0), 'right'),
-              ('B', 'good masks, missed objects', 0.50, 0.90, (6, 0), 'left'),
+              ('B', 'good masks, many unmatched segments', 0.50, 0.90, (6, 0), 'left'),
               ('C', 'found objects, rough masks', 0.85, 0.55, (-6, 0), 'right')]
     lines = []
     for letter, desc, rq, sq, off, ha in models:

@@ -25,16 +25,16 @@ and how they changed as models improved.}{In this chapter}
     [{\dl{nothing: quality and diversity of a set}{\mref{IS}{sec:is}}}]
     [{\dl{a reference set}{\mref{FID}{sec:fid}}}]
     [{\dl{one reference image}{\mref{LPIPS}{sec:lpips}}}]
-    [{\dm{the prompt}{How thoroughly?}}
-      [{\dl{one similarity score}{\mref{CLIP Score}{sec:clip-score}}}]
-      [{\dl{a question per detail}{\mref{DSG}{sec:dsg}}}]
-      [{\dl{one yes/no probability}{\mref{VQAScore}{sec:vqascore}}}]
+    [{\dm{the prompt}{One score or per detail?}}
+      [{\dl{one fast score:\\embedding similarity}{\mref{CLIP Score}{sec:clip-score}}}]
+      [{\dl{one score that checks\\composition}{\mref{VQAScore}{sec:vqascore}}}]
+      [{\dl{per detail: which\\ones failed}{\mref{DSG}{sec:dsg}}}]
     ]
   ]
-  [{\dm{speech or audio}{Who judges?}}, text width=2.6cm
-    [{\dl{people}{\mref{MOS}{sec:mos}}}]
-    [{\dl{an algorithm: how good\\it sounds}{\mref{PESQ}{sec:pesq}}}]
-    [{\dl{an algorithm: how easily\\words are understood}{\mref{STOI}{sec:stoi}}}]
+  [{\dm{speech or audio}{What to measure?}}, text width=2.6cm
+    [{\dl{quality, rated by listeners}{\mref{MOS}{sec:mos}}}]
+    [{\dl{quality, predicted against\\a clean reference}{\mref{PESQ}{sec:pesq}}}]
+    [{\dl{intelligibility, predicted\\against a clean reference}{\mref{STOI}{sec:stoi}}}]
   ]
 ]
 \end{forest}

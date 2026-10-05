@@ -7,7 +7,7 @@ Without topic labels, we can still examine how close the documents in each clust
 
 % ---------- Decision map ----------
 \begin{decisionmap}{orangelight}{orangeaccent}{Which clustering metric?}{Follow the branches to a metric. The number next to it is its page.}
-\maproot{Do you have ground-truth classes?}
+\maproot{Do you have reference labels or another clustering?}
 \begin{forest} dmap, wide
 [, coordinate, l sep=0pt
   [{\dm{yes}{How do you compare the two labelings?}}
@@ -21,13 +21,13 @@ Without topic labels, we can still examine how close the documents in each clust
     [{\dl{both at once}{\mref{V-Measure}{sec:v-measure}}}]
   ]
   [{\dm{no}{What makes a cluster good?}}
-    [{\dl{points close to their own cluster}{\mref{Silhouette Score}{sec:silhouette-score}}}]
+    [{\dl{points closer to their own cluster\\than to the next one}{\mref{Silhouette Score}{sec:silhouette-score}}}]
     [{\dl{clusters far apart relative to their spread}{\mref{CH Index}{sec:ch-index}}}]
     [{\dl{far from the most similar cluster}{\mref{Davies-Bouldin Index}{sec:davies-bouldin-index}}}]
   ]
 ]
 \end{forest}
-\mapnotes{Check some clusters yourself, even when the scores look good. Distance-based scores judge how tightly points group together and how far apart the groups lie; they do not tell you whether those groups are useful for your task.}
+\mapnotes{Check some clusters yourself, even when the scores look good. Distance-based scores judge how tightly points group together and how far apart the groups lie; they do not tell you whether those groups are useful for your task. The scores that need no labels also apply when you have them.}
 \end{decisionmap}
 
 
@@ -354,7 +354,7 @@ When the task requires that all members of a class stay together: topic modeling
     \includegraphics[width=\textwidth]{figures/Completeness_Score_tradeoff.png}
 \end{metricfigure}
 
-\metriccaption{Figure. Completeness Score.}{Three clusterings of the same $3$-class data. With $k=3$, both scores hit $1$. Collapsing into one big cluster keeps Completeness at $1$ (every class is fully contained somewhere) but sends Homogeneity to $0$ --- the inflation that makes Completeness misleading on its own. Over-splitting into $k=9$ does the opposite: every cluster is pure, but each class spreads across multiple clusters and Completeness falls to $0.50$.}
+\metriccaption{Figure. Completeness Score.}{Three clusterings of the same $3$-class data. Dot colors mark the predicted clusters; with $k=9$, each class splits into three clusters, drawn in three shades of its color. With $k=3$, both scores hit $1$. Collapsing into one big cluster keeps Completeness at $1$ (every class is fully contained somewhere) but sends Homogeneity to $0$ --- the inflation that makes Completeness misleading on its own. Over-splitting into $k=9$ does the opposite: every cluster is pure, but each class spreads across multiple clusters and Completeness falls to $0.50$.}
 
 \orangebox{Did you know that...}
 {Completeness and Homogeneity are the same formula with the arguments swapped: $\text{Homogeneity} = 1 - H(C \mid K)/H(C)$ and $\text{Completeness} = 1 - H(K \mid C)/H(K)$. So Completeness on (true, predicted) equals Homogeneity on (predicted, true). This is why V-Measure --- the harmonic mean of the two --- is symmetric in its arguments when $\beta=1$, giving the two components equal weight.}

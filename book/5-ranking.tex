@@ -11,10 +11,10 @@ For recommendations, we also look beyond relevance. A movie list might suit a vi
 \begin{forest} dmap, wide
 [, coordinate, l sep=0pt
   [{\dm{yes or no}{What matters about the list?}}
-    [{\dl{where the one right answer lands}{\mref{MRR}{sec:mrr}}}]
+    [{\dl{where the first relevant result lands}{\mref{MRR}{sec:mrr}}}]
     [{\dl{whether anything relevant is in the top $K$}{\mref{Hit Rate}{sec:hit-rate}}}]
     [{\dl{how much of the top $K$ is relevant}{\mref{@K Metrics}{sec:k-metrics}}}]
-    [{\dl{the whole order, over all queries}{\mref{MAP}{sec:map}}}]
+    [{\dl{how early all relevant results appear}{\mref{MAP}{sec:map}}}]
   ]
   [{\dm{a grade}{How should position count?}}
     [{\dl{not at all}{\mref{CG}{sec:cg}}}]
@@ -22,9 +22,9 @@ For recommendations, we also look beyond relevance. A movie list might suit a vi
     [{\dl{and comparable across queries}{\mref{nDCG}{sec:ndcg}}}]
   ]
   [{\dl{a rating or a preference:\\is each pair in order?}{\mref{FCP}{sec:fcp}}}]
-  [{\dm{relevance is not\\the question}{Which quality of the list?}}
+  [{\dm{beyond\\relevance}{Which quality of the list?}}
     [{\dl{items unlike each other}{\mref{Diversity}{sec:diversity}}}]
-    [{\dl{new to the user}{\mref{Novelty}{sec:novelty}}}]
+    [{\dl{how uncommon the items are}{\mref{Novelty}{sec:novelty}}}]
     [{\dl{relevant and unexpected}{\mref{Serendipity}{sec:serendipity}}}]
     [{\dl{share of the catalog ever shown}{\mref{Coverage}{sec:coverage}}}]
   ]
@@ -40,15 +40,27 @@ For recommendations, we also look beyond relevance. A movie list might suit a vi
 
 An @K metric evaluates the first $K$ items in a ranking. Precision@$K$ is the fraction of those items that are relevant; Recall@$K$ is the fraction of all relevant items retrieved. With three relevant results in the top five and ten relevant items overall, $Precision@5=3/5$ and $Recall@5=3/10$. Average per-query or per-user scores.
 
-\begin{center}
-    $\displaystyle Precision@K = \frac{|\text{relevant items in top-}K|}{K}$
-\end{center}
+\begin{metricformula}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                Precision@K = \frac{|{\color{nmlcyan}R} \cap {\color{nmlpurple}Top\text{-}K}|}{{\color{nmlred}K}}
+                $
+            }
+        };
 
-Choose $K$ for the stage evaluated. A retriever might supply $100$ candidates to a reranker showing five results: Recall@$100$ checks the candidate pool, Precision@$5$ the final slots. Compare cutoffs to choose a retrieval budget.
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.35,-0.22)$) to[bend right=15] node[pos=1, left] {relevant items} +(-0.80,0.12);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.68,0.04)$) to[bend left=10] node[pos=1, right] {first $K$ items} +(1.45,-0.08);
+        \draw[-latex,nmlred, semithick] ($(a.east)+(-1.20,-0.38)$) to[bend right=15] node[pos=1, right] {cutoff} +(1.20,0.00);
+    }
+\end{metricformula}
+
+Choose $K$ for the stage evaluated. If a retriever supplies $100$ candidates to a reranker showing five results, Recall@$100$ checks the candidate pool and Precision@$5$ the final slots.
 
 \metricheading{When to use}
 
-Use @K for a limited recommendation window or candidate budget. Compare systems on the same queries, eligible items and cutoff. To isolate a reranker's contribution, also hold its candidate lists fixed. Scores calculated with sampled distractors need not match scores over the full catalog.
+Use @K for a limited recommendation window or candidate budget. Compare systems on the same queries, eligible items and cutoff. To isolate a reranker's contribution, also hold its candidate lists fixed. Scores from sampled distractors need not match full-catalog scores.
 
 \coloredboxes{
     \item Matches what users actually see. $Precision@5$ on a mobile carousel directly measures the relevance of the slice the user is shown.
@@ -546,7 +558,18 @@ Diversity measures how different the items in one list are. The popularity-based
 Novelty measures how unfamiliar recommendations may be to a user. The version here estimates that from item popularity: an item that appears rarely in past interactions gets a higher score. This is a proxy, not evidence that a particular person has never seen it. A rare film may already be familiar to its biggest fan.
 
 \begin{metricformula}
-\tikz{\node[inner sep=2pt,font=\Large] {$\displaystyle\operatorname{Novelty}(i)=-\log_2 P(i)$};}
+    \tikz{
+        \node[inner sep=2pt, font=\Large] (a) {
+            {
+                $\displaystyle
+                \operatorname{Novelty}({\color{nmlpurple}i}) = -\log_2 {\color{nmlcyan}P}({\color{nmlpurple}i})
+                $
+            }
+        };
+
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-0.62,0.22)$) to[bend left=15] node[pos=1, left] {recommended item} +(-1.00,-0.40);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.70,-0.08)$) to[bend left=15] node[pos=1, right] {item's share of past interactions} +(0.50,0.30);
+    }
 \end{metricformula}
 
 Let $P(i)$ be the fraction of historical interactions involving item $i$. An item with $P(i) = 0.5$ scores $1$ bit; one with $P(i) = 0.01$ scores about $6.6$ bits. Average item scores to evaluate a list. Zero-count items need an explicit policy, such as smoothing the counts, because $\log 0$ is undefined.

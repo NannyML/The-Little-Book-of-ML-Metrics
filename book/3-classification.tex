@@ -11,24 +11,24 @@ Many classifiers also predict probabilities. A filter may flag email once its sp
 \begin{forest} dmap, compact
 [, coordinate, l sep=0pt
   [{\dm{probabilities}{What should the score show?}}
-    [{\dl{a training loss}{\mref{Log Loss}{sec:log-loss}}}]
-    [{\dl{a bounded score}{\mref{Brier Score Loss}{sec:brier-score-loss}}}]
+    [{\dl{punishes confident errors}{\mref{Log Loss}{sec:log-loss}}}]
+    [{\dl{squared probability error}{\mref{Brier Score Loss}{sec:brier-score-loss}}}]
     [{\dl{skill over the base rate}{\mref{D-squared Log Loss Score}{sec:d-squared-log-loss-score}}}]
   ]
-  [{\dm{ranking before a threshold}{Are positives rare?}}
-    [{\dl{yes}{\mref{PR AUC}{sec:pr-auc}}}]
-    [{\dl{no}{\mref{ROC AUC}{sec:roc-auc}}}]
+  [{\dm{ranking before a threshold}{What should it show?}}
+    [{\dl{positives above negatives}{\mref{ROC AUC}{sec:roc-auc}}}]
+    [{\dl{precision on the positives}{\mref{PR AUC}{sec:pr-auc}}}]
   ]
   [{\dm{labels at\\a threshold}{Know the error costs?}}
     [{\dl{yes}{\mref{EC}{sec:ec}}}]
-    [{\dl{no; balanced classes}{\mref{Accuracy}{sec:accuracy}}}]
-    [{\dm{no; classes\\are imbalanced}{Which error is costlier?}}
+    [{\dl{no; overall share correct}{\mref{Accuracy}{sec:accuracy}}}]
+    [{\dm{no; specific\\error types}{Which errors matter?}}
       [{\dl{missed positives}{\mref{TPR (Recall)}{sec:tpr-recall-sensitivity}, \mref{FNR}{sec:fnr}}}]
       [{\dl{false alarms among flags}{\mref{Precision}{sec:precision}}}]
       [{\dl{false alarms per negative}{\mref{FPR}{sec:fpr}, \mref{TNR}{sec:tnr-specificity}}}]
       [{\dl{both, traded off}{\mref{F1-score}{sec:f1-score}, \mref{F-beta}{sec:f-beta}}}]
       [{\dl{both, in one score}{\mref{MCC}{sec:mcc}, \mref{Balanced Accuracy}{sec:balanced-accuracy}, \mref{P4-metric}{sec:p4-metric}}}]
-      [{\dl{neither: overlap of the\\positive sets}{\mref{Jaccard Index}{sec:jaccard-index}}}]
+      [{\dl{overlap of predicted\\and actual positives}{\mref{Jaccard Index}{sec:jaccard-index}}}]
     ]
   ]
   [{\dl{agreement between raters}{\mref{Cohen's Kappa}{sec:cohen-s-kappa}}}]
@@ -680,18 +680,17 @@ ROC AUC measures how well a model ranks positive cases above negative ones. Chan
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{ROC AUC} = \int_{0}^{1} {\color{nmlpurple}TPR}\big({\color{nmlcyan}FPR}^{-1}({\color{nmlyellow}x})\big) \, d{\color{nmlyellow}x}
+                \text{ROC AUC} = \int_{{\color{nmlyellow}0}}^{{\color{nmlyellow}1}} {\color{nmlpurple}TPR}({\color{nmlyellow}FPR}) \, d{\color{nmlyellow}FPR}
                 $
             }
         };
 
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.14,-0.46)$) to[bend right=15] node[pos=1, left] {true positive rate} +(-1.00,0.70);
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.53,-0.46)$) to[bend left=15] node[pos=1, right] {false positive rate} +(1.00,0.61);
-        \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.86,0.51)$) to[bend left=15] node[pos=1, left] {swept from $0$ to $1$} +(-1.00,-0.64);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.40,-0.46)$) to[bend right=15] node[pos=1, left] {true positive rate} +(-1.00,0.60);
+        \draw[-latex,nmlyellow, semithick] ($(a.north)+(1.55,-0.46)$) to[bend left=15] node[pos=1, right] {false positive rate, from $0$ to $1$} +(0.80,0.60);
     }
 \end{metricformula}
 
-An AUC of $1$ means perfect ordering, while random rankings have expected AUC $0.5$. Reversing a perfect ranking gives $0$, not $0.5$. Higher values mean better overall ordering, but what is useful depends on the task.
+The curve joins the points from each threshold with straight lines, and the area beneath them is calculated with the trapezoidal rule. An AUC of $1$ means perfect ordering, while random rankings have expected AUC $0.5$. Reversing a perfect ranking gives $0$, not $0.5$. Higher values mean better overall ordering, but what is useful depends on the task.
 
 Another way to read AUC is to pick a positive and a negative at random. With AUC $0.90$, the positive ranks higher $90\%$ of the time if there are no ties. Tied scores count as half a correct ordering.
 

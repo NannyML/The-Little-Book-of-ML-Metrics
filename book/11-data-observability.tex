@@ -246,12 +246,12 @@ Duplicate percentage shows what share of rows in a partition have a repeated key
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                \text{dup}\%_t = 100 \cdot \frac{1}{{\color{nmlred}|R|}} \sum_{r \in R} \mathds{1}\big[\, {\color{nmlred}n(v_r)} > 1 \,\big]
+                \text{dup}\%_t = 100 \cdot \frac{1}{{\color{nmlred}|R|}} \sum_{r \in R} \mathds{1}\big[\, {\color{nmlcyan}n(v_r)} > 1 \,\big]
                 $
             }
         };
         \draw[-latex,nmlred, semithick] ($(a.south)+(-0.29,0.25)$) to node[pos=1, below] (obsannotation1) {records with a non-null value} +(0.00,-0.30);
-        \draw[-latex,nmlred, semithick] ($(a.north)+(2.10,-0.33)$) to node[pos=1, above] (obsannotation2) {how often record $r$'s value occurs} +(0.00,0.33);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.10,-0.33)$) to node[pos=1, above] (obsannotation2) {how often record $r$'s value occurs} +(0.00,0.33);
 
 
     }
