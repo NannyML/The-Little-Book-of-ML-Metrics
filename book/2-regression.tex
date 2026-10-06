@@ -551,18 +551,17 @@ MASE divides a model's evaluation MAE by the error of a simple forecast on the t
         \node[inner sep=2pt, font=\Large] (a) {
             {
                 $\displaystyle
-                MASE = \frac{1}{{\color{nmlred}h}} \sum_{j=1}^{h} \frac{|{\color{nmlcyan}Y_{T+j}} - {\color{nmlpurple}\hat{Y}_{T+j}}|}{\frac{1}{{\color{nmlred}T-1}} \sum_{t=2}^{T} |{\color{nmlcyan}Y_t} - {\color{nmlcyan}Y_{t-1}}|}
+                MASE = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^n \frac{|{\color{nmlcyan}Y_t} - {\color{nmlpurple}\hat{Y}_t}|}{\frac{1}{n-1} \sum_{t=2}^n |{\color{nmlcyan}Y_t} - {\color{nmlcyan}Y_{t-1}}|}
                 $
             }
         };
-        \draw[-latex,nmlred, semithick] ($(a.north)+(-0.95,-1.12)$) to[bend left=15] node[pos=1, left] {forecasts evaluated} +(-0.90,0.25);
-        \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.55,-0.25)$) to[bend right=15] node[pos=1, left] {actual value} +(-0.60,0.45);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.55,-0.30)$) to[bend left=15] node[pos=1, right] {forecast value} +(0.80,0.45);
-        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.95,0.45)$) to[bend left=15] node[pos=1, left] {changes in the training history} +(-1.00,-0.40);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-1.50,0.25)$) to[bend left=15] node[pos=1, left] {number of samples} +(-1.00,-0.50);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.30,0.00)$) to[bend left=15] node[pos=1, right] {forecast value} +(1.00,0.50);
+        \draw[-latex,nmlcyan,semithick] ($(a.north)+(1.25,-0.15)$) to[bend right=15] node[pos=1, left] {actual value} +(-1.00,0.50);
     }
 \end{metricformula}
 
-The denominator uses the $T$ values of the training history; the $h$ evaluated forecasts come after it. For seasonal data with period $m$, use $Y_t - Y_{t-m}$ instead. MASE $=0.6$ means the model's MAE is $40\%$ below that historical scale; it does not establish that the model beats a naive forecast on the same future period.
+The formula illustrates both averages on one series. For future forecasts, keep the denominator fixed from the training history. MASE $=0.6$ means the model's MAE is $40\%$ below that historical scale; it does not establish that the model beats a naive forecast on the same future period.
 
 \metricheading{When to use}
 
@@ -608,17 +607,17 @@ MDA measures how often a forecast gets the direction of a change right. A stock-
     \node[inner sep=2pt, font=\Large] (a) {
         {
             $\displaystyle
-            MDA = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^{n} {\color{nmlgreen}\mathds{1}}\big[\, {\color{nmlyellow}\operatorname{sign}}({\color{nmlcyan}y_t} - {\color{nmlcyan}y_{t-1}}) = {\color{nmlyellow}\operatorname{sign}}({\color{nmlpurple}\hat{y}_t} - {\color{nmlcyan}y_{t-1}}) \,\big]
+            MDA = \frac{1}{{\color{nmlred}n}} \sum_{t=1}^{n} {\color{nmlgreen}\mathds{1}}_{{\color{nmlyellow}sign}({\color{nmlcyan}y_t} - {\color{nmlcyan}y_{t-1}}) == {\color{nmlyellow}sign}({\color{nmlpurple}\hat{y}_t} - {\color{nmlcyan}y_{t-1}})}
             $
         }
     };
 
     % Draw arrows for annotations
-    \draw[-latex, nmlred, semithick] ($(a.south)+(-3.38,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number \\ of samples} +(-0.70,-0.40);
-    \draw[-latex, nmlgreen, semithick] ($(a.north)+(-2.20,-0.32)$) to[bend right=15] node[pos=1, left] {indicator} +(-0.60,0.40);
-    \draw[-latex, nmlyellow, semithick] ($(a.south)+(-1.30,0.28)$) to node[pos=1, below] {sign function} +(0.00,-0.30);
-    \draw[-latex, nmlcyan, semithick] ($(a.north)+(-0.68,-0.30)$) to[bend left=15] node[pos=1, right] {actual value} +(0.60,0.40);
-    \draw[-latex, nmlpurple, semithick] ($(a.south)+(2.72,0.30)$) to[bend right=15] node[pos=1, right] {forecast value} +(0.60,-0.40);
+    \draw[-latex, nmlred, semithick] ($(a.south)+(-2.05,0.30)$) to[bend left=15] node[pos=1, left,align=center] {number \\ of samples} +(-1.00,-0.50);
+    \draw[-latex,nmlcyan,semithick] ($(a.north)+(0.70,-0.65)$) to[bend right=27] node[pos=1, left] {actual value} +(-0.60,0.85);
+    \draw[-latex, nmlpurple, semithick] ($(a.north)+(3.00,-0.70)$) to[bend left=15] node[pos=1, right,align=center] {forecast\\value} +(1.00,0.50);
+    \draw[-latex, nmlgreen, semithick] ($(a.west)+(3.65,-0.20)$) to[bend right=37] node[pos=1, right] {indicator} +(0.75,-0.60);
+    \draw[-latex, nmlyellow, semithick] ($(a.south)+(2.60,0.50)$) to[bend right=15] node[pos=1, right] {sign function} +(1.00,-0.50);
     }
 \end{metricformula}
 

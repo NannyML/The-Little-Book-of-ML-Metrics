@@ -132,8 +132,8 @@ CBPE estimates classification performance from probabilities while labels, such 
             $
         };
 
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.30,-0.35)$) to[bend right=15] node[pos=1,left] {calibrated probability} +(-1.0,0.65);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(4.40,-0.20)$) to[bend left=15] node[pos=1,above] {predicted label} +(0.0,0.65);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-2.12,-0.30)$) to[bend right=15] node[pos=1, left] {predicted label} +(-0.55,0.42);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.88,-0.30)$) to[bend right=15] node[pos=1, left] {calibrated probability} +(-0.55,0.42);
     }
 \end{metricformula}
 
@@ -204,8 +204,8 @@ PAPE adapts calibration to the production input mix. Suppose a loan model predic
             }
         };
 
-        \draw[-latex,nmlred, semithick] ($(a.north)+(-0.60,-0.18)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-1.00,0.30);
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(0.48,0.09)$) to[bend left=15] node[pos=1, left] {domain classifier} +(-1.00,-0.30);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-0.75,-0.16)$) to[bend right=15] node[pos=1, left] {sample sizes} +(-0.60,0.40);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.46,-0.04)$) to[bend left=15] node[pos=1, right] {domain classifier} +(0.50,0.40);
     }
 \end{metricformula}
 
@@ -278,10 +278,10 @@ DLE learns how large a regression model's errors tend to be for different inputs
             }
         };
 
-        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.93,0.42)$) to[bend left=15] node[pos=1, left] {production size} +(-1.00,-0.30);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.28,-0.52)$) to[bend right=15] node[pos=1, left] {nanny model} +(-1.00,0.72);
-        \draw[-latex,nmlcyan, semithick] ($(a.south)+(1.05,0.63)$) to[bend right=15] node[pos=1, right] {input} +(1.00,-0.30);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.45,-0.51)$) to node[pos=1, above] {child's prediction} +(0.00,0.33);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-0.89,0.30)$) to[bend left=15] node[pos=1, left] {production size} +(-0.60,-0.40);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(0.34,-0.44)$) to[bend right=15] node[pos=1, left] {nanny model} +(-0.80,0.48);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.86,0.52)$) to[bend right=15] node[pos=1, right] {input} +(0.50,-0.62);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.60,-0.44)$) to[bend left=15] node[pos=1, right] {child's prediction} +(0.45,0.48);
     }
 \end{metricformula}
 
@@ -356,8 +356,9 @@ RCD estimates how a changed input--outcome relationship affects performance on t
         \node[below=0.1cm of a, inner sep=2pt, font=\normalsize] (b) {
             $\mathbb{E}_{\,y \sim {\color{nmlpurple}g}(x)}[m(\hat{y}, y)] = {\color{nmlpurple}g}(x)\, m(\hat{y}, 1) + \big(1 - {\color{nmlpurple}g}(x)\big)\, m(\hat{y}, 0)$
         };
-        \draw[-latex,nmlpurple, semithick] ($(b.south)+(-0.55,0.1)$) to[bend left=15] node[pos=1, left] {new concept} +(-0.5,-.45);
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.9,-0.3)$) to[bend left=15] node[pos=1, right] {reference performance} +(0.2,.5);
+
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-0.87,-0.62)$) to[bend left=15] node[pos=1, left] {new concept} +(-0.55,-0.40);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(3.50,-0.34)$) to[bend right=15] node[pos=1, left] {reference performance} +(-0.55,0.42);
     }
 \end{metricformula}
 

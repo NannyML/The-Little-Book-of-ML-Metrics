@@ -39,7 +39,7 @@ Pixel Accuracy reports the fraction of pixels that a segmentation model labels c
 \node[inner sep=2pt, font=\Large] (a) {
 {
 $\displaystyle
-Pixel Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\color{nmlpurple}t_{j}}}
+Pixel\ Accuracy = \frac{\sum_{j=1}^{k} {\color{nmlcyan}n_{jj}}}{\sum_{j=1}^{k} {\color{nmlpurple}t_{j}}}
 $
 }
 };
@@ -103,8 +103,8 @@ PCK measures how often a model places a landmark close enough to its annotated l
         PCK(\alpha) = \frac{1}{\textcolor{nmlgreen}{N}} \sum_{i=1}^{N} 1\!\left(\textcolor{nmlpurple}{d_i} \le \textcolor{nmlyellow}{\alpha L}\right)
         $
     };
-    \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.70,0.69)$) to node[pos=1, below] {threshold Radius} +(0.00,-0.37);
-    \draw[-latex,nmlgreen, semithick] ($(a.south)+(-0.33,0.34)$) to[bend left=15] node[pos=1, left] {Num. keypoints} +(-1.00,-0.55);
+    \draw[-latex,nmlyellow, semithick] ($(a.south)+(2.70,0.69)$) to node[pos=1, below] {threshold radius} +(0.00,-0.37);
+    \draw[-latex,nmlgreen, semithick] ($(a.south)+(-0.33,0.34)$) to[bend left=15] node[pos=1, left] {number of keypoints} +(-1.00,-0.55);
     \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.45,-0.61)$) to[bend right=15] node[pos=1, left] {Euclidean distance} +(-1.00,0.79);
 }
 \end{metricformula}

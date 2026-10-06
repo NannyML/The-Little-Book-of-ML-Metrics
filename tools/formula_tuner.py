@@ -48,8 +48,8 @@ if os.path.isdir("/Library/TeX/texbin") and "/Library/TeX/texbin" not in os.envi
 
 CHAPTER_FILES = sorted(BOOK.glob("[0-9]*-*.tex"), key=lambda p: int(p.name.split("-")[0]))
 
-BLOCK_RE = re.compile(r"\\begin\{center\}\s*\n\s*\\tikz\{.*?\n\s*\}\s*\n\\end\{center\}", re.S)
-SECTION_RE = re.compile(r"\\section\{((?:[^{}]|\{[^{}]*\})+)\}")
+BLOCK_RE = re.compile(r"\\begin\{(center|metricformula)\}\s*\n\s*\\tikz\{.*?\n\s*\}\s*\n\\end\{\1\}", re.S)
+SECTION_RE = re.compile(r"\\(?:section|metricentry|monitorentry)\{((?:[^{}]|\{[^{}]*\})+)\}")
 ARROW_RE = re.compile(
     r"\\draw\[(?P<opts>[^\]]*)\]\s*\(\$\((?P<anchor>[ab]\.[a-z ]+)\)\s*\+\s*\((?P<sx>-?[\d.]+)\s*,\s*(?P<sy>-?[\d.]+)\)\$\)\s*"
     r"to(?:\[bend (?P<bdir>left|right)\s*=\s*(?P<bend>-?\d+)\])?\s*node\[pos=1,\s*(?P<side>left|right|above|below)(?P<nodeopts>[^\]]*)\]\s*\{(?P<label>.*?)\}\s*"
@@ -230,7 +230,7 @@ def calibration_tex(bare):
         for k, anc in enumerate(ANCHORS):
             r, g, b = _mark_color(node, k)
             marks.append(f"\\fill[overlay, color={{rgb,255:red,{r};green,{g};blue,{b}}}] ({node}.{anc}) ++(-0.6pt,-0.6pt) rectangle ++(1.2pt,1.2pt);")
-    closing = re.search(r"\n[ \t]*\}\s*\n\\end\{center\}\s*$", bare)
+    closing = re.search(r"\n[ \t]*\}\s*\n\\end\{(?:center|metricformula)\}\s*$", bare)
     tex = bare[: closing.start()] + "\n" + "\n".join(marks) + bare[closing.start():]
     tex = tex.replace("\\tikz{", "\\tikz[text=white]{", 1)
     return tex, nodes

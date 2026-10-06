@@ -378,8 +378,8 @@ FID compares sets of generated and real images using features extracted by Incep
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.33,0.29)$) to node[pos=1, below] {real distribution} +(0.00,-0.24);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(1.53,-0.27)$) to node[pos=1, above] {generated distribution} +(0.00,0.24);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-2.98,-0.32)$) to[bend left=15] node[pos=1, right] {real distribution} +(0.55,0.45);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-1.92,0.18)$) to[bend right=15] node[pos=1, right] {generated distribution} +(0.55,-0.45);
     }
 \end{metricformula}
 
@@ -455,7 +455,7 @@ LPIPS estimates how different two images look to a person. It compares features 
         };
 
         \draw[-latex,nmlcyan, semithick] ($(a.north)+(2.22,-0.22)$) to[bend right=15] node[pos=1, left] {features of image $x$} +(-1.30,0.35);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.54,-0.25)$) to node[pos=1, above] {features of image $y$} +(0.00,0.25);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(3.54,-0.25)$) to node[pos=1, above] {features of image $y$} +(0.00,0.38);
         \draw[-latex,nmlred, semithick] ($(a.south)+(0.84,0.71)$) to node[pos=1, below] {learned weights} +(0.00,-0.62);
     }
 \end{metricformula}
@@ -525,9 +525,9 @@ CLIP Score estimates image--text agreement without a reference image. CLIP learn
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.92,-0.19)$) to[bend right=15] node[pos=1, left] {text embedding} +(-2.70,0.82);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.39,-0.18)$) to node[pos=1, above] {image embedding} +(0.00,0.40);
-        \draw[-latex,nmlred, semithick] ($(a.north)+(-1.02,-0.18)$) to[bend right=15] node[pos=1, left] {scaling weight} +(-1.00,0.40);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(-0.80,-0.14)$) to[bend right=15] node[pos=1, left] {scaling weight} +(-0.50,0.32);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.73,-0.14)$) to[bend right=15] node[pos=1, left] {text embedding} +(-0.55,0.72);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.17,-0.14)$) to[bend left=15] node[pos=1, right] {image embedding} +(0.45,0.32);
     }
 \end{metricformula}
 
@@ -596,10 +596,10 @@ DSG checks a generated image against the objects, attributes and relationships i
             }
         };
 
-        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.98,0.34)$) to node[pos=1, below] {number of questions} +(0.00,-0.30);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-0.99,-0.49)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-1.00,0.77);
-        \draw[-latex,nmlyellow, semithick] ($(a.south)+(1.76,0.10)$) to node[pos=1, below] {parent questions of $q$} +(0.00,-0.30);
-        \draw[-latex,nmlgreen, semithick] ($(a.north)+(2.50,-0.37)$) to node[pos=1, above] {indicator function} +(0.00,0.62);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(-2.66,0.26)$) to[bend right=15] node[pos=1, right] {number of questions} +(0.50,-0.60);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(-0.80,-0.42)$) to[bend right=15] node[pos=1, left] {VQA answer to $q$} +(-0.60,0.45);
+        \draw[-latex,nmlgreen, semithick] ($(a.north)+(2.41,-0.30)$) to[bend left=15] node[pos=1, right] {indicator function} +(0.45,0.45);
+        \draw[-latex,nmlyellow, semithick] ($(a.south)+(1.80,0.06)$) to[bend right=15] node[pos=1, right] {parent questions of $q$} +(0.45,-0.40);
     }
 \end{metricformula}
 
@@ -674,9 +674,9 @@ answering ``Yes'' becomes the score.
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-0.40,-0.04)$) to[bend right=15] node[pos=1, left] {positive answer} +(-1.00,0.26);
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.37,0.07)$) to node[pos=1, below] {generated image} +(0.00,-0.22);
-        \draw[-latex,nmlred, semithick] ($(a.north)+(3.38,-0.04)$) to node[pos=1, above] {prompt as a question} +(0.00,0.22);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(-0.45,0.10)$) to[bend left=15] node[pos=1, left] {positive answer} +(-0.70,-0.40);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.35,0.04)$) to[bend right=15] node[pos=1, right] {generated image} +(0.45,-0.40);
+        \draw[-latex,nmlred, semithick] ($(a.north)+(3.11,-0.04)$) to[bend right=15] node[pos=1, left] {prompt as a question} +(-0.60,0.40);
     }
 \end{metricformula}
 
