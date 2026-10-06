@@ -8,7 +8,7 @@
 % Padding is inserted only when necessary and carries neither folio nor band.
 \newcommand{\metricentry}[2]{%
  \clearpage
- \ifodd\value{page}\thispagestyle{empty}\null\newpage\fi
+ \ifodd\value{page}\bookblankpage\fi
  \metricentrytitle{#1}{#2}\global\metricstartpage=\value{page}}
 % Record the first title line's cap height without changing its layout.
 \newlength{\metrictitlecapheight}
