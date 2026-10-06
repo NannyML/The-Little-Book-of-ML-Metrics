@@ -64,10 +64,10 @@ An expected range uses past measurements to show where a metric usually falls. V
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.80,-0.18)$) to[bend right=15] node[pos=1, left] (obsannotation1) {today's measurement} +(-0.70,0.42);
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.72,0.06)$) to[bend left=15] node[pos=1, left] (obsannotation2) {baseline from history} +(-0.70,-0.42);
-        \draw[-latex,nmlyellow, semithick] ($(a.north)+(3.06,-0.18)$) to[bend left=15] node[pos=1, right] (obsannotation3) {sensitivity} +(0.50,0.42);
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(3.45,0.16)$) to[bend right=15] node[pos=1, right] (obsannotation4) {spread of history} +(0.40,-0.42);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.77,-0.15)$) to[bend right=20] node[pos=1, left] {today's measurement} +(-0.60,0.45);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(1.75,0.02)$) to[bend left=20] node[pos=1, left] {baseline from history} +(-0.60,-0.45);
+        \draw[-latex,nmlyellow, semithick] ($(a.north)+(3.05,-0.15)$) to[bend left=20] node[pos=1, right] {sensitivity} +(0.50,0.45);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(3.39,0.12)$) to[bend right=20] node[pos=1, right] {spread of history} +(0.50,-0.55);
     }
 \end{metricformula}
 
@@ -101,8 +101,8 @@ Row count tells you how many rows are in a table or a selected part of it, helpi
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.80,0.30)$) to[bend left=15] node[pos=1, left] (obsannotation1) {row's partition value} +(-0.80,-0.45);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.20,-0.22)$) to[bend right=15] node[pos=1, left] (obsannotation2) {the day being scanned} +(-0.70,0.45);
+        \draw[-latex,nmlcyan, semithick] ($(a.south)+(0.85,0.47)$) to[bend left=20] node[pos=1, left] {row's partition value} +(-0.60,-0.74);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.11,-0.16)$) to[bend right=20] node[pos=1, left] {the day being scanned} +(-0.60,0.46);
     }
 \end{metricformula}
 
@@ -173,8 +173,8 @@ Schema monitoring tells you when columns are added, removed or given a different
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-3.12,0.00)$) to[bend left=15] node[pos=1, right] (obsannotation1) {columns and types now} +(0.55,0.40);
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-1.95,0.02)$) to[bend right=15] node[pos=1, right] (obsannotation2) {at the previous scan} +(0.55,-0.40);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(-3.12,0.05)$) to[bend left=20] node[pos=1, right] {columns and types now} +(0.55,0.45);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-2.11,0.04)$) to[bend right=20] node[pos=1, right] {at the previous scan} +(0.55,-0.45);
     }
 \end{metricformula}
 

@@ -2,6 +2,7 @@
 
     uv run python tools/formula_preview.py OUT.png "5-ranking.tex:@K Metrics" "8-genai.tex:FID" ...
     uv run python tools/formula_preview.py --positions "8-genai.tex:FID"
+    uv run python tools/formula_preview.py --dpi 300 OUT.png "8-genai.tex:FID"     # sharper sheet to check clearances
 
 The sheet shows each formula at book scale inside the text block (gray box) with the text block's
 center line (red), so you can judge arrow placement, label collisions and whether the math itself sits
@@ -94,7 +95,7 @@ def positions(spec):
         return xs.mean(), ys.mean()
 
     (nx, ny), (sx, sy), (wx, _), (ex, _) = (mark(c) for c in [(255, 0, 255), (0, 255, 0), (255, 128, 0), (0, 128, 255)])
-    cm = ft.PX_PER_CM
+    cm = ft.DPI / 2.54
     print(f"{title}: node a {(ex - wx) / cm:.2f} x {(sy - ny) / cm:.2f} cm, west {(wx - nx) / cm:+.2f}, east {(ex - nx) / cm:+.2f}")
     for name, rgb in COLORS.items():
         hit = (abs(im - np.array(rgb)) < 40).all(axis=2)
@@ -109,6 +110,9 @@ def positions(spec):
 
 if __name__ == "__main__":
     ft.ensure_format()
+    if sys.argv[1] == "--dpi":
+        ft.DPI = int(sys.argv[2])
+        sys.argv[1:3] = []
     if sys.argv[1] == "--positions":
         for spec in sys.argv[2:]:
             positions(spec)

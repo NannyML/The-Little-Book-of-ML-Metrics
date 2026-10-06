@@ -50,9 +50,9 @@ An @K metric evaluates the first $K$ items in a ranking. Precision@$K$ is the fr
             }
         };
 
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.82,-0.02)$) to[bend right=15] node[pos=1, left] {relevant items} +(-0.55,0.40);
-        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.25,-0.02)$) to[bend left=15] node[pos=1, right] {first $K$ items} +(0.45,0.40);
-        \draw[-latex,nmlred, semithick] ($(a.south)+(2.08,0.28)$) to[bend right=10] node[pos=1, right] {cutoff} +(0.80,0.00);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(0.83,0.02)$) to[bend right=20] node[pos=1, left] {relevant items} +(-0.55,0.42);
+        \draw[-latex,nmlpurple, semithick] ($(a.north)+(2.23,0.02)$) to[bend left=20] node[pos=1, right] {first $K$ items} +(0.50,0.42);
+        \draw[-latex,nmlred, semithick] ($(a.south)+(2.11,0.24)$) to node[pos=1, right] {cutoff} +(0.70,0.00);
     }
 \end{metricformula}
 
@@ -567,8 +567,8 @@ Novelty measures how unfamiliar recommendations may be to a user. The version he
             }
         };
 
-        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-0.61,0.10)$) to[bend right=15] node[pos=1, right] {recommended item} +(0.50,-0.40);
-        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.77,-0.02)$) to[bend right=15] node[pos=1, left] {share of past interactions} +(-0.55,0.40);
+        \draw[-latex,nmlpurple, semithick] ($(a.south)+(-0.63,0.09)$) to[bend right=20] node[pos=1, right] {recommended item} +(0.50,-0.45);
+        \draw[-latex,nmlcyan, semithick] ($(a.north)+(1.77,0.02)$) to[bend right=20] node[pos=1, left] {share of past interactions} +(-0.55,0.45);
     }
 \end{metricformula}
 
