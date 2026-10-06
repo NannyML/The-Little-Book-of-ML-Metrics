@@ -63,15 +63,13 @@
 % Front matter: the first page is a half-title. Reserve a separate full title,
 % copyright, dedication, and one page each for foreword/preface.
 % Reservations are identified by PDF bookmarks, not printed placeholder copy.
-% Every page without content says so, centered on the trimmed page: the bleed
-% lies on the right of odd pages and on the left of even ones.
-\newlength{\bookblankshift}
+% Every page without content says so, at the same spot on every page so the
+% note stays still when paging through the PDF.
 \newcommand{\bookblankpage}{%
  \thispagestyle{empty}\noindent
- \ifodd\value{page}\setlength{\bookblankshift}{-.5\bookbleed}\else\setlength{\bookblankshift}{.5\bookbleed}\fi
  \begin{tikzpicture}[remember picture,overlay]
   \node[inner sep=0pt,font=\normalfont\small\itshape,text=black!45]
-   at ([xshift=\bookblankshift]current page.center)
+   at (current page.center)
    {This page intentionally left blank.};
  \end{tikzpicture}\newpage}
 \newcommand{\bookfrontheading}[1]{%
