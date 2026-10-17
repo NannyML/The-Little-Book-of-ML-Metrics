@@ -62,7 +62,8 @@
  \clearpage}
 
 % Front matter: the first page is a half-title. Reserve a separate full title,
-% copyright, dedication, and one page each for foreword/preface (text in preface.tex).
+% copyright and dedication before the contents, and one page each for
+% foreword/preface after it (text in preface.tex).
 % Reservations are identified by PDF bookmarks, not printed placeholder copy.
 % Every page without content says so, at the same spot on every page so the
 % note stays still when paging through the PDF.
@@ -88,7 +89,10 @@
  \pdfbookmark[0]{Title page}{full-title}\label{front:title}\bookblankpage
  \pdfbookmark[0]{Copyright}{copyright}\label{front:copyright}\bookblankpage
  \pdfbookmark[0]{Dedication}{dedication}\label{front:dedication}\bookblankpage
- \bookblankpage % dedication verso
+ \bookblankpage} % dedication verso
+% The foreword and preface follow the contents.
+\newcommand{\bookforewordpreface}{%
+ \clearpage
  \pdfbookmark[0]{Foreword}{foreword}\label{front:foreword}%
  \bookfrontheading{Foreword}\newpage
  \pdfbookmark[0]{Preface}{preface}\label{front:preface}%
@@ -118,7 +122,7 @@
   \begin{minipage}{\textwidth}
    \setlength{\parskip}{0pt}%
    {\normalfont\fontsize{15}{18}\selectfont\bfseries
-    \hyperlink{\booktocdestination}{\booktoctitle\hfill\booktocpage}\par}%
+    \hyperlink{\booktocdestination}{\hspace*{13pt}\booktoctitle\hfill\booktocpage}\par}%
    \ifbooktochasitems
     \vspace{2pt}%
     {\normalfont\fontsize{10}{12.5}\selectfont
@@ -137,7 +141,8 @@
   Foreword\hspace{.5em}\pageref{front:foreword}\hspace{2em}%
   Preface\hspace{.5em}\pageref{front:preface}\par}\vspace{3pt}%
  \setcounter{booktocgroup}{0}\booktocactivefalse\booktochasitemsfalse\booktocitems={}%
- \renewcommand{\numberline}[1]{\makebox[22pt][l]{\sffamily\fontsize{9}{12}\selectfont\mdseries\color{black!65}##1}}%
+ % Chapter numbers hang left of the titles, so unnumbered rows align with them.
+ \renewcommand{\numberline}[1]{\hspace*{-13pt}\makebox[13pt][l]{\normalfont\fontsize{9}{12}\selectfont##1}}%
  \renewcommand{\contentsline}[4]{%
   \ifstrequal{##1}{chapter}{%
    \booktocflush\stepcounter{booktocgroup}%
