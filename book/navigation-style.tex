@@ -62,7 +62,7 @@
  \clearpage}
 
 % Front matter: the first page is a half-title. Reserve a separate full title,
-% copyright, dedication, and one page each for foreword/preface.
+% copyright, dedication, and one page each for foreword/preface (text in preface.tex).
 % Reservations are identified by PDF bookmarks, not printed placeholder copy.
 % Every page without content says so, at the same spot on every page so the
 % note stays still when paging through the PDF.
@@ -92,7 +92,8 @@
  \pdfbookmark[0]{Foreword}{foreword}\label{front:foreword}%
  \bookfrontheading{Foreword}\newpage
  \pdfbookmark[0]{Preface}{preface}\label{front:preface}%
- \bookfrontheading{Preface}\newpage}
+ \bookfrontheading{Preface}\vspace{14pt}%
+ {\metricbody\input{preface}\par}\newpage}
 
 % The main contents groups each chapter's metrics in two reading columns.
 % Whole chapter groups stay together. Page breaks balance the three pages:
