@@ -124,7 +124,7 @@ Mean Squared Error (MSE) averages the squares of the prediction errors. Squaring
     }
 \end{metricformula}
 
-MSE ranges from 0 (perfect) to $+\infty$. The main interpretation challenge is that MSE is in squared units — if you're predicting
+MSE ranges from $0$ (perfect) to $+\infty$. The main interpretation challenge is that MSE is in squared units — if you're predicting
 revenue in dollars, MSE is in dollars-squared. Take the square root to get RMSE, which returns to interpretable units.
 
 \metricheading{When to use}
@@ -187,7 +187,7 @@ MSLE measures prediction errors on a logarithmic scale. We add one to each actua
         }
 \end{metricformula}
 
-MSLE is $0$ for perfect predictions and has no upper bound. For a fixed actual value, it penalizes an under-prediction more than an equally large over-prediction. If the actual is $100$, predicting $50$ contributes more loss than predicting $150$.
+MSLE ranges from $0$ (perfect) to $+\infty$. For a fixed actual value, it penalizes an under-prediction more than an equally large over-prediction. If the actual is $100$, predicting $50$ contributes more loss than predicting $150$.
 
 \metricheading{When to use}
 
@@ -317,7 +317,7 @@ RMSLE is the square root of MSLE. Add one to actual and predicted values, take t
     }
 \end{metricformula}
 
-RMSLE is $0$ for perfect predictions and has no upper bound. For one prediction, an absolute log difference of $0.1$ means the larger shifted value is about $1.105$ times the smaller. RMSLE summarizes many such differences, giving extra weight to large ones; it is not an average percentage error.
+RMSLE ranges from $0$ (perfect) to $+\infty$. For one prediction, an absolute log difference of $0.1$ means the larger shifted value is about $1.105$ times the smaller. RMSLE summarizes many such differences, giving extra weight to large ones; it is not an average percentage error.
 
 \metricheading{When to use}
 
@@ -375,7 +375,7 @@ MAPE is the average absolute prediction error expressed as a percentage of each 
     }
 \end{metricformula}
 
-MAPE is $0\%$ for perfect predictions and has no upper bound. Judge it against a relevant baseline on the same task and forecast horizon. A score that is useful for one forecasting problem may be unacceptable for another.
+MAPE ranges from $0\%$ (perfect) to $+\infty$. Judge it against a relevant baseline on the same task and forecast horizon. A score that is useful for one forecasting problem may be unacceptable for another.
 
 \metricheading{When to use}
 
@@ -505,7 +505,7 @@ wMAPE measures total absolute prediction error as a percentage of the sum of abs
     }
 \end{metricformula}
 
-wMAPE ranges from $0\%$ to $+\infty$ and is undefined when all actuals are zero. A score of $8\%$ means total absolute error is $8\%$ of the total absolute actuals; it does not mean every prediction misses by $8\%$.
+wMAPE ranges from $0\%$ (perfect) to $+\infty$ and is undefined when all actuals are zero. A score of $8\%$ means total absolute error is $8\%$ of the total absolute actuals; it does not mean every prediction misses by $8\%$.
 
 \metricheading{When to use}
 
@@ -677,7 +677,7 @@ MPD measures errors in predictions of an expected count. A model might predict a
     }
 \end{metricformula}
 
-MPD ranges from $0$ to $+\infty$, with lower values indicating smaller loss. Compare models with a suitable baseline on the same data, such as the training mean count. Zero actuals are valid: their contribution is twice the predicted count, using the standard limit for the logarithmic term.
+MPD ranges from $0$ (perfect) to $+\infty$. Compare models with a suitable baseline on the same data, such as the training mean count. Zero actuals are valid: their contribution is twice the predicted count, using the standard limit for the logarithmic term.
 
 \metricheading{When to use}
 
@@ -735,7 +735,7 @@ MGD measures errors in predictions of a positive mean, using the ratio between e
 }
 \end{metricformula}
 
-MGD ranges from $0$ to $+\infty$, with $0$ when every prediction equals its actual value. Both actuals and predictions must be strictly positive. Compare models on the same observations and in the context of a suitable baseline.
+MGD ranges from $0$ (perfect) to $+\infty$. Both actuals and predictions must be strictly positive. Compare models on the same observations and in the context of a suitable baseline.
 
 \metricheading{When to use}
 
@@ -912,7 +912,7 @@ Pinball Loss measures the error of a quantile prediction. For example, a predict
 	}
 \end{metricformula}
 
-The loss is nonnegative and has no upper bound. At $q=0.9$, an under-prediction receives nine times the penalty of an equally large over-prediction. At $q=0.5$, the penalties match; averaging this loss gives half the MAE and targets the median.
+Pinball Loss ranges from $0$ (perfect) to $+\infty$. At $q=0.9$, an under-prediction receives nine times the penalty of an equally large over-prediction. At $q=0.5$, the penalties match; averaging this loss gives half the MAE and targets the median.
 
 \metricheading{When to use}
 
