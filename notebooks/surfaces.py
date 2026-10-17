@@ -82,14 +82,14 @@ def regression():
     yield 'sMAPE_3d_surface', lambda: surface('sMAPE_3d_surface', Yg, Pg,
         200 * np.abs(Yg - Pg) / (np.abs(Yg) + np.abs(Pg)),
         cbar_label='sMAPE term (%)', zticks=[0, 50, 100, 150], **common)
-    # MSLE starts at 1 so the caption's example (Y = 10, predictions 5 and 15)
-    # and the steep penalty near zero are on the surface.
-    v = np.linspace(1, 50, 197)
+    # MSLE starts at 5 so the caption's example (Y = 10, predictions 5 and 15)
+    # is on the surface without the near-zero spike squeezing the valley.
+    v = np.linspace(5, 50, 181)
     Yl, Pl = np.meshgrid(v, v)
     msle = (np.log1p(Yl) - np.log1p(Pl)) ** 2
     yield 'MSLE_3d_surface', lambda: surface('MSLE_3d_surface', Yl, Pl, msle,
-        cbar_label='squared log error', zticks=[0, 3, 6, 9, 12],
-        xlim=(1, 50), ylim=(1, 50), **{**common, 'xticks': [10, 30, 50]})
+        cbar_label='squared log error', zticks=[0, 1, 2, 3, 4, 5],
+        xlim=(5, 50), ylim=(5, 50), **{**common, 'xticks': [10, 30, 50]})
 
 
 def classification():
