@@ -5,17 +5,15 @@
 \begin{bookreadingguide}
 \section{Who this is for}
 
-We wrote this book for data scientists, ML engineers and anyone working with machine learning models. You should be familiar with confusion matrices and residuals; we explain the metrics as we go.
+We wrote this book for data scientists, ML and AI engineers, and anyone who wants to understand what goes into evaluating ML/AI/SI models. We assume basic ML knowledge; it helps if you're familiar with residuals, confusion matrices, and targets versus predictions.
 
 \section{How to read a metric page}
 
-Most metrics have a two-page spread. On the left, we explain what the metric measures and how to read its formula and score. We also discuss where it works well and where it falls short, so you can decide whether it suits your task.
-
-On the right, a figure shows how the metric behaves on example data. You'll also find a ``Did you know'' note about its history or an interesting property, followed by a short comparison with related metrics.
+Most metrics have a two-page spread. On the left, we explain what the metric measures, how to read its formula and score, and where it works well or falls short. On the right, we show it in action with example data, share a bit of history or an interesting property, and compare it with related metrics.
 
 \section{Formula colors}
 
-In the annotated formulas, an arrow links each colored term to a short label that says what it is. Most formulas use the colors in the same way, so a color usually hints at a term's role. A few use them differently, and then the label is the guide.
+Almost every metric in this book has a formula. We've annotated the formulas to make them easier to follow and tried to keep the colors consistent. Here's the logic behind them.
 
 \vspace{4pt}
 \guidecolor{nmlcyan}{Cyan}{Observed values: targets and labels.}
@@ -26,5 +24,5 @@ In the annotated formulas, an arrow links each colored term to a short label tha
 
 \section{How the book is organized}
 
-Start with the chapter for your task, then use its decision map to find a metric. The final three subject chapters cover probability calibration and performance estimation, fairness, and data observability.
+In this little, not so little book, we've grouped metrics into ten chapters: Regression, Classification, Clustering, Ranking, Computer Vision, NLP, GenAI, Probabilistic, Bias \& Fairness, and Data Observability. Each chapter opens with a decision tree to help you pick metrics for your task, and when applicable finishes with a diagram explaining how to translate metrics from one to the other.
 \end{bookreadingguide}

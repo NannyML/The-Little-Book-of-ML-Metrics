@@ -6,19 +6,20 @@
 \newenvironment{bookreadingguide}{%
  \clearpage\thispagestyle{customstyle}\begingroup\metricbody
  \renewcommand{\section}[1]{%
-  \par\addvspace{13pt}\refstepcounter{section}%
+  \par\addvspace{14pt}\refstepcounter{section}%
   \addcontentsline{toc}{section}{##1}\renewcommand{\sectiontitle}{##1}%
   {\normalfont\fontsize{13}{16}\selectfont\bfseries ##1\par}%
-  \nobreak\vspace{3pt}\nobreak}%
+  \nobreak\vspace{4pt}\nobreak}%
  {\normalfont\fontsize{26}{30}\selectfont\bfseries\itshape How to use this book\par}%
  \vspace{2pt}%
 }{\par\endgroup\clearpage}
 \newcommand{\guidecolor}[3]{%
+ \begingroup\setlength{\parskip}{0pt}%
  \noindent\makebox[73pt][l]{%
   {\color{#1}\raisebox{2.5pt}{\rule{12pt}{2.5pt}}}\hspace{7pt}%
   {\sffamily\fontsize{9}{12}\selectfont\bfseries #2}}%
  \parbox[t]{\dimexpr\linewidth-73pt\relax}{%
-  \normalfont\fontsize{10}{12.5}\selectfont #3\strut}\par\vspace{3pt}}
+  \normalfont\fontsize{10}{12.5}\selectfont #3\strut}\par\vspace{3pt}\endgroup}
 
 % Read older auxiliary files harmlessly on the first build after the redesign.
 \newcommand{\tocmark}[1]{}
