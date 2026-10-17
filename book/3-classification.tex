@@ -165,7 +165,7 @@ In the context of statistical hypothesis testing, the FPR is also known as the `
 
 \metricheading{Related metrics}\metricsecondary
 
-Other metrics used alongside or instead of FPR include True Positive Rate (TPR), Precision, F1-Score, the area under the ROC curve (ROC AUC), and Specificity.
+Other metrics used alongside or instead of FPR include True Positive Rate (TPR)\relpage{sec:tpr-recall-sensitivity}, Precision\relpage{sec:precision}, F1-Score\relpage{sec:f1-score}, the area under the ROC curve (ROC AUC)\relpage{sec:roc-auc}, and Specificity\relpage{sec:tnr-specificity}.
 
 
 % ---------- FNR ----------
@@ -235,7 +235,7 @@ In hypothesis testing, the false negative rate is $\beta$ and the power is $1-\b
 \metricheading{Related metrics}\metricsecondary
 
 Other metrics used alongside or instead of False Negative Rate
-are Recall/Sensitivity, Specificity, Precision, F1-Score, and ROC curve.
+are Recall/Sensitivity\relpage{sec:tpr-recall-sensitivity}, Specificity\relpage{sec:tnr-specificity}, Precision\relpage{sec:precision}, F1-Score\relpage{sec:f1-score}, and ROC curve\relpage{sec:roc-auc}.
 
 % ---------- TPR ----------
 \metricend
@@ -301,7 +301,7 @@ Did you know that...}
 
 \metricheading{Related metrics}\metricsecondary
 
-Precision describes the reliability of positive predictions; specificity describes correct rejections. F-beta combines precision and recall with a chosen emphasis.
+Precision\relpage{sec:precision} describes the reliability of positive predictions; specificity\relpage{sec:tnr-specificity} describes correct rejections. F-beta\relpage{sec:f-beta} combines precision and recall with a chosen emphasis.
 
 % ---------- TNR ----------
 \metricend
@@ -365,7 +365,7 @@ Did you know that...}
 
 \metricheading{Related metrics}\metricsecondary
 
-Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall), FPR, which is $1 - \text{Specificity}$, F1-score, and the ROC curve.
+Other metrics used alongside or instead of TNR include TPR (Sensitivity/Recall)\relpage{sec:tpr-recall-sensitivity}, FPR\relpage{sec:fpr}, which is $1 - \text{Specificity}$, F1-score\relpage{sec:f1-score}, and the ROC curve\relpage{sec:roc-auc}.
 
 % ---------- Accuracy ----------
 \metricend
@@ -425,7 +425,7 @@ Use accuracy when the goal is to minimize the number of wrong decisions and each
 
 \metricheading{Related metrics}\metricsecondary
 
-Balanced Accuracy gives each class's recall equal weight. Precision and Recall describe results for the positive class, while Expected Cost accounts for the consequences of different mistakes.
+Balanced Accuracy\relpage{sec:balanced-accuracy} gives each class's recall\relpage{sec:tpr-recall-sensitivity} equal weight. Precision\relpage{sec:precision} and Recall describe results for the positive class, while Expected Cost\relpage{sec:ec} accounts for the consequences of different mistakes.
 
 % ---------- Balanced Accuracy ----------
 \metricend
@@ -483,7 +483,7 @@ Use balanced accuracy when you want success within each class to contribute equa
 
 \metricheading{Related metrics}\metricsecondary
 
-A gap between Accuracy and Balanced Accuracy is a reason to inspect the individual class recalls. MCC offers a different summary of the same confusion matrix, as a correlation between actual and predicted labels. Precision and Recall help when the positive class is the main concern.
+A gap between Accuracy\relpage{sec:accuracy} and Balanced Accuracy is a reason to inspect the individual class recalls\relpage{sec:tpr-recall-sensitivity}. MCC\relpage{sec:mcc} offers a different summary of the same confusion matrix\relpage{sec:confusion-matrix}, as a correlation between actual and predicted labels. Precision\relpage{sec:precision} and Recall help when the positive class is the main concern.
 
 % ---------- Precision ----------
 \metricend
@@ -542,8 +542,8 @@ Did you know that...}
 
 \metricheading{Related metrics}\metricsecondary
 
-Precision is most commonly used alongside Recall. To combine both into a single metric, use the F1-score or the F-beta score.
-For a threshold-independent evaluation, consider the PR AUC.
+Precision is most commonly used alongside Recall\relpage{sec:tpr-recall-sensitivity}. To combine both into a single metric, use the F1-score\relpage{sec:f1-score} or the F-beta score\relpage{sec:f-beta}.
+For a threshold-independent evaluation, consider the PR AUC\relpage{sec:pr-auc}.
 
 % ---------- F1-score ----------
 \metricend
@@ -605,7 +605,7 @@ Use F1 when you want one summary of precision and recall for the positive class,
 
 \metricheading{Related metrics}\metricsecondary
 
-When precision and recall are not equally important, use the F-beta score. For a metric that also considers true negatives, consider MCC or the P4-metric.
+When precision\relpage{sec:precision} and recall\relpage{sec:tpr-recall-sensitivity} are not equally important, use the F-beta score\relpage{sec:f-beta}. For a metric that also considers true negatives, consider MCC\relpage{sec:mcc} or the P4-metric\relpage{sec:p4-metric}.
 
 % ---------- F-beta ----------
 \metricend
@@ -664,7 +664,7 @@ Use F-beta when you need a single precision--recall summary but want to favor on
 
 \metricheading{Related metrics}\metricsecondary
 
-The F-beta score generalizes the F1-score. If you need a metric that also accounts for true negatives, consider MCC or the P4-metric.
+The F-beta score generalizes the F1-score\relpage{sec:f1-score}. If you need a metric that also accounts for true negatives, consider MCC\relpage{sec:mcc} or the P4-metric\relpage{sec:p4-metric}.
 
 % ---------- ROC AUC ----------
 \metricend
@@ -725,7 +725,7 @@ leading to the development of signal detection theory and the receiver operating
 
 \metricheading{Related metrics}\metricsecondary
 
-PR AUC complements ROC AUC by showing precision as recall changes. For decisions at one chosen threshold, examine the confusion matrix and metrics such as F1 or MCC.
+PR AUC\relpage{sec:pr-auc} complements ROC AUC by showing precision\relpage{sec:precision} as recall\relpage{sec:tpr-recall-sensitivity} changes. For decisions at one chosen threshold, examine the confusion matrix\relpage{sec:confusion-matrix} and metrics such as F1\relpage{sec:f1-score} or MCC\relpage{sec:mcc}.
 
 % ---------- PR AUC ----------
 \metricend
@@ -780,8 +780,8 @@ Use PR AUC when finding positive cases and limiting false alarms are the main co
 
 \metricheading{Related metrics}\metricsecondary
 
-PR AUC is complementary to ROC AUC. For a single-score summary that balances precision and recall at a fixed threshold, use the F1-score.
-For evaluating the predicted probabilities, consider Brier Score or Log Loss; neither isolates calibration alone.
+PR AUC is complementary to ROC AUC\relpage{sec:roc-auc}. For a single-score summary that balances precision\relpage{sec:precision} and recall\relpage{sec:tpr-recall-sensitivity} at a fixed threshold, use the F1-score\relpage{sec:f1-score}.
+For evaluating the predicted probabilities, consider Brier Score\relpage{sec:brier-score-loss} or Log Loss\relpage{sec:log-loss}; neither isolates calibration alone.
 % ---------- Brier Score Loss ----------
 \metricend
 \clearpage
@@ -836,7 +836,7 @@ Use the Brier Score when evaluating probabilities matters beyond getting the cla
 
 \metricheading{Related metrics}\metricsecondary
 
-The Brier Score and Log Loss both evaluate probability predictions. Brier loss is bounded, while Log Loss grows without bound as the probability assigned to the actual outcome approaches zero. For predicted class labels, use metrics such as accuracy or F1-score.
+The Brier Score and Log Loss\relpage{sec:log-loss} both evaluate probability predictions. Brier loss is bounded, while Log Loss grows without bound as the probability assigned to the actual outcome approaches zero. For predicted class labels, use metrics such as accuracy\relpage{sec:accuracy} or F1-score\relpage{sec:f1-score}.
 
 % ---------- Log Loss ----------
 \metricend
@@ -895,7 +895,7 @@ is the same as minimizing Log Loss, making it the natural loss function for prob
 
 \metricheading{Related metrics}\metricsecondary
 
-Log Loss and the Brier Score evaluate overall probability quality; neither isolates calibration. A reliability diagram compares predicted probabilities with observed frequencies. D-squared Log Loss expresses improvement over a constant-probability baseline, while accuracy and F1 evaluate class labels.
+Log Loss and the Brier Score\relpage{sec:brier-score-loss} evaluate overall probability quality; neither isolates calibration. A reliability diagram compares predicted probabilities with observed frequencies. D-squared Log Loss\relpage{sec:d-squared-log-loss-score} expresses improvement over a constant-probability baseline, while accuracy\relpage{sec:accuracy} and F1\relpage{sec:f1-score} evaluate class labels.
 
 % ---------- Jaccard Index ----------
 \metricend
@@ -953,7 +953,7 @@ Use Jaccard when the overlap between predicted and actual positives is the focus
 
 \metricheading{Related metrics}\metricsecondary
 
-For evaluations that include true negatives, use accuracy or balanced accuracy. The Computer Vision chapter covers the closely related Sørensen-Dice coefficient. When a distance between sets is needed, Jaccard distance is $1-J$ and satisfies the triangle inequality.
+For evaluations that include true negatives, use accuracy\relpage{sec:accuracy} or balanced accuracy\relpage{sec:balanced-accuracy}. The Computer Vision chapter covers the closely related Sørensen-Dice coefficient\relpage{sec:sorensen-dice-coefficient}. When a distance between sets is needed, Jaccard distance is $1-J$ and satisfies the triangle inequality.
 
 % ---------- D-squared Log Loss Score ----------
 \metricend
@@ -1011,7 +1011,7 @@ but you can also compute D-squared with other losses like absolute error or Pois
 
 \metricheading{Related metrics}\metricsecondary
 
-Use raw Log Loss to see the loss before normalization, and a reliability diagram to examine calibration. F1 and MCC summarize decisions at a chosen threshold; they answer a different question from the quality of the probabilities.
+Use raw Log Loss\relpage{sec:log-loss} to see the loss before normalization, and a reliability diagram to examine calibration. F1\relpage{sec:f1-score} and MCC\relpage{sec:mcc} summarize decisions at a chosen threshold; they answer a different question from the quality of the probabilities.
 
 % ---------- P4-metric ----------
 \metricend
@@ -1070,7 +1070,7 @@ Use P4 when you want a summary that includes both classes. It can also compare c
 
 \metricheading{Related metrics}\metricsecondary
 
-P4 and MCC both include true negatives, but summarize the confusion matrix differently: P4 combines four rates, while MCC measures the association between predicted and actual labels. Neither replaces an explicit error-cost objective. F-beta is useful when the focus is the precision--recall trade-off for the positive class.
+P4 and MCC\relpage{sec:mcc} both include true negatives, but summarize the confusion matrix\relpage{sec:confusion-matrix} differently: P4 combines four rates, while MCC measures the association between predicted and actual labels. Neither replaces an explicit error-cost objective. F-beta\relpage{sec:f-beta} is useful when the focus is the precision--recall trade-off for the positive class.
 
 % ---------- Cohen's Kappa ----------
 \metricend
@@ -1126,7 +1126,7 @@ Use Cohen's Kappa to assess agreement between two annotators, for example when c
 
 \metricheading{Related metrics}\metricsecondary
 
-Fleiss' Kappa extends agreement assessment to multiple annotators. MCC measures association between predicted and actual labels. A low kappa is a reason to examine disagreements and label frequencies; it does not identify their cause or prove that the labels are unusable.
+Fleiss' Kappa extends agreement assessment to multiple annotators. MCC\relpage{sec:mcc} measures association between predicted and actual labels. A low kappa is a reason to examine disagreements and label frequencies; it does not identify their cause or prove that the labels are unusable.
 
 % ---------- MCC ----------
 \metricend
@@ -1182,7 +1182,7 @@ Use MCC as an overall summary when performance on both classes matters, includin
 
 \metricheading{Related metrics}\metricsecondary
 
-MCC and F1 use different scales and summarize different aspects of a classifier. Similar values do not establish balanced performance across classes. Inspect precision, recall, specificity, and the confusion matrix to understand the results. ROC AUC adds a view of score ordering across thresholds.
+MCC and F1\relpage{sec:f1-score} use different scales and summarize different aspects of a classifier. Similar values do not establish balanced performance across classes. Inspect precision\relpage{sec:precision}, recall\relpage{sec:tpr-recall-sensitivity}, specificity\relpage{sec:tnr-specificity}, and the confusion matrix\relpage{sec:confusion-matrix} to understand the results. ROC AUC\relpage{sec:roc-auc} adds a view of score ordering across thresholds.
 
 % ---------- EC ----------
 \metricend
@@ -1272,5 +1272,5 @@ Did you know that...}
 
 \metricheading{Related metrics}\metricsecondary
 
-F1 combines precision and recall, while ROC AUC evaluates score ordering across thresholds. Neither requires an explicit cost for each decision. EC lets those application costs determine the evaluation. If correct decisions cost $0$ and every error costs $1$, EC equals one minus accuracy.
+F1\relpage{sec:f1-score} combines precision\relpage{sec:precision} and recall\relpage{sec:tpr-recall-sensitivity}, while ROC AUC\relpage{sec:roc-auc} evaluates score ordering across thresholds. Neither requires an explicit cost for each decision. EC lets those application costs determine the evaluation. If correct decisions cost $0$ and every error costs $1$, EC equals one minus accuracy\relpage{sec:accuracy}.
 \metricend

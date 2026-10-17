@@ -117,7 +117,7 @@ differently.}
 
 \metricheading{Related metrics}\metricsecondary
 
-BLEU and ROUGE (NLP chapter) measure overlap with a reference; MAUVE compares generated and human-text distributions. If held-out
+BLEU\relpage{sec:bleu} and ROUGE\relpage{sec:rouge} measure overlap with a reference; MAUVE\relpage{sec:mauve} compares generated and human-text distributions. If held-out
 perplexity falls while MAUVE stays flat, predictive fit improved but this MAUVE evaluation found no corresponding distributional
 improvement in the samples. Inspect the generations and decoding setup before drawing a conclusion. For masked models,
 pseudo-perplexity scores each token while masking it in turn.
@@ -193,7 +193,7 @@ configuration next to every score.}
 
 \metricheading{Related metrics}\metricsecondary
 
-BLEU, METEOR and ROUGE count surface overlap; BERTScore compares contextual similarity. Low BLEU with high BERTScore can indicate a paraphrase or hide a role swap or negation: inspect meaning, and check exact values separately. MAUVE compares collections, needing human reference texts but no matched reference per sample.
+BLEU\relpage{sec:bleu}, METEOR\relpage{sec:meteor} and ROUGE\relpage{sec:rouge} count surface overlap; BERTScore compares contextual similarity. Low BLEU with high BERTScore can indicate a paraphrase or hide a role swap or negation: inspect meaning, and check exact values separately. MAUVE\relpage{sec:mauve} compares collections, needing human reference texts but no matched reference per sample.
 
 % ---------- MAUVE ----------
 \metricend
@@ -273,8 +273,8 @@ curve says which way a model fails.}
 
 \metricheading{Related metrics}\metricsecondary
 
-Perplexity measures how well the model predicts human text; MAUVE how well its samples resemble it, so one can improve while the other
-stagnates. BERTScore compares one output to one reference. For images the same distribution-level idea is FID, which compares Gaussian
+Perplexity\relpage{sec:perplexity} measures how well the model predicts human text; MAUVE how well its samples resemble it, so one can improve while the other
+stagnates. BERTScore\relpage{sec:bertscore} compares one output to one reference. For images the same distribution-level idea is FID\relpage{sec:fid}, which compares Gaussian
 fits in feature space rather than histograms.
 
 % ---------- Inception Score ---------
@@ -349,9 +349,9 @@ a gap larger than many claimed improvements between GANs.}
 
 \metricheading{Related metrics}\metricsecondary
 
-IS and FID often move together during training. If IS rises while FID stalls, sharper predictions without broader coverage are one
+IS and FID\relpage{sec:fid} often move together during training. If IS rises while FID stalls, sharper predictions without broader coverage are one
 possible explanation; inspect class coverage and repeated images before calling it collapse. For similarity of one image to one target,
-use LPIPS.
+use LPIPS\relpage{sec:lpips}.
 
 % ---------- Fréchet Inception Distance ---------
 \metricend
@@ -429,7 +429,7 @@ Landau in 1982.}
 
 \metricheading{Related metrics}\metricsecondary
 
-IS and FID can disagree, which is a reason to inspect class coverage and repetition. LPIPS compares image pairs rather than sets. With
+IS\relpage{sec:is} and FID can disagree, which is a reason to inspect class coverage and repetition. LPIPS\relpage{sec:lpips} compares image pairs rather than sets. With
 limited samples, Kernel Inception Distance (KID) has an unbiased standard estimator.
 
 
@@ -498,9 +498,9 @@ checkpoint used to score it. In that case, add an independent metric and a human
 
 \metricheading{Related metrics}\metricsecondary
 
-PSNR and SSIM (Computer Vision chapter) measure pixel fidelity, while LPIPS compares deep features. High PSNR with poor LPIPS can be
+PSNR\relpage{sec:psnr} and SSIM\relpage{sec:ssim} measure pixel fidelity, while LPIPS compares deep features. High PSNR with poor LPIPS can be
 consistent with blur, because blur preserves broad pixel values while removing texture. The reverse can occur when detail is sharp but
-slightly displaced. These patterns are clues to inspect the images, not diagnoses. FID compares sets of images and needs no pairs.
+slightly displaced. These patterns are clues to inspect the images, not diagnoses. FID\relpage{sec:fid} compares sets of images and needs no pairs.
 
 % ---------- CLIPScore ---------
 \metricend
@@ -572,7 +572,7 @@ was part of the objective. For a strong claim, add an independent evaluator and 
 
 \metricheading{Related metrics}\metricsecondary
 
-CLIP Score measures broad image--text alignment; VQAScore and DSG probe composition. High CLIP Score with poor FID may suggest better alignment but worse reference-distribution matching; the reverse may suggest the opposite. Inspect examples: FID does not itself test photographic realism, and these metrics inherit their evaluators' blind spots.
+CLIP Score measures broad image--text alignment; VQAScore\relpage{sec:vqascore} and DSG\relpage{sec:dsg} probe composition. High CLIP Score with poor FID\relpage{sec:fid} may suggest better alignment but a worse match to the reference distribution. Inspect examples: FID does not itself test photographic realism, and these metrics inherit their evaluators' blind spots.
 
 % ---------- Davidsonian Scene Graph ---------
 \metricend
@@ -645,7 +645,7 @@ color of a bicycle it does not contain. The dependency edges close that hole.}
 
 \metricheading{Related metrics}\metricsecondary
 
-CLIP Score gives one embedding similarity; VQAScore asks one question about the whole prompt; DSG asks many smaller questions and shows
+CLIP Score\relpage{sec:clip-score} gives one embedding similarity; VQAScore\relpage{sec:vqascore} asks one question about the whole prompt; DSG asks many smaller questions and shows
 which ones failed. A disagreement between VQAScore and DSG tells us that the evaluators read the image or prompt differently. A missed
 detail in the single question and a faulty decomposition are two possibilities to check, not conclusions from the scores alone.
 
@@ -718,7 +718,7 @@ $0.93$ against $0.82$. The paper's much larger CLIP-FlanT5 model pushes mismatch
 
 \metricheading{Related metrics}\metricsecondary
 
-CLIP Score is faster and coarser; DSG is slower and more diagnostic; VQAScore sits between them. Agreement raises confidence only when
+CLIP Score\relpage{sec:clip-score} is faster and coarser; DSG\relpage{sec:dsg} is slower and more diagnostic; VQAScore sits between them. Agreement raises confidence only when
 the evaluators make sufficiently different errors. A high CLIP Score and low VQAScore can point to a compositional mistake, such as the
 right objects in the wrong arrangement, but inspecting the image is still necessary.
 
@@ -797,7 +797,7 @@ mean is a useful convention rather than a physical unit.}
 
 \metricheading{Related metrics}\metricsecondary
 
-PESQ predicts perceived speech quality from a reference signal, while STOI predicts intelligibility. A disagreement with a well-designed
+PESQ\relpage{sec:pesq} predicts perceived speech quality from a reference signal, while STOI\relpage{sec:stoi} predicts intelligibility. A disagreement with a well-designed
 listening test shows that the automatic metric does not capture this case; inspect the audio and protocol before assigning the cause.
 Comparison MOS (CMOS: the same listeners rate A against B on a $-3$ to $+3$ scale) and MUSHRA-style tests can offer more power for close
 systems.
@@ -875,7 +875,7 @@ speech along with the noise: removed speech counts as a mild loss, while the noi
 
 \metricheading{Related metrics}\metricsecondary
 
-STOI predicts intelligibility, while PESQ predicts perceived quality. If one rises while the other falls, the two objectives may be
+STOI\relpage{sec:stoi} predicts intelligibility, while PESQ predicts perceived quality. If one rises while the other falls, the two objectives may be
 trading off, or one metric may be outside the conditions where it works well. Listen to the audio and run the relevant listening test
 before deciding which. For reference-free monitoring in production, learned predictors such as DNSMOS and NISQA estimate quality from
 the degraded signal alone.
@@ -957,9 +957,9 @@ does not simply remove all extra energy; it limits how much large local deviatio
 
 \metricheading{Related metrics}\metricsecondary
 
-PESQ estimates quality, while STOI estimates intelligibility; both need the clean reference and both were validated against listening
+PESQ\relpage{sec:pesq} estimates quality, while STOI estimates intelligibility; both need the clean reference and both were validated against listening
 tests. When PESQ improves and STOI falls, the scores flag a possible tradeoff rather than proving its cause. Listen to the audio and test
-intelligibility with people. WER (NLP chapter) on a recognizer fed the processed audio is a separate downstream check, not a substitute
+intelligibility with people. WER\relpage{sec:wer} on a recognizer fed the processed audio is a separate downstream check, not a substitute
 for human intelligibility.
 
 % ---------- Benchmarks ---------

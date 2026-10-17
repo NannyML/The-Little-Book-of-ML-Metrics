@@ -87,7 +87,7 @@ Use @K for a limited recommendation window or candidate budget. Compare systems 
 
 \metricheading{Related metrics}\metricsecondary
 
-Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$, and nDCG@$K$. For a binary check of whether any relevant item appears in the top-$K$, see Hit Rate.
+Common @K variants include Precision@$K$, Recall@$K$, MAP@$K$\relpage{sec:map}, and nDCG@$K$\relpage{sec:ndcg}. For a binary check of whether any relevant item appears in the top-$K$, see Hit Rate\relpage{sec:hit-rate}.
 
 % ---------- Mean Reciprocal Rank ----------
 \metricend
@@ -144,7 +144,7 @@ Use MRR when finding a first useful answer is the goal, as in known-item search 
 
 \metricheading{Related metrics}\metricsecondary
 
-For multi-relevant evaluation use MAP. For graded relevance (some items more relevant than others, e.g., a five-star rating system) use nDCG — it credits every relevant item with a position-discounted contribution, whereas MRR collapses the entire list to a single number from the first hit. For a binary top-$K$ check use Hit Rate.
+For multi-relevant evaluation use MAP\relpage{sec:map}. For graded relevance (some items more relevant than others, e.g., a five-star rating system) use nDCG\relpage{sec:ndcg} — it credits every relevant item with a position-discounted contribution, whereas MRR collapses the entire list to a single number from the first hit. For a binary top-$K$ check use Hit Rate\relpage{sec:hit-rate}.
 
 
 % ---------- Mean Average Precision ----------
@@ -203,7 +203,7 @@ Use MAP when several relevant results matter and relevance is binary. MAP@$K$ su
 
 \metricheading{Related metrics}\metricsecondary
 
-For graded relevance use nDCG. For the first relevant result use MRR; for the number of relevant results in the first $K$ slots use Precision@$K$. AP scores one query, while MAP averages AP across queries.
+For graded relevance use nDCG\relpage{sec:ndcg}. For the first relevant result use MRR\relpage{sec:mrr}; for the number of relevant results in the first $K$ slots use Precision@$K$\relpage{sec:k-metrics}. AP scores one query, while MAP averages AP across queries.
 
 % good resources for inpiration for visual: https://juneandrews.com/2014/12/15/mean-average-precision-isnt-so-nice/
 % https://sdsawtelle.github.io/blog/output/mean-average-precision-MAP-for-recommender-systems.html
@@ -264,7 +264,7 @@ Use Hit Rate to check how often a top-$K$ list contains any known relevant item.
 
 \metricheading{Related metrics}\metricsecondary
 
-For position-aware evaluation use MRR or nDCG. For counting how many relevant items the list retrieved, use Recall@$K$. Hit Rate is the binary collapse of Recall@$K$.
+For position-aware evaluation use MRR\relpage{sec:mrr} or nDCG\relpage{sec:ndcg}. For counting how many relevant items the list retrieved, use Recall@$K$\relpage{sec:k-metrics}. Hit Rate is the binary collapse of Recall@$K$.
 
 % ---------- Cumulative Gain ----------
 \metricend
@@ -321,7 +321,7 @@ how much relevance a list retrieved, not on where it put it.}
 
 \metricheading{Related metrics}\metricsecondary
 
-DCG extends CG by discounting later positions. nDCG normalizes DCG against the ideal ranking, so scores are comparable across queries with different relevance budgets. In practice, CG is the warm-up step toward those two.
+DCG\relpage{sec:dcg} extends CG by discounting later positions. nDCG\relpage{sec:ndcg} normalizes DCG against the ideal ranking, so scores are comparable across queries with different relevance budgets. In practice, CG is the warm-up step toward those two.
 
 % ---------- Discounted Cumulative Gain ----------
 \metricend
@@ -376,7 +376,7 @@ Use DCG when you want to reward relevance grades and early positions within a ch
 
 \metricheading{Related metrics}\metricsecondary
 
-nDCG divides DCG by the best possible score for each query. MAP uses binary relevance and precision at each hit, while MRR considers only the first hit.
+nDCG\relpage{sec:ndcg} divides DCG by the best possible score for each query. MAP\relpage{sec:map} uses binary relevance and precision at each hit, while MRR\relpage{sec:mrr} considers only the first hit.
 
 % ---------- Normalized Discounted Cumulative Gain ----------
 \metricend
@@ -431,7 +431,7 @@ Use nDCG@$K$ when both relevance and position matter within the first $K$ result
 
 \metricheading{Related metrics}\metricsecondary
 
-nDCG normalizes DCG against the ideal ranking. MAP is another option for binary relevance, with different weights on early hits. Use MRR when only the first useful result matters, or Precision@$K$ when order within the selected list does not matter.
+nDCG normalizes DCG\relpage{sec:dcg} against the ideal ranking. MAP\relpage{sec:map} is another option for binary relevance, with different weights on early hits. Use MRR\relpage{sec:mrr} when only the first useful result matters, or Precision@$K$\relpage{sec:k-metrics} when order within the selected list does not matter.
 
 % great resource: https://aman.ai/recsys/metrics/#normalized-discounted-cumulative-gain-ndcg-1
 
@@ -489,7 +489,7 @@ Use FCP when recovering preference order matters more than matching rating value
 
 \metricheading{Related metrics}\metricsecondary
 
-Kendall's tau also compares pairwise order, with variants that handle ties. nDCG weights positions and relevance grades, while MAP uses binary relevance. MRR focuses on the first relevant result.
+Kendall's tau also compares pairwise order, with variants that handle ties. nDCG\relpage{sec:ndcg} weights positions and relevance grades, while MAP\relpage{sec:map} uses binary relevance. MRR\relpage{sec:mrr} focuses on the first relevant result.
 
 % great references: https://aman.ai/recsys/metrics/#fraction-of-concordant-pairs-fcp
 % https://www.ijcai.org/Proceedings/13/Papers/449.pdf
@@ -547,7 +547,7 @@ Use Diversity alongside relevance when offering useful variety matters, such as 
 
 \metricheading{Related metrics}\metricsecondary
 
-Diversity measures how different the items in one list are. The popularity-based Novelty score estimates unfamiliarity from how rarely items appear in interaction history. Serendipity combines relevance with unexpectedness, while Coverage measures catalog reach across many lists.
+Diversity measures how different the items in one list are. The popularity-based Novelty score\relpage{sec:novelty} estimates unfamiliarity from how rarely items appear in interaction history. Serendipity\relpage{sec:serendipity} combines relevance with unexpectedness, while Coverage\relpage{sec:coverage} measures catalog reach across many lists.
 
 % ---------- Novelty ----------
 \metricend
@@ -603,7 +603,7 @@ Use Novelty when discovery matters, including exploratory search, and assess rel
 
 \metricheading{Related metrics}\metricsecondary
 
-This Novelty score uses item popularity; Diversity compares items within a list. Serendipity additionally asks whether a relevant item is unexpected for the user, which need not mean it is unpopular. Coverage measures catalog reach.
+This Novelty score uses item popularity; Diversity\relpage{sec:diversity} compares items within a list. Serendipity\relpage{sec:serendipity} additionally asks whether a relevant item is unexpected for the user, which need not mean it is unpopular. Coverage\relpage{sec:coverage} measures catalog reach.
 
 % ---------- Serendipity ----------
 \metricend
@@ -659,7 +659,7 @@ Use Serendipity for discovery, such as music browsing or exploratory search. Agr
 
 \metricheading{Related metrics}\metricsecondary
 
-Serendipity combines relevance with unexpectedness relative to a chosen baseline. Novelty may use popularity as a proxy for unfamiliarity; Diversity measures variety within the list. Neither alone tells us whether a recommendation is both useful and surprising.
+Serendipity combines relevance with unexpectedness relative to a chosen baseline. Novelty\relpage{sec:novelty} may use popularity as a proxy for unfamiliarity; Diversity\relpage{sec:diversity} measures variety within the list. Neither alone tells us whether a recommendation is both useful and surprising.
 
 % ---------- Coverage ----------
 \metricend
@@ -715,5 +715,5 @@ Use Coverage when catalog reach matters, such as exposure for marketplace seller
 
 \metricheading{Related metrics}\metricsecondary
 
-Coverage measures catalog reach across lists, while Diversity measures variety within one list. Popularity-based Novelty estimates unfamiliarity from interaction counts. Use nDCG or MAP for relevance, and Serendipity for relevant recommendations that are also unexpected.
+Coverage measures catalog reach across lists, while Diversity\relpage{sec:diversity} measures variety within one list. Popularity-based Novelty\relpage{sec:novelty} estimates unfamiliarity from interaction counts. Use nDCG\relpage{sec:ndcg} or MAP\relpage{sec:map} for relevance, and Serendipity\relpage{sec:serendipity} for relevant recommendations that are also unexpected.
 \metricend

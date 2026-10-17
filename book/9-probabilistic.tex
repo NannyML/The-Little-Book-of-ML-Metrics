@@ -98,9 +98,9 @@ binary case does it necessarily preserve the ranking of probabilities across exa
 
 \metricheading{Related metrics}\metricsecondary
 
-Brier score and log loss evaluate the probabilities as a whole, while ROC AUC measures ranking. Log loss can improve without
-changing either ROC AUC or binned ECE, so read them together before explaining a change. Calibration within Groups
-(Bias \& Fairness chapter) can reveal errors hidden by pooling groups; CBPE additionally needs calibration to hold in production.
+Brier score\relpage{sec:brier-score-loss} and log loss\relpage{sec:log-loss} evaluate the probabilities as a whole, while ROC AUC\relpage{sec:roc-auc} measures ranking. Log loss can improve without
+changing either ROC AUC or binned ECE, so read them together before explaining a change. Calibration within Groups\relpage{sec:calibration-within-groups}
+can reveal errors hidden by pooling groups; CBPE\relpage{sec:cbpe} additionally needs calibration to hold in production.
 
 % ---------- CBPE ----------
 \metricend
@@ -177,8 +177,8 @@ performance. To judge a gap, consider both sampling variation and estimation err
 
 \metricheading{Related metrics}\metricsecondary
 
-Low reference ECE does not bound production error. PAPE adjusts calibration for a changed input mix, but its estimates also need
-validation. When labels arrive, investigate gaps between estimated and measured performance; RCD can help assess concept drift,
+Low reference ECE\relpage{sec:ece} does not bound production error. PAPE\relpage{sec:pape} adjusts calibration for a changed input mix, but its estimates also need
+validation. When labels arrive, investigate gaps between estimated and measured performance; RCD\relpage{sec:rcd} can help assess concept drift,
 while estimator error and sampling variation may also contribute.
 
 % ---------- PAPE ----------
@@ -252,9 +252,9 @@ in those experiments; it does not guarantee that weighting improves every estima
 
 \metricheading{Related metrics}\metricsecondary
 
-If CBPE and PAPE disagree, check whether production inputs are covered by the reference data and whether a few examples dominate
+If CBPE\relpage{sec:cbpe} and PAPE disagree, check whether production inputs are covered by the reference data and whether a few examples dominate
 the weights. Compare both estimates with measured performance on labeled periods with similar shifts before choosing between them.
-DLE estimates regression loss; RCD uses new labels to assess the effect of a changed input--outcome relationship.
+DLE\relpage{sec:dle} estimates regression loss; RCD\relpage{sec:rcd} uses new labels to assess the effect of a changed input--outcome relationship.
 
 % ---------- DLE ----------
 \metricend
@@ -328,7 +328,7 @@ calibration and future examples being exchangeable, as they are under independen
 
 \metricheading{Related metrics}\metricsecondary
 
-CBPE and PAPE estimate classification performance; DLE learns the loss directly. When measured and estimated loss disagree,
+CBPE\relpage{sec:cbpe} and PAPE\relpage{sec:pape} estimate classification performance; DLE learns the loss directly. When measured and estimated loss disagree,
 check input changes, recent labeled errors, and the loss model's validation results. The gap may reflect concept drift, poor
 estimation, or sampling variation, and input monitoring alone cannot distinguish them.
 
@@ -406,7 +406,7 @@ the other. A small overall impact can therefore hide a substantial change for pa
 
 \metricheading{Related metrics}\metricsecondary
 
-CBPE, PAPE, and DLE assume the input--outcome relationship is stable; RCD helps investigate that assumption once labels arrive.
+CBPE\relpage{sec:cbpe}, PAPE\relpage{sec:pape}, and DLE\relpage{sec:dle} assume the input--outcome relationship is stable; RCD helps investigate that assumption once labels arrive.
 RCD also reports a \emph{magnitude}, $\frac{1}{n}\sum_j |g(x_j)-g_{\text{ref}}(x_j)|$, where $g_{\text{ref}}$ models the old concept
 and the sum covers the reference inputs. This measures how much estimated probabilities changed, regardless of their effect on
 accuracy. If magnitude is large but impact is small, examine individual groups for changes that cancel in the average.

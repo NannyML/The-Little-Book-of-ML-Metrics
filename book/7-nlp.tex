@@ -103,8 +103,8 @@ a different result.}
 
 \metricheading{Related metrics}\metricsecondary
 
-METEOR can recognize stems and synonyms that BLEU misses; BERTScore compares learned representations
-of words in context. TER gives another view by counting edits, including phrase moves. If these scores
+METEOR\relpage{sec:meteor} can recognize stems and synonyms that BLEU misses; BERTScore\relpage{sec:bertscore} compares learned representations
+of words in context. TER\relpage{sec:ter} gives another view by counting edits, including phrase moves. If these scores
 disagree, inspect the translations: a gap can reflect valid wording changes, but it does not rule out
 errors.
 
@@ -182,9 +182,9 @@ not a fixed property of every METEOR configuration.}
 
 \metricheading{Related metrics}\metricsecondary
 
-A high METEOR score alongside low BLEU can reflect stems or synonyms that BLEU does not match.
-It is a reason to inspect the wording, not evidence that the translation is correct. TER counts edits;
-BERTScore, in the GenAI chapter, compares learned representations of words in context.
+A high METEOR score alongside low BLEU\relpage{sec:bleu} can reflect stems or synonyms that BLEU does not match.
+It is a reason to inspect the wording, not evidence that the translation is correct. TER\relpage{sec:ter} counts edits;
+BERTScore\relpage{sec:bertscore} compares learned representations of words in context.
 
 % ---------- Recall-Oriented Understudy for Gisting Evaluation ----------
 % references:
@@ -259,7 +259,7 @@ and an F-score help account for it.}
 
 High ROUGE-1 with lower ROUGE-2 or ROUGE-L means that fewer shared words also match as adjacent pairs
 or in sequence. This can help locate examples worth reading, but it does not tell us whether their
-content is right. BLEU emphasizes output-side phrase precision; BERTScore can recognize similarities
+content is right. BLEU\relpage{sec:bleu} emphasizes output-side phrase precision; BERTScore\relpage{sec:bertscore} can recognize similarities
 beyond exact wording.
 
 % ---------- Translation Error Rate ----------
@@ -332,9 +332,9 @@ may produce a cheaper alignment.}
 
 \metricheading{Related metrics}\metricsecondary
 
-WER uses the same word-edit operations without phrase shifts. TER can therefore give a much lower
-edit count when a shift resolves a reordering, as in the figure. BLEU measures phrase overlap, while
-METEOR also allows selected word-form and synonym matches. Lower TER is better; higher BLEU and METEOR
+WER\relpage{sec:wer} uses the same word-edit operations without phrase shifts. TER can therefore give a much lower
+edit count when a shift resolves a reordering, as in the figure. BLEU\relpage{sec:bleu} measures phrase overlap, while
+METEOR\relpage{sec:meteor} also allows selected word-form and synonym matches. Lower TER is better; higher BLEU and METEOR
 indicate more agreement with their references.
 
 % ---------- Exact Match ----------
@@ -410,8 +410,8 @@ prediction, so a valid alternative need not score zero if it appears in the refe
 
 A large token-F1--EM gap means that many answers share words without matching in full. Some may have
 extra words or different answer boundaries; others may contain a wrong date or a negation that changes
-the meaning. Read those answers before deciding they are nearly correct. For longer text, ROUGE
-measures word and sequence overlap, while BERTScore compares words in context.
+the meaning. Read those answers before deciding they are nearly correct. For longer text, ROUGE\relpage{sec:rouge}
+measures word and sequence overlap, while BERTScore\relpage{sec:bertscore} compares words in context.
 
 % ---------- Word Error Rate ----------
 \metricend
@@ -481,7 +481,7 @@ Error Rate (CER). The distance was introduced by Levenshtein in 1965.}
 \metricheading{Related metrics}\metricsecondary
 
 CER applies the edit-distance calculation to characters rather than words. The choice concerns the
-written units and word boundaries, not whether a spoken language uses tones. TER adds phrase shifts
-for translation, so it can reduce the edit count when words move together. BERTScore provides a
+written units and word boundaries, not whether a spoken language uses tones. TER\relpage{sec:ter} adds phrase shifts
+for translation, so it can reduce the edit count when words move together. BERTScore\relpage{sec:bertscore} provides a
 comparison based on learned text representations, but does not replace checking transcription errors.
 \metricend

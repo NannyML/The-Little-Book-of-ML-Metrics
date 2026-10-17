@@ -18,6 +18,9 @@
  {Size=8.5-11,Font=lmroman10-regular.otf},{Size=11-,Font=lmroman12-regular.otf}}]
 \newcommand{\metricbody}{\normalfont\fontsize{11}{13.5}\selectfont}
 \newcommand{\metricsecondary}{\normalfont\fontsize{10}{12}\selectfont}
+% Page number after a related metric's name: small and light, so the sentence
+% still reads as prose.
+\newcommand{\relpage}[1]{\,{\fontsize{7.5}{9}\selectfont\color{black!50}\pageref{#1}}}
 \newcommand{\metriclabel}{\sffamily\fontsize{10}{12}\selectfont\bfseries\color{black}}
 \AtBeginDocument{\metricbody\raggedbottom}
 \setlength{\parindent}{0pt}

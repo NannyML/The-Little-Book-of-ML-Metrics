@@ -82,7 +82,7 @@ The right-hand panel lowers Group B's threshold until it also selects $54$ peopl
 
 \metricheading{Related metrics}\metricsecondary
 
-Demographic Parity compares selection rates across whole groups. Equality of Opportunity instead compares selection among qualified people, while Predictive Parity compares how many selected people are qualified. A model can select equal shares of two groups while selecting their qualified members at different rates.
+Demographic Parity compares selection rates across whole groups. Equality of Opportunity\relpage{sec:equality-of-opportunity} instead compares selection among qualified people, while Predictive Parity\relpage{sec:predictive-parity} compares how many selected people are qualified. A model can select equal shares of two groups while selecting their qualified members at different rates.
 
 % ---------- Equality of Opportunity ----------
 \metricend
@@ -143,7 +143,7 @@ Equality of opportunity holds because these proportions match, even though the c
 
 \metricheading{Related metrics}\metricsecondary
 
-Equality of Odds also requires equal false-positive rates. If opportunity holds but odds fails, false-positive rates differ. Demographic Parity compares overall selection rates, which can differ when groups have different proportions of qualified people.
+Equality of Odds\relpage{sec:equality-of-odds} also requires equal false-positive rates\relpage{sec:fpr}. If opportunity holds but odds fails, false-positive rates differ. Demographic Parity\relpage{sec:demographic-parity} compares overall selection rates, which can differ when groups have different proportions of qualified people.
 
 % ---------- Equality of Odds ----------
 \metricend
@@ -205,7 +205,7 @@ Both TPR and FPR match, so equality of odds holds. There are still more false po
 
 \metricheading{Related metrics}\metricsecondary
 
-Equality of Odds includes Equality of Opportunity because it requires equal TPR as well as equal FPR. Predictive Parity checks precision instead, so compare it separately. Demographic Parity checks overall selection rates, which can differ even when both error rates match.
+Equality of Odds includes Equality of Opportunity\relpage{sec:equality-of-opportunity} because it requires equal TPR\relpage{sec:tpr-recall-sensitivity} as well as equal FPR\relpage{sec:fpr}. Predictive Parity\relpage{sec:predictive-parity} checks precision\relpage{sec:precision} instead, so compare it separately. Demographic Parity\relpage{sec:demographic-parity} checks overall selection rates, which can differ even when both error rates match.
 
 % ---------- Predictive Parity ----------
 \metricend
@@ -266,7 +266,7 @@ Both groups have the same TPR and FPR, but B has fewer qualified people. False p
 
 \metricheading{Related metrics}\metricsecondary
 
-Predictive Parity compares precision, while Equality of Opportunity compares recall and Equality of Odds also checks false-positive rates. Calibration within Groups checks probability scores; those scores can be calibrated even when precision differs after thresholding.
+Predictive Parity compares precision\relpage{sec:precision}, while Equality of Opportunity\relpage{sec:equality-of-opportunity} compares recall\relpage{sec:tpr-recall-sensitivity} and Equality of Odds\relpage{sec:equality-of-odds} also checks false-positive rates\relpage{sec:fpr}. Calibration within Groups\relpage{sec:calibration-within-groups} checks probability scores; those scores can be calibrated even when precision differs after thresholding.
 
 % ---------- Calibration within Groups ----------
 \metricend
@@ -327,5 +327,5 @@ For scores between $0.5$ and $0.6$, about $70\%$ of Group A is qualified, compar
 
 \metricheading{Related metrics}\metricsecondary
 
-Calibration within Groups implies score-level sufficiency: among people with the same score, outcome rates do not depend on group. Predictive Parity instead pools everyone above a decision threshold, where groups may have different mixes of scores. Use Equality of Odds to assess the resulting error rates, and group-level calibration plots alongside the Brier Score to assess probability predictions.
+Calibration within Groups implies score-level sufficiency: among people with the same score, outcome rates do not depend on group. Predictive Parity\relpage{sec:predictive-parity} instead pools everyone above a decision threshold, where groups may have different mixes of scores. Use Equality of Odds\relpage{sec:equality-of-odds} to assess the resulting error rates, and group-level calibration plots alongside the Brier Score\relpage{sec:brier-score-loss} to assess probability predictions.
 \metricend

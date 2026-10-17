@@ -142,7 +142,7 @@ Use RI to describe pairwise agreement and ARI when comparing against chance. Bot
 
 \metricheading{Related metrics}\metricsecondary
 
-RI and MI summarize agreement differently, while ARI and AMI also use chance baselines. A disagreement between their scores does not by itself identify a cause. The Pair Confusion Matrix separates the two kinds of pairwise error; the Contingency Matrix shows which classes and clusters overlap.
+RI and MI\relpage{sec:mutual-info-score} summarize agreement differently, while ARI and AMI also use chance baselines. A disagreement between their scores does not by itself identify a cause. The Pair Confusion Matrix\relpage{sec:pair-confusion-matrix} separates the two kinds of pairwise error; the Contingency Matrix\relpage{sec:contingency-matrix} shows which classes and clusters overlap.
 
 % ---------- calinski harabasz index ----------
 \metricend
@@ -198,7 +198,7 @@ Use CH to compare clusterings of the same data, including different choices of c
 
 \metricheading{Related metrics}\metricsecondary
 
-Davies-Bouldin also compares spread with separation, but lower values are preferred. Silhouette compares each point's average distances within and outside its cluster. The criteria can favor different clusterings; inspect the candidate groups to understand what each score rewards.
+Davies-Bouldin\relpage{sec:davies-bouldin-index} also compares spread with separation, but lower values are preferred. Silhouette\relpage{sec:silhouette-score} compares each point's average distances within and outside its cluster. The criteria can favor different clusterings; inspect the candidate groups to understand what each score rewards.
 
 % ---------- contingency matrix ----------
 \metricend
@@ -252,7 +252,7 @@ Use the matrix when you have reference labels and need to see which groups split
 
 \metricheading{Related metrics}\metricsecondary
 
-The Pair Confusion Matrix collapses the contingency matrix to a $2 \times 2$ table by counting \emph{pairs} of points instead of individual points, which is what powers the pair-counting family (RI, ARI, FMI). When $k \neq C$, the Pair Confusion Matrix still works, but the class-vs-cluster diagnostic detail is gone --- you trade granularity for a tidy summary.
+The Pair Confusion Matrix\relpage{sec:pair-confusion-matrix} collapses the contingency matrix to a $2 \times 2$ table by counting \emph{pairs} of points instead of individual points, which is what powers the pair-counting family (RI\relpage{sec:rand-index}, ARI, FMI\relpage{sec:fmi}). When $k \neq C$, the Pair Confusion Matrix still works, but the class-vs-cluster diagnostic detail is gone --- you trade granularity for a tidy summary.
 
 % ---------- pair confusion matrix ----------
 \metricend
@@ -304,7 +304,7 @@ The larger ``both apart'' count reflects the number of different-class pairs, bu
 
 \metricheading{Related metrics}\metricsecondary
 
-FMI gives a symmetric summary of pairwise precision and recall. If merging and splitting have different consequences, keep those two rates or the off-diagonal counts separate. Use the Contingency Matrix to identify which classes are affected.
+FMI\relpage{sec:fmi} gives a symmetric summary of pairwise precision and recall. If merging and splitting have different consequences, keep those two rates or the off-diagonal counts separate. Use the Contingency Matrix\relpage{sec:contingency-matrix} to identify which classes are affected.
 
 % ---------- Completeness Score ----------
 \metricend
@@ -361,7 +361,7 @@ When the task requires that all members of a class stay together: topic modeling
 
 \metricheading{Related metrics}\metricsecondary
 
-Completeness and Homogeneity always need to be read together; one without the other is incomplete. If Completeness is high and Homogeneity is low, you're over-merging; the opposite signals over-splitting. V-Measure gives the harmonic-mean summary, and AMI provides the chance-corrected version of the same intuition.
+Completeness and Homogeneity always need to be read together; one without the other is incomplete. If Completeness is high and Homogeneity\relpage{sec:homogeneity-score} is low, you're over-merging; the opposite signals over-splitting. V-Measure\relpage{sec:v-measure} gives the harmonic-mean summary, and AMI\relpage{sec:mutual-info-score} provides the chance-corrected version of the same intuition.
 
 % ---------- Homogeneity Score ----------
 \metricend
@@ -421,7 +421,7 @@ the failure Completeness alone would never report.}
 
 \metricheading{Related metrics}\metricsecondary
 
-Homogeneity and Completeness mirror each other: if Homogeneity is high but Completeness is low, the algorithm is over-splitting; the opposite signals over-merging. V-Measure summarizes the pair as a harmonic mean; AMI provides the chance-corrected information-theoretic version of the same intuition.
+Homogeneity and Completeness\relpage{sec:completeness-score} mirror each other: if Homogeneity is high but Completeness is low, the algorithm is over-splitting; the opposite signals over-merging. V-Measure\relpage{sec:v-measure} summarizes the pair as a harmonic mean; AMI\relpage{sec:mutual-info-score} provides the chance-corrected information-theoretic version of the same intuition.
 
 % ---------- V Measure ----------
 \metricend
@@ -479,7 +479,7 @@ Use V-Measure when both pure clusters and intact reference classes matter. Choos
 
 \metricheading{Related metrics}\metricsecondary
 
-At $\beta=1$, V-Measure equals NMI using the arithmetic mean of the label entropies. AMI adds chance correction; ARI uses pairwise agreement with its own chance baseline. Differences between these scores can reflect their weighting as well as chance agreement. Inspect the contingency table before attributing them to a particular kind of split or merge.
+At $\beta=1$, V-Measure equals NMI\relpage{sec:mutual-info-score} using the arithmetic mean of the label entropies. AMI adds chance correction; ARI\relpage{sec:rand-index} uses pairwise agreement with its own chance baseline. Differences between these scores can reflect their weighting as well as chance agreement. Inspect the contingency table\relpage{sec:contingency-matrix} before attributing them to a particular kind of split or merge.
 
 % ---------- Davis Bouldin Index ----------
 \metricend
@@ -536,7 +536,7 @@ Use DB to compare clusterings with compact groups around centers, such as k-mean
 
 \metricheading{Related metrics}\metricsecondary
 
-CH adds up squared distances across the data, while DB gives each cluster equal weight in its average. Silhouette instead evaluates each point against its own cluster and the nearest alternative. Its plot can help locate points that fit poorly, even when the overall clustering score looks good.
+CH\relpage{sec:ch-index} adds up squared distances across the data, while DB gives each cluster equal weight in its average. Silhouette\relpage{sec:silhouette-score} instead evaluates each point against its own cluster and the nearest alternative. Its plot can help locate points that fit poorly, even when the overall clustering score looks good.
 
 % ---------- Fowlkes-Mallows Index ----------
 \metricend
@@ -594,7 +594,7 @@ Use FMI for balanced pair-counting comparisons, including hierarchical clusterin
 
 \metricheading{Related metrics}\metricsecondary
 
-ARI adjusts pairwise agreement for chance, whereas FMI combines pairwise precision and recall without that adjustment. A positive ARI indicates agreement above its baseline, even if numerically lower than FMI. An ARI near zero, as in the one-cluster example, indicates agreement close to that baseline. The Contingency Matrix shows which groups are responsible for the agreement or disagreement.
+ARI\relpage{sec:rand-index} adjusts pairwise agreement for chance, whereas FMI combines pairwise precision and recall without that adjustment. A positive ARI indicates agreement above its baseline, even if numerically lower than FMI. An ARI near zero, as in the one-cluster example, indicates agreement close to that baseline. The Contingency Matrix\relpage{sec:contingency-matrix} shows which groups are responsible for the agreement or disagreement.
 
 
 % ---------- Silhouette Score ----------
@@ -655,5 +655,5 @@ Use silhouette for point-level diagnostics with a distance appropriate to the ta
 
 \metricheading{Related metrics}\metricsecondary
 
-CH and Davies-Bouldin are faster options when distances to Euclidean centers suit the task. Silhouette allows other dissimilarities and shows individual point scores, but it can favor compact, separated groups too. The methods need not choose the same cluster count; compare what each one measures with the structure you want to recover.
+CH\relpage{sec:ch-index} and Davies-Bouldin\relpage{sec:davies-bouldin-index} are faster options when distances to Euclidean centers suit the task. Silhouette allows other dissimilarities and shows individual point scores, but it can favor compact, separated groups too. The methods need not choose the same cluster count; compare what each one measures with the structure you want to recover.
 \metricend

@@ -98,7 +98,7 @@ is skewed (e.g., income, claim amounts), this distinction matters: MAE and MSE w
 
 \metricheading{Related metrics}\metricsecondary
 
-RMSE gives larger errors more weight. When MAE is nonzero, an RMSE/MAE ratio near $1$ means the absolute error sizes are similar; a larger ratio indicates more variation in their sizes. Percentage measures offer another perspective when the target has a meaningful zero.
+RMSE\relpage{sec:rmse} gives larger errors more weight. When MAE is nonzero, an RMSE/MAE ratio near $1$ means the absolute error sizes are similar; a larger ratio indicates more variation in their sizes. Percentage measures offer another perspective when the target has a meaningful zero.
 
 % ---------- MSE ----------
 \metricend
@@ -161,7 +161,7 @@ Use MSE when a few large misses should matter more than many small ones. It is a
 
 \metricheading{Related metrics}\metricsecondary
 
-RMSE is the square root of MSE, so it returns the score to the target's units. The two rank models identically on the same evaluation data. MAE gives less emphasis to large misses, while inspecting individual errors shows which predictions drive the difference.
+RMSE\relpage{sec:rmse} is the square root of MSE, so it returns the score to the target's units. The two rank models identically on the same evaluation data. MAE\relpage{sec:mae} gives less emphasis to large misses, while inspecting individual errors shows which predictions drive the difference.
 
 % ---------- MSLE ----------
 \metricend
@@ -225,7 +225,7 @@ Use MSLE for nonnegative quantities spanning a wide range, such as website traff
 
 \metricheading{Related metrics}\metricsecondary
 
-Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Squared Log Error (RMSLE).
+Related metrics for MSLE include Mean Absolute Log Error (MALE) and Root Mean Squared Log Error (RMSLE)\relpage{sec:rmsle}.
 
 % ---------- RMSE ----------
 \metricend
@@ -286,7 +286,7 @@ Use RMSE when large errors deserve extra weight but you want to report the resul
 
 
 \metricheading{Related metrics}\metricsecondary
-Metrics like Mean Absolute Error (MAE), Average Absolute Deviation (AAD), and Normalized Estimation Error Squared (NEES) are also used to evaluate model performance.
+Metrics like Mean Absolute Error (MAE)\relpage{sec:mae}, Average Absolute Deviation (AAD), and Normalized Estimation Error Squared (NEES) are also used to evaluate model performance.
 
 % ---------- RMSLE ----------
 \metricend
@@ -350,7 +350,7 @@ Use RMSLE for nonnegative prices or counts when proportional differences matter.
 {Kaggle's Mercari Price Suggestion Challenge in 2017--2018 and ASHRAE Great Energy Predictor III in 2019 both used RMSLE. The tasks involved predicting product prices and building energy consumption, respectively.}
 
 \metricheading{Related metrics}\metricsecondary
-MSLE gives the same model rankings without taking the root. RMSE evaluates errors in the original units, while MAPE expresses each absolute error as a percentage of its actual value and requires nonzero actuals.
+MSLE\relpage{sec:msle} gives the same model rankings without taking the root. RMSE\relpage{sec:rmse} evaluates errors in the original units, while MAPE\relpage{sec:mape} expresses each absolute error as a percentage of its actual value and requires nonzero actuals.
 % ---------- MAPE ----------
 \metricend
 \clearpage
@@ -413,7 +413,7 @@ Use MAPE for quantities with a meaningful zero, such as positive sales volumes, 
 
 \metricheading{Related metrics}\metricsecondary
 
-sMAPE uses both actual and predicted values in its denominator. wMAPE divides total absolute error by total absolute actuals, while MASE scales errors by a historical naive-forecast error. The latter two can handle individual zero actuals, provided their overall denominators are nonzero.
+sMAPE\relpage{sec:smape} uses both actual and predicted values in its denominator. wMAPE\relpage{sec:wmape} divides total absolute error by total absolute actuals, while MASE\relpage{sec:mase} scales errors by a historical naive-forecast error. The latter two can handle individual zero actuals, provided their overall denominators are nonzero.
 
 % ---------- sMAPE ----------
 \metricend
@@ -481,7 +481,7 @@ For $x=100$ and $y=400$, this gives $z=200$ and error $2/3$. Choosing $z=100$ gi
 
 \metricheading{Related metrics}\metricsecondary
 
-MAPE and wMAPE scale errors by actual values; MASE uses a historical naive-forecast error.
+MAPE\relpage{sec:mape} and wMAPE\relpage{sec:wmape} scale errors by actual values; MASE\relpage{sec:mase} uses a historical naive-forecast error.
 % ---------- wMAPE ----------
 \metricend
 \clearpage
@@ -536,7 +536,7 @@ Use wMAPE when you want a percentage summary that allows some actuals to be zero
 
 \metricheading{Related metrics}\metricsecondary
 
-MAPE weights each percentage error equally, while wMAPE gives larger actuals more weight. If MAPE is higher, small actuals may have larger percentage errors; inspect the individual contributions before drawing a conclusion. For time series, MASE instead scales errors by a naive forecast's error on the training history.
+MAPE\relpage{sec:mape} weights each percentage error equally, while wMAPE gives larger actuals more weight. If MAPE is higher, small actuals may have larger percentage errors; inspect the individual contributions before drawing a conclusion. For time series, MASE\relpage{sec:mase} instead scales errors by a naive forecast's error on the training history.
 
 \metricend
 \clearpage
@@ -591,7 +591,7 @@ Use MASE to compare forecast errors across time series with different scales. It
 
 \metricheading{Related metrics}\metricsecondary
 
-MAPE and sMAPE express errors relative to actuals or predictions; MASE uses a historical forecast error instead. RMSE gives larger misses more influence than MAE. For direction rather than magnitude, consider MDA.
+MAPE\relpage{sec:mape} and sMAPE\relpage{sec:smape} express errors relative to actuals or predictions; MASE uses a historical forecast error instead. RMSE\relpage{sec:rmse} gives larger misses more influence than MAE\relpage{sec:mae}. For direction rather than magnitude, consider MDA\relpage{sec:mda}.
 
 % ---------- MDA ----------
 \metricend
@@ -651,7 +651,7 @@ Use MDA when the direction of change matters, such as in stock or energy-price f
 
 \metricheading{Related metrics}\metricsecondary
 
-MAE and RMSE assess error magnitude, while MASE compares it with a historical error scale. These complement MDA when evaluating forecasts, but a trading strategy also needs evaluation of its actual gains, losses, and costs.
+MAE\relpage{sec:mae} and RMSE\relpage{sec:rmse} assess error magnitude, while MASE\relpage{sec:mase} compares it with a historical error scale. These complement MDA when evaluating forecasts, but a trading strategy also needs evaluation of its actual gains, losses, and costs.
 
 % ---------- MPD ----------
 \metricend
@@ -708,7 +708,7 @@ Use MPD for mean counts or rates, such as calls per day or claims per year. A Po
 
 \metricheading{Related metrics}\metricsecondary
 
-MPD and MGD are members of the Tweedie deviance family. The compound Poisson--Gamma model, with $1<p<2$, describes a mix of zero and positive continuous amounts, such as total claim cost; it is not a general replacement for counts with many zeros. If MPD and MAE rank models differently, inspect the cases contributing most to each loss before deciding why.
+MPD and MGD\relpage{sec:mgd} are members of the Tweedie deviance family. The compound Poisson--Gamma model, with $1<p<2$, describes a mix of zero and positive continuous amounts, such as total claim cost; it is not a general replacement for counts with many zeros. If MPD and MAE\relpage{sec:mae} rank models differently, inspect the cases contributing most to each loss before deciding why.
 
 % ---------- MGD ----------
 \metricend
@@ -766,7 +766,7 @@ Use MGD when proportional errors matter for positive quantities, such as claim s
 
 \metricheading{Related metrics}\metricsecondary
 
-MGD compares ratios, while RMSE gives more weight to large errors in the target's units. If they rank models differently, consider which errors matter for the prediction task. MPD instead scales with count size. Both losses can evaluate mean predictions, even when the full outcome distribution does not follow their namesake probability model exactly.
+MGD compares ratios, while RMSE\relpage{sec:rmse} gives more weight to large errors in the target's units. If they rank models differently, consider which errors matter for the prediction task. MPD\relpage{sec:mpd} instead scales with count size. Both losses can evaluate mean predictions, even when the full outcome distribution does not follow their namesake probability model exactly.
 
 % ---------- R-squared ----------
 \metricend
@@ -823,7 +823,7 @@ Use $R^2$ to express squared error relative to the variation in the targets. It 
 
 \metricheading{Related metrics}\metricsecondary
 
-Adjusted $R^2$ penalizes additional predictors in linear regression, but it does not replace evaluation on held-out data. A large training--test gap can prompt an investigation of overfitting or differences between datasets. D2 Absolute Score uses absolute errors and a median baseline instead.
+Adjusted $R^2$ penalizes additional predictors in linear regression, but it does not replace evaluation on held-out data. A large training--test gap can prompt an investigation of overfitting or differences between datasets. D2 Absolute Score\relpage{sec:d2} uses absolute errors and a median baseline instead.
 
 % ---------- D2 ----------
 \metricend
@@ -881,7 +881,7 @@ Use D2 when absolute error fits your task and you want to compare it with a cons
 
 \metricheading{Related metrics}\metricsecondary
 
-R-squared uses squared errors and a mean baseline, so it need not agree with D2 even without outliers. If they rank models differently, inspect the errors and decide which penalty fits the task. Both scores use baselines calculated from the evaluated targets by definition. Comparing with a historical training-set baseline is a different skill score.
+R-squared\relpage{sec:r-squared} uses squared errors and a mean baseline, so it need not agree with D2 even without outliers. If they rank models differently, inspect the errors and decide which penalty fits the task. Both scores use baselines calculated from the evaluated targets by definition. Comparing with a historical training-set baseline is a different skill score.
 
 % ---------- Pinball Loss ----------
 \metricend
@@ -943,7 +943,7 @@ Use it when evaluating a chosen quantile, such as an upper demand forecast for i
 
 \metricheading{Related metrics}\metricsecondary
 
-MAE targets the median, just as Pinball Loss does at $q=0.5$; MSE targets the mean. For a prediction interval, evaluate its lower and upper quantiles and check how often new outcomes fall inside it.
+MAE\relpage{sec:mae} targets the median, just as Pinball Loss does at $q=0.5$; MSE\relpage{sec:mse} targets the mean. For a prediction interval, evaluate its lower and upper quantiles and check how often new outcomes fall inside it.
 
 % ---------- Explained Variance Score ----------
 \metricend
@@ -1000,5 +1000,5 @@ Use EVS alongside $R^2$ to check how much of the squared error comes from predic
 
 \metricheading{Related metrics}\metricsecondary
 
-To test whether an offset correction helps on new data, estimate it from one labeled dataset and evaluate the corrected predictions on another. Report $R^2$ with MAE or RMSE so readers can see both the relative improvement and the remaining error in the target's units. Check individual groups as well, because the same correction may help some and hurt others.
+To test whether an offset correction helps on new data, estimate it from one labeled dataset and evaluate the corrected predictions on another. Report $R^2$\relpage{sec:r-squared} with MAE\relpage{sec:mae} or RMSE\relpage{sec:rmse} so readers can see both the relative improvement and the remaining error in the target's units. Check individual groups as well, because the same correction may help some and hurt others.
 \metricend

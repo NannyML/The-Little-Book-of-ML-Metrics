@@ -84,7 +84,7 @@ In this example, background fills $85\%$ of the image. Its high recall dominates
 
 \metricheading{Related metrics}\metricsecondary
 
-IoU includes both missed and extra pixels in its denominator. Mean IoU weights classes equally, while Frequency Weighted IoU weights them by their ground-truth pixel counts. MPA averages class recall; it does not count the correctly rejected pixels of other classes as additional successes.
+IoU\relpage{sec:jaccard-index} includes both missed and extra pixels in its denominator. Mean IoU weights classes equally, while Frequency Weighted IoU weights them by their ground-truth pixel counts. MPA averages class recall; it does not count the correctly rejected pixels of other classes as additional successes.
 
 
 
@@ -142,7 +142,7 @@ For a benchmark, use its specified tolerance. For a new application, choose a to
 
 \metricheading{Related metrics}\metricsecondary
 
-Object Keypoint Similarity (OKS) rewards smaller distance errors continuously and uses a separate tolerance for each type of keypoint. A PCK curve instead shows the fraction of correct predictions over a range of thresholds.
+Object Keypoint Similarity (OKS)\relpage{sec:oks} rewards smaller distance errors continuously and uses a separate tolerance for each type of keypoint. A PCK curve instead shows the fraction of correct predictions over a range of thresholds.
 
 % ---------- OKS ----------
 \metricend
@@ -199,7 +199,7 @@ Use OKS for COCO-style pose evaluation, where both object size and annotation un
 
 \metricheading{Related metrics}\metricsecondary
 
-PCK counts keypoints within a distance threshold. OKS gives partial credit according to distance, scale and keypoint tolerance. For comparing regions rather than landmarks, see IoU or Dice.
+PCK\relpage{sec:pck} counts keypoints within a distance threshold. OKS gives partial credit according to distance, scale and keypoint tolerance. For comparing regions rather than landmarks, see IoU\relpage{sec:jaccard-index} or Dice\relpage{sec:sorensen-dice-coefficient}.
 
 % ---------- PSNR ----------
 \metricend
@@ -286,7 +286,7 @@ Use PSNR when corresponding pixels should match. Compare methods on the same tes
 \metricheading{Related metrics}\metricsecondary
 
 
-SSIM and LPIPS compare image pairs, but neither automatically fixes misalignment. FID and Inception Score address a different question: they evaluate sets of generated images rather than the reconstruction of a particular reference. See the GenAI chapter for those comparisons.
+SSIM\relpage{sec:ssim} and LPIPS\relpage{sec:lpips} compare image pairs, but neither automatically fixes misalignment. FID\relpage{sec:fid} and Inception Score\relpage{sec:is} address a different question: they evaluate sets of generated images rather than the reconstruction of a particular reference. See the GenAI chapter for those comparisons.
 
 
 % ---------- Sørensen–Dice Coefficient ----------
@@ -349,8 +349,8 @@ Use Dice when overlap matters, especially for small foreground regions against a
 
 \metricheading{Related metrics}\metricsecondary
 
-The Dice coefficient is mathematically equivalent to the F1-score and closely related to the Jaccard Index (IoU):
-$Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Panoptic Quality (PQ).
+The Dice coefficient is mathematically equivalent to the F1-score\relpage{sec:f1-score} and closely related to the Jaccard Index (IoU)\relpage{sec:jaccard-index}:
+$Jaccard = \frac{Dice}{2 - Dice}$. For panoptic segmentation evaluation, see Panoptic Quality (PQ)\relpage{sec:pq}.
 
 % ---------- Panoptic Quality ----------
 % references:
@@ -477,5 +477,5 @@ Use SSIM alongside PSNR and visual inspection for compression or image restorati
 
 \metricheading{Related metrics}\metricsecondary
 
-PSNR measures pixel error, while MS-SSIM compares structure at several image scales. LPIPS uses learned image features; see the GenAI chapter. Like SSIM, standard LPIPS can react strongly to small spatial shifts, so it does not remove the need for alignment.
+PSNR\relpage{sec:psnr} measures pixel error, while MS-SSIM compares structure at several image scales. LPIPS\relpage{sec:lpips} uses learned image features. Like SSIM, standard LPIPS can react strongly to small spatial shifts, so it does not remove the need for alignment.
 \metricend
